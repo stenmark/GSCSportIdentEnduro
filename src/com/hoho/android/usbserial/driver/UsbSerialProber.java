@@ -21,14 +21,9 @@
 package com.hoho.android.usbserial.driver;
 
 import java.util.Map;
-
-import se.gsc.stenmark.gscenduro.MainActivity;
-
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
-import android.util.Log;
-import android.widget.TextView;
 
 
 
@@ -49,7 +44,7 @@ public enum UsbSerialProber {
      */
     FTDI_SERIAL {
         @Override
-        public UsbSerialDriver getDevice(final UsbManager manager, final UsbDevice usbDevice, MainActivity act) {
+        public UsbSerialDriver getDevice(final UsbManager manager, final UsbDevice usbDevice) {
             if (!testIfSupported(usbDevice, FtdiSerialDriver.getSupportedDevices())) {
                 return null;
             }
@@ -63,7 +58,7 @@ public enum UsbSerialProber {
 
     CDC_ACM_SERIAL {
         @Override
-        public UsbSerialDriver getDevice(UsbManager manager, UsbDevice usbDevice, MainActivity act) {
+        public UsbSerialDriver getDevice(UsbManager manager, UsbDevice usbDevice) {
             if (!testIfSupported(usbDevice, CdcAcmSerialDriver.getSupportedDevices())) {
                return null;
             }
@@ -77,21 +72,13 @@ public enum UsbSerialProber {
     
     SILAB_SERIAL {
         @Override
-        public UsbSerialDriver getDevice(final UsbManager manager, final UsbDevice usbDevice, MainActivity act) {
+        public UsbSerialDriver getDevice(final UsbManager manager, final UsbDevice usbDevice) {
         	
             if (!testIfSupported(usbDevice, Cp2102SerialDriver.getSupportedDevices())) {
-              TextView textView = new TextView(act);
-              textView.setTextSize(80);
-              textView.setText("NULL 1");
-              act.setContentView(textView);
-                return null;
+            	return null;
             }
             final UsbDeviceConnection connection = manager.openDevice(usbDevice);
             if (connection == null) {
-                TextView textView = new TextView(act);
-                textView.setTextSize(80);
-                textView.setText("NULL 2");
-                act.setContentView(textView);
                 return null;
             }
             return new Cp2102SerialDriver(usbDevice, connection);
@@ -108,7 +95,7 @@ public enum UsbSerialProber {
      * @return the first available {@link UsbSerialDriver}, or {@code null} if
      *         no devices could be acquired
      */
-    public abstract UsbSerialDriver getDevice(final UsbManager manager, final UsbDevice usbDevice, MainActivity act);
+    public abstract UsbSerialDriver getDevice(final UsbManager manager, final UsbDevice usbDevice);
 
     /**
      * Acquires and returns the first available serial device among all
@@ -119,12 +106,9 @@ public enum UsbSerialProber {
      * @return the first available {@link UsbSerialDriver}, or {@code null} if
      *         no devices could be acquired
      */
-    public static UsbSerialDriver acquire(final UsbManager usbManager, MainActivity act) {
-        String debug = "acquire 1";
-
+    public static UsbSerialDriver acquire(final UsbManager usbManager) {
         for (final UsbDevice usbDevice : usbManager.getDeviceList().values()) {
-        	debug += " ANDREAS: VID " + usbDevice.getVendorId() + " PID " + usbDevice.getProductId();
-            final UsbSerialDriver probedDevice = acquire(usbManager, usbDevice, act);
+            final UsbSerialDriver probedDevice = acquire(usbManager, usbDevice);
             if (probedDevice != null) {
                 return probedDevice;
             }
@@ -147,11 +131,9 @@ public enum UsbSerialProber {
      * @return a new {@link UsbSerialDriver}, or {@code null} if no devices
      *         could be acquired
      */
-    public static UsbSerialDriver acquire(final UsbManager usbManager, final UsbDevice usbDevice, MainActivity act) {
-    	 String debug = "Looping";
+    public static UsbSerialDriver acquire(final UsbManager usbManager, final UsbDevice usbDevice) {
     	for (final UsbSerialProber prober : values()) {
-    		debug += "Name: " + prober.name();
-            final UsbSerialDriver probedDevice = prober.getDevice(usbManager, usbDevice, act);
+            final UsbSerialDriver probedDevice = prober.getDevice(usbManager, usbDevice);
             if (probedDevice != null) {
                 return probedDevice;
             }

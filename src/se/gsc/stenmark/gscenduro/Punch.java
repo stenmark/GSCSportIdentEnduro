@@ -12,4 +12,5 @@ public class Punch{
 	public String toString(){
 		return "Time " + time + " control " + control; 
 	}
+	
 }

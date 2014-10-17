@@ -117,16 +117,6 @@ public class FtdiSerialDriver extends UsbSerialDriver {
     private static final int SIO_RESET_REQUEST = 0;
 
     /**
-     * Set the modem control register.
-     */
-    private static final int SIO_MODEM_CTRL_REQUEST = 1;
-
-    /**
-     * Set flow control register.
-     */
-    private static final int SIO_SET_FLOW_CTRL_REQUEST = 2;
-
-    /**
      * Set baud rate.
      */
     private static final int SIO_SET_BAUD_RATE_REQUEST = 3;
@@ -159,15 +149,6 @@ public class FtdiSerialDriver extends UsbSerialDriver {
     private static enum DeviceType {
         TYPE_BM, TYPE_AM, TYPE_2232C, TYPE_R, TYPE_2232H, TYPE_4232H;
     }
-
-    private int mInterface = 0; /* INTERFACE_ANY */
-
-    private int mMaxPacketSize = 64; // TODO(mikey): detect
-
-    private int mBaudRate;
-    private int mDataBits;
-    private int mParity;
-    private int mStopBits;
 
     /**
      * Due to http://b.android.com/28023 , we cannot use UsbRequest async reads
@@ -333,7 +314,7 @@ public class FtdiSerialDriver extends UsbSerialDriver {
     @Override
     public void setParameters(int baudRate, int dataBits, int stopBits, int parity)
             throws IOException {
-        mBaudRate = setBaudRate(baudRate);
+        setBaudRate(baudRate);
 
         int config = dataBits;
 
@@ -378,9 +359,6 @@ public class FtdiSerialDriver extends UsbSerialDriver {
             throw new IOException("Setting parameters failed: result=" + result);
         }
 
-        mParity = parity;
-        mStopBits = stopBits;
-        mDataBits = dataBits;
     }
 
     private long[] convertBaudrate(int baudrate) {

@@ -42,9 +42,7 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
     private static final int USB_RT_ACM = UsbConstants.USB_TYPE_CLASS | USB_RECIP_INTERFACE;
 
     private static final int SET_LINE_CODING = 0x20;  // USB CDC 1.1 section 6.2
-    private static final int GET_LINE_CODING = 0x21;
     private static final int SET_CONTROL_LINE_STATE = 0x22;
-    private static final int SEND_BREAK = 0x23;
 
     public CdcAcmSerialDriver(UsbDevice device, UsbDeviceConnection connection) {
         super(device, connection);

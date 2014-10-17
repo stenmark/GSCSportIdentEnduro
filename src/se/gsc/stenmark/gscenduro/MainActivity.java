@@ -1,12 +1,10 @@
 package se.gsc.stenmark.gscenduro;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
-import com.hoho.android.usbserial.util.HexDump;
 
 
 import android.app.Activity;
@@ -17,13 +15,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AnalogClock;
-import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends Activity{
 	public final static String EXTRA_MESSAGE = "se.gsc.stenmark.gscenduro.MESSAGE";
-	private static final String TAG = "MainActivity";
 	
 	private UsbSerialDriver driver;
 	
@@ -353,7 +348,7 @@ public class MainActivity extends Activity{
 			return false;
 		}
 
-		driver = UsbSerialProber.acquire(manager, this);
+		driver = UsbSerialProber.acquire(manager);
 
 		if (driver != null) {
 			try {
@@ -428,16 +423,7 @@ public class MainActivity extends Activity{
     	  int i = b & 0xFF;
     	  return Integer.toHexString(i);
     	}
-    
-    private class Card6Block{
-    	private byte[] blockData;
-    	private boolean readSuccesful;
-    	
-    	Card6Block(){
-    		
-    	}
-    	
-    }
+       	
     
     /**
      * Send in a preread data buffer and extract data between DLE
