@@ -15,9 +15,9 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
+        <activity android:name="se.gsc.stenmark.gscenduro.MainActivity"
+            android:label="@string/title_activity_main"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 				<action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -32,3 +32,16 @@
     
     
 </manifest>
+
+<!-- ======= -->
+<!-- <manifest xmlns:android="http://schemas.android.com/apk/res/android" > -->
+
+<!--     <application> -->
+<!--         <activity android:name="se.gsc.stenmark.gscenduro.MainActivity" -->
+<!--             android:label="@string/title_activity_main" -->
+<!--             > -->
+<!--         </activity> -->
+<!--     </application> -->
+
+<!-- </manifest> -->
+<!-- >>>>>>> Added -->

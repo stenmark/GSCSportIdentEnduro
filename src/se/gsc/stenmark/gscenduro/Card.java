@@ -12,6 +12,11 @@ public class Card {
 	public List<Punch> punches;
 	
 	Card(){
+		cardNumber = 0;
+		numberOfPunches = 0;
+		startPunch = new Punch(-1, -1);
+		finishPunch = new Punch(-1, -1);
+		checkPunch = new Punch(-1, -1);
 		punches = new ArrayList<Punch>();
 	}
 	

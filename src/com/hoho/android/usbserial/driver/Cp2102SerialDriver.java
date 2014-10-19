@@ -119,7 +119,7 @@ public class Cp2102SerialDriver extends UsbSerialDriver {
                 // We *should* use UsbRequest, except it has a bug/api oversight
                 // where there is no way to determine the number of bytes read
                 // in response :\ -- http://b.android.com/28023
-                return -1;
+                return 0;
             }
             System.arraycopy(mReadBuffer, 0, dest, 0, numBytesRead);
         }
