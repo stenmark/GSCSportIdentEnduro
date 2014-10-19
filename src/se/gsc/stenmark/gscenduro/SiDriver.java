@@ -11,10 +11,8 @@ import com.hoho.android.usbserial.driver.UsbSerialProber;
 
 public class SiDriver {
 	private UsbSerialDriver driver;
-	private MainActivity androidActivity;
 	
-	SiDriver( MainActivity androidActivity ){
-		this.androidActivity = androidActivity;
+	SiDriver( ){
 	}
 	
 
@@ -37,16 +35,16 @@ public class SiDriver {
     private boolean performHandShake( boolean withStartup){
 		byte[] startupResponse = new byte[16];
     	if( withStartup ){
-    		androidActivity.msg += "Send startup sequence \n";
+//    		androidActivity.msg += "Send startup sequence \n";
 			sendSiMessage(SiMessage.startup_sequence, false);
 			sleep(700);
 			startupResponse = readSiMessage(16, 500, false);
 		}
 		if( (startupResponse.length >= 1 && startupResponse[0]== SiMessage.STX ) || (withStartup == false)) {
-			androidActivity.msg += "Startup handshake \n ";
+//			androidActivity.msg += "Startup handshake \n ";
 			
 			sendMessage( appendMarkesAndCrcToMessage(SiMessage.read_system_data.sequence() ), false);
-			androidActivity.msg += "Read system data sent\n";
+//			androidActivity.msg += "Read system data sent\n";
 			
 			byte[] systemData = readSiMessage(32, 8000, false);
 			if( (systemData[0] == SiMessage.STX) &&  
@@ -60,16 +58,16 @@ public class SiDriver {
 				boolean handShake= (pr&0x4) !=0;
 				boolean autoSend = (pr&0x2)!=0;
 				
-				androidActivity.msg += "System data is read Station ID " + stationId + " extended: " + extended + 
-						" handshake: " + handShake + " autosend: " + autoSend + " Mode: " + SiMessage.getStationMode(mode) + "\n";
+//				androidActivity.msg += "System data is read Station ID " + stationId + " extended: " + extended + 
+//						" handshake: " + handShake + " autosend: " + autoSend + " Mode: " + SiMessage.getStationMode(mode) + "\n";
 			}
 			else{
-				androidActivity.msg += "Too few bytes read for systemdata\n";
+//				androidActivity.msg += "Too few bytes read for systemdata\n";
 				return false;
 			}
 		}
 		else{
-			androidActivity.msg += "Starup handshake failed\n";
+//			androidActivity.msg += "Starup handshake failed\n";
 			return false;
 		}
 		return true;
@@ -80,10 +78,10 @@ public class SiDriver {
     	try {
     		bytesWritten = driver.write(message, 1000 );
 		} catch (IOException e) {
-			androidActivity.msg += " : Write expception: " + e.getMessage() + " cause: " + e.getCause();
+//			androidActivity.msg += " : Write expception: " + e.getMessage() + " cause: " + e.getCause();
 		}
     	if( verbose ){
-    		androidActivity.msg += " : bytes written " + bytesWritten+ "\n";
+//    		androidActivity.msg += " : bytes written " + bytesWritten+ "\n";
     	}
     }
     
@@ -92,10 +90,10 @@ public class SiDriver {
     	try {
     		bytesWritten = driver.write(message.sequence(), 1000 );
 		} catch (IOException e) {
-			androidActivity.msg += " : Write expception: " + e.getMessage() + " cause: " + e.getCause();
+//			androidActivity.msg += " : Write expception: " + e.getMessage() + " cause: " + e.getCause();
 		}
     	if( verbose){
-    		androidActivity.msg += " : bytes written " + bytesWritten+ "\n";
+//    		androidActivity.msg += " : bytes written " + bytesWritten+ "\n";
     	}
     }
     
@@ -109,7 +107,7 @@ public class SiDriver {
     	cardNumber = (cardHi*65536) + cardLow;
     	card.cardNumber = cardNumber;
     	
-    	androidActivity.msg += "CardNumber= " + cardNumber + "\n";
+//    	androidActivity.msg += "CardNumber= " + cardNumber + "\n";
     	
     	dataPos += 16;
     	
@@ -117,7 +115,7 @@ public class SiDriver {
     	card.finishPunch = analysePunch(card6Data, dataPos+4); 	
     	card.checkPunch = analysePunch(card6Data, dataPos+12); 
     	int numberOfPunches = card6Data[dataPos+2];
-    	androidActivity.msg += "Number of punches = " + numberOfPunches + "\n";
+//    	androidActivity.msg += "Number of punches = " + numberOfPunches + "\n";
     	card.numberOfPunches = numberOfPunches;
 
     	
@@ -129,7 +127,7 @@ public class SiDriver {
     		card.punches.add(punch);
     	}
     	
-    	androidActivity.msg += card.toString() + "\n";
+//    	androidActivity.msg += card.toString() + "\n";
 
     	return card;
     	
@@ -140,7 +138,7 @@ public class SiDriver {
     	
     	boolean compact = false;
 		for(int blockNumber = 0; blockNumber < 3 ; blockNumber++){
-			androidActivity.msg += "Loop " + blockNumber + "\n";
+//			androidActivity.msg += "Loop " + blockNumber + "\n";
 			byte[] rawData = readSiMessage(256, 1000, false);
 			MessageBuffer messageBuffer = new MessageBuffer(rawData);
 			byte[] dleOutputPre = new byte[10];
@@ -153,11 +151,11 @@ public class SiDriver {
 				dleBytesCorrectSize[i] = dleOutput[i];
 			}
 			
-			androidActivity.msg += "DLE READ: bytesRead " + bytesRead + "  ";
+//			androidActivity.msg += "DLE READ: bytesRead " + bytesRead + "  ";
 			for(int i = 0; i < dleOutput.length; i++){
-				androidActivity.msg += i + "=0x" + byteToHex(dleOutput[i]) + ", ";
+//				androidActivity.msg += i + "=0x" + byteToHex(dleOutput[i]) + ", ";
 			}
-			androidActivity.msg+= "\n";
+//			androidActivity.msg+= "\n";
 			
 			
 			
@@ -215,12 +213,13 @@ public class SiDriver {
     }
     
 	public boolean connectDriver() {
-		androidActivity.msg += "Connecting driver \n";
+//		androidActivity.msg += "Connecting driver \n";
 
 		// Get UsbManager from Android.
-		UsbManager manager = (UsbManager) androidActivity.getSystemService(Context.USB_SERVICE);
+//		UsbManager manager = (UsbManager) androidActivity.getSystemService(Context.USB_SERVICE);
+		UsbManager manager = MainActivity.usbManager;
 		if (manager == null) {
-			androidActivity.msg += " : Manager Null";
+//			androidActivity.msg += " : Manager Null";
 			return false;
 		}
 
@@ -230,21 +229,21 @@ public class SiDriver {
 			try {
 				driver.open();
 			} catch (IOException e1) {
-				androidActivity.msg += "IOException 1";
+//				androidActivity.msg += "IOException 1";
 				return false;
 			}
 			try {
 				driver.setParameters(38400, UsbSerialDriver.DATABITS_8, UsbSerialDriver.STOPBITS_1, UsbSerialDriver.PARITY_NONE);
 			} catch (IOException e) {
-				androidActivity.msg += "Set parms exception " + e.getMessage();
+//				androidActivity.msg += "Set parms exception " + e.getMessage();
 			}
 
 		} else {
-			androidActivity.msg += ": driver null";
+//			androidActivity.msg += ": driver null";
 			return false;
 		}
 
-		androidActivity.msg += "Driver connected \n";
+//		androidActivity.msg += "Driver connected \n";
 		return true;
 	}
     
@@ -257,15 +256,15 @@ public class SiDriver {
 				return new byte[0];
 			}
 		} catch (IOException e) {
-			androidActivity.msg += "Exceptiion when reading " + e.getMessage();
+//			androidActivity.msg += "Exceptiion when reading " + e.getMessage();
 		}
 	    		
 		if (verbose) {
-			androidActivity.msg += "Read numbytes: " + numBytesRead + " Data: ";
+//			androidActivity.msg += "Read numbytes: " + numBytesRead + " Data: ";
 			for (int i = 0; i < numBytesRead; i++) {
-				androidActivity.msg += "0x" + byteToHex(buffer[i]) + ", ";
+//				androidActivity.msg += "0x" + byteToHex(buffer[i]) + ", ";
 			}
-			androidActivity.msg += "\n";
+//			androidActivity.msg += "\n";
 		}
 	   
 		byte[] result = Arrays.copyOfRange(buffer, 0, numBytesRead);

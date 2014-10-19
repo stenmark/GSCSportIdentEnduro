@@ -7,19 +7,24 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.hardware.usb.UsbManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
-
+	private static SiDriver siDriver = null;
+	public static UsbManager usbManager; 
+	public String msg = "";
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a {@link FragmentPagerAdapter}
@@ -38,6 +43,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
@@ -179,8 +185,61 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container,
 					false);
+			
+		   Button button = (Button) rootView.findViewById(R.id.connectButton);
+			   button.setOnClickListener(new OnClickListener()
+			   {
+			             @Override
+			             public void onClick(View v)
+			             {
+			            	 
+			            	 TextView sampleTextView = (TextView) getView().findViewById(R.id.statusText);
+			            	 String connectMsg = connectToSiMaster();
+			            	 sampleTextView.setText(connectMsg);
+			   
+			             } 
+			   }); 
+				
+			
 			return rootView;
-		}
+		} 	
+		
+	    /** Called when the user clicks the Send button */
+	    public String connectToSiMaster() {
+	    	String msg = "";
+	    	MainActivity.siDriver = new SiDriver();
+	    	if( siDriver.connectDriver() ){
+	    		if( siDriver.connectToSiMaster() ){
+	    			
+		    		msg += "Wait for input\n";
+		    		byte[] readSiMessage = siDriver.readSiMessage(100, 50000, false);
+		    		if( readSiMessage.length >= 1 && readSiMessage[0]== SiMessage.STX ){
+		    			msg += "STX\n";
+		    			if( readSiMessage.length >= 2 && readSiMessage[1] == 0x66 ){
+		    				msg += "Card6\n";
+		    				
+		    				siDriver.sendSiMessage(SiMessage.request_si_card6, true);
+		    				siDriver.getCard6Data();
+		    			
+		    				siDriver.sendSiMessage(SiMessage.ack_sequence, true);
+		    				
+		    			}
+		    			else{
+		    				msg += "not card6\n";
+		    			}
+		    			
+		    		}
+		    		else{
+		    			msg += "not STX";
+		    		}
+	    		}
+	      	}
+	    	
+	    	return msg;
+//	    	writeInfo(msg);     
+	    }
+
+		
 	}
 
 }

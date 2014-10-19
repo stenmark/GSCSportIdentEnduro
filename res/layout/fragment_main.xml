@@ -13,4 +13,37 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:id="@+id/connectButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="Connect" />
+
+    <Button
+        android:id="@+id/addTrackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/statusText"
+        android:layout_below="@+id/statusText"
+        android:layout_marginTop="65dp"
+        android:text="Add track" />
+
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/connectButton"
+        android:layout_below="@+id/connectButton"
+        android:text="Not Connected" />
+
+    <TextView
+        android:id="@+id/trackInfoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/addTrackButton"
+        android:layout_below="@+id/addTrackButton"
+        android:text="No track loaded" />
+
 </RelativeLayout>
