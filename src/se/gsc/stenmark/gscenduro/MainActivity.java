@@ -8,7 +8,7 @@ import se.gsc.stenmark.gscenduro.StartScreenFragment.OnNewCardListener;
 
 import android.app.Activity;
 import android.app.ActionBar;
-import android.app.FragmentManager;
+import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.hardware.usb.UsbManager;
@@ -43,8 +43,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	ViewPager mViewPager;
 
 	public void onNewCard(Card card){
-		ResultListFragment resultFrag = (ResultListFragment)getSupportFragmentManager().findFragmentById(R.id.result_fragment);
-		resultFrag.processNewCard();
+//		ResultListFragment resultFrag = (ResultListFragment)getSupportFragmentManager().findFragmentById(R.id.result_fragment);
+//		resultFrag.processNewCard();
+		ResultListFragment.instance.processNewCard(card);
 	}
 	
 	@Override
@@ -66,7 +67,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -139,7 +140,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 		public SectionsPagerAdapter(FragmentManager fm) {
-//			super(fm);
+			super(fm);
 		}
 
 		@Override

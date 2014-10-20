@@ -18,6 +18,7 @@ public class ResultListFragment extends Fragment {
 	 * The fragment argument representing the section number for this
 	 * fragment.
 	 */
+	public static ResultListFragment instance;
 	private static final String ARG_SECTION_NUMBER = "section_number";
 
 	/**
@@ -40,14 +41,13 @@ public class ResultListFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_result_list, container,
 				false);
 	
-//		TextView cardText = (TextView) rootView.findViewById(R.id.resultsTextView);
-//		cardText.setText("ANDREAS");
+		instance = this;
 		return rootView;
 	} 	
 	
-	public void processNewCard(){
+	public void processNewCard( Card newCard){
 		TextView cardText = (TextView) getView().findViewById(R.id.resultsTextView);
-		cardText.setText("ANDREAS");
+		cardText.setText(newCard.toString());
 	}
 
 }
