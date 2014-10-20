@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import se.gsc.stenmark.gscenduro.StartScreenFragment.OnNewCardListener;
 
-import android.app.Activity;
 import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -27,7 +26,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public static UsbManager usbManager; 
 	public String msg = "";
 	public static List<TrackMarker> track= null;
-	public static Competiror competitor = null;
+	public static List<Competitor> competitors = null;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a {@link FragmentPagerAdapter}
@@ -52,14 +51,29 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 		
-		track = new ArrayList<TrackMarker>();
-		track.add( new TrackMarker(71,72));
-		track.add( new TrackMarker(71,72));
-		track.add( new TrackMarker(71,72));
-		
-		competitor = new Competiror("Andreas", 2065396);
+		if(savedInstanceState == null){
+			usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+			
+			track = new ArrayList<TrackMarker>();
+			track.add( new TrackMarker(71,72));
+			track.add( new TrackMarker(71,72));
+			track.add( new TrackMarker(71,72));
+			
+			competitors = new ArrayList<Competitor>();
+			Competitor competitor1 = new Competitor("Andreas", 2065396);
+			Competitor competitor2 = new Competitor("Sverker", 2065302);
+			Competitor competitor3 = new Competitor("Kalle", 2065307);
+			Competitor competitor4 = new Competitor("Archer", 2065325);
+			Competitor competitor5 = new Competitor("Karsten", 2065317);
+			Competitor competitor6 = new Competitor("Dummy", 2065434);
+			competitors.add(competitor1);
+			competitors.add(competitor2);
+			competitors.add(competitor3);
+			competitors.add(competitor4);
+			competitors.add(competitor5);
+			competitors.add(competitor6);
+		}
 
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
@@ -149,9 +163,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// Return a PlaceholderFragment (defined as a static inner class
 			// below).
 			switch( position){
-				case 0: return StartScreenFragment.newInstance(position + 1);
-				case 1: return ResultListFragment.newInstance(position + 1);
-				case 2: return StartScreenFragment.newInstance(position + 1);				
+				case 0: return StartScreenFragment.getInstance(position + 1);
+				case 1: return ResultListFragment.getInstance(position + 1);
+				case 2: return StartScreenFragment.getInstance(position + 1);				
 			}
 			
 			return null;

@@ -10,6 +10,7 @@ public class Card {
 	public Punch finishPunch;
 	public Punch checkPunch;
 	public List<Punch> punches;
+	public List<Punch> doublePunches;
 	public String errorMsg;
 	
 	Card(){
@@ -19,6 +20,7 @@ public class Card {
 		finishPunch = new Punch(-1, -1);
 		checkPunch = new Punch(-1, -1);
 		punches = new ArrayList<Punch>();
+		doublePunches = new ArrayList<Punch>();
 		errorMsg = "";
 	}
 	
@@ -35,5 +37,21 @@ public class Card {
 		}
 		
 		return result;
+	}
+	
+	public void removeDoublePunches(){
+		List<Integer> doublePunchesPos = new ArrayList<Integer>();
+		for( int i = 0; i < punches.size()-1; i++){
+			if(punches.get(i).control == punches.get(i+1).control ){
+				doublePunchesPos.add(i);
+			}
+		}
+		
+		for(int doublePunchPos : doublePunchesPos){
+			doublePunches.add( punches.get(doublePunchPos));
+			punches.remove(doublePunchPos);
+		}
+
+		
 	}
 }

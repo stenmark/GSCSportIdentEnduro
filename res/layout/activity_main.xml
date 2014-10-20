@@ -3,5 +3,6 @@
     android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:screenOrientation="landscape" 
     tools:context="se.gsc.stenmark.gscenduro.MainActivity" />
 

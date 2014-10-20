@@ -21,6 +21,7 @@ public class StartScreenFragment extends Fragment {
 	 */
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	OnNewCardListener newCardCallback;
+	private static StartScreenFragment instance = null;
 
 
 	
@@ -47,12 +48,17 @@ public class StartScreenFragment extends Fragment {
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
-	public static StartScreenFragment newInstance(int sectionNumber) {
-		StartScreenFragment fragment = new StartScreenFragment();
-		Bundle args = new Bundle();
-		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-		fragment.setArguments(args);
-		return fragment;
+	public static StartScreenFragment getInstance(int sectionNumber) {
+		StartScreenFragment fragment = null;
+//		if( instance == null ){
+			fragment = new StartScreenFragment();
+			Bundle args = new Bundle();
+			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+			fragment.setArguments(args);
+			instance = fragment;
+//		}
+		 
+		return instance;
 	}
 
 	public StartScreenFragment() {

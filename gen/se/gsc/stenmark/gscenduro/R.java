@@ -25,10 +25,11 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f090009;
+        public static final int action_settings=0x7f09000a;
         public static final int addTrackButton=0x7f090004;
         public static final int cardInfoTextView=0x7f090006;
         public static final int connectButton=0x7f090002;
+        public static final int latestCardInfo=0x7f090009;
         public static final int pager=0x7f090000;
         public static final int result_fragment=0x7f090007;
         public static final int resultsTextView=0x7f090008;
