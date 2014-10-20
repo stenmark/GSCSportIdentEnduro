@@ -10,6 +10,7 @@ public class Card {
 	public Punch finishPunch;
 	public Punch checkPunch;
 	public List<Punch> punches;
+	public String errorMsg;
 	
 	Card(){
 		cardNumber = 0;
@@ -18,6 +19,7 @@ public class Card {
 		finishPunch = new Punch(-1, -1);
 		checkPunch = new Punch(-1, -1);
 		punches = new ArrayList<Punch>();
+		errorMsg = "";
 	}
 	
 	@Override

@@ -1,30 +1,33 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+
+import se.gsc.stenmark.gscenduro.StartScreenFragment.OnNewCardListener;
 
 import android.app.Activity;
 import android.app.ActionBar;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.hardware.usb.UsbManager;
-import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
+//import android.support.v4.app.FragmentManager;
+//import android.support.v13.app.FragmentPagerAdapter;
+import	android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
-public class MainActivity extends Activity implements ActionBar.TabListener {
-	private static SiDriver siDriver = null;
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener, OnNewCardListener {
+	public static SiDriver siDriver = null;
 	public static UsbManager usbManager; 
 	public String msg = "";
+	public static List<TrackMarker> track= null;
+	public static Competiror competitor = null;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a {@link FragmentPagerAdapter}
@@ -39,11 +42,23 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	 */
 	ViewPager mViewPager;
 
+	public void onNewCard(Card card){
+		ResultListFragment resultFrag = (ResultListFragment)getSupportFragmentManager().findFragmentById(R.id.result_fragment);
+		resultFrag.processNewCard();
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+		
+		track = new ArrayList<TrackMarker>();
+		track.add( new TrackMarker(71,72));
+		track.add( new TrackMarker(71,72));
+		track.add( new TrackMarker(71,72));
+		
+		competitor = new Competiror("Andreas", 2065396);
 
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
@@ -124,7 +139,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 		public SectionsPagerAdapter(FragmentManager fm) {
-			super(fm);
+//			super(fm);
 		}
 
 		@Override
@@ -132,7 +147,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 			// getItem is called to instantiate the fragment for the given page.
 			// Return a PlaceholderFragment (defined as a static inner class
 			// below).
-			return PlaceholderFragment.newInstance(position + 1);
+			switch( position){
+				case 0: return StartScreenFragment.newInstance(position + 1);
+				case 1: return ResultListFragment.newInstance(position + 1);
+				case 2: return StartScreenFragment.newInstance(position + 1);				
+			}
+			
+			return null;
 		}
 
 		@Override
@@ -154,92 +175,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 			}
 			return null;
 		}
-	}
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
-		private static final String ARG_SECTION_NUMBER = "section_number";
-
-		/**
-		 * Returns a new instance of this fragment for the given section number.
-		 */
-		public static PlaceholderFragment newInstance(int sectionNumber) {
-			PlaceholderFragment fragment = new PlaceholderFragment();
-			Bundle args = new Bundle();
-			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-			fragment.setArguments(args);
-			return fragment;
-		}
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
-			
-		   Button button = (Button) rootView.findViewById(R.id.connectButton);
-			   button.setOnClickListener(new OnClickListener()
-			   {
-			             @Override
-			             public void onClick(View v)
-			             {
-			            	 
-			            	 TextView sampleTextView = (TextView) getView().findViewById(R.id.statusText);
-			            	 String connectMsg = connectToSiMaster();
-			            	 sampleTextView.setText(connectMsg);
-			   
-			             } 
-			   }); 
-				
-			
-			return rootView;
-		} 	
-		
-	    /** Called when the user clicks the Send button */
-	    public String connectToSiMaster() {
-	    	String msg = "";
-	    	MainActivity.siDriver = new SiDriver();
-	    	if( siDriver.connectDriver() ){
-	    		if( siDriver.connectToSiMaster() ){
-	    			
-		    		msg += "Wait for input\n";
-		    		byte[] readSiMessage = siDriver.readSiMessage(100, 50000, false);
-		    		if( readSiMessage.length >= 1 && readSiMessage[0]== SiMessage.STX ){
-		    			msg += "STX\n";
-		    			if( readSiMessage.length >= 2 && readSiMessage[1] == 0x66 ){
-		    				msg += "Card6\n";
-		    				
-		    				siDriver.sendSiMessage(SiMessage.request_si_card6, true);
-		    				siDriver.getCard6Data();
-		    			
-		    				siDriver.sendSiMessage(SiMessage.ack_sequence, true);
-		    				
-		    			}
-		    			else{
-		    				msg += "not card6\n";
-		    			}
-		    			
-		    		}
-		    		else{
-		    			msg += "not STX";
-		    		}
-	    		}
-	      	}
-	    	
-	    	return msg;
-//	    	writeInfo(msg);     
-	    }
-
-		
 	}
 
 }
