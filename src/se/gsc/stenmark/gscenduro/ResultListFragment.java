@@ -78,7 +78,7 @@ public class ResultListFragment extends Fragment {
 		updateResultList();
 	}
 	
-	private void updateResultList(){
+	public void updateResultList(){
 		TextView resultsText = (TextView) getView().findViewById(R.id.resultsTextView);
 		resultsText.setText("");
 		Collections.sort(MainActivity.competitors);

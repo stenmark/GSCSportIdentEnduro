@@ -1,5 +1,11 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -20,13 +26,17 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener, OnNewCardListener {
 	public static SiDriver siDriver = null;
 	public static UsbManager usbManager; 
 	public String msg = "";
 	public static List<TrackMarker> track= null;
-	public static List<Competitor> competitors = null;
+	public static ArrayList<Competitor> competitors = null;
+	public static MainActivity instance = null;
+	
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a {@link FragmentPagerAdapter}
@@ -45,12 +55,98 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		ResultListFragment.instance.processNewCard(card);
 	}
 	
+	public void saveCurrentData(){
+    	TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
+    	cardText.setText("" );
+    	FileOutputStream fileOutputComp;
+    	FileOutputStream fileOutputTrack;
+		try {
+			fileOutputComp = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE, Context.MODE_PRIVATE);
+			ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);  
+			objStreamOutComp.writeObject(competitors);
+			objStreamOutComp.close();	 
+			
+			if(track == null){
+				track = new ArrayList<TrackMarker>();
+			}
+			fileOutputTrack = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_TRACK_FILE, Context.MODE_PRIVATE);
+			ObjectOutputStream objStreamOutTrack = new ObjectOutputStream(fileOutputTrack);  
+			objStreamOutTrack.writeObject(track);
+			objStreamOutTrack.close();	
+		} catch (FileNotFoundException e) {
+			cardText.append("FileNotFoundException " + e.getMessage() );
+			return;
+		} catch (IOException e) {
+			cardText.append("IOException " + e.getMessage() + "\n"  );
+			
+			for( StackTraceElement elem :  e.getStackTrace()){
+				cardText.append(elem.toString() + "\n");
+			}
+			return;
+		}
+	 
+    	 cardText.append("\nSaved: " );
+	}
+	
+	public void loadCurrentData(){
+	try{
+	   	 TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
+	   	 cardText.setText("" );
+	   	 try {
+				FileInputStream fileInputComp = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE);
+				ObjectInputStream objStreamInComp = new ObjectInputStream(fileInputComp);
+				competitors = (ArrayList<Competitor>) objStreamInComp.readObject();
+				objStreamInComp.close();
+				
+				FileInputStream fileInputTrack = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_TRACK_FILE);
+				ObjectInputStream objStreamInTrack = new ObjectInputStream(fileInputTrack);
+				track = (List<TrackMarker>) objStreamInTrack.readObject();
+				objStreamInTrack.close();
+			} catch (FileNotFoundException e) {
+				 cardText.append("File not found: " +e.getMessage() );
+				 return;
+			} catch (IOException e) {
+				cardText.append("IOException: " +e.getMessage() );
+				return;
+			} catch (ClassNotFoundException e) {
+				cardText.append("ClassNotFoundException: " +e.getMessage() );
+				return;
+			}
+	   	 
+	   	 //TODO: some fuck up with this global instances, need to get rid of them
+//	   	 StartScreenFragment.instance.updateTrackText();
+		 TextView trackInfoTextView = (TextView) findViewById(R.id.trackInfoTextView);
+		 trackInfoTextView.setText("Current loaded Track: " );
+		 int i = 0;
+		 for( TrackMarker trackMarker : MainActivity.track){
+			 i++;
+			 trackInfoTextView.append( ", SS" + i + " Start: " + trackMarker.start + " Finish: " + trackMarker.finish );
+		 }
+	   	 ResultListFragment.instance.updateResultList();
+	   	 cardText.append("Loaded: " );
+	
+	   	 for( Competitor comp : MainActivity.competitors ){
+	   		 cardText.append("Name: " + comp.name + " cardnum" + comp.cardNumber  +
+	   				 		comp.card + "\n");
+	   	 }
+		 
+		}
+		catch( Exception e1){
+			TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
+			cardText.append("Caught super exception " + e1.getMessage() + "\n" );
+			for( StackTraceElement elem :  e1.getStackTrace()){
+				cardText.append(elem.toString() + "\n");
+			}
+		}
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
 		if(savedInstanceState == null){
+			instance = this;
 			usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 			
 			competitors = new ArrayList<Competitor>();

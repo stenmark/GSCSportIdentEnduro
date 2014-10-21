@@ -1,16 +1,7 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -32,7 +23,7 @@ public class StartScreenFragment extends Fragment {
 	 */
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	OnNewCardListener newCardCallback;
-	private static StartScreenFragment instance = null;
+	public static StartScreenFragment instance = null;
 	
 	public static final String CURRENT_COMPETITIOR_LIST_FILE = "current_comp_list";
 	public static final String CURRENT_TRACK_FILE = "current_track";
@@ -108,13 +99,7 @@ public class StartScreenFragment extends Fragment {
 	            	 
 	            	 parseNewTrack( newTrack.getText().toString() );
 	            	 
-	            	 TextView trackInfoTextView = (TextView) getView().findViewById(R.id.trackInfoTextView);
-	            	 trackInfoTextView.setText("Current loaded Track: " );
-	            	 int i = 0;
-	            	 for( TrackMarker trackMarker : MainActivity.track){
-	            		 i++;
-	            		 trackInfoTextView.append( ", SS" + i + " Start: " + trackMarker.start + " Finish: " + trackMarker.finish );
-	            	 }
+	            	 updateTrackText();
 	             } 
 	   }); 
 	   
@@ -158,26 +143,7 @@ public class StartScreenFragment extends Fragment {
 	             @Override
 	             public void onClick(View v)
 	             {
-	            	TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
-	            	cardText.setText("" );
-	            	FileOutputStream fos;
-					try {
-						fos = MainApplication.getAppContext().openFileOutput(CURRENT_COMPETITIOR_LIST_FILE, Context.MODE_PRIVATE);
-						ObjectOutputStream oos = new ObjectOutputStream(fos);  
-						ArrayList<Competitor> tmpForSerialize = new ArrayList<Competitor>(MainActivity.competitors);
-						oos.writeObject(tmpForSerialize);
-		            	oos.close();	 
-					} catch (FileNotFoundException e) {
-						cardText.append("FileNotFoundException " + e.getMessage() );
-					} catch (IOException e) {
-						cardText.append("IOException " + e.getMessage() + "\n"  );
-						
-						for( StackTraceElement elem :  e.getStackTrace()){
-							cardText.append(elem.toString() + "\n");
-						}
-					}
-           	 
-	            	 cardText.append("\nSaved: " );
+	            	 MainActivity.instance.saveCurrentData();
 	             } 
 	   }); 
 	   
@@ -187,38 +153,22 @@ public class StartScreenFragment extends Fragment {
 	             @Override
 	             public void onClick(View v)
 	             {
-	            	 TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
-	            	 cardText.setText("" );
-	            	 try {
-						FileInputStream fin = MainApplication.getAppContext().openFileInput(CURRENT_COMPETITIOR_LIST_FILE);
-						ObjectInputStream ois = new ObjectInputStream(fin);
-						MainActivity.competitors = (ArrayList<Competitor>) ois.readObject();
-						ois.close();
-					} catch (FileNotFoundException e) {
-						 cardText.append("File not found: " +e.getMessage() );
-					} catch (IOException e) {
-						cardText.append("IOException: " +e.getMessage() );
-					} catch (ClassNotFoundException e) {
-						cardText.append("ClassNotFoundException: " +e.getMessage() );
-					}
-	            	 
-
-	            	 cardText.append("Loaded: " );
-
-	            	 for( Competitor comp : MainActivity.competitors ){
-	            		 cardText.append("Name: " + comp.name + " cardnum" + comp.cardNumber  +
-	            				 		comp.card + "\n");
-	            	 }
-           	 
+	            	 MainActivity.instance.loadCurrentData( );
 	             } 
 	   }); 
-	   
-	   
-	   
-	   
 
 		return rootView;
 	} 	
+	
+	public void updateTrackText(){
+		 TextView trackInfoTextView = (TextView) getView().findViewById(R.id.trackInfoTextView);
+		 trackInfoTextView.setText("Current loaded Track: " );
+		 int i = 0;
+		 for( TrackMarker trackMarker : MainActivity.track){
+			 i++;
+			 trackInfoTextView.append( ", SS" + i + " Start: " + trackMarker.start + " Finish: " + trackMarker.finish );
+		 }
+	}
 	
     /** Called when the user clicks the Send button */
     public String connectToSiMaster() {
