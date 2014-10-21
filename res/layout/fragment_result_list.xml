@@ -23,6 +23,7 @@
         android:id="@+id/scrollView1"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="80sp"
         android:scrollbars="vertical" >
 
         <TextView
@@ -30,6 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 		android:scrollbars="vertical" 
+		android:textSize="12sp"
         android:text="No results yet" />
     </ScrollView>
 
@@ -39,7 +41,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="80sp"
-        android:text="No card yet" />
+        android:layout_marginTop="10sp"
+        android:textSize="7sp"
+        android:text="No cards read yet" />
 
 </RelativeLayout>
