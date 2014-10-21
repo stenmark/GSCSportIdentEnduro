@@ -14,11 +14,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:id="@+id/latestCardInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="30sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="7sp" 
+        android:text="no cards read yet" />
+    
     <ScrollView 
         android:visibility="visible" 
         android:layout_height="wrap_content" 
         android:layout_width="wrap_content"
         android:keepScreenOn="true" 
+        android:layout_alignLeft="@+id/latestCardInfo"
+        android:layout_below="@+id/latestCardInfo"
         android:scrollbarStyle="insideInset" 
         android:id="@+id/scrollView1"
         android:scrollbars="vertical" >
@@ -26,19 +37,11 @@
         android:id="@+id/resultsTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
+
 		android:scrollbars="vertical" 
-        android:text="No results yet"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="No results yet" />
     </ScrollView>
 
-    <TextView
-        android:id="@+id/latestCardInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="180dp" />
+
 
 </RelativeLayout>
