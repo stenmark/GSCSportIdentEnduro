@@ -174,7 +174,7 @@ public class StartScreenFragment extends Fragment {
 			 int i = 0;
 			 for( TrackMarker trackMarker : MainActivity.track){
 				 i++;
-				 trackInfoTextView.append( ", SS" + i + " Start: " + trackMarker.start + " Finish: " + trackMarker.finish );
+				 trackInfoTextView.append( ", SS" + i + ": " + trackMarker.start + "->" + trackMarker.finish );
 			 }
 		 }
 		 else{

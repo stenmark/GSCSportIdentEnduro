@@ -19,7 +19,7 @@
         android:layout_height="45sp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:textSize="12sp" 
+        android:textSize="12sp"
         android:text="Connect" />
     
     <Button
@@ -28,8 +28,8 @@
         android:layout_height="45sp"
         android:layout_alignLeft="@+id/connectButton"
         android:layout_below="@+id/connectButton"
-        android:layout_marginTop="10sp"
-        android:textSize="12sp" 
+        android:layout_marginTop="18sp"
+        android:textSize="12sp"
         android:text="Add track" />
     
     <TextView
@@ -37,7 +37,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/editTrackDefinition"
-        android:layout_above="@+id/editTrackDefinition"
+        android:layout_below="@+id/editTrackDefinition"
+        android:textSize="8sp"
         android:text="Add track in format start,stop,start,stop e.g. 71,72,71,72" />
     
     <Button
@@ -76,35 +77,27 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/addTrackButton"
         android:layout_below="@+id/addTrackButton"
+        android:textSize="10sp"
         android:text="No track loaded" />
-    
-    <EditText
-        android:id="@+id/editCompetitorName"
-        android:layout_width="150sp"
-        android:layout_height="30sp"
-        android:layout_alignTop="@+id/addCompetitorButton"
-        android:layout_toRightOf="@+id/addCompetitorButton"
-        android:inputType="textPersonName"
-        android:textSize="10sp" />
     
     <TextView
         android:id="@+id/textViewName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/editCompetitorName"
-        android:layout_alignLeft="@+id/editCompetitorName"
+        android:layout_alignTop="@+id/addCompetitorButton"
+        android:layout_toRightOf="@+id/addCompetitorButton"
         android:text="Name"
-        android:textAppearance="?android:attr/textAppearanceSmall" />     
-    
-     <EditText
-         android:id="@+id/editCardNumber"
-         android:layout_width="150sp"
-         android:layout_height="30sp"
-         android:layout_alignLeft="@+id/editCompetitorName"
-         android:layout_below="@+id/editCompetitorName"
-         android:layout_marginTop="15sp"
-         android:textSize="10sp" />
-    
+        android:textAppearance="?android:attr/textAppearanceSmall" />         
+        
+    <EditText
+        android:id="@+id/editCompetitorName"
+        android:layout_width="150sp"
+        android:layout_height="30sp"
+        android:layout_alignLeft="@+id/textViewName"
+        android:layout_below="@+id/textViewName"
+        android:inputType="textPersonName"
+        android:textSize="10sp" />
+
     <TextView
         android:id="@+id/textCardNumber"
         android:layout_width="wrap_content"
@@ -112,7 +105,15 @@
         android:layout_below="@+id/editCompetitorName"
         android:layout_alignLeft="@+id/editCompetitorName"
         android:text="Card Number"
-        android:textAppearance="?android:attr/textAppearanceSmall" /> 
+        android:textAppearance="?android:attr/textAppearanceSmall" />     
+    
+     <EditText
+         android:id="@+id/editCardNumber"
+         android:layout_width="150sp"
+         android:layout_height="30sp"
+         android:layout_alignLeft="@+id/textCardNumber"
+         android:layout_below="@+id/textCardNumber"
+         android:textSize="10sp" />
 
     <TextView
         android:id="@+id/cardInfoTextView"
