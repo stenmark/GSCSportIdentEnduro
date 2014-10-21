@@ -69,6 +69,13 @@ public class StartScreenFragment extends Fragment {
 	public StartScreenFragment() {
 	}
 
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		updateTrackText();
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {

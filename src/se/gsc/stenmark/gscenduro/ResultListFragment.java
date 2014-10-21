@@ -48,7 +48,15 @@ public class ResultListFragment extends Fragment {
 			
 		instance = this;
 		return rootView;
+
 	} 	
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		updateResultList();
+	}
+	
 	
 	public void processNewCard( Card newCard){
 		TextView latestCardInfoText = (TextView) getView().findViewById(R.id.latestCardInfo);
