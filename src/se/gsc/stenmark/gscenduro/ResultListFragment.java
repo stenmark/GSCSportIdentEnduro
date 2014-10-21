@@ -70,13 +70,13 @@ public class ResultListFragment extends Fragment {
 		newCard.removeDoublePunches();
 		foundCompetitor.card = newCard;
 		
-		latestCardInfoText.append("New card read for " + foundCompetitor.name +"\n" );
+		latestCardInfoText.append("New card read for " + foundCompetitor.name +"   " );
 		
 		List<Long> results = extractResultFromCard(newCard);
 		foundCompetitor.trackTimes = new ArrayList<Long>();
 		int i = 1;
 		for(Long trackTime : results){
-			latestCardInfoText.append("Time for SS " + i + " = " + trackTime + " seconds \n" );
+			latestCardInfoText.append(", Time for SS " + i + " = " + trackTime + " seconds " );
 			foundCompetitor.trackTimes.add(trackTime);
 			i++;
 		}
