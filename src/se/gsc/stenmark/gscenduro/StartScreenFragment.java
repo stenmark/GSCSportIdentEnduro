@@ -1,8 +1,13 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -138,6 +143,65 @@ public class StartScreenFragment extends Fragment {
 	            		 cardInfoTextView.append( "Name: " + currentCompetitor.name + " Card "+ currentCompetitor.cardNumber + "\n");
 	            	 }
 	            	 
+	             } 
+	   }); 
+	   
+	   Button saveButton = (Button) rootView.findViewById(R.id.saveButton);
+	   saveButton.setOnClickListener(new OnClickListener()
+	   {
+	             @Override
+	             public void onClick(View v)
+	             {
+	            	String FILENAME = "hello_file";
+	            	String string = "hello world!";
+
+	            	FileOutputStream fos;
+					try {
+						fos = MainApplication.getAppContext().openFileOutput(FILENAME, Context.MODE_PRIVATE);
+		            	fos.write(string.getBytes());
+		            	fos.close();	 
+					} catch (FileNotFoundException e) {
+
+					} catch (IOException e) {
+
+					}
+           	 
+	            	 TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
+	            	 cardText.setText("Saved: " + string);
+	             } 
+	   }); 
+	   
+	   Button loadButton = (Button) rootView.findViewById(R.id.loadButton);
+	   loadButton.setOnClickListener(new OnClickListener()
+	   {
+	             @Override
+	             public void onClick(View v)
+	             {
+	            	 String test = "";
+	            	 String FILENAME = "hello_file";
+	            	 char[] buffer = new char[1000];
+	            	 try {
+						FileInputStream fos = MainApplication.getAppContext().openFileInput(FILENAME);
+						int read = fos.read();
+						int i = 0;
+						while( read != -1 ){
+							buffer[i] = (char) read;
+							read = fos.read();
+							i++;
+						}
+						test = String.copyValueOf(buffer);
+						
+						fos.close();
+					} catch (FileNotFoundException e) {
+						
+					} catch (IOException e) {
+
+					}
+	            	 
+	            	 TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
+	            	 cardText.setText("Loaded: " + test);
+	            	 
+           	 
 	             } 
 	   }); 
 	   

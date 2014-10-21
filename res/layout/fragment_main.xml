@@ -121,16 +121,22 @@
         android:layout_marginTop="50sp"
         android:text="No cards read yet" />
 
+    <Button
+        android:id="@+id/saveButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="50sp"
+        android:layout_height="30sp"
+        android:layout_alignTop="@+id/statusText"
+        android:layout_toRightOf="@+id/statusText"
+        android:text="Save" />
 
-
-
-
-
-
-
-
-
-
-
+    <Button
+        android:id="@+id/loadButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="50sp"
+        android:layout_height="30sp"
+        android:layout_alignTop="@+id/saveButton"
+        android:layout_toRightOf="@+id/saveButton"
+        android:text="Load" />
 
 </RelativeLayout>

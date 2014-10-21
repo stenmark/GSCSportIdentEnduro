@@ -42,8 +42,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	ViewPager mViewPager;
 
 	public void onNewCard(Card card){
-//		ResultListFragment resultFrag = (ResultListFragment)getSupportFragmentManager().findFragmentById(R.id.result_fragment);
-//		resultFrag.processNewCard();
 		ResultListFragment.instance.processNewCard(card);
 	}
 	
@@ -69,10 +67,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			competitors.add(competitor5);
 			competitors.add(competitor6);
 			
-			for(int i = 0; i < 25; i++){
-				Competitor competitorllop = new Competitor("loop"+i, 2065+i);
-				competitors.add(competitorllop);
-			}
 		}
 
 		// Set up the action bar.
