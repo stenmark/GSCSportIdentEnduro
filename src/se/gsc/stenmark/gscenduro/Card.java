@@ -1,16 +1,21 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Card {
+public class Card implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public int numberOfPunches;
 	public long cardNumber;
 	public Punch startPunch;
 	public Punch finishPunch;
 	public Punch checkPunch;
-	public List<Punch> punches;
-	public List<Punch> doublePunches;
+	public ArrayList<Punch> punches;
+	public ArrayList<Punch> doublePunches;
 	public String errorMsg;
 	
 	Card(){

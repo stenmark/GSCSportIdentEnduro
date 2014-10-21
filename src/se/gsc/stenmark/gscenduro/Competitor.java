@@ -1,12 +1,18 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.ArrayList;
 
-public class Competitor implements Comparable<Competitor>{
+
+public class Competitor implements Comparable<Competitor>, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String name;
 	public int cardNumber;
 	public Card card;
-	public List<Long> trackTimes;
+	public ArrayList<Long> trackTimes;
 	
 	Competitor(String name){
 		this.name = name;

@@ -2,9 +2,6 @@ package se.gsc.stenmark.gscenduro;
 
 import java.io.IOException;
 import java.util.Arrays;
-
-import android.app.Activity;
-import android.content.Context;
 import android.hardware.usb.UsbManager;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;

@@ -4,7 +4,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,6 +33,9 @@ public class StartScreenFragment extends Fragment {
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	OnNewCardListener newCardCallback;
 	private static StartScreenFragment instance = null;
+	
+	public static final String CURRENT_COMPETITIOR_LIST_FILE = "current_comp_list";
+	public static final String CURRENT_TRACK_FILE = "current_track";
 
 
 	
@@ -152,22 +158,26 @@ public class StartScreenFragment extends Fragment {
 	             @Override
 	             public void onClick(View v)
 	             {
-	            	String FILENAME = "hello_file";
-	            	String string = "hello world!";
-
+	            	TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
+	            	cardText.setText("" );
 	            	FileOutputStream fos;
 					try {
-						fos = MainApplication.getAppContext().openFileOutput(FILENAME, Context.MODE_PRIVATE);
-		            	fos.write(string.getBytes());
-		            	fos.close();	 
+						fos = MainApplication.getAppContext().openFileOutput(CURRENT_COMPETITIOR_LIST_FILE, Context.MODE_PRIVATE);
+						ObjectOutputStream oos = new ObjectOutputStream(fos);  
+						ArrayList<Competitor> tmpForSerialize = new ArrayList<Competitor>(MainActivity.competitors);
+						oos.writeObject(tmpForSerialize);
+		            	oos.close();	 
 					} catch (FileNotFoundException e) {
-
+						cardText.append("FileNotFoundException " + e.getMessage() );
 					} catch (IOException e) {
-
+						cardText.append("IOException " + e.getMessage() + "\n"  );
+						
+						for( StackTraceElement elem :  e.getStackTrace()){
+							cardText.append(elem.toString() + "\n");
+						}
 					}
            	 
-	            	 TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
-	            	 cardText.setText("Saved: " + string);
+	            	 cardText.append("\nSaved: " );
 	             } 
 	   }); 
 	   
@@ -177,30 +187,28 @@ public class StartScreenFragment extends Fragment {
 	             @Override
 	             public void onClick(View v)
 	             {
-	            	 String test = "";
-	            	 String FILENAME = "hello_file";
-	            	 char[] buffer = new char[1000];
+	            	 TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
+	            	 cardText.setText("" );
 	            	 try {
-						FileInputStream fos = MainApplication.getAppContext().openFileInput(FILENAME);
-						int read = fos.read();
-						int i = 0;
-						while( read != -1 ){
-							buffer[i] = (char) read;
-							read = fos.read();
-							i++;
-						}
-						test = String.copyValueOf(buffer);
-						
-						fos.close();
+						FileInputStream fin = MainApplication.getAppContext().openFileInput(CURRENT_COMPETITIOR_LIST_FILE);
+						ObjectInputStream ois = new ObjectInputStream(fin);
+						MainActivity.competitors = (ArrayList<Competitor>) ois.readObject();
+						ois.close();
 					} catch (FileNotFoundException e) {
-						
+						 cardText.append("File not found: " +e.getMessage() );
 					} catch (IOException e) {
-
+						cardText.append("IOException: " +e.getMessage() );
+					} catch (ClassNotFoundException e) {
+						cardText.append("ClassNotFoundException: " +e.getMessage() );
 					}
 	            	 
-	            	 TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
-	            	 cardText.setText("Loaded: " + test);
-	            	 
+
+	            	 cardText.append("Loaded: " );
+
+	            	 for( Competitor comp : MainActivity.competitors ){
+	            		 cardText.append("Name: " + comp.name + " cardnum" + comp.cardNumber  +
+	            				 		comp.card + "\n");
+	            	 }
            	 
 	             } 
 	   }); 
