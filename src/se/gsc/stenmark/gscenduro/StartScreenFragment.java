@@ -169,12 +169,18 @@ public class StartScreenFragment extends Fragment {
 	
 	public void updateTrackText(){
 		 TextView trackInfoTextView = (TextView) getView().findViewById(R.id.trackInfoTextView);
-		 trackInfoTextView.setText("Current loaded Track: " );
-		 int i = 0;
-		 for( TrackMarker trackMarker : MainActivity.track){
-			 i++;
-			 trackInfoTextView.append( ", SS" + i + " Start: " + trackMarker.start + " Finish: " + trackMarker.finish );
+		 if(MainActivity.track != null){
+			 trackInfoTextView.setText("Current loaded Track: " );
+			 int i = 0;
+			 for( TrackMarker trackMarker : MainActivity.track){
+				 i++;
+				 trackInfoTextView.append( ", SS" + i + " Start: " + trackMarker.start + " Finish: " + trackMarker.finish );
+			 }
 		 }
+		 else{
+			 trackInfoTextView.setText("No track loaded" );
+		 }
+		 
 	}
 	
     /** Called when the user clicks the Send button */

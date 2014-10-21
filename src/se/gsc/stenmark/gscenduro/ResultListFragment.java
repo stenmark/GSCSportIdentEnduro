@@ -89,30 +89,34 @@ public class ResultListFragment extends Fragment {
 	public void updateResultList(){
 		TextView resultsText = (TextView) getView().findViewById(R.id.resultsTextView);
 		resultsText.setText("");
-		Collections.sort(MainActivity.competitors);
-		
-		for( Competitor competitor : MainActivity.competitors ){
-			if( competitor.hasResult() ){
-				resultsText.append( competitor.name );
-				int i = 0;
-				for(long trackTime : competitor.trackTimes ){
-					i++;
-					resultsText.append( " SS" + i + " " + trackTime + ", " ); 
-				}
-				
-				resultsText.append( "Total time: " + competitor.getTotalTime() );
-				
-				if( !competitor.card.doublePunches.isEmpty() ){
-					resultsText.append(" Warning this user has doublePunches ");
-					for( Punch doublePunch : competitor.card.doublePunches ){
-						resultsText.append( doublePunch.toString() + ", ");
+		if(MainActivity.competitors != null && !MainActivity.competitors.isEmpty()){
+			Collections.sort(MainActivity.competitors);
+			for( Competitor competitor : MainActivity.competitors ){
+				if( competitor.hasResult() ){
+					resultsText.append( competitor.name );
+					int i = 0;
+					for(long trackTime : competitor.trackTimes ){
+						i++;
+						resultsText.append( " SS" + i + " " + trackTime + ", " ); 
 					}
+					
+					resultsText.append( "Total time: " + competitor.getTotalTime() );
+					
+					if( !competitor.card.doublePunches.isEmpty() ){
+						resultsText.append(" Warning this user has doublePunches ");
+						for( Punch doublePunch : competitor.card.doublePunches ){
+							resultsText.append( doublePunch.toString() + ", ");
+						}
+					}
+					resultsText.append("\n");
 				}
-				resultsText.append("\n");
+				else{
+					resultsText.append(competitor.name + " no reuslt\n");
+				}
 			}
-			else{
-				resultsText.append(competitor.name + " no reuslt\n");
-			}
+		}
+		else{
+			resultsText.setText("No results yet\n");
 		}
 		
 	}

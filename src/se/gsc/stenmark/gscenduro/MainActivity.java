@@ -155,23 +155,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	@Override
 	protected void onResume() {
 		super.onResume();
-	   	 try {
-				FileInputStream fileInputComp = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE);
-				ObjectInputStream objStreamInComp = new ObjectInputStream(fileInputComp);
-				competitors = (ArrayList<Competitor>) objStreamInComp.readObject();
-				objStreamInComp.close();
-				
-				FileInputStream fileInputTrack = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_TRACK_FILE);
-				ObjectInputStream objStreamInTrack = new ObjectInputStream(fileInputTrack);
-				track = (List<TrackMarker>) objStreamInTrack.readObject();
-				objStreamInTrack.close();
-			} catch (FileNotFoundException e) {
-				 return;
-			} catch (IOException e) {
-				return;
-			} catch (ClassNotFoundException e) {
-				return;
-			}
+//		try {
+//			FileInputStream fileInputComp = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE);
+//			ObjectInputStream objStreamInComp = new ObjectInputStream(fileInputComp);
+//			competitors = (ArrayList<Competitor>) objStreamInComp.readObject();
+//			objStreamInComp.close();
+//
+//			FileInputStream fileInputTrack = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_TRACK_FILE);
+//			ObjectInputStream objStreamInTrack = new ObjectInputStream(	fileInputTrack);
+//			track = (List<TrackMarker>) objStreamInTrack.readObject();
+//			objStreamInTrack.close();
+//		} catch (FileNotFoundException e) {
+//			return;
+//		} catch (IOException e) {
+//			return;
+//		} catch (ClassNotFoundException e) {
+//			return;
+//		}
 	}
 	
 	@Override

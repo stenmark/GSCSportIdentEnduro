@@ -19,6 +19,7 @@
         android:layout_height="45sp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:textSize="12sp" 
         android:text="Connect" />
     
     <Button
@@ -28,6 +29,7 @@
         android:layout_alignLeft="@+id/connectButton"
         android:layout_below="@+id/connectButton"
         android:layout_marginTop="10sp"
+        android:textSize="12sp" 
         android:text="Add track" />
     
     <TextView
