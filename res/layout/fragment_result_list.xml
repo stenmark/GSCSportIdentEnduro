@@ -7,34 +7,38 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="se.gsc.stenmark.gscenduro.ResultListFragment" >
-    
-<!--     <fragment android:name="se.gsc.stenmark.gscenduro.ResultListFragment" -->
-<!--             android:id="@+id/list" -->
-<!--             android:layout_width="0dp" -->
-<!--             android:layout_height="match_parent" /> -->
-    
+    tools:context="se.gsc.stenmark.gscenduro.ResultListFragment" >  
 
     <TextView
         android:id="@+id/section_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <ScrollView 
+        android:visibility="visible" 
+        android:layout_height="wrap_content" 
+        android:layout_width="wrap_content"
+        android:keepScreenOn="true" 
+        android:scrollbarStyle="insideInset" 
+        android:id="@+id/scrollView1"
+        android:scrollbars="vertical" >
     <TextView
         android:id="@+id/resultsTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
+		android:scrollbars="vertical" 
         android:text="No results yet"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+    </ScrollView>
 
     <TextView
         android:id="@+id/latestCardInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="120dp" />
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="180dp" />
 
 </RelativeLayout>

@@ -15,44 +15,122 @@
 
     <Button
         android:id="@+id/connectButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="85sp"
+        android:layout_height="45sp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:text="Connect" />
-
+    
+    <Button
+        android:id="@+id/addTrackButton"
+        android:layout_width="85sp"
+        android:layout_height="45sp"
+        android:layout_alignLeft="@+id/connectButton"
+        android:layout_below="@+id/connectButton"
+        android:layout_marginTop="10sp"
+        android:text="Add track" />
+    
+    <TextView
+        android:id="@+id/addTrackInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editTrackDefinition"
+        android:layout_above="@+id/editTrackDefinition"
+        android:text="Add track in format start,stop,start,stop e.g. 71,72,71,72" />
+    
+    <Button
+        android:id="@+id/addCompetitorButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="85sp"
+        android:layout_height="45sp"
+        android:layout_alignLeft="@+id/addTrackButton"
+        android:layout_below="@+id/addTrackButton"
+        android:text="Add\ncompetitor"
+        android:layout_marginTop="35sp"
+        android:textSize="12sp" />
+    
     <TextView
         android:id="@+id/statusText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/connectButton"
-        android:layout_below="@+id/connectButton"
+        android:layout_alignTop="@+id/connectButton"
+        android:layout_toRightOf="@+id/connectButton"
         android:text="Not Connected" />
-
-    <Button
-        android:id="@+id/addTrackButton"
+        
+    <EditText
+        android:id="@+id/editTrackDefinition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/statusText"
-        android:layout_below="@+id/statusText"
-        android:layout_marginTop="18dp"
-        android:text="Add track" />
-
+        android:layout_toRightOf="@+id/addTrackButton"
+        android:layout_alignTop="@+id/addTrackButton"
+        android:layout_marginLeft="5dp"
+        android:text="71,72,71,72,71,72"
+        android:textSize="10sp" >
+    </EditText>
+    
     <TextView
         android:id="@+id/trackInfoTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/statusText"
+        android:layout_alignLeft="@+id/addTrackButton"
         android:layout_below="@+id/addTrackButton"
         android:text="No track loaded" />
+    
+    <EditText
+        android:id="@+id/editCompetitorName"
+        android:layout_width="150sp"
+        android:layout_height="30sp"
+        android:layout_alignTop="@+id/addCompetitorButton"
+        android:layout_toRightOf="@+id/addCompetitorButton"
+        android:inputType="textPersonName"
+        android:textSize="10sp" />
+    
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/editCompetitorName"
+        android:layout_alignLeft="@+id/editCompetitorName"
+        android:text="Name"
+        android:textAppearance="?android:attr/textAppearanceSmall" />     
+    
+     <EditText
+         android:id="@+id/editCardNumber"
+         android:layout_width="150sp"
+         android:layout_height="30sp"
+         android:layout_alignLeft="@+id/editCompetitorName"
+         android:layout_below="@+id/editCompetitorName"
+         android:layout_marginTop="15sp"
+         android:textSize="10sp" />
+    
+    <TextView
+        android:id="@+id/textCardNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editCompetitorName"
+        android:layout_alignLeft="@+id/editCompetitorName"
+        android:text="Card Number"
+        android:textAppearance="?android:attr/textAppearanceSmall" /> 
 
     <TextView
         android:id="@+id/cardInfoTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/trackInfoTextView"
-        android:layout_below="@+id/trackInfoTextView"
-        android:layout_marginTop="28dp"
+        android:layout_below="@+id/addCompetitorButton"
+        android:layout_alignLeft="@+id/addCompetitorButton"
+        android:layout_marginTop="50sp"
         android:text="No cards read yet" />
+
+
+
+
+
+
+
+
+
+
+
+
 
 </RelativeLayout>

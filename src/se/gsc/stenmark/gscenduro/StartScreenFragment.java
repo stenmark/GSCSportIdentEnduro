@@ -1,5 +1,7 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 /**
@@ -70,18 +73,77 @@ public class StartScreenFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_main, container,
 				false);
 		
-	   Button button = (Button) rootView.findViewById(R.id.connectButton);
-		   button.setOnClickListener(new OnClickListener()
+	   Button connectButton = (Button) rootView.findViewById(R.id.connectButton);
+		   connectButton.setOnClickListener(new OnClickListener()
 		   {
 		             @Override
 		             public void onClick(View v)
 		             {
-		            	 TextView sampleTextView = (TextView) getView().findViewById(R.id.statusText);
+		            	 TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);
 		            	 String connectMsg = connectToSiMaster();
-		            	 sampleTextView.setText(connectMsg);
+		            	 statusTextView.setText(connectMsg);
 		            	 new SiCardListener().execute(MainActivity.siDriver);
 		             } 
 		   }); 
+		   
+	   Button addTrackButton = (Button) rootView.findViewById(R.id.addTrackButton);
+	   addTrackButton.setOnClickListener(new OnClickListener()
+	   {
+	             @Override
+	             public void onClick(View v)
+	             {
+	            	 
+	            	 EditText newTrack = (EditText) getView().findViewById(R.id.editTrackDefinition);
+	            	 
+	            	 parseNewTrack( newTrack.getText().toString() );
+	            	 
+	            	 TextView trackInfoTextView = (TextView) getView().findViewById(R.id.trackInfoTextView);
+	            	 trackInfoTextView.setText("Current loaded Track: " );
+	            	 int i = 0;
+	            	 for( TrackMarker trackMarker : MainActivity.track){
+	            		 i++;
+	            		 trackInfoTextView.append( ", SS" + i + " Start: " + trackMarker.start + " Finish: " + trackMarker.finish );
+	            	 }
+	             } 
+	   }); 
+	   
+	   Button addCompetitorButton = (Button) rootView.findViewById(R.id.addCompetitorButton);
+	   addCompetitorButton.setOnClickListener(new OnClickListener()
+	   {
+	             @Override
+	             public void onClick(View v)
+	             {
+	            	 
+	            	 EditText competitorName = (EditText) getView().findViewById(R.id.editCompetitorName);
+	            	 Competitor competitor = new Competitor( competitorName.getText().toString() );
+	            	 
+	            	 EditText cardNumber = (EditText) getView().findViewById(R.id.editCardNumber);
+	            	 String cardNumberAsString = cardNumber.getText().toString();
+	            	 if( !cardNumberAsString.isEmpty() ){
+	            		 try{
+	            			 int cardNumberAsInt = Integer.parseInt(cardNumberAsString);
+	            			 competitor.cardNumber = cardNumberAsInt;
+	            			 
+	            		 }
+	            		 catch(Exception e){
+	            			 
+	            		 }
+	            	 }
+	            	 
+	            	 MainActivity.competitors.add(competitor);	    
+	            	 
+	            	 TextView cardInfoTextView = (TextView) getView().findViewById(R.id.cardInfoTextView);
+	            	 cardInfoTextView.setText("");
+	            	 for(Competitor currentCompetitor : MainActivity.competitors){
+	            		 cardInfoTextView.append( "Name: " + currentCompetitor.name + " Card "+ currentCompetitor.cardNumber + "\n");
+	            	 }
+	            	 
+	             } 
+	   }); 
+	   
+	   
+	   
+	   
 
 		return rootView;
 	} 	
@@ -113,6 +175,23 @@ public class StartScreenFragment extends Fragment {
     	}
     	
     	new SiCardListener().execute(MainActivity.siDriver);
+    }
+    
+    private void parseNewTrack( String newTrack){
+    	String[] trackMarkers = newTrack.split(",");
+    	MainActivity.track = new ArrayList<TrackMarker>();
+    	for( int i = 0; i < trackMarkers.length; i+=2){
+    		int startMarker = 0;
+    		int finishMarker = 0;
+    		try{
+	    		startMarker = Integer.parseInt(trackMarkers[i]);
+	    		finishMarker = Integer.parseInt(trackMarkers[i+1]);
+    		}
+    		catch( Exception e ){
+    			return;
+    		}
+			MainActivity.track.add( new TrackMarker(startMarker,finishMarker));
+    	}
     }
     
     private class SiCardListener extends AsyncTask<SiDriver, Void, Card> {

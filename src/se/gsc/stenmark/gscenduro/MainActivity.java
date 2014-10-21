@@ -55,11 +55,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		if(savedInstanceState == null){
 			usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 			
-			track = new ArrayList<TrackMarker>();
-			track.add( new TrackMarker(71,72));
-			track.add( new TrackMarker(71,72));
-			track.add( new TrackMarker(71,72));
-			
 			competitors = new ArrayList<Competitor>();
 			Competitor competitor1 = new Competitor("Andreas", 2065396);
 			Competitor competitor2 = new Competitor("Sverker", 2065302);
@@ -73,6 +68,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			competitors.add(competitor4);
 			competitors.add(competitor5);
 			competitors.add(competitor6);
+			
+			for(int i = 0; i < 25; i++){
+				Competitor competitorllop = new Competitor("loop"+i, 2065+i);
+				competitors.add(competitorllop);
+			}
 		}
 
 		// Set up the action bar.

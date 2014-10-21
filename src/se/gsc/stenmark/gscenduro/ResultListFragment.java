@@ -114,12 +114,17 @@ public class ResultListFragment extends Fragment {
 		List<Long> result = new ArrayList<Long>();
 		
 		for(int i = 0; i < track.size(); i++ ){
-			TrackMarker trackMarker = track.get(i);
-			Punch startPunch = findPunchForStationNrInCard(card, trackMarker.start, i+1);
-			Punch finishPunch = findPunchForStationNrInCard(card, trackMarker.finish, i+1);
-			
-			long trackTime = finishPunch.time - startPunch.time;
-			result.add(trackTime);
+			try{
+				TrackMarker trackMarker = track.get(i);
+				Punch startPunch = findPunchForStationNrInCard(card, trackMarker.start, i+1);
+				Punch finishPunch = findPunchForStationNrInCard(card, trackMarker.finish, i+1);
+				
+				long trackTime = finishPunch.time - startPunch.time;
+				result.add(trackTime);
+			}
+			catch( Exception e){
+				
+			}
 		}
 		
 		return result;
