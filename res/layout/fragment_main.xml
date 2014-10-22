@@ -26,8 +26,8 @@
         android:id="@+id/statusText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/connectButton"
-        android:layout_toRightOf="@+id/connectButton"
+        android:layout_alignLeft="@+id/connectButton"
+        android:layout_below="@+id/connectButton"
         android:text="Not Connected" />  
           
     <Button
@@ -38,7 +38,7 @@
         android:layout_alignLeft="@+id/connectButton"
         android:layout_below="@+id/connectButton"
         android:text="Add\ncompetitor"
-        android:layout_marginTop="10sp"
+        android:layout_marginTop="30sp"
         android:textSize="12sp" />
 
     <TextView
@@ -126,23 +126,53 @@
         android:text="No cards read yet" />
 
     <Button
+        android:id="@+id/listLoadedButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="70sp"
+        android:layout_height="35sp"
+        android:layout_alignTop="@+id/connectButton"
+        android:layout_toRightOf="@+id/connectButton"
+        android:textSize="8sp"
+        android:layout_marginLeft="8sp"
+        android:text="List saved\nCompetitions" />
+    
+    <Button
         android:id="@+id/saveButton"
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="50sp"
-        android:layout_height="30sp"
-        android:layout_alignTop="@+id/statusText"
-        android:layout_toRightOf="@+id/statusText"
+        android:layout_width="67sp"
+        android:layout_height="35sp"
+        android:layout_alignTop="@+id/listLoadedButton"
+        android:layout_toRightOf="@+id/listLoadedButton"
         android:textSize="8sp"
-        android:text="Save" />
+        android:text="Save\nCompetition" />
 
     <Button
         android:id="@+id/loadButton"
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="50sp"
-        android:layout_height="30sp"
+        android:layout_width="67sp"
+        android:layout_height="35sp"
         android:layout_alignTop="@+id/saveButton"
         android:layout_toRightOf="@+id/saveButton"
         android:textSize="8sp"
-        android:text="Load" />
+        android:text="Load\nCompetition" />
+    
+        <EditText
+        android:id="@+id/editSaveLoadComp"
+        android:layout_width="134sp"
+        android:layout_height="30sp"
+        android:layout_alignLeft="@+id/saveButton"
+        android:layout_below="@+id/saveButton"
+        android:inputType="textPersonName"
+        android:textSize="10sp" />
+
+     <Button
+        android:id="@+id/newCompButton"
+        style="?android:attr/buttonStyleSmall"
+      	android:layout_width="35sp"
+      	android:layout_height="64sp"
+       	android:layout_alignTop="@+id/loadButton"
+       	android:layout_toRightOf="@+id/loadButton"
+        android:text="N\nE\nW" 
+       	android:textSize="10sp" />
 
 </RelativeLayout>

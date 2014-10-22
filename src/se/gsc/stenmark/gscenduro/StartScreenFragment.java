@@ -150,7 +150,10 @@ public class StartScreenFragment extends Fragment {
 	             @Override
 	             public void onClick(View v)
 	             {
-	            	 MainActivity.instance.saveCurrentData();
+	            	 EditText nameOFCompToSave = (EditText) getView().findViewById(R.id.editSaveLoadComp);
+	            	 String compName = nameOFCompToSave.getText().toString();
+	            	 compName.replace(" ", "_");
+	            	 MainActivity.instance.saveSessionData( compName );
 	             } 
 	   }); 
 	   
@@ -160,11 +163,48 @@ public class StartScreenFragment extends Fragment {
 	             @Override
 	             public void onClick(View v)
 	             {
-	            	 MainActivity.instance.loadCurrentData( );
+	            	 
+	            	 EditText nameOFCompToLoad = (EditText) getView().findViewById(R.id.editSaveLoadComp);
+	            	 MainActivity.instance.loadSessionData( nameOFCompToLoad.getText().toString(), true );
+	             } 
+	   }); 
+	   
+	   Button listButton = (Button) rootView.findViewById(R.id.listLoadedButton);
+	   listButton.setOnClickListener(new OnClickListener()
+	   {
+	             @Override
+	             public void onClick(View v)
+	             {
+	            	 TextView statusText = (TextView) getView().findViewById(R.id.cardInfoTextView);
+	            	 statusText.setText("Existing competitions \n");
+	            	 String[] fileList = MainApplication.getAppContext().fileList();
+	            	 for( String file : fileList){
+	            		 if( file.contains("_list") ){
+	            			 if(!file.equals(CURRENT_COMPETITIOR_LIST_FILE)){
+		            			 String compName = file.replace("_list", "");
+		            			 statusText.append(compName + "\n");
+	            			 }
+	            		 }
+	            		 
+	            	 }
+	             } 
+	   }); 
+	   
+	   Button newButton = (Button) rootView.findViewById(R.id.newCompButton);
+	   newButton.setOnClickListener(new OnClickListener()
+	   {
+	             @Override
+	             public void onClick(View v)
+	             {
+	            	 //Hack to use loadseesiondata to update the GUI.
+	            	 //Uses some ugly work arounds due to poor GUI design that i dont want to duplicate
+	            	 MainActivity.instance.track = new ArrayList<TrackMarker>();
+	            	 MainActivity.instance.competitors = new ArrayList<Competitor>();
+	            	 MainActivity.instance.loadSessionData(null,false);
 	             } 
 	   }); 
 
-		return rootView;
+	   return rootView;
 	} 	
 	
 	public void updateTrackText(){

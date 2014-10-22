@@ -55,13 +55,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		ResultListFragment.instance.processNewCard(card);
 	}
 	
-	public void saveCurrentData(){
-    	TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
-    	cardText.setText("" );
+	public void saveSessionData( String competionName){
+    	TextView statusText = (TextView) findViewById(R.id.cardInfoTextView);
+    	statusText.setText("" );
     	FileOutputStream fileOutputComp;
     	FileOutputStream fileOutputTrack;
 		try {
-			fileOutputComp = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE, Context.MODE_PRIVATE);
+			if( competionName == null || competionName.isEmpty() ){
+				fileOutputComp = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE, Context.MODE_PRIVATE);
+			}
+			else{
+				fileOutputComp = MainApplication.getAppContext().openFileOutput(competionName+"_list", Context.MODE_PRIVATE);
+			}
+			
 			ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);  
 			objStreamOutComp.writeObject(competitors);
 			objStreamOutComp.close();	 
@@ -69,36 +75,54 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			if(track == null){
 				track = new ArrayList<TrackMarker>();
 			}
-			fileOutputTrack = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_TRACK_FILE, Context.MODE_PRIVATE);
+			if( competionName == null || competionName.isEmpty() ){
+				fileOutputTrack = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_TRACK_FILE, Context.MODE_PRIVATE);
+			}
+			else{
+				fileOutputTrack = MainApplication.getAppContext().openFileOutput(competionName+"_track", Context.MODE_PRIVATE);
+			}
 			ObjectOutputStream objStreamOutTrack = new ObjectOutputStream(fileOutputTrack);  
 			objStreamOutTrack.writeObject(track);
 			objStreamOutTrack.close();	
 		} catch (FileNotFoundException e) {
-			cardText.append("FileNotFoundException " + e.getMessage() );
+			statusText.append("FileNotFoundException " + e.getMessage() );
 			return;
 		} catch (IOException e) {
-			cardText.append("IOException " + e.getMessage() + "\n"  );
+			statusText.append("IOException " + e.getMessage() + "\n"  );
 			
 			for( StackTraceElement elem :  e.getStackTrace()){
-				cardText.append(elem.toString() + "\n");
+				statusText.append(elem.toString() + "\n");
 			}
 			return;
 		}
 	 
-    	 cardText.append("\nSaved: " );
+    	 statusText.append("\nSaved: " );
 	}
 	
-	public void loadCurrentData(){
+	public void loadSessionData(String competionName, boolean readFile){
 	try{
 	   	 TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
 	   	 cardText.setText("" );
+	   	if( readFile ){
+	   	FileInputStream fileInputTrack = null;
+	   	FileInputStream fileInputComp = null;
 	   	 try {
-				FileInputStream fileInputComp = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE);
+			 	if( competionName == null || competionName.isEmpty() ){
+			 		fileInputComp = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE);
+			 	}
+			 	else{
+			 		fileInputComp = MainApplication.getAppContext().openFileInput(competionName+"_list");
+			 	}
 				ObjectInputStream objStreamInComp = new ObjectInputStream(fileInputComp);
 				competitors = (ArrayList<Competitor>) objStreamInComp.readObject();
 				objStreamInComp.close();
 				
-				FileInputStream fileInputTrack = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_TRACK_FILE);
+				if( competionName == null || competionName.isEmpty() ){
+					fileInputTrack = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_TRACK_FILE);
+				}
+				else{
+					fileInputTrack = MainApplication.getAppContext().openFileInput(competionName+"_track");
+				}
 				ObjectInputStream objStreamInTrack = new ObjectInputStream(fileInputTrack);
 				track = (List<TrackMarker>) objStreamInTrack.readObject();
 				objStreamInTrack.close();
@@ -112,6 +136,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				cardText.append("ClassNotFoundException: " +e.getMessage() );
 				return;
 			}
+		}
 	   	 
 	   	 //TODO: some fuck up with this global instances, need to get rid of them
 //	   	 StartScreenFragment.instance.updateTrackText();
@@ -143,13 +168,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	@Override
 	protected void onPause() {
 		super.onPause();
-		saveCurrentData();
+		saveSessionData(null);
 	}
 	
 	@Override
 	protected void onStop() {
 		super.onStop();
-		saveCurrentData();
+		saveSessionData(null);
 	}
 	
 	@Override
