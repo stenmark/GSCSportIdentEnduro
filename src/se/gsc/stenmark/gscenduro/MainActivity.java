@@ -208,22 +208,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			instance = this;
 			usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 			competitors = new ArrayList<Competitor>();
-			
-//			Competitor competitor1 = new Competitor("Andreas", 2065396);
-//			Competitor competitor2 = new Competitor("Sverker", 2065302);
-//			Competitor competitor3 = new Competitor("Kalle", 2065307);
-//			Competitor competitor4 = new Competitor("Archer", 2065325);
-//			Competitor competitor5 = new Competitor("Karsten", 2065317);
-//			Competitor competitor6 = new Competitor("Dummy", 2065434);
-//			competitors.add(competitor1);
-//			competitors.add(competitor2);
-//			competitors.add(competitor3);
-//			competitors.add(competitor4);
-//			competitors.add(competitor5);
-//			competitors.add(competitor6);
-			
-//		}
-		
+					
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -257,8 +242,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}
-		
-		
 	}
 
 	@Override
@@ -316,7 +299,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			switch( position){
 				case 0: return StartScreenFragment.getInstance(position + 1);
 				case 1: return ResultListFragment.getInstance(position + 1);
-				case 2: return StartScreenFragment.getInstance(position + 1);				
+				case 2: return CompMangementFragment.getInstance(position + 1);				
 			}
 			
 			return null;

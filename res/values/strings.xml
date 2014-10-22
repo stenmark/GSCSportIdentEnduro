@@ -6,9 +6,9 @@
     <string name="action_settings">Settings</string>
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">GSC Enduro</string>
     <string name="title_section1">Start</string>
     <string name="title_section2">Results</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_section3">Competitors</string>
 
 </resources>
