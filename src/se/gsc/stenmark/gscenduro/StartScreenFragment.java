@@ -152,6 +152,9 @@ public class StartScreenFragment extends Fragment {
 	             {
 	            	 EditText nameOFCompToSave = (EditText) getView().findViewById(R.id.editSaveLoadComp);
 	            	 String compName = nameOFCompToSave.getText().toString();
+	            	 if(compName.isEmpty()){
+	            		 return;
+	            	 }
 	            	 compName.replace(" ", "_");
 	            	 MainActivity.instance.saveSessionData( compName );
 	             } 
