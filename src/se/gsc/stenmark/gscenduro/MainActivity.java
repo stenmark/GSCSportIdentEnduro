@@ -56,8 +56,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 	
 	public void saveSessionData( String competionName){
-    	TextView statusText = (TextView) findViewById(R.id.cardInfoTextView);
-    	statusText.setText("" );
+//    	TextView statusText = (TextView) findViewById(R.id.cardInfoTextView);
+//    	statusText.setText("" );
     	FileOutputStream fileOutputComp;
     	FileOutputStream fileOutputTrack;
 		try {
@@ -85,18 +85,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			objStreamOutTrack.writeObject(track);
 			objStreamOutTrack.close();	
 		} catch (FileNotFoundException e) {
-			statusText.append("FileNotFoundException " + e.getMessage() );
+//			statusText.append("FileNotFoundException " + e.getMessage() );
 			return;
 		} catch (IOException e) {
-			statusText.append("IOException " + e.getMessage() + "\n"  );
+//			statusText.append("IOException " + e.getMessage() + "\n"  );
 			
 			for( StackTraceElement elem :  e.getStackTrace()){
-				statusText.append(elem.toString() + "\n");
+//				statusText.append(elem.toString() + "\n");
 			}
 			return;
 		}
 	 
-    	 statusText.append("\nSaved: " );
+//    	 statusText.append("\nSaved: " );
 	}
 	
 	public void loadSessionData(String competionName, boolean readFile){
@@ -299,7 +299,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			switch( position){
 				case 0: return StartScreenFragment.getInstance(position + 1);
 				case 1: return ResultListFragment.getInstance(position + 1);
-				case 2: return CompMangementFragment.getInstance(position + 1);				
+				case 2: return CompMangementFragment.getInstance(position + 1);		
+//				case 2: return StartScreenFragment.getInstance(position + 1);
 			}
 			
 			return null;
