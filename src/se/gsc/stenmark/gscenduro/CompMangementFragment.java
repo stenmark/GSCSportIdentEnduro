@@ -1,10 +1,19 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
 
 
 
@@ -13,11 +22,17 @@ import android.view.ViewGroup;
  */
 public class CompMangementFragment extends Fragment {
 
+	
 	/**
 	 * The fragment argument representing the section number for this
 	 * fragment.
 	 */
+	public static CompMangementFragment instance;
 	private static final String ARG_SECTION_NUMBER = "section_number";
+	private List<TextView> textViews = null;
+	private List<EditText> editViews = null;
+	private List<Button> deleteButtons = null;
+	private List<Button> modifyButtons = null;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -31,15 +46,23 @@ public class CompMangementFragment extends Fragment {
 	}
 
 	public CompMangementFragment() {
+		textViews = new ArrayList<TextView>();
+		editViews = new ArrayList<EditText>();
+		deleteButtons = new ArrayList<Button>();
+		modifyButtons = new ArrayList<Button>();
+//		instance = this;
 	}
 
 	@Override
+	public void onResume(){
+		super.onResume();	
+//		listCompetitors();
+	}
+	
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_comp_management, container,false);
-//		View rootView = inflater.inflate(R.layout.fragment_main, container,false);
-					
-		
+		View rootView = inflater.inflate(R.layout.fragment_comp_management, container,false);			
 		return rootView;
 	} 	
 	
@@ -58,7 +81,75 @@ public class CompMangementFragment extends Fragment {
 		return fragment;
 	}
 	
-   
+	private void addDeleteButton(String nameToDelete, int viewIdToAlign ){
+		RelativeLayout relativeLayout = (RelativeLayout)getView().findViewById(R.id.comp_management_fragment);
+		Button deleteButton = new Button(MainApplication.getAppContext());
+		deleteButton.setText("Delete");
+		deleteButton.setTextColor(Color.WHITE);
+		deleteButton.setTextSize(8f);
+		deleteButton.setId(View.generateViewId());	
+		
+		LayoutParams layoutParams = new LayoutParams(140,55);
+		layoutParams.addRule(RelativeLayout.RIGHT_OF, viewIdToAlign);
+		layoutParams.addRule(RelativeLayout.ALIGN_TOP, viewIdToAlign);
+		
+//		deleteButton.setOnClickListener( new OnDeleteClickedListener(nameToDelete, this));	
+		relativeLayout.addView(deleteButton, layoutParams);
+		
+		deleteButtons.add(deleteButton);
+	}
+	
+	private void addModifyButton(String nameToModify, int editViewIdToReadFrom, int viewIdToAlign ){
+		RelativeLayout relativeLayout = (RelativeLayout)getView().findViewById(R.id.comp_management_fragment);
+		Button modifyButton = new Button(MainApplication.getAppContext());
+		modifyButton.setText("Modify");
+		modifyButton.setTextColor(Color.WHITE);
+		modifyButton.setTextSize(8f);
+		modifyButton.setId(View.generateViewId());	
+		
+		LayoutParams layoutParams = new LayoutParams(140,55);
+		layoutParams.addRule(RelativeLayout.RIGHT_OF, viewIdToAlign);
+		layoutParams.addRule(RelativeLayout.ALIGN_TOP, viewIdToAlign);
+		
+//		modifyButton.setOnClickListener( new OnModifyClickedListener(nameToModify, editViewIdToReadFrom, this));	
+		relativeLayout.addView(modifyButton, layoutParams);
+		
+		modifyButtons.add(modifyButton);
+	}
+	
+	private int addCompetitorText(String name, String card, int previousViewId ){
+		RelativeLayout relativeLayout = (RelativeLayout)getView().findViewById(R.id.comp_management_fragment);
+		TextView competitorNameView = new TextView(MainApplication.getAppContext());
+		competitorNameView.setText(name);
+		competitorNameView.setTextColor(Color.BLACK);
+		competitorNameView.setId(View.generateViewId());
+		
+		LayoutParams layoutParamsName = new LayoutParams(220,LayoutParams.WRAP_CONTENT);
+		if( previousViewId == -1){
+			layoutParamsName.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+			layoutParamsName.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+		}
+		else{
+			layoutParamsName.addRule(RelativeLayout.BELOW, previousViewId);
+			layoutParamsName.addRule(RelativeLayout.ALIGN_LEFT, previousViewId);
+		}
+		layoutParamsName.setMargins(0, 12, 0, 0);
+		relativeLayout.addView(competitorNameView, layoutParamsName);
+		textViews.add( competitorNameView );
+		
+		EditText competitorCardEdit= new EditText(MainApplication.getAppContext());
+		competitorCardEdit.setText(card);
+		competitorCardEdit.setTextColor(Color.BLACK);
+		competitorCardEdit.setTextSize(10);
+		competitorCardEdit.setId(View.generateViewId());
+		LayoutParams layoutParamsCard = new LayoutParams(140,55);
+		layoutParamsCard.addRule(RelativeLayout.RIGHT_OF, competitorNameView.getId());
+		layoutParamsCard.addRule(RelativeLayout.ALIGN_TOP, competitorNameView.getId());
+		relativeLayout.addView(competitorCardEdit, layoutParamsCard);
+		editViews.add( competitorCardEdit );
+		
+		return competitorNameView.getId();
+	}   
 
 	
 
