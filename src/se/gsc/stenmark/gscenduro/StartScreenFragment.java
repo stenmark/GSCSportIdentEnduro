@@ -1,9 +1,14 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -201,14 +206,94 @@ public class StartScreenFragment extends Fragment {
 	             {
 	            	 //Hack to use loadseesiondata to update the GUI.
 	            	 //Uses some ugly work arounds due to poor GUI design that i dont want to duplicate
-	            	 MainActivity.instance.track = new ArrayList<TrackMarker>();
-	            	 MainActivity.instance.competitors = new ArrayList<Competitor>();
+	            	 MainActivity.track = new ArrayList<TrackMarker>();
+	            	 MainActivity.competitors = new ArrayList<Competitor>();
 	            	 MainActivity.instance.loadSessionData(null,false);
+	             } 
+	   }); 
+	   
+	   Button exportResultButton = (Button) rootView.findViewById(R.id.exportResultButton);
+	   exportResultButton.setOnClickListener(new OnClickListener()
+	   {
+	             @Override
+	             public void onClick(View v)
+	             {
+	            	 exportResult();
 	             } 
 	   }); 
 
 	   return rootView;
 	} 	
+	
+	private void exportResult(){
+		TextView status = (TextView) getView().findViewById(R.id.cardInfoTextView);
+		String result = "Name,card number,total time,";
+		for( int i = 0; i < MainActivity.track.size(); i++){
+			result += "SS" + (i+1) + ",";
+		}
+		result += "\n";
+		status.setText("");
+		if( isExternalStorageWritable() ){	
+			try{
+				File sdCard = Environment.getExternalStorageDirectory();
+				File dir = new File (sdCard.getAbsolutePath() + "/gscEnduro");
+				if( !dir.exists() ) {
+					status.append("Dir does not exist " + dir.getAbsolutePath() );
+					if( !dir.mkdirs() ){
+						status.append("Could not create directory: " + dir.getAbsolutePath() );
+						return;
+					}
+				}
+				
+				File file = new File(dir, "endurrace.csv");
+				status.append("Saving result to file:\n" + file.getAbsolutePath() + "\n");
+					
+				if(MainActivity.competitors != null && !MainActivity.competitors.isEmpty()){
+					Collections.sort(MainActivity.competitors);
+					for(Competitor competitor : MainActivity.competitors){
+						status.append( competitor.name + "," + competitor.cardNumber + "," + competitor.getTotalTime(false) + ",");
+						result += competitor.name + "," + competitor.cardNumber + "," + competitor.getTotalTime(false) + ",";				
+						if(competitor.trackTimes != null ){
+							for( long time : competitor.trackTimes){
+								status.append( time + "," );
+								result +=  time + "," ;
+							}
+						}
+						else{
+							for( int i = 0; i < MainActivity.track.size(); i++ ){
+								status.append("0,");
+								result += "0,";
+							}
+						}
+						status.append("\n");
+						result += "\n\n";
+					}
+				}
+		        FileWriter fw = new FileWriter(file);
+		        fw.write(result);
+		        fw.close();
+			}
+			catch( Exception e){
+				status.append("FAIL + " + e.getMessage() + "\n");
+				for( StackTraceElement elem : e.getStackTrace()){
+					status.append( elem.toString() + "\n");
+				}
+			}
+		}
+		else{
+			status.setText("External file storage not available, coulr not export results");
+		}
+		
+	}
+	
+	private boolean isExternalStorageWritable() {
+	    String state = Environment.getExternalStorageState();
+	    if (Environment.MEDIA_MOUNTED.equals(state)) {
+	        return true;
+	    }
+	    return false;
+	}
+
 	
 	public void updateTrackText(){
 		 TextView trackInfoTextView = (TextView) getView().findViewById(R.id.trackInfoTextView);

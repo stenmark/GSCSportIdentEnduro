@@ -28,10 +28,16 @@ public class Competitor implements Comparable<Competitor>, Serializable{
 		trackTimes = null;
 	}
 	
-	public long getTotalTime(){
+	public long getTotalTime( boolean useMaxValueOnEmptyResult ){
 		long totalTime = 0;
 		if( trackTimes == null ){
-			return Integer.MAX_VALUE;
+			if(useMaxValueOnEmptyResult){
+				return Integer.MAX_VALUE;
+			}
+			else{
+				return 0;
+			}
+			
 		}
 		
 		for( long trackTime : trackTimes){
@@ -47,7 +53,7 @@ public class Competitor implements Comparable<Competitor>, Serializable{
 
 	@Override
 	public int compareTo(Competitor another) {
-		return (int) (this.getTotalTime() - another.getTotalTime());
+		return (int) (this.getTotalTime(true) - another.getTotalTime(true));
 	}
 	
 }

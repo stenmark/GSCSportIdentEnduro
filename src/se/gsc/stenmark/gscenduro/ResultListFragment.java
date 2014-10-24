@@ -81,7 +81,7 @@ public class ResultListFragment extends Fragment {
 			i++;
 		}
 		
-		latestCardInfoText.append("Total time was: " + foundCompetitor.getTotalTime() + " seconds \n");
+		latestCardInfoText.append("Total time was: " + foundCompetitor.getTotalTime(true) + " seconds \n");
 		
 		updateResultList();
 	}
@@ -100,7 +100,7 @@ public class ResultListFragment extends Fragment {
 						resultsText.append( " SS" + i + " " + trackTime + ", " ); 
 					}
 					
-					resultsText.append( "Total time: " + competitor.getTotalTime() );
+					resultsText.append( "Total time: " + competitor.getTotalTime(true) );
 					
 					if( !competitor.card.doublePunches.isEmpty() ){
 						resultsText.append(" Warning this user has doublePunches ");

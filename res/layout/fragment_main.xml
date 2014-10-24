@@ -116,13 +116,25 @@
         android:textSize="10sp"
         android:text="No track loaded" />
 
+    <Button
+        android:id="@+id/exportResultButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="85sp"
+        android:layout_height="45sp"
+        android:layout_alignLeft="@+id/trackInfoTextView"
+        android:layout_below="@+id/trackInfoTextView"
+        android:textSize="11sp"
+        android:layout_marginTop="8sp"
+        android:text="Export\nresult" />    
+    
+    
     <TextView
         android:id="@+id/cardInfoTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/addTrackButton"
-        android:layout_alignLeft="@+id/addTrackButton"
-        android:layout_marginTop="50sp"
+        android:layout_below="@+id/exportResultButton"
+        android:layout_alignLeft="@+id/exportResultButton"
+        android:layout_marginTop="20sp"
         android:text="No cards read yet" />
 
     <Button
