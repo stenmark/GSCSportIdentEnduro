@@ -60,6 +60,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 //    	statusText.setText("" );
     	FileOutputStream fileOutputComp;
     	FileOutputStream fileOutputTrack;
+    	FileOutputStream fileOutputName;
 		try {
 			if( competionName == null || competionName.isEmpty() ){
 				fileOutputComp = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE, Context.MODE_PRIVATE);
@@ -84,6 +85,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			ObjectOutputStream objStreamOutTrack = new ObjectOutputStream(fileOutputTrack);  
 			objStreamOutTrack.writeObject(track);
 			objStreamOutTrack.close();	
+			
+//			if( competionName == null || competionName.isEmpty() ){
+//				fileOutputName = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_COMPETITION_NAME_FILE, Context.MODE_PRIVATE);
+//			}
+//			else{
+//				fileOutputName = MainApplication.getAppContext().openFileOutput(competionName+"_name", Context.MODE_PRIVATE);
+//			}
+//			String blaha = competionName;
+//			fileOutputName.write(blaha.getBytes());
+//			fileOutputName.close();
+			
 		} catch (FileNotFoundException e) {
 //			statusText.append("FileNotFoundException " + e.getMessage() );
 			return;

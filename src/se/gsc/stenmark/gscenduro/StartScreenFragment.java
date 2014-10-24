@@ -32,6 +32,7 @@ public class StartScreenFragment extends Fragment {
 	
 	public static final String CURRENT_COMPETITIOR_LIST_FILE = "current_comp_list";
 	public static final String CURRENT_TRACK_FILE = "current_track";
+	public static final String CURRENT_COMPETITION_NAME_FILE = "current_comp_name";
 
 
 	
@@ -79,6 +80,13 @@ public class StartScreenFragment extends Fragment {
 	public void onResume(){
 		super.onResume();
 		updateTrackText();
+		EditText nameOFCompEdit = (EditText) getView().findViewById(R.id.editSaveLoadComp);
+		nameOFCompEdit.setText("New"); 
+		if(MainActivity.track != null){
+			if(!MainActivity.track.isEmpty()){
+				nameOFCompEdit.setText(MainActivity.track.get(0).compName);
+			}
+		}
 	}
 	
 	@Override
@@ -160,6 +168,12 @@ public class StartScreenFragment extends Fragment {
 	            	 if(compName.isEmpty()){
 	            		 return;
 	            	 }
+	            	 //TODO: work around, using trackmarker object to save competitions name...
+	            	 if(MainActivity.track != null){
+		            	 for(TrackMarker trackmarker : MainActivity.track){
+		            		 trackmarker.compName = compName;
+		            	 }
+	            	 }
 	            	 compName.replace(" ", "_");
 	            	 MainActivity.instance.saveSessionData( compName );
 	             } 
@@ -236,6 +250,14 @@ public class StartScreenFragment extends Fragment {
 		if( isExternalStorageWritable() ){	
 			try{
 				File sdCard = Environment.getExternalStorageDirectory();
+				String compName = "New";
+				if(MainActivity.track != null ){
+					if(!MainActivity.track.isEmpty()){
+						compName = MainActivity.track.get(0).compName;
+					}	
+				}
+				compName.replace(" ", "_");
+				
 				File dir = new File (sdCard.getAbsolutePath() + "/gscEnduro");
 				if( !dir.exists() ) {
 					status.append("Dir does not exist " + dir.getAbsolutePath() );
@@ -245,7 +267,7 @@ public class StartScreenFragment extends Fragment {
 					}
 				}
 				
-				File file = new File(dir, "endurrace.csv");
+				File file = new File(dir, compName + ".csv");
 				status.append("Saving result to file:\n" + file.getAbsolutePath() + "\n");
 					
 				if(MainActivity.competitors != null && !MainActivity.competitors.isEmpty()){
@@ -343,6 +365,13 @@ public class StartScreenFragment extends Fragment {
     private void parseNewTrack( String newTrack){
     	String[] trackMarkers = newTrack.split(",");
     	MainActivity.track = new ArrayList<TrackMarker>();
+    	String compName = "New";
+    	if( MainActivity.track != null){
+    		if(!MainActivity.track.isEmpty()){
+    			compName = MainActivity.track.get(0).compName;
+    		}
+    	}
+    	
     	for( int i = 0; i < trackMarkers.length; i+=2){
     		int startMarker = 0;
     		int finishMarker = 0;
@@ -353,7 +382,7 @@ public class StartScreenFragment extends Fragment {
     		catch( Exception e ){
     			return;
     		}
-			MainActivity.track.add( new TrackMarker(startMarker,finishMarker));
+			MainActivity.track.add( new TrackMarker(startMarker,finishMarker, compName));
     	}
     }
     
