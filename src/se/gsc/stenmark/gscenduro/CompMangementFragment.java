@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
@@ -56,7 +57,7 @@ public class CompMangementFragment extends Fragment {
 	@Override
 	public void onResume(){
 		super.onResume();	
-//		listCompetitors();
+		listCompetitors();
 	}
 	
 	@Override
@@ -93,7 +94,7 @@ public class CompMangementFragment extends Fragment {
 		layoutParams.addRule(RelativeLayout.RIGHT_OF, viewIdToAlign);
 		layoutParams.addRule(RelativeLayout.ALIGN_TOP, viewIdToAlign);
 		
-//		deleteButton.setOnClickListener( new OnDeleteClickedListener(nameToDelete, this));	
+		deleteButton.setOnClickListener( new OnDeleteClickedListener(nameToDelete, this));	
 		relativeLayout.addView(deleteButton, layoutParams);
 		
 		deleteButtons.add(deleteButton);
@@ -111,7 +112,7 @@ public class CompMangementFragment extends Fragment {
 		layoutParams.addRule(RelativeLayout.RIGHT_OF, viewIdToAlign);
 		layoutParams.addRule(RelativeLayout.ALIGN_TOP, viewIdToAlign);
 		
-//		modifyButton.setOnClickListener( new OnModifyClickedListener(nameToModify, editViewIdToReadFrom, this));	
+		modifyButton.setOnClickListener( new OnModifyClickedListener(nameToModify, editViewIdToReadFrom, this));	
 		relativeLayout.addView(modifyButton, layoutParams);
 		
 		modifyButtons.add(modifyButton);
@@ -149,8 +150,113 @@ public class CompMangementFragment extends Fragment {
 		editViews.add( competitorCardEdit );
 		
 		return competitorNameView.getId();
-	}   
+	}  
+	
+	public void listCompetitors(){
+		clearList();
+		int previousViewId = -1;
+		for(Competitor competitor : MainActivity.competitors){
+			String cardNumber = String.valueOf( competitor.cardNumber );
+			if( competitor.cardNumber == -1){
+				cardNumber = "No card added yet";
+			}
+			
+			String doublePunches = "";
+			if( competitor.card != null ){
+				if(competitor.card.doublePunches != null ){
+					if(!competitor.card.doublePunches.isEmpty()){
+						doublePunches += "Double punches: ";
+						for( Punch doublePunch : competitor.card.doublePunches ){
+							doublePunches += " On control: " + doublePunch.control + " at time: " + doublePunch.time + ", ";
+						}
+					}
+				}
+			}
+			
+			previousViewId = addCompetitorText(competitor.name + "  "  + doublePunches, cardNumber, previousViewId);
+			addDeleteButton(competitor.name , editViews.get(editViews.size()-1).getId() );
+			addModifyButton(competitor.name, editViews.get(editViews.size()-1).getId(), deleteButtons.get(deleteButtons.size()-1).getId());
+			
+		}
+	}
 
+	private void clearList(){
+		RelativeLayout relativeLayout = (RelativeLayout)getView().findViewById(R.id.comp_management_fragment);
+		for( TextView textView :  textViews){
+			relativeLayout.removeView(textView);
+		}
+		for(EditText editText : editViews){
+			relativeLayout.removeView(editText);
+		}
+		for(Button button : deleteButtons){
+			relativeLayout.removeView(button);
+		}
+		for(Button button : modifyButtons){
+			relativeLayout.removeView(button);
+		}
+	}
+	
+	private class OnDeleteClickedListener implements OnClickListener {
+		private String nameToDelete;
+		private CompMangementFragment parent;
+		OnDeleteClickedListener( String nameToDelete, CompMangementFragment parent){
+			this.nameToDelete = nameToDelete;
+			this.parent = parent;
+		}
+		
+		@Override
+		public void onClick(View arg0) {
+			 Competitor compToDelete = null;
+		   	 for( Competitor competitor : MainActivity.competitors ){
+				 if(competitor.name.equals(nameToDelete)){
+					 compToDelete = competitor;
+					 break;
+				 }
+			 }	
+		   	 if(compToDelete != null){
+		   		MainActivity.competitors.remove(compToDelete); 
+		   	 }
+		   	
+		   	parent.listCompetitors();
+		   	 
+		}
+	}
+	
+	private class OnModifyClickedListener implements OnClickListener {
+		private String nameToModify;
+		private CompMangementFragment parent;
+		private int editViewIdToReadFrom;
+		OnModifyClickedListener( String nameToModify, int editViewIdToReadFrom, CompMangementFragment parent){
+			this.nameToModify = nameToModify;
+			this.parent = parent;
+			this.editViewIdToReadFrom = editViewIdToReadFrom;
+		}
+		
+		@Override
+		public void onClick(View arg0) {
+			try{
+				 Competitor compToModify = null;
+			   	 for( Competitor competitor : MainActivity.competitors ){
+					 if(competitor.name.equals(nameToModify)){
+						 compToModify = competitor;
+						 break;
+					 }
+				 }	
+			   	 if(compToModify != null){
+	
+			   		EditText newCardNumberEdit = (EditText) getView().findViewById(editViewIdToReadFrom);
+			   		String newCardNumberString = newCardNumberEdit.getText().toString();
+			   		compToModify.cardNumber = Integer.parseInt( newCardNumberString );
+			   	 }
+			   	
+			   	parent.listCompetitors();
+				}
+			catch( Exception e){
+				
+			}
+		   	 
+		}
+	}
 	
 
 }
