@@ -403,8 +403,14 @@ public class StartScreenFragment extends Fragment {
 	    				return cardData;
 	    			}
 	    			else if( readSiMessage.length >= 2 && readSiMessage[1] == 0x46 ){
+	    				cardData.errorMsg += "Card5!!!";
 	    				siDriver[0].sendSiMessage(SiMessage.request_si_card5, true);
 	    				cardData = siDriver[0].getCard5Data();
+	    				if( cardData == null ){
+	    					cardData = new Card();
+	    					cardData.errorMsg = "Got null when reading Card5 data";
+	    				}
+	    				return cardData;
 	    			}
 	    			else{
 	    				cardData.errorMsg += "not card6";

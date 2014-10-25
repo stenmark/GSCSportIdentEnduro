@@ -8,7 +8,7 @@ import com.hoho.android.usbserial.driver.UsbSerialProber;
 
 public class SiDriver {
 	private UsbSerialDriver driver;
-	
+
 	SiDriver( ){
 	}
 	
@@ -177,7 +177,22 @@ public class SiDriver {
     	byte[] rawData = readSiMessage(256, 1000, false);
     	MessageBuffer messageBuffer = new MessageBuffer(rawData);
     	byte[] dleOutputPre = new byte[10];
-    	readBytesDle(messageBuffer, dleOutputPre, 0, 3);
+    	
+//    	Card card = new Card();
+//    	card.errorMsg = "Raw data ";
+//    	for( byte readbyte: rawData){
+//    		card.errorMsg +=  "=0x" + byteToHex(readbyte) + ", ";
+//    	}
+//    	return card;
+    	
+    	if( rawData.length < 2){
+    		return null;
+    	}
+    	
+    	int numberOfBytesRead = readBytesDle(messageBuffer, dleOutputPre, 0, 3);
+    	if( numberOfBytesRead < 2){
+    		return null;
+    	}
     	if( dleOutputPre[0] == SiMessage.STX && (dleOutputPre[1] & 0xFF)  == 0x31 ){
     		readBytesDle(messageBuffer, allData, 3, 128);
     		return parseCard5( allData );
