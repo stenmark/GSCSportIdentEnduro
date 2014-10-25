@@ -353,6 +353,7 @@ public class StartScreenFragment extends Fragment {
     	TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
     	if( card.errorMsg.isEmpty()){
     		cardText.setText(card.toString());
+    		cardText.append("\n" + card.errorMsg);
     		newCardCallback.onNewCard(card);
     	}
     	else{
@@ -393,8 +394,17 @@ public class StartScreenFragment extends Fragment {
         	Card cardData = new Card();
         	while(true){
 	    		byte[] readSiMessage = siDriver[0].readSiMessage(100, 50000, false);
+	    		
+//	        	Card card = new Card();
+//	        	card.errorMsg = "Raw data ";
+//	        	for( byte readbyte: readSiMessage){
+//	        		card.errorMsg +=  "=0x" + SiDriver.byteToHex(readbyte) + ", ";
+//	        	}
+//	        	return card;
+	    		
+	    		
 	    		if( readSiMessage.length >= 1 && readSiMessage[0]== SiMessage.STX ){
-	    			if( readSiMessage.length >= 2 && readSiMessage[1] == 0x66 ){	    				
+	    			if( readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF)  == 0x66 ){	    				
 	    				siDriver[0].sendSiMessage(SiMessage.request_si_card6, true);
 	    				cardData = siDriver[0].getCard6Data();
 	    			
@@ -402,14 +412,21 @@ public class StartScreenFragment extends Fragment {
 	    				
 	    				return cardData;
 	    			}
-	    			else if( readSiMessage.length >= 2 && readSiMessage[1] == 0x46 ){
-	    				cardData.errorMsg += "Card5!!!";
+	    			else if( readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF)  == 0x46 ){
+//	    				cardData.errorMsg += "Card5!!!";
+	    				if( readSiMessage.length >= 3 && (readSiMessage[2] & 0xFF)  == 0x4f ){
+	    					cardData.errorMsg += "Card pulled out";
+	    					return cardData;
+	    				}
+	    				
 	    				siDriver[0].sendSiMessage(SiMessage.request_si_card5, true);
 	    				cardData = siDriver[0].getCard5Data();
 	    				if( cardData == null ){
 	    					cardData = new Card();
-	    					cardData.errorMsg = "Got null when reading Card5 data";
+//	    					cardData.errorMsg = "Got null when reading Card5 data";
 	    				}
+	    				
+	    				siDriver[0].sendSiMessage(SiMessage.ack_sequence, true);
 	    				return cardData;
 	    			}
 	    			else{

@@ -173,6 +173,7 @@ public class SiDriver {
     }
     
     public Card getCard5Data( ){
+    	String msg = "";
     	byte[] allData = new byte[256];
     	byte[] rawData = readSiMessage(256, 1000, false);
     	MessageBuffer messageBuffer = new MessageBuffer(rawData);
@@ -180,9 +181,9 @@ public class SiDriver {
     	
 //    	Card card = new Card();
 //    	card.errorMsg = "Raw data ";
-//    	for( byte readbyte: rawData){
-//    		card.errorMsg +=  "=0x" + byteToHex(readbyte) + ", ";
-//    	}
+    	for( byte readbyte: rawData){
+    		msg +=  "=0x" + byteToHex(readbyte) + ", ";
+    	}
 //    	return card;
     	
     	if( rawData.length < 2){
@@ -194,8 +195,11 @@ public class SiDriver {
     		return null;
     	}
     	if( dleOutputPre[0] == SiMessage.STX && (dleOutputPre[1] & 0xFF)  == 0x31 ){
-    		readBytesDle(messageBuffer, allData, 3, 128);
-    		return parseCard5( allData );
+    		readBytesDle(messageBuffer, allData, 0, 128);
+    		msg += "Parse card\n";
+    		Card card = parseCard5( allData );
+//    		card.errorMsg = msg;
+    		return card;
     		
     	}
 		
@@ -403,7 +407,7 @@ public class SiDriver {
     	return (highInt*256)+lowInt;
     }
     
-    private String byteToHex(byte b){
+    public static String byteToHex(byte b){
     	  int i = b & 0xFF;
     	  return Integer.toHexString(i);
     	}
