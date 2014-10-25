@@ -353,7 +353,8 @@ public class StartScreenFragment extends Fragment {
     	TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
     	if( card.errorMsg.isEmpty()){
     		cardText.setText(card.toString());
-    		cardText.append("\n" + card.errorMsg);
+//    		cardText.append(card.toString()+"\n");
+//    		cardText.append(card.errorMsg + "\n");
     		newCardCallback.onNewCard(card);
     	}
     	else{
@@ -439,7 +440,7 @@ public class StartScreenFragment extends Fragment {
     				cardData.errorMsg += "not STX or timeout";
     				return cardData;
 	    		}
-        	}	
+        	}		
         }
         
         /** The system calls this to perform work in the UI thread and delivers

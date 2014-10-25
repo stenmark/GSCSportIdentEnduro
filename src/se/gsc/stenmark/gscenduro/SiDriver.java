@@ -94,6 +94,85 @@ public class SiDriver {
     	}
     }
     
+    //Work around, ReadDle is not woeking as expected for card5, not found why yet.
+    //This one hacks the SI interface by finding the Fist station position in the data array and
+    //then just hard fetches 4 bytes at a time from there, removing DLE (0x10) marker and extract station ID and time
+    private Card parseCard5Alt( byte[] dleData, byte[] allData){
+    	Card card = new Card();;
+    	int dataPos = 0;
+    	
+    	long cardNumber = 0;
+    	cardNumber = makeIntFromBytes( dleData[5], dleData[4] );
+    	
+    	if(dleData[6]==1)
+    		card.cardNumber=cardNumber;
+    	else
+    		card.cardNumber=100000*dleData[6]+cardNumber;
+    	
+    	dataPos += 16;
+    	
+    	card.startPunch = analyseSi5Time(dleData, dataPos+3);
+    	card.finishPunch = analyseSi5Time(dleData, dataPos+5);
+    	card.checkPunch = analyseSi5Time(dleData, dataPos+9);
+    	
+    	int numberOfPunches = dleData[dataPos+7]-1;
+    	card.numberOfPunches = numberOfPunches;
+    	
+    	byte firstStartMaker = (byte) MainActivity.track.get(0).start;
+    	int firstMarkerPos = 0;
+    	int i = 0;
+    	for( byte data : allData ){
+    		if( firstStartMaker == data){
+    			firstMarkerPos = i;
+    			break;
+    		}
+    		i++;
+    	}
+    	
+    	int currentPos = 0;
+    	for(int k = 0; k < card.numberOfPunches; k++)
+    	{
+    		byte stationId = allData[firstMarkerPos + currentPos];
+    		currentPos++;
+    		byte byte1 = allData[firstMarkerPos + currentPos];
+    		currentPos++;
+    		byte byte2;
+    		if( allData[firstMarkerPos + currentPos] == 0x10){
+    			byte2 = allData[firstMarkerPos + currentPos+1];
+    			currentPos++;
+    			currentPos++;
+//    			if( allData[firstMarkerPos + currentPos] == 0x00){
+//    				currentPos++;
+//    			}
+    		}
+    		else{
+    			byte2 = allData[firstMarkerPos + currentPos];
+    			currentPos++;
+    		}
+    		int time = makeIntFromBytes(byte2, byte1 );
+    		
+    		if( allData[firstMarkerPos + currentPos] == 0x10){
+    			currentPos++;
+    			if(allData[firstMarkerPos + currentPos] == 0x00){
+    				currentPos++;
+    			}
+    		}
+    		
+    		Punch punch = new Punch(time, stationId);
+    		
+//    		card.errorMsg += "byte1: " + byte1 + "  byte2: " + byte2 + "\n";
+    		
+    		card.punches.add(punch);
+    	}
+    	
+//    	card.errorMsg += "First marker pos = " +firstMarkerPos + "\n";
+//    	card.errorMsg += "First marker: " + allData[i] + " " + allData[i+1] + " " + allData[i+2] + " " + allData[i+3] + "\n";
+//    	card.errorMsg += "Second marker: " + allData[i+4] + " " + allData[i+5] + " " + allData[i+6] + " " + allData[i+7] + "\n";
+//    	card.errorMsg += "Third marker: " + allData[i+8] + " " + allData[i+9] + " " + allData[i+10] + " " + allData[i+11] + "\n";
+//    	
+    	return card;
+    }
+    
     private Card parseCard5( byte[] card5Data ){
     	Card card = new Card();;
     	int dataPos = 0;
@@ -181,8 +260,10 @@ public class SiDriver {
     	
 //    	Card card = new Card();
 //    	card.errorMsg = "Raw data ";
+    	int k = 0;
     	for( byte readbyte: rawData){
-    		msg +=  "=0x" + byteToHex(readbyte) + ", ";
+    		msg +=  k+ "=0x" + byteToHex(readbyte) + ", ";
+    		k++;
     	}
 //    	return card;
     	
@@ -197,8 +278,13 @@ public class SiDriver {
     	if( dleOutputPre[0] == SiMessage.STX && (dleOutputPre[1] & 0xFF)  == 0x31 ){
     		readBytesDle(messageBuffer, allData, 0, 128);
     		msg += "Parse card\n";
-    		Card card = parseCard5( allData );
-//    		card.errorMsg = msg;
+    		int i = 0;
+        	for( byte readbyte: allData){
+        		msg +=  i + "=0x" + byteToHex(readbyte) + ", ";
+        		i++;
+        	}
+    		Card card = parseCard5Alt( allData, rawData );
+//    		card.errorMsg += msg;
     		return card;
     		
     	}
