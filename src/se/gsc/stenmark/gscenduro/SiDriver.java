@@ -94,6 +94,48 @@ public class SiDriver {
     	}
     }
     
+    private Card parseCard5( byte[] card5Data ){
+    	Card card = new Card();;
+    	int dataPos = 0;
+    	
+    	long cardNumber = 0;
+    	cardNumber = makeIntFromBytes( card5Data[5], card5Data[4] );
+    	
+    	if(card5Data[6]==1)
+    		card.cardNumber=cardNumber;
+    	else
+    		card.cardNumber=100000*card5Data[6]+cardNumber;
+    	
+    	dataPos += 16;
+    	
+    	card.startPunch = analyseSi5Time(card5Data, dataPos+3);
+    	card.finishPunch = analyseSi5Time(card5Data, dataPos+5);
+    	card.checkPunch = analyseSi5Time(card5Data, dataPos+9);
+    	
+    	int numberOfPunches = card5Data[dataPos+7]-1;
+    	card.numberOfPunches = numberOfPunches;
+    	dataPos += 16;
+    	
+    	for(int i = 0; i < card.numberOfPunches; i++)
+    	{
+    		if(i<30){
+    			int basepointer=3*(i%5)+1+(i/5)*16;
+    			int code=card5Data[dataPos+basepointer];
+    			Punch punch = analyseSi5Time(card5Data, dataPos+basepointer+1);
+    			punch.control = code;
+    			card.punches.add(punch);
+    		}
+    		else{
+    			return null;    			
+    		}
+    	}
+    	
+//    	androidActivity.msg += card.toString() + "\n";
+
+    	return card;
+    	
+    }
+    
     private Card parseCard6( byte[] card6Data ){
     	Card card = new Card();;
     	int dataPos = 0;
@@ -127,6 +169,22 @@ public class SiDriver {
 //    	androidActivity.msg += card.toString() + "\n";
 
     	return card;
+    	
+    }
+    
+    public Card getCard5Data( ){
+    	byte[] allData = new byte[256];
+    	byte[] rawData = readSiMessage(256, 1000, false);
+    	MessageBuffer messageBuffer = new MessageBuffer(rawData);
+    	byte[] dleOutputPre = new byte[10];
+    	readBytesDle(messageBuffer, dleOutputPre, 0, 3);
+    	if( dleOutputPre[0] == SiMessage.STX && (dleOutputPre[1] & 0xFF)  == 0x31 ){
+    		readBytesDle(messageBuffer, allData, 3, 128);
+    		return parseCard5( allData );
+    		
+    	}
+		
+		return null;
     	
     }
     
@@ -186,6 +244,21 @@ public class SiDriver {
 		
 		return parseCard6( allData );
     	
+    }
+    
+    
+    private Punch analyseSi5Time( byte[] data, int pos){
+    	int time = 0;
+    	int control = 0;
+    	if( (data[pos] & 0xFF) != 0xEE ){
+    		time = makeIntFromBytes(data[pos+1], data[pos]);
+    	}
+    	else{
+    		control = -1;
+    		time = 0;
+    	}
+    	
+    	return new Punch(time, control);
     }
     
     private Punch analysePunch( byte[] data, int pos){

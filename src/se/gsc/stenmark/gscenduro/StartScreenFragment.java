@@ -390,27 +390,31 @@ public class StartScreenFragment extends Fragment {
         /** The system calls this to perform work in a worker thread and
           * delivers it the parameters given to AsyncTask.execute() */
         protected Card doInBackground(SiDriver... siDriver) {
-        	Card card6Data = new Card();
+        	Card cardData = new Card();
         	while(true){
 	    		byte[] readSiMessage = siDriver[0].readSiMessage(100, 50000, false);
 	    		if( readSiMessage.length >= 1 && readSiMessage[0]== SiMessage.STX ){
 	    			if( readSiMessage.length >= 2 && readSiMessage[1] == 0x66 ){	    				
 	    				siDriver[0].sendSiMessage(SiMessage.request_si_card6, true);
-	    				card6Data = siDriver[0].getCard6Data();
+	    				cardData = siDriver[0].getCard6Data();
 	    			
 	    				siDriver[0].sendSiMessage(SiMessage.ack_sequence, true);
 	    				
-	    				return card6Data;
+	    				return cardData;
+	    			}
+	    			else if( readSiMessage.length >= 2 && readSiMessage[1] == 0x46 ){
+	    				siDriver[0].sendSiMessage(SiMessage.request_si_card5, true);
+	    				cardData = siDriver[0].getCard5Data();
 	    			}
 	    			else{
-	    				card6Data.errorMsg += "not card6";
-	    				return card6Data;
+	    				cardData.errorMsg += "not card6";
+	    				return cardData;
 	    			}
 	    			
 	    		}
 	    		else{
-    				card6Data.errorMsg += "not STX or timeout";
-    				return card6Data;
+    				cardData.errorMsg += "not STX or timeout";
+    				return cardData;
 	    		}
         	}	
         }

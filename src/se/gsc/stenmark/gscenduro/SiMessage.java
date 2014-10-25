@@ -209,6 +209,9 @@ public class SiMessage {
 		STX, BEEP, 0x01, 0x02, 0x14, 0x0A, ETX
 	});
 	
+	public static final SiMessage request_si_card5 = new SiMessage( new byte[] {
+			STX, 0x31, ETX
+		});
 	public static final SiMessage request_si_card6 = new SiMessage( new byte[] {
 			STX, 0x61, 0x08, ETX
 		});
