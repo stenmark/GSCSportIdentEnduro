@@ -33,6 +33,10 @@ public class StartScreenFragment extends Fragment {
 	public static final String CURRENT_COMPETITIOR_LIST_FILE = "current_comp_list";
 	public static final String CURRENT_TRACK_FILE = "current_track";
 	public static final String CURRENT_COMPETITION_NAME_FILE = "current_comp_name";
+	
+	public static long lastCalltime;
+	public static int disconnectCounter;
+	public static boolean disconected;
 
 
 	
@@ -92,6 +96,10 @@ public class StartScreenFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		lastCalltime = System.currentTimeMillis();
+		disconnectCounter = 0;
+		disconected = true;
+		
 		View rootView = inflater.inflate(R.layout.fragment_main, container,
 				false);
 		
@@ -104,6 +112,8 @@ public class StartScreenFragment extends Fragment {
 		            	 TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);
 		            	 String connectMsg = connectToSiMaster();
 		            	 statusTextView.setText(connectMsg);
+		            	 disconected = false;
+		            	 disconnectCounter = 0;
 		            	 new SiCardListener().execute(MainActivity.siDriver);
 		             } 
 		   }); 
@@ -350,18 +360,31 @@ public class StartScreenFragment extends Fragment {
     }
 
     public void writeCard( Card card){
-    	TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
-    	if( card.cardNumber != 0){
-    		cardText.setText(card.toString());
-//    		cardText.append(card.toString()+"\n");
-    		cardText.append("\n" + card.errorMsg + "\n");
-    		newCardCallback.onNewCard(card);
+    	try{
+	    	TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
+	    	if( card.cardNumber != 0){
+	    		cardText.setText(card.toString());
+	//    		cardText.append(card.toString()+"\n");
+	    		cardText.append("\n" + card.errorMsg + "\n");
+	    		newCardCallback.onNewCard(card);
+	    	}
+	    	else{
+	    		cardText.append("\n" + card.errorMsg);
+	    	}
+	    	if(!disconected){
+	    		new SiCardListener().execute(MainActivity.siDriver);
+	    	}
+    		else{
+    			TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);
+    			statusTextView.setText("Disconnected");
+    		}
     	}
-    	else{
-    		cardText.append("\n" + card.errorMsg);
+    	catch( Exception e){
+    		if(!disconected){
+    			new SiCardListener().execute(MainActivity.siDriver);
+    		}
+
     	}
-    	
-    	new SiCardListener().execute(MainActivity.siDriver);
     }
     
     private void parseNewTrack( String newTrack){
@@ -388,7 +411,7 @@ public class StartScreenFragment extends Fragment {
     	}
     }
     
-    private class SiCardListener extends AsyncTask<SiDriver, Void, Card> {
+    private class SiCardListener extends AsyncTask<SiDriver, Void, Card> {    	
         /** The system calls this to perform work in a worker thread and
           * delivers it the parameters given to AsyncTask.execute() */
         protected Card doInBackground(SiDriver... siDriver) {
@@ -437,6 +460,18 @@ public class StartScreenFragment extends Fragment {
 	    			
 	    		}
 	    		else{
+	    			//Use this to check if we have been disconnected. If we have many faulty read outs from the Driver, assume disconenction.
+	    			if( System.currentTimeMillis() - StartScreenFragment.lastCalltime < 1000 ){
+	    				disconnectCounter++;
+	    			}
+	    			else{
+	    				disconnectCounter = 0;
+	    			}
+	    			if(disconnectCounter > 10){
+	    				disconected = true;
+	    				siDriver[0].closeDriver();
+	    			}
+	    			StartScreenFragment.lastCalltime = System.currentTimeMillis();
     				cardData.errorMsg += "not STX or timeout";
     				return cardData;
 	    		}

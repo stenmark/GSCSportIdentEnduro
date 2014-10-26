@@ -272,12 +272,12 @@ public class SiDriver {
     	byte[] dleOutputPre = new byte[10];
     	
 //    	Card card = new Card();
-    	msg += "Raw data ";
-    	int k = 0;
-    	for( byte readbyte: rawData){
-    		msg +=  k+ "=0x" + byteToHex(readbyte) + ", ";
-    		k++;
-    	}
+//    	msg += "Raw data ";
+//    	int k = 0;
+//    	for( byte readbyte: rawData){
+//    		msg +=  k+ "=0x" + byteToHex(readbyte) + ", ";
+//    		k++;
+//    	}
     	
     	if( rawData.length < 2){
     		return null;
@@ -434,6 +434,14 @@ public class SiDriver {
 		return true;
 	}
     
+	public void closeDriver(){
+		try {
+			driver.close();
+		} catch (IOException e) {
+
+		}
+	}
+	
     public byte[] readSiMessage( int size, int timeout, boolean verbose){
 	    byte buffer[] = new byte[size];
 	    int numBytesRead = -2;
