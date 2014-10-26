@@ -32,13 +32,14 @@ public class Card implements Serializable {
 	@Override
 	public String toString(){
 		String result  = "CardNumber " + cardNumber +
-		" Number of punches " + numberOfPunches + 
-		" start punch " + startPunch.toString() +
-		" finsh punch " + finishPunch.toString() + 
-		" check punch " + checkPunch.toString();
+		"  Number of punches " + numberOfPunches;
+//		"\nstart punch " + startPunch.toString() +
+//		"\nfinsh punch " + finishPunch.toString() + 
+//		"\ncheck punch " + checkPunch.toString();
+	
 		
 		for( Punch punch : punches ){
-			result += " " + punch.toString();
+			result += "\n" + punch.toString();
 		}
 		
 		return result;

@@ -17,7 +17,7 @@ public class Punch implements Serializable{
 	
 	@Override
 	public String toString(){
-		return "Time " + time + " control " + control; 
+		return "Control=" + control + "  Time="+time;
 	}
 	
 }

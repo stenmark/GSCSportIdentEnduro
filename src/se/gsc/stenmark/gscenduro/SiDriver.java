@@ -108,6 +108,7 @@ public class SiDriver {
     		card.cardNumber=cardNumber;
     	else
     		card.cardNumber=100000*dleData[6]+cardNumber;
+    	card.errorMsg += "Card Number: " + cardNumber + "\n"; 
     	
     	dataPos += 16;
     	
@@ -117,6 +118,7 @@ public class SiDriver {
     	
     	int numberOfPunches = dleData[dataPos+7]-1;
     	card.numberOfPunches = numberOfPunches;
+    	card.errorMsg += "Number of punches: " + numberOfPunches + "\n"; 
     	
     	byte firstStartMaker = (byte) MainActivity.track.get(0).start;
     	int firstMarkerPos = 0;
@@ -128,17 +130,27 @@ public class SiDriver {
     		}
     		i++;
     	}
+    	card.errorMsg += "firstMarkerPos " + firstMarkerPos + "\n"; 
     	
     	int currentPos = 0;
     	for(int k = 0; k < card.numberOfPunches; k++)
     	{
     		byte stationId = allData[firstMarkerPos + currentPos];
     		currentPos++;
-    		byte byte1 = allData[firstMarkerPos + currentPos];
+    	
+    		byte byte1;
+    		int byte1Pos;
+    		if( allData[firstMarkerPos + currentPos] == 0x10){
+    			currentPos++;
+    		}
+    		byte1 = allData[firstMarkerPos + currentPos];
+    		byte1Pos = firstMarkerPos + currentPos;
+    		int byte2Pos = 0;
     		currentPos++;
     		byte byte2;
     		if( allData[firstMarkerPos + currentPos] == 0x10){
     			byte2 = allData[firstMarkerPos + currentPos+1];
+    			byte2Pos = firstMarkerPos + currentPos+1;
     			currentPos++;
     			currentPos++;
 //    			if( allData[firstMarkerPos + currentPos] == 0x00){
@@ -147,6 +159,7 @@ public class SiDriver {
     		}
     		else{
     			byte2 = allData[firstMarkerPos + currentPos];
+    			byte2Pos = firstMarkerPos + currentPos;
     			currentPos++;
     		}
     		int time = makeIntFromBytes(byte2, byte1 );
@@ -160,7 +173,7 @@ public class SiDriver {
     		
     		Punch punch = new Punch(time, stationId);
     		
-//    		card.errorMsg += "byte1: " + byte1 + "  byte2: " + byte2 + "\n";
+    		card.errorMsg += "loop nr " + k + " byte1: " + byte1Pos + " : " + byte1 + "  byte2: "+ byte2Pos + " : " + byte2 + "\n";
     		
     		card.punches.add(punch);
     	}
@@ -259,13 +272,12 @@ public class SiDriver {
     	byte[] dleOutputPre = new byte[10];
     	
 //    	Card card = new Card();
-//    	card.errorMsg = "Raw data ";
+    	msg += "Raw data ";
     	int k = 0;
     	for( byte readbyte: rawData){
     		msg +=  k+ "=0x" + byteToHex(readbyte) + ", ";
     		k++;
     	}
-//    	return card;
     	
     	if( rawData.length < 2){
     		return null;
@@ -277,14 +289,14 @@ public class SiDriver {
     	}
     	if( dleOutputPre[0] == SiMessage.STX && (dleOutputPre[1] & 0xFF)  == 0x31 ){
     		readBytesDle(messageBuffer, allData, 0, 128);
-    		msg += "Parse card\n";
-    		int i = 0;
-        	for( byte readbyte: allData){
-        		msg +=  i + "=0x" + byteToHex(readbyte) + ", ";
-        		i++;
-        	}
+//    		msg += "Parse card\n";
+//    		int i = 0;
+//        	for( byte readbyte: allData){
+//        		msg +=  i + "=0x" + byteToHex(readbyte) + ", ";
+//        		i++;
+//        	}
     		Card card = parseCard5Alt( allData, rawData );
-//    		card.errorMsg += msg;
+    		card.errorMsg += "\n" + msg;
     		return card;
     		
     	}

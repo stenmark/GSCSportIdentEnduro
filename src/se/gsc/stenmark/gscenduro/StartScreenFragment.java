@@ -351,10 +351,10 @@ public class StartScreenFragment extends Fragment {
 
     public void writeCard( Card card){
     	TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
-    	if( card.errorMsg.isEmpty()){
+    	if( card.cardNumber != 0){
     		cardText.setText(card.toString());
 //    		cardText.append(card.toString()+"\n");
-//    		cardText.append(card.errorMsg + "\n");
+    		cardText.append("\n" + card.errorMsg + "\n");
     		newCardCallback.onNewCard(card);
     	}
     	else{
