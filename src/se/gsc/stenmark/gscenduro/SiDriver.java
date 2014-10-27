@@ -8,12 +8,21 @@ import com.hoho.android.usbserial.driver.UsbSerialProber;
 
 public class SiDriver {
 	private UsbSerialDriver driver;
+	
+	public int stationId;
+	public int mode;
+	public boolean extended;
+	public boolean handShake;
+	public boolean autoSend;
 
 	SiDriver( ){
+		stationId = -1;
+		mode = -1;
+		extended = false;
+		handShake = false;
+		autoSend = false;
 	}
 	
-
-
     public boolean connectToSiMaster(){
     	if( performHandShake(true) ){
     		return true;
@@ -32,66 +41,50 @@ public class SiDriver {
     private boolean performHandShake( boolean withStartup){
 		byte[] startupResponse = new byte[16];
     	if( withStartup ){
-//    		androidActivity.msg += "Send startup sequence \n";
-			sendSiMessage(SiMessage.startup_sequence, false);
+			sendSiMessage(SiMessage.startup_sequence);
 			sleep(700);
 			startupResponse = readSiMessage(16, 500, false);
 		}
 		if( (startupResponse.length >= 1 && startupResponse[0]== SiMessage.STX ) || (withStartup == false)) {
-//			androidActivity.msg += "Startup handshake \n ";
-			
-			sendMessage( appendMarkesAndCrcToMessage(SiMessage.read_system_data.sequence() ), false);
-//			androidActivity.msg += "Read system data sent\n";
-			
+			sendMessage( appendMarkesAndCrcToMessage(SiMessage.read_system_data.sequence() ));
 			byte[] systemData = readSiMessage(32, 8000, false);
 			if( (systemData[0] == SiMessage.STX) &&  
 				(systemData.length > 14) ){
-				int stationId = makeIntFromBytes( systemData[4], systemData[3] );
+				stationId = makeIntFromBytes( systemData[4], systemData[3] );
 								
 				byte pr = systemData[6+4];
-				int mode = systemData[6+1] & 0xFF;
+				mode = systemData[6+1] & 0xFF;
 
-				boolean extended = (pr&0x1) !=0 ;
-				boolean handShake= (pr&0x4) !=0;
-				boolean autoSend = (pr&0x2)!=0;
-				
-//				androidActivity.msg += "System data is read Station ID " + stationId + " extended: " + extended + 
-//						" handshake: " + handShake + " autosend: " + autoSend + " Mode: " + SiMessage.getStationMode(mode) + "\n";
-			}
+				extended = (pr&0x1) !=0 ;
+				handShake= (pr&0x4) !=0;
+				autoSend = (pr&0x2)!=0;
+							}
 			else{
-//				androidActivity.msg += "Too few bytes read for systemdata\n";
 				return false;
 			}
 		}
 		else{
-//			androidActivity.msg += "Starup handshake failed\n";
 			return false;
 		}
 		return true;
     }
     
-    private void sendMessage(byte[] message, boolean verbose){
-    	int bytesWritten = 0;
-    	try {
-    		bytesWritten = driver.write(message, 1000 );
-		} catch (IOException e) {
-//			androidActivity.msg += " : Write expception: " + e.getMessage() + " cause: " + e.getCause();
+	private void sendMessage(byte[] message) {
+		try {
+			driver.write(message, 1000);
+		} 
+		catch (IOException e) {
+			
 		}
-    	if( verbose ){
-//    		androidActivity.msg += " : bytes written " + bytesWritten+ "\n";
-    	}
-    }
+	}
     
-    public void sendSiMessage(SiMessage message, boolean verbose){
-    	int bytesWritten = 0;
+    public void sendSiMessage(SiMessage message){
     	try {
-    		bytesWritten = driver.write(message.sequence(), 1000 );
+    		 driver.write(message.sequence(), 1000 );
 		} catch (IOException e) {
-//			androidActivity.msg += " : Write expception: " + e.getMessage() + " cause: " + e.getCause();
+
 		}
-    	if( verbose){
-//    		androidActivity.msg += " : bytes written " + bytesWritten+ "\n";
-    	}
+
     }
     
     //Work around, ReadDle is not woeking as expected for card5, not found why yet.

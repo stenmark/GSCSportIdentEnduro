@@ -349,12 +349,15 @@ public class StartScreenFragment extends Fragment {
     	MainActivity.siDriver = new SiDriver();
     	if( MainActivity.siDriver.connectDriver() ){
     		if( MainActivity.siDriver.connectToSiMaster() ){
-    			msg += "SiMaster connected";
+    			msg = "SiMain " + MainActivity.siDriver.stationId + " connected";
     		}
     		else{
-    			msg += "Failed ot connect SI master";
+    			msg = "Failed ot connect SI master";
     		}
       	}
+    	if( MainActivity.siDriver.mode != SiMessage.STATION_MODE_READ_CARD){
+    		msg = "SiMain is not configured as Reas Si. Is configured as: " + SiMessage.getStationMode(MainActivity.siDriver.mode);
+    	}
     	
     	return msg;
     }
@@ -429,10 +432,10 @@ public class StartScreenFragment extends Fragment {
 	    		
 	    		if( readSiMessage.length >= 1 && readSiMessage[0]== SiMessage.STX ){
 	    			if( readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF)  == 0x66 ){	    				
-	    				siDriver[0].sendSiMessage(SiMessage.request_si_card6, true);
+	    				siDriver[0].sendSiMessage(SiMessage.request_si_card6);
 	    				cardData = siDriver[0].getCard6Data();
 	    			
-	    				siDriver[0].sendSiMessage(SiMessage.ack_sequence, true);
+	    				siDriver[0].sendSiMessage(SiMessage.ack_sequence);
 	    				
 	    				return cardData;
 	    			}
@@ -443,14 +446,14 @@ public class StartScreenFragment extends Fragment {
 	    					return cardData;
 	    				}
 	    				
-	    				siDriver[0].sendSiMessage(SiMessage.request_si_card5, true);
+	    				siDriver[0].sendSiMessage(SiMessage.request_si_card5);
 	    				cardData = siDriver[0].getCard5Data();
 	    				if( cardData == null ){
 	    					cardData = new Card();
 //	    					cardData.errorMsg = "Got null when reading Card5 data";
 	    				}
 	    				
-	    				siDriver[0].sendSiMessage(SiMessage.ack_sequence, true);
+	    				siDriver[0].sendSiMessage(SiMessage.ack_sequence);
 	    				return cardData;
 	    			}
 	    			else{

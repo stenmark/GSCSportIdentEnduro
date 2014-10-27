@@ -12,9 +12,7 @@
         android:id="@+id/section_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-
-        
-        
+  
     <Button
         android:id="@+id/connectButton"
         android:layout_width="85sp"
@@ -26,10 +24,11 @@
     
     <TextView
         android:id="@+id/statusText"
-        android:layout_width="wrap_content"
+        android:layout_width="167sp"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/connectButton"
         android:layout_below="@+id/connectButton"
+        android:textSize="11sp"
         android:text="Not Connected" />  
           
     <Button
@@ -40,7 +39,7 @@
         android:layout_alignLeft="@+id/connectButton"
         android:layout_below="@+id/connectButton"
         android:text="Add\ncompetitor"
-        android:layout_marginTop="30sp"
+        android:layout_marginTop="40sp"
         android:textSize="12sp" />
 
     <TextView
@@ -144,8 +143,6 @@
 	        android:id="@+id/cardInfoTextView"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_below="@+id/exportResultButton"
-	        android:layout_alignLeft="@+id/exportResultButton"
 	        android:text="No cards read yet" />
     
     </ScrollView>

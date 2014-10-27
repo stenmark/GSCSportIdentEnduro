@@ -19,25 +19,23 @@ public class ResultListFragment extends Fragment {
 	 * The fragment argument representing the section number for this
 	 * fragment.
 	 */
-	public static ResultListFragment instance;
 	private static final String ARG_SECTION_NUMBER = "section_number";
+	private boolean isInView;  //TODO: hack to make the view not update when its called from external object and this view is not active
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
 	public static ResultListFragment getInstance(int sectionNumber) {
 		ResultListFragment fragment = null;
-//		if(instance == null){
-			fragment = new ResultListFragment();
-			Bundle args = new Bundle();
-			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-			fragment.setArguments(args);
-			instance = fragment;
-//		}
-		return instance;
+		fragment = new ResultListFragment();
+		Bundle args = new Bundle();
+		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+		fragment.setArguments(args);
+		return fragment;
 	}
 
 	public ResultListFragment() {
+		isInView = false;
 	}
 
 	@Override
@@ -46,7 +44,6 @@ public class ResultListFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_result_list, container,
 				false);
 			
-		instance = this;
 		return rootView;
 
 	} 	
@@ -54,71 +51,92 @@ public class ResultListFragment extends Fragment {
 	@Override
 	public void onResume(){
 		super.onResume();
+		isInView = true;
 		updateResultList();
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		isInView = false;
 	}
 	
 	
 	public void processNewCard( Card newCard){
-		TextView latestCardInfoText = (TextView) getView().findViewById(R.id.latestCardInfo);
-		latestCardInfoText.setText("");
+		TextView latestCardInfoText = null;
+		if( isInView ){
+			latestCardInfoText = (TextView) getView().findViewById(R.id.latestCardInfo);
+			latestCardInfoText.setText("");
+		}
 
 		Competitor foundCompetitor = findCompetitor(newCard);
 		if(foundCompetitor == null ){
-			latestCardInfoText.append("Read new card with card number: " + newCard.cardNumber + " Could not find any competitor with this number");
+			if( isInView ){
+				latestCardInfoText.append("Read new card with card number: " + newCard.cardNumber + " Could not find any competitor with this number");
+			}
 			return;
 		}
 		newCard.removeDoublePunches();
 		foundCompetitor.card = newCard;
 		
-		latestCardInfoText.append("New card read for " + foundCompetitor.name +"   " );
+		if( isInView ){
+			latestCardInfoText.append("New card read for " + foundCompetitor.name +"   " );
+		}
 		
 		List<Long> results = extractResultFromCard(newCard);
 		foundCompetitor.trackTimes = new ArrayList<Long>();
 		int i = 1;
 		for(Long trackTime : results){
-			latestCardInfoText.append(", Time for SS " + i + " = " + trackTime + " seconds " );
+			if( isInView ){
+				latestCardInfoText.append(", Time for SS " + i + " = " + trackTime + " seconds " );
+			}
 			foundCompetitor.trackTimes.add(trackTime);
 			i++;
 		}
 		
-		latestCardInfoText.append("Total time was: " + foundCompetitor.getTotalTime(true) + " seconds \n");
+		if( isInView ){
+			latestCardInfoText.append("Total time was: " + foundCompetitor.getTotalTime(true) + " seconds \n");
+		}
 		
-		updateResultList();
+		if( isInView ){
+			updateResultList();
+		}
 	}
 	
 	public void updateResultList(){
-		TextView resultsText = (TextView) getView().findViewById(R.id.resultsTextView);
-		resultsText.setText("");
-		if(MainActivity.competitors != null && !MainActivity.competitors.isEmpty()){
-			Collections.sort(MainActivity.competitors);
-			for( Competitor competitor : MainActivity.competitors ){
-				if( competitor.hasResult() ){
-					resultsText.append( competitor.name );
-					int i = 0;
-					for(long trackTime : competitor.trackTimes ){
-						i++;
-						resultsText.append( " SS" + i + " " + trackTime + ", " ); 
-					}
-					
-					resultsText.append( "Total time: " + competitor.getTotalTime(true) );
-					
-					if( !competitor.card.doublePunches.isEmpty() ){
-						resultsText.append(" Warning this user has doublePunches ");
-						for( Punch doublePunch : competitor.card.doublePunches ){
-							resultsText.append( doublePunch.toString() + ", ");
+		if( isInView ){
+			TextView resultsText = (TextView) getView().findViewById(R.id.resultsTextView);
+			resultsText.setText("");
+			if(MainActivity.competitors != null && !MainActivity.competitors.isEmpty()){
+				Collections.sort(MainActivity.competitors);
+				for( Competitor competitor : MainActivity.competitors ){
+					if( competitor.hasResult() ){
+						resultsText.append( competitor.name );
+						int i = 0;
+						for(long trackTime : competitor.trackTimes ){
+							i++;
+							resultsText.append( " SS" + i + " " + trackTime + ", " ); 
 						}
+						
+						resultsText.append( "Total time: " + competitor.getTotalTime(true) );
+						
+						if( !competitor.card.doublePunches.isEmpty() ){
+							resultsText.append(" Warning this user has doublePunches ");
+							for( Punch doublePunch : competitor.card.doublePunches ){
+								resultsText.append( doublePunch.toString() + ", ");
+							}
+						}
+						resultsText.append("\n");
 					}
-					resultsText.append("\n");
-				}
-				else{
-					resultsText.append(competitor.name + " no reuslt\n");
+					else{
+						resultsText.append(competitor.name + " no reuslt\n");
+					}
 				}
 			}
+			else{
+				resultsText.setText("No results yet\n");
+			}
 		}
-		else{
-			resultsText.setText("No results yet\n");
-		}
-		
 	}
 	
 	private List<Long> extractResultFromCard( Card card ){

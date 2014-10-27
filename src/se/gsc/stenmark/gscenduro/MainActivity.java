@@ -18,15 +18,12 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-//import android.support.v4.app.FragmentManager;
-//import android.support.v13.app.FragmentPagerAdapter;
 import	android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener, OnNewCardListener {
@@ -52,15 +49,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	ViewPager mViewPager;
 
 	public void onNewCard(Card card){
-		ResultListFragment.instance.processNewCard(card);
+//		ResultListFragment fragment = (ResultListFragment) getSupportFragmentManager().findFragmentById(R.id.pager);
+		if(mSectionsPagerAdapter.resultListFragment != null ){
+			mSectionsPagerAdapter.resultListFragment.processNewCard(card);
+		}
 	}
 	
 	public void saveSessionData( String competionName){
-//    	TextView statusText = (TextView) findViewById(R.id.cardInfoTextView);
-//    	statusText.setText("" );
     	FileOutputStream fileOutputComp;
     	FileOutputStream fileOutputTrack;
-    	FileOutputStream fileOutputName;
 		try {
 			if( competionName == null || competionName.isEmpty() ){
 				fileOutputComp = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE, Context.MODE_PRIVATE);
@@ -86,29 +83,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			objStreamOutTrack.writeObject(track);
 			objStreamOutTrack.close();	
 			
-//			if( competionName == null || competionName.isEmpty() ){
-//				fileOutputName = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_COMPETITION_NAME_FILE, Context.MODE_PRIVATE);
-//			}
-//			else{
-//				fileOutputName = MainApplication.getAppContext().openFileOutput(competionName+"_name", Context.MODE_PRIVATE);
-//			}
-//			String blaha = competionName;
-//			fileOutputName.write(blaha.getBytes());
-//			fileOutputName.close();
-			
 		} catch (FileNotFoundException e) {
-//			statusText.append("FileNotFoundException " + e.getMessage() );
 			return;
 		} catch (IOException e) {
-//			statusText.append("IOException " + e.getMessage() + "\n"  );
-			
-			for( StackTraceElement elem :  e.getStackTrace()){
-//				statusText.append(elem.toString() + "\n");
-			}
 			return;
 		}
 	 
-//    	 statusText.append("\nSaved: " );
 	}
 	
 	public void loadSessionData(String competionName, boolean readFile){
@@ -159,7 +139,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			 i++;
 			 trackInfoTextView.append( ", SS" + i + " Start: " + trackMarker.start + " Finish: " + trackMarker.finish );
 		 }
-	   	 ResultListFragment.instance.updateResultList();
+		 if(mSectionsPagerAdapter.resultListFragment != null ){
+			 mSectionsPagerAdapter.resultListFragment.updateResultList();
+		 }
 	   	 cardText.append("Loaded: " );
 	
 	   	 for( Competitor comp : MainActivity.competitors ){
@@ -228,6 +210,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+//		startScreenFragment = mSectionsPagerAdapter.startScreenFragment;
+//		resultListFragment = mSectionsPagerAdapter.resultListFragment;
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -298,7 +282,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * one of the sections/tabs/pages.
 	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
+		public StartScreenFragment startScreenFragment = null;
+		public ResultListFragment resultListFragment = null;
+		
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
@@ -309,10 +295,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// Return a PlaceholderFragment (defined as a static inner class
 			// below).
 			switch( position){
-				case 0: return StartScreenFragment.getInstance(position + 1);
-				case 1: return ResultListFragment.getInstance(position + 1);
+				case 0: startScreenFragment = StartScreenFragment.getInstance(position + 1);
+						return startScreenFragment;
+				case 1: resultListFragment = ResultListFragment.getInstance(position + 1);
+						return resultListFragment;
 				case 2: return CompMangementFragment.getInstance(position + 1);		
-//				case 2: return StartScreenFragment.getInstance(position + 1);
 			}
 			
 			return null;
