@@ -27,7 +27,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener, OnNewCardListener {
-	public static SiDriver siDriver = null;
 	public static UsbManager usbManager; 
 	public String msg = "";
 	public static List<TrackMarker> track= null;
@@ -49,7 +48,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	ViewPager mViewPager;
 
 	public void onNewCard(Card card){
-//		ResultListFragment fragment = (ResultListFragment) getSupportFragmentManager().findFragmentById(R.id.pager);
 		if(mSectionsPagerAdapter.resultListFragment != null ){
 			mSectionsPagerAdapter.resultListFragment.processNewCard(card);
 		}
@@ -135,7 +133,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		 TextView trackInfoTextView = (TextView) findViewById(R.id.trackInfoTextView);
 		 trackInfoTextView.setText("Current loaded Track: " );
 		 int i = 0;
-		 for( TrackMarker trackMarker : MainActivity.track){
+		 for( TrackMarker trackMarker : track){
 			 i++;
 			 trackInfoTextView.append( ", SS" + i + " Start: " + trackMarker.start + " Finish: " + trackMarker.finish );
 		 }
@@ -209,7 +207,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
 //		startScreenFragment = mSectionsPagerAdapter.startScreenFragment;
 //		resultListFragment = mSectionsPagerAdapter.resultListFragment;
 
@@ -284,9 +282,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 		public StartScreenFragment startScreenFragment = null;
 		public ResultListFragment resultListFragment = null;
+		private MainActivity mainActivity = null;
 		
-		public SectionsPagerAdapter(FragmentManager fm) {
+		public SectionsPagerAdapter(FragmentManager fm, MainActivity mainActivity ) {
 			super(fm);
+			this.mainActivity = mainActivity;
 		}
 
 		@Override
@@ -295,9 +295,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// Return a PlaceholderFragment (defined as a static inner class
 			// below).
 			switch( position){
-				case 0: startScreenFragment = StartScreenFragment.getInstance(position + 1);
+				case 0: startScreenFragment = StartScreenFragment.getInstance(position + 1, mainActivity);
 						return startScreenFragment;
-				case 1: resultListFragment = ResultListFragment.getInstance(position + 1);
+				case 1: resultListFragment = ResultListFragment.getInstance(position + 1, mainActivity);
 						return resultListFragment;
 				case 2: return CompMangementFragment.getInstance(position + 1);		
 			}

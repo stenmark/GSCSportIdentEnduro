@@ -27,8 +27,9 @@ public class StartScreenFragment extends Fragment {
 	 * fragment.
 	 */
 	private static final String ARG_SECTION_NUMBER = "section_number";
+	private MainActivity mainActivity;
 	OnNewCardListener newCardCallback;
-	public static StartScreenFragment instance = null;
+	public SiDriver siDriver = null;
 	
 	public static final String CURRENT_COMPETITIOR_LIST_FILE = "current_comp_list";
 	public static final String CURRENT_TRACK_FILE = "current_track";
@@ -63,17 +64,15 @@ public class StartScreenFragment extends Fragment {
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
-	public static StartScreenFragment getInstance(int sectionNumber) {
+	public static StartScreenFragment getInstance(int sectionNumber, MainActivity mainActivity) {
 		StartScreenFragment fragment = null;
-//		if( instance == null ){
-			fragment = new StartScreenFragment();
-			Bundle args = new Bundle();
-			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-			fragment.setArguments(args);
-			instance = fragment;
-//		}
-		 
-		return instance;
+		fragment = new StartScreenFragment();
+		Bundle args = new Bundle();
+		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+		fragment.setArguments(args);
+		fragment.mainActivity = mainActivity;
+		return fragment;
+
 	}
 
 	public StartScreenFragment() {
@@ -86,9 +85,10 @@ public class StartScreenFragment extends Fragment {
 		updateTrackText();
 		EditText nameOFCompEdit = (EditText) getView().findViewById(R.id.editSaveLoadComp);
 		nameOFCompEdit.setText("New"); 
-		if(MainActivity.track != null){
-			if(!MainActivity.track.isEmpty()){
-				nameOFCompEdit.setText(MainActivity.track.get(0).compName);
+		
+		if(mainActivity.track != null){
+			if(!mainActivity.track.isEmpty()){
+				nameOFCompEdit.setText(mainActivity.track.get(0).compName);
 			}
 		}
 	}
@@ -114,7 +114,7 @@ public class StartScreenFragment extends Fragment {
 		            	 statusTextView.setText(connectMsg);
 		            	 disconected = false;
 		            	 disconnectCounter = 0;
-		            	 new SiCardListener().execute(MainActivity.siDriver);
+		            	 new SiCardListener().execute(siDriver);
 		             } 
 		   }); 
 		   
@@ -156,11 +156,11 @@ public class StartScreenFragment extends Fragment {
 	            		 }
 	            	 }
 	            	 
-	            	 MainActivity.competitors.add(competitor);	    
+	            	 mainActivity.competitors.add(competitor);	    
 	            	 
 	            	 TextView cardInfoTextView = (TextView) getView().findViewById(R.id.cardInfoTextView);
 	            	 cardInfoTextView.setText("");
-	            	 for(Competitor currentCompetitor : MainActivity.competitors){
+	            	 for(Competitor currentCompetitor : mainActivity.competitors){
 	            		 cardInfoTextView.append( "Name: " + currentCompetitor.name + " Card "+ currentCompetitor.cardNumber + "\n");
 	            	 }
 	            	 
@@ -179,13 +179,13 @@ public class StartScreenFragment extends Fragment {
 	            		 return;
 	            	 }
 	            	 //TODO: work around, using trackmarker object to save competitions name...
-	            	 if(MainActivity.track != null){
-		            	 for(TrackMarker trackmarker : MainActivity.track){
+	            	 if(mainActivity.track != null){
+		            	 for(TrackMarker trackmarker : mainActivity.track){
 		            		 trackmarker.compName = compName;
 		            	 }
 	            	 }
 	            	 compName.replace(" ", "_");
-	            	 MainActivity.instance.saveSessionData( compName );
+	            	 mainActivity.instance.saveSessionData( compName );
 	             } 
 	   }); 
 	   
@@ -197,7 +197,7 @@ public class StartScreenFragment extends Fragment {
 	             {
 	            	 
 	            	 EditText nameOFCompToLoad = (EditText) getView().findViewById(R.id.editSaveLoadComp);
-	            	 MainActivity.instance.loadSessionData( nameOFCompToLoad.getText().toString(), true );
+	            	 mainActivity.instance.loadSessionData( nameOFCompToLoad.getText().toString(), true );
 	             } 
 	   }); 
 	   
@@ -230,9 +230,9 @@ public class StartScreenFragment extends Fragment {
 	             {
 	            	 //Hack to use loadseesiondata to update the GUI.
 	            	 //Uses some ugly work arounds due to poor GUI design that i dont want to duplicate
-	            	 MainActivity.track = new ArrayList<TrackMarker>();
-	            	 MainActivity.competitors = new ArrayList<Competitor>();
-	            	 MainActivity.instance.loadSessionData(null,false);
+	            	 mainActivity.track = new ArrayList<TrackMarker>();
+	            	 mainActivity.competitors = new ArrayList<Competitor>();
+	            	 mainActivity.instance.loadSessionData(null,false);
 	             } 
 	   }); 
 	   
@@ -252,7 +252,7 @@ public class StartScreenFragment extends Fragment {
 	private void exportResult(){
 		TextView status = (TextView) getView().findViewById(R.id.cardInfoTextView);
 		String result = "Name,card number,total time,";
-		for( int i = 0; i < MainActivity.track.size(); i++){
+		for( int i = 0; i < mainActivity.track.size(); i++){
 			result += "SS" + (i+1) + ",";
 		}
 		result += "\n";
@@ -261,9 +261,9 @@ public class StartScreenFragment extends Fragment {
 			try{
 				File sdCard = Environment.getExternalStorageDirectory();
 				String compName = "New";
-				if(MainActivity.track != null ){
-					if(!MainActivity.track.isEmpty()){
-						compName = MainActivity.track.get(0).compName;
+				if(mainActivity.track != null ){
+					if(!mainActivity.track.isEmpty()){
+						compName = mainActivity.track.get(0).compName;
 					}	
 				}
 				compName.replace(" ", "_");
@@ -280,9 +280,9 @@ public class StartScreenFragment extends Fragment {
 				File file = new File(dir, compName + ".csv");
 				status.append("Saving result to file:\n" + file.getAbsolutePath() + "\n");
 					
-				if(MainActivity.competitors != null && !MainActivity.competitors.isEmpty()){
-					Collections.sort(MainActivity.competitors);
-					for(Competitor competitor : MainActivity.competitors){
+				if(mainActivity.competitors != null && !mainActivity.competitors.isEmpty()){
+					Collections.sort(mainActivity.competitors);
+					for(Competitor competitor : mainActivity.competitors){
 						status.append( competitor.name + "," + competitor.cardNumber + "," + competitor.getTotalTime(false) + ",");
 						result += competitor.name + "," + competitor.cardNumber + "," + competitor.getTotalTime(false) + ",";				
 						if(competitor.trackTimes != null ){
@@ -292,7 +292,7 @@ public class StartScreenFragment extends Fragment {
 							}
 						}
 						else{
-							for( int i = 0; i < MainActivity.track.size(); i++ ){
+							for( int i = 0; i < mainActivity.track.size(); i++ ){
 								status.append("0,");
 								result += "0,";
 							}
@@ -329,10 +329,10 @@ public class StartScreenFragment extends Fragment {
 	
 	public void updateTrackText(){
 		 TextView trackInfoTextView = (TextView) getView().findViewById(R.id.trackInfoTextView);
-		 if(MainActivity.track != null){
+		 if(mainActivity.track != null){
 			 trackInfoTextView.setText("Current loaded Track: " );
 			 int i = 0;
-			 for( TrackMarker trackMarker : MainActivity.track){
+			 for( TrackMarker trackMarker : mainActivity.track){
 				 i++;
 				 trackInfoTextView.append( ", SS" + i + ": " + trackMarker.start + "->" + trackMarker.finish );
 			 }
@@ -346,17 +346,17 @@ public class StartScreenFragment extends Fragment {
     /** Called when the user clicks the Send button */
     public String connectToSiMaster() {
     	String msg = "";
-    	MainActivity.siDriver = new SiDriver();
-    	if( MainActivity.siDriver.connectDriver() ){
-    		if( MainActivity.siDriver.connectToSiMaster() ){
-    			msg = "SiMain " + MainActivity.siDriver.stationId + " connected";
+    	siDriver = new SiDriver();
+    	if( siDriver.connectDriver() ){
+    		if( siDriver.connectToSiMaster() ){
+    			msg = "SiMain " + siDriver.stationId + " connected";
     		}
     		else{
     			msg = "Failed ot connect SI master";
     		}
       	}
-    	if( MainActivity.siDriver.mode != SiMessage.STATION_MODE_READ_CARD){
-    		msg = "SiMain is not configured as Reas Si. Is configured as: " + SiMessage.getStationMode(MainActivity.siDriver.mode);
+    	if( siDriver.mode != SiMessage.STATION_MODE_READ_CARD){
+    		msg = "SiMain is not configured as Reas Si. Is configured as: " + SiMessage.getStationMode(siDriver.mode);
     	}
     	
     	return msg;
@@ -375,7 +375,7 @@ public class StartScreenFragment extends Fragment {
 	    		cardText.append("\n" + card.errorMsg);
 	    	}
 	    	if(!disconected){
-	    		new SiCardListener().execute(MainActivity.siDriver);
+	    		new SiCardListener().execute(siDriver);
 	    	}
     		else{
     			TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);
@@ -384,7 +384,7 @@ public class StartScreenFragment extends Fragment {
     	}
     	catch( Exception e){
     		if(!disconected){
-    			new SiCardListener().execute(MainActivity.siDriver);
+    			new SiCardListener().execute(siDriver);
     		}
 
     	}
@@ -392,11 +392,11 @@ public class StartScreenFragment extends Fragment {
     
     private void parseNewTrack( String newTrack){
     	String[] trackMarkers = newTrack.split(",");
-    	MainActivity.track = new ArrayList<TrackMarker>();
+    	mainActivity.track = new ArrayList<TrackMarker>();
     	String compName = "New";
-    	if( MainActivity.track != null){
-    		if(!MainActivity.track.isEmpty()){
-    			compName = MainActivity.track.get(0).compName;
+    	if( mainActivity.track != null){
+    		if(!mainActivity.track.isEmpty()){
+    			compName = mainActivity.track.get(0).compName;
     		}
     	}
     	
@@ -410,7 +410,7 @@ public class StartScreenFragment extends Fragment {
     		catch( Exception e ){
     			return;
     		}
-			MainActivity.track.add( new TrackMarker(startMarker,finishMarker, compName));
+    		mainActivity.track.add( new TrackMarker(startMarker,finishMarker, compName));
     	}
     }
     

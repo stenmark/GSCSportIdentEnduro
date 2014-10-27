@@ -21,16 +21,18 @@ public class ResultListFragment extends Fragment {
 	 */
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	private boolean isInView;  //TODO: hack to make the view not update when its called from external object and this view is not active
-
+	private MainActivity mainActivity;
+	
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
-	public static ResultListFragment getInstance(int sectionNumber) {
+	public static ResultListFragment getInstance(int sectionNumber, MainActivity mainActivity) {
 		ResultListFragment fragment = null;
 		fragment = new ResultListFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		fragment.setArguments(args);
+		fragment.mainActivity = mainActivity;
 		return fragment;
 	}
 
@@ -120,13 +122,6 @@ public class ResultListFragment extends Fragment {
 						
 						resultsText.append( "Total time: " + competitor.getTotalTime(true) );
 						
-						if( !competitor.card.doublePunches.isEmpty() ){
-							resultsText.append(" Warning this user has doublePunches ");
-							for( Punch doublePunch : competitor.card.doublePunches ){
-								resultsText.append( doublePunch.toString() + ", ");
-							}
-						}
-						resultsText.append("\n");
 					}
 					else{
 						resultsText.append(competitor.name + " no reuslt\n");
@@ -140,7 +135,7 @@ public class ResultListFragment extends Fragment {
 	}
 	
 	private List<Long> extractResultFromCard( Card card ){
-		List<TrackMarker> track = MainActivity.track;
+		List<TrackMarker> track = mainActivity.track;
 		List<Long> result = new ArrayList<Long>();
 		
 		for(int i = 0; i < track.size(); i++ ){
