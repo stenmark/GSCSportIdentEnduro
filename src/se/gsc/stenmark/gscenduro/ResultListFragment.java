@@ -16,17 +16,19 @@ import android.widget.TextView;
  */
 public class ResultListFragment extends Fragment {
 	/**
-	 * The fragment argument representing the section number for this
-	 * fragment.
+	 * The fragment argument representing the section number for this fragment.
 	 */
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	private boolean isInView;  //TODO: hack to make the view not update when its called from external object and this view is not active
+	private boolean isInView; // TODO: hack to make the view not update when its
+								// called from external object and this view is
+								// not active
 	private MainActivity mainActivity;
-	
+
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
-	public static ResultListFragment getInstance(int sectionNumber, MainActivity mainActivity) {
+	public static ResultListFragment getInstance(int sectionNumber,
+			MainActivity mainActivity) {
 		ResultListFragment fragment = null;
 		fragment = new ResultListFragment();
 		Bundle args = new Bundle();
@@ -43,139 +45,198 @@ public class ResultListFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_result_list, container,
-				false);
-			
-		return rootView;
+		try {
+			View rootView = inflater.inflate(R.layout.fragment_result_list,
+					container, false);
 
-	} 	
-	
-	@Override
-	public void onResume(){
-		super.onResume();
-		isInView = true;
-		updateResultList();
-	}
-	
-	@Override
-	public void onPause(){
-		super.onPause();
-		isInView = false;
-	}
-	
-	
-	public void processNewCard( Card newCard){
-		TextView latestCardInfoText = null;
-		if( isInView ){
-			latestCardInfoText = (TextView) getView().findViewById(R.id.latestCardInfo);
-			latestCardInfoText.setText("");
+			return rootView;
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
 		}
+		return null;
 
-		Competitor foundCompetitor = findCompetitor(newCard);
-		if(foundCompetitor == null ){
-			if( isInView ){
-				latestCardInfoText.append("Read new card with card number: " + newCard.cardNumber + " Could not find any competitor with this number");
-			}
-			return;
-		}
-		newCard.removeDoublePunches();
-		foundCompetitor.card = newCard;
-		
-		if( isInView ){
-			latestCardInfoText.append("New card read for " + foundCompetitor.name +"   " );
-		}
-		
-		List<Long> results = extractResultFromCard(newCard);
-		foundCompetitor.trackTimes = new ArrayList<Long>();
-		int i = 1;
-		for(Long trackTime : results){
-			if( isInView ){
-				latestCardInfoText.append(", Time for SS " + i + " = " + trackTime + " seconds " );
-			}
-			foundCompetitor.trackTimes.add(trackTime);
-			i++;
-		}
-		
-		if( isInView ){
-			latestCardInfoText.append("Total time was: " + foundCompetitor.getTotalTime(true) + " seconds \n");
-		}
-		
-		if( isInView ){
+	}
+
+	@Override
+	public void onResume() {
+		try {
+			super.onResume();
+			isInView = true;
 			updateResultList();
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
 		}
 	}
-	
-	public void updateResultList(){
-		if( isInView ){
-			TextView resultsText = (TextView) getView().findViewById(R.id.resultsTextView);
-			resultsText.setText("");
-			if(MainActivity.competitors != null && !MainActivity.competitors.isEmpty()){
-				Collections.sort(MainActivity.competitors);
-				for( Competitor competitor : MainActivity.competitors ){
-					if( competitor.hasResult() ){
-						resultsText.append( competitor.name );
-						int i = 0;
-						for(long trackTime : competitor.trackTimes ){
-							i++;
-							resultsText.append( " SS" + i + " " + trackTime + ", " ); 
-						}
-						
-						resultsText.append( "Total time: " + competitor.getTotalTime(true) );
-						
-					}
-					else{
-						resultsText.append(competitor.name + " no reuslt\n");
-					}
+
+	@Override
+	public void onPause() {
+		try {
+			super.onPause();
+			isInView = false;
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
+		}
+	}
+
+	public void processNewCard(Card newCard) {
+		try {
+			TextView latestCardInfoText = null;
+			if (isInView) {
+				latestCardInfoText = (TextView) getView().findViewById(
+						R.id.latestCardInfo);
+				latestCardInfoText.setText("");
+			}
+
+			Competitor foundCompetitor = findCompetitor(newCard);
+			if (foundCompetitor == null) {
+				if (isInView) {
+					latestCardInfoText
+							.append("Read new card with card number: "
+									+ newCard.cardNumber
+									+ " Could not find any competitor with this number");
 				}
+				return;
 			}
-			else{
-				resultsText.setText("No results yet\n");
+			newCard.removeDoublePunches();
+			foundCompetitor.card = newCard;
+
+			if (isInView) {
+				latestCardInfoText.append("New card read for "
+						+ foundCompetitor.name + "   ");
 			}
-		}
-	}
-	
-	private List<Long> extractResultFromCard( Card card ){
-		List<TrackMarker> track = mainActivity.track;
-		List<Long> result = new ArrayList<Long>();
-		
-		for(int i = 0; i < track.size(); i++ ){
-			try{
-				TrackMarker trackMarker = track.get(i);
-				Punch startPunch = findPunchForStationNrInCard(card, trackMarker.start, i+1);
-				Punch finishPunch = findPunchForStationNrInCard(card, trackMarker.finish, i+1);
-				
-				long trackTime = finishPunch.time - startPunch.time;
-				result.add(trackTime);
-			}
-			catch( Exception e){
-				
-			}
-		}
-		
-		return result;
-	}
-	
-	private Punch findPunchForStationNrInCard( Card card, long stationNumber, int instanceNumber ){
-		int i = 0;
-		for( Punch punch : card.punches ){
-			if( punch.control == stationNumber ){
+
+			List<Long> results = extractResultFromCard(newCard);
+			foundCompetitor.trackTimes = new ArrayList<Long>();
+			int i = 1;
+			for (Long trackTime : results) {
+				if (isInView) {
+					latestCardInfoText.append(", Time for SS " + i + " = "
+							+ trackTime + " seconds ");
+				}
+				foundCompetitor.trackTimes.add(trackTime);
 				i++;
-				if( i == instanceNumber){
-					return punch;
+			}
+
+			if (isInView) {
+				latestCardInfoText.append("Total time was: "
+						+ foundCompetitor.getTotalTime(true) + " seconds \n");
+			}
+
+			if (isInView) {
+				updateResultList();
+			}
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
+		}
+	}
+
+	public void updateResultList() {
+		try {
+			if (isInView) {
+				TextView resultsText = (TextView) getView().findViewById(
+						R.id.resultsTextView);
+				resultsText.setText("");
+				if (mainActivity.competitors != null
+						&& !mainActivity.competitors.isEmpty()) {
+					Collections.sort(mainActivity.competitors);
+					for (Competitor competitor : mainActivity.competitors) {
+						if (competitor.hasResult()) {
+							resultsText.append(competitor.name);
+							int i = 0;
+							for (long trackTime : competitor.trackTimes) {
+								i++;
+								resultsText.append(" SS" + i + " " + trackTime
+										+ ", ");
+							}
+
+							resultsText.append("Total time: "
+									+ competitor.getTotalTime(true));
+
+						} else {
+							resultsText
+									.append(competitor.name + " no reuslt\n");
+						}
+					}
+				} else {
+					resultsText.setText("No results yet\n");
 				}
 			}
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
 		}
-		return null;
 	}
+
+	private List<Long> extractResultFromCard(Card card) {
+		try {
+			List<TrackMarker> track = MainActivity.track;
+			List<Long> result = new ArrayList<Long>();
+
+			try {
+				for (int i = 0; i < track.size(); i++) {
+					TrackMarker trackMarker = track.get(i);
+					Punch startPunch = findPunchForStationNrInCard(card,
+							trackMarker.start, i + 1);
+					Punch finishPunch = findPunchForStationNrInCard(card,
+							trackMarker.finish, i + 1);
+
+					long trackTime = finishPunch.time - startPunch.time;
+					result.add(trackTime);
 	
-	private Competitor findCompetitor( Card cardToMatch ){
-		for(Competitor competitor : MainActivity.competitors ){
-			if( competitor.cardNumber == cardToMatch.cardNumber ){
-				return competitor;
+				}
+			} catch (Exception e) {
+				PopupMessage dialog = new PopupMessage("Not all stations have been checked for card number: " + card.cardNumber);
+				dialog.show(getFragmentManager(), "popUp");
 			}
+
+			return result;
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(
+					MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
+			return new ArrayList<Long>();
 		}
-		return null;
 	}
-	
+
+	private Punch findPunchForStationNrInCard(Card card, long stationNumber,
+			int instanceNumber) {
+		try {
+			int i = 0;
+			for (Punch punch : card.punches) {
+				if (punch.control == stationNumber) {
+					i++;
+					if (i == instanceNumber) {
+						return punch;
+					}
+				}
+			}
+			return null;
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(
+					MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
+			return new Punch(-1, 0);
+		}
+	}
+
+	private Competitor findCompetitor(Card cardToMatch) {
+		try {
+			for (Competitor competitor : mainActivity.competitors) {
+				if (competitor.cardNumber == cardToMatch.cardNumber) {
+					return competitor;
+				}
+			}
+			return null;
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(
+					MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
+			return new Competitor("Error");
+		}
+	}
 
 }

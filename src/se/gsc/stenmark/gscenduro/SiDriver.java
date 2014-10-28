@@ -392,14 +392,8 @@ public class SiDriver {
     	return new Punch(time, control);
     }
     
-	public boolean connectDriver() {
-//		androidActivity.msg += "Connecting driver \n";
-
-		// Get UsbManager from Android.
-//		UsbManager manager = (UsbManager) androidActivity.getSystemService(Context.USB_SERVICE);
-		UsbManager manager = MainActivity.usbManager;
+	public boolean connectDriver(UsbManager manager) {
 		if (manager == null) {
-//			androidActivity.msg += " : Manager Null";
 			return false;
 		}
 
@@ -409,21 +403,18 @@ public class SiDriver {
 			try {
 				driver.open();
 			} catch (IOException e1) {
-//				androidActivity.msg += "IOException 1";
 				return false;
 			}
 			try {
 				driver.setParameters(38400, UsbSerialDriver.DATABITS_8, UsbSerialDriver.STOPBITS_1, UsbSerialDriver.PARITY_NONE);
 			} catch (IOException e) {
-//				androidActivity.msg += "Set parms exception " + e.getMessage();
+				return false;
 			}
 
 		} else {
-//			androidActivity.msg += ": driver null";
 			return false;
 		}
 
-//		androidActivity.msg += "Driver connected \n";
 		return true;
 	}
     

@@ -16,9 +16,8 @@ import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-import	android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -26,13 +25,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener, OnNewCardListener {
-	public static UsbManager usbManager; 
+public class MainActivity extends FragmentActivity implements
+		ActionBar.TabListener, OnNewCardListener {
 	public String msg = "";
-	public static List<TrackMarker> track= null;
-	public static ArrayList<Competitor> competitors = null;
-	public static MainActivity instance = null;
-	
+	public static List<TrackMarker> track = null;
+	public ArrayList<Competitor> competitors = null;
+
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a {@link FragmentPagerAdapter}
@@ -47,194 +45,282 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	ViewPager mViewPager;
 
-	public void onNewCard(Card card){
-		if(mSectionsPagerAdapter.resultListFragment != null ){
-			mSectionsPagerAdapter.resultListFragment.processNewCard(card);
-		}
-	}
-	
-	public void saveSessionData( String competionName){
-    	FileOutputStream fileOutputComp;
-    	FileOutputStream fileOutputTrack;
+	public void onNewCard(Card card) {
 		try {
-			if( competionName == null || competionName.isEmpty() ){
-				fileOutputComp = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE, Context.MODE_PRIVATE);
+			if (mSectionsPagerAdapter.resultListFragment != null) {
+				mSectionsPagerAdapter.resultListFragment.processNewCard(card);
 			}
-			else{
-				fileOutputComp = MainApplication.getAppContext().openFileOutput(competionName+"_list", Context.MODE_PRIVATE);
-			}
-			
-			ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);  
-			objStreamOutComp.writeObject(competitors);
-			objStreamOutComp.close();	 
-			
-			if(track == null){
-				track = new ArrayList<TrackMarker>();
-			}
-			if( competionName == null || competionName.isEmpty() ){
-				fileOutputTrack = MainApplication.getAppContext().openFileOutput(StartScreenFragment.CURRENT_TRACK_FILE, Context.MODE_PRIVATE);
-			}
-			else{
-				fileOutputTrack = MainApplication.getAppContext().openFileOutput(competionName+"_track", Context.MODE_PRIVATE);
-			}
-			ObjectOutputStream objStreamOutTrack = new ObjectOutputStream(fileOutputTrack);  
-			objStreamOutTrack.writeObject(track);
-			objStreamOutTrack.close();	
-			
-		} catch (FileNotFoundException e) {
-			return;
-		} catch (IOException e) {
-			return;
+		} catch (Exception e1) {
+			PopupMessage dialog = new PopupMessage(
+					MainActivity.generateErrorMessage(e1));
+			dialog.show(getSupportFragmentManager(), "popUp");
 		}
-	 
 	}
-	
-	public void loadSessionData(String competionName, boolean readFile){
-	try{
-	   	 TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
-	   	 cardText.setText("" );
-	   	if( readFile ){
-	   	FileInputStream fileInputTrack = null;
-	   	FileInputStream fileInputComp = null;
-	   	 try {
-			 	if( competionName == null || competionName.isEmpty() ){
-			 		fileInputComp = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE);
-			 	}
-			 	else{
-			 		fileInputComp = MainApplication.getAppContext().openFileInput(competionName+"_list");
-			 	}
-				ObjectInputStream objStreamInComp = new ObjectInputStream(fileInputComp);
-				competitors = (ArrayList<Competitor>) objStreamInComp.readObject();
+
+	public void saveSessionData(String competionName) {
+		try {
+			FileOutputStream fileOutputComp;
+			FileOutputStream fileOutputTrack;
+			try {
+				if (competionName == null || competionName.isEmpty()) {
+					fileOutputComp = MainApplication
+							.getAppContext()
+							.openFileOutput(
+									StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE,
+									Context.MODE_PRIVATE);
+				} else {
+					fileOutputComp = MainApplication.getAppContext()
+							.openFileOutput(competionName + "_list",
+									Context.MODE_PRIVATE);
+				}
+
+				ObjectOutputStream objStreamOutComp = new ObjectOutputStream(
+						fileOutputComp);
+				objStreamOutComp.writeObject(competitors);
+				objStreamOutComp.close();
+
+				if (track == null) {
+					track = new ArrayList<TrackMarker>();
+				}
+				if (competionName == null || competionName.isEmpty()) {
+					fileOutputTrack = MainApplication.getAppContext()
+							.openFileOutput(
+									StartScreenFragment.CURRENT_TRACK_FILE,
+									Context.MODE_PRIVATE);
+				} else {
+					fileOutputTrack = MainApplication.getAppContext()
+							.openFileOutput(competionName + "_track",
+									Context.MODE_PRIVATE);
+				}
+				ObjectOutputStream objStreamOutTrack = new ObjectOutputStream(
+						fileOutputTrack);
+				objStreamOutTrack.writeObject(track);
+				objStreamOutTrack.close();
+
+			} catch (FileNotFoundException e) {
+				PopupMessage dialog = new PopupMessage(
+						MainActivity.generateErrorMessage(e));
+				dialog.show(getSupportFragmentManager(), "popUp");
+				return;
+			} catch (IOException e) {
+				PopupMessage dialog = new PopupMessage(
+						MainActivity.generateErrorMessage(e));
+				dialog.show(getSupportFragmentManager(), "popUp");
+				return;
+			}
+		} catch (Exception e1) {
+			PopupMessage dialog = new PopupMessage(
+					MainActivity.generateErrorMessage(e1));
+			dialog.show(getSupportFragmentManager(), "popUp");
+		}
+
+	}
+
+	public void loadSessionData(String competionName, boolean readFile) {
+		try {
+			TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
+			cardText.setText("");
+			if (readFile) {
+				FileInputStream fileInputTrack = null;
+				FileInputStream fileInputComp = null;
+				try {
+					if (competionName == null || competionName.isEmpty()) {
+						fileInputComp = MainApplication
+								.getAppContext()
+								.openFileInput(
+										StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE);
+					} else {
+						fileInputComp = MainApplication.getAppContext()
+								.openFileInput(competionName + "_list");
+					}
+					ObjectInputStream objStreamInComp = new ObjectInputStream(
+							fileInputComp);
+					competitors = (ArrayList<Competitor>) objStreamInComp
+							.readObject();
+					objStreamInComp.close();
+
+					if (competionName == null || competionName.isEmpty()) {
+						fileInputTrack = MainApplication.getAppContext()
+								.openFileInput(
+										StartScreenFragment.CURRENT_TRACK_FILE);
+					} else {
+						fileInputTrack = MainApplication.getAppContext()
+								.openFileInput(competionName + "_track");
+					}
+					ObjectInputStream objStreamInTrack = new ObjectInputStream(
+							fileInputTrack);
+					track = (List<TrackMarker>) objStreamInTrack.readObject();
+					objStreamInTrack.close();
+				} catch (FileNotFoundException e) {
+					cardText.append("File not found: " + e.getMessage());
+					PopupMessage dialog = new PopupMessage(
+							MainActivity.generateErrorMessage(e));
+					dialog.show(getSupportFragmentManager(), "popUp");
+					return;
+				} catch (IOException e) {
+					cardText.append("IOException: " + e.getMessage());
+					PopupMessage dialog = new PopupMessage(
+							MainActivity.generateErrorMessage(e));
+					dialog.show(getSupportFragmentManager(), "popUp");
+					return;
+				} catch (ClassNotFoundException e) {
+					PopupMessage dialog = new PopupMessage(
+							MainActivity.generateErrorMessage(e));
+					dialog.show(getSupportFragmentManager(), "popUp");
+					cardText.append("ClassNotFoundException: " + e.getMessage());
+					return;
+				}
+			}
+
+			// TODO: some fuck up with this global instances, need to get rid of
+			// them
+			// StartScreenFragment.instance.updateTrackText();
+			TextView trackInfoTextView = (TextView) findViewById(R.id.trackInfoTextView);
+			trackInfoTextView.setText("Current loaded Track: ");
+			int i = 0;
+			for (TrackMarker trackMarker : track) {
+				i++;
+				trackInfoTextView.append(", SS" + i + " Start: "
+						+ trackMarker.start + " Finish: " + trackMarker.finish);
+			}
+			if (mSectionsPagerAdapter.resultListFragment != null) {
+				mSectionsPagerAdapter.resultListFragment.updateResultList();
+			}
+			cardText.append("Loaded: ");
+
+			for (Competitor comp : competitors) {
+				cardText.append("Name: " + comp.name + " cardnum"
+						+ comp.cardNumber + comp.card + "\n");
+			}
+
+		} catch (Exception e1) {
+			PopupMessage dialog = new PopupMessage(
+					MainActivity.generateErrorMessage(e1));
+			dialog.show(getSupportFragmentManager(), "popUp");
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		try {
+			super.onPause();
+			saveSessionData(null);
+		} catch (Exception e1) {
+			PopupMessage dialog = new PopupMessage(
+					MainActivity.generateErrorMessage(e1));
+			dialog.show(getSupportFragmentManager(), "popUp");
+		}
+	}
+
+	@Override
+	protected void onStop() {
+		try {
+			super.onStop();
+			saveSessionData(null);
+		} catch (Exception e1) {
+			PopupMessage dialog = new PopupMessage(
+					MainActivity.generateErrorMessage(e1));
+			dialog.show(getSupportFragmentManager(), "popUp");
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		try {
+			super.onResume();
+			try {
+				FileInputStream fileInputComp = MainApplication
+						.getAppContext()
+						.openFileInput(
+								StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE);
+				ObjectInputStream objStreamInComp = new ObjectInputStream(
+						fileInputComp);
+				competitors = (ArrayList<Competitor>) objStreamInComp
+						.readObject();
 				objStreamInComp.close();
-				
-				if( competionName == null || competionName.isEmpty() ){
-					fileInputTrack = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_TRACK_FILE);
-				}
-				else{
-					fileInputTrack = MainApplication.getAppContext().openFileInput(competionName+"_track");
-				}
-				ObjectInputStream objStreamInTrack = new ObjectInputStream(fileInputTrack);
+
+				FileInputStream fileInputTrack = MainApplication
+						.getAppContext().openFileInput(
+								StartScreenFragment.CURRENT_TRACK_FILE);
+				ObjectInputStream objStreamInTrack = new ObjectInputStream(
+						fileInputTrack);
 				track = (List<TrackMarker>) objStreamInTrack.readObject();
 				objStreamInTrack.close();
 			} catch (FileNotFoundException e) {
-				 cardText.append("File not found: " +e.getMessage() );
-				 return;
+				PopupMessage dialog = new PopupMessage(
+						MainActivity.generateErrorMessage(e));
+				dialog.show(getSupportFragmentManager(), "popUp");
+				return;
 			} catch (IOException e) {
-				cardText.append("IOException: " +e.getMessage() );
+				PopupMessage dialog = new PopupMessage(
+						MainActivity.generateErrorMessage(e));
+				dialog.show(getSupportFragmentManager(), "popUp");
 				return;
 			} catch (ClassNotFoundException e) {
-				cardText.append("ClassNotFoundException: " +e.getMessage() );
+				PopupMessage dialog = new PopupMessage(
+						MainActivity.generateErrorMessage(e));
+				dialog.show(getSupportFragmentManager(), "popUp");
 				return;
 			}
-		}
-	   	 
-	   	 //TODO: some fuck up with this global instances, need to get rid of them
-//	   	 StartScreenFragment.instance.updateTrackText();
-		 TextView trackInfoTextView = (TextView) findViewById(R.id.trackInfoTextView);
-		 trackInfoTextView.setText("Current loaded Track: " );
-		 int i = 0;
-		 for( TrackMarker trackMarker : track){
-			 i++;
-			 trackInfoTextView.append( ", SS" + i + " Start: " + trackMarker.start + " Finish: " + trackMarker.finish );
-		 }
-		 if(mSectionsPagerAdapter.resultListFragment != null ){
-			 mSectionsPagerAdapter.resultListFragment.updateResultList();
-		 }
-	   	 cardText.append("Loaded: " );
-	
-	   	 for( Competitor comp : MainActivity.competitors ){
-	   		 cardText.append("Name: " + comp.name + " cardnum" + comp.cardNumber  +
-	   				 		comp.card + "\n");
-	   	 }
-		 
-		}
-		catch( Exception e1){
-			TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
-			cardText.append("Caught super exception " + e1.getMessage() + "\n" );
-			for( StackTraceElement elem :  e1.getStackTrace()){
-				cardText.append(elem.toString() + "\n");
-			}
+		} catch (Exception e1) {
+			PopupMessage dialog = new PopupMessage(
+					MainActivity.generateErrorMessage(e1));
+			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		saveSessionData(null);
-	}
-	
-	@Override
-	protected void onStop() {
-		super.onStop();
-		saveSessionData(null);
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		try {
-			FileInputStream fileInputComp = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE);
-			ObjectInputStream objStreamInComp = new ObjectInputStream(fileInputComp);
-			competitors = (ArrayList<Competitor>) objStreamInComp.readObject();
-			objStreamInComp.close();
 
-			FileInputStream fileInputTrack = MainApplication.getAppContext().openFileInput(StartScreenFragment.CURRENT_TRACK_FILE);
-			ObjectInputStream objStreamInTrack = new ObjectInputStream(	fileInputTrack);
-			track = (List<TrackMarker>) objStreamInTrack.readObject();
-			objStreamInTrack.close();
-		} catch (FileNotFoundException e) {
-			return;
-		} catch (IOException e) {
-			return;
-		} catch (ClassNotFoundException e) {
-			return;
-		}
-	}
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		
-//		if(savedInstanceState == null){
-			instance = this;
-			usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+		try {
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.activity_main);
+
 			competitors = new ArrayList<Competitor>();
-					
-		// Set up the action bar.
-		final ActionBar actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-		// Create the adapter that will return a fragment for each of the three
-		// primary sections of the activity.
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
-//		startScreenFragment = mSectionsPagerAdapter.startScreenFragment;
-//		resultListFragment = mSectionsPagerAdapter.resultListFragment;
+			// Set up the action bar.
+			final ActionBar actionBar = getActionBar();
+			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-		// Set up the ViewPager with the sections adapter.
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
+			// Create the adapter that will return a fragment for each of the
+			// three
+			// primary sections of the activity.
+			mSectionsPagerAdapter = new SectionsPagerAdapter(
+					getSupportFragmentManager(), this);
+			// startScreenFragment = mSectionsPagerAdapter.startScreenFragment;
+			// resultListFragment = mSectionsPagerAdapter.resultListFragment;
 
-		// When swiping between different sections, select the corresponding
-		// tab. We can also use ActionBar.Tab#select() to do this if we have
-		// a reference to the Tab.
-		mViewPager
-				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-					@Override
-					public void onPageSelected(int position) {
-						actionBar.setSelectedNavigationItem(position);
-					}
-				});
+			// Set up the ViewPager with the sections adapter.
+			mViewPager = (ViewPager) findViewById(R.id.pager);
+			mViewPager.setAdapter(mSectionsPagerAdapter);
 
-		// For each of the sections in the app, add a tab to the action bar.
-		for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-			// Create a tab with text corresponding to the page title defined by
-			// the adapter. Also specify this Activity object, which implements
-			// the TabListener interface, as the callback (listener) for when
-			// this tab is selected.
-			actionBar.addTab(actionBar.newTab()
-					.setText(mSectionsPagerAdapter.getPageTitle(i))
-					.setTabListener(this));
+			// When swiping between different sections, select the corresponding
+			// tab. We can also use ActionBar.Tab#select() to do this if we have
+			// a reference to the Tab.
+			mViewPager
+					.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+						@Override
+						public void onPageSelected(int position) {
+							actionBar.setSelectedNavigationItem(position);
+						}
+					});
+
+			// For each of the sections in the app, add a tab to the action bar.
+			for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+				// Create a tab with text corresponding to the page title
+				// defined by
+				// the adapter. Also specify this Activity object, which
+				// implements
+				// the TabListener interface, as the callback (listener) for
+				// when
+				// this tab is selected.
+				actionBar.addTab(actionBar.newTab()
+						.setText(mSectionsPagerAdapter.getPageTitle(i))
+						.setTabListener(this));
+			}
+		} catch (Exception e1) {
+			PopupMessage dialog = new PopupMessage(
+					MainActivity.generateErrorMessage(e1));
+			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 	}
 
@@ -282,9 +368,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 		public StartScreenFragment startScreenFragment = null;
 		public ResultListFragment resultListFragment = null;
+		public CompMangementFragment compMangementFragment = null;
 		private MainActivity mainActivity = null;
-		
-		public SectionsPagerAdapter(FragmentManager fm, MainActivity mainActivity ) {
+
+		public SectionsPagerAdapter(FragmentManager fm,
+				MainActivity mainActivity) {
 			super(fm);
 			this.mainActivity = mainActivity;
 		}
@@ -294,14 +382,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// getItem is called to instantiate the fragment for the given page.
 			// Return a PlaceholderFragment (defined as a static inner class
 			// below).
-			switch( position){
-				case 0: startScreenFragment = StartScreenFragment.getInstance(position + 1, mainActivity);
-						return startScreenFragment;
-				case 1: resultListFragment = ResultListFragment.getInstance(position + 1, mainActivity);
-						return resultListFragment;
-				case 2: return CompMangementFragment.getInstance(position + 1);		
+			switch (position) {
+			case 0:
+				startScreenFragment = StartScreenFragment.getInstance(
+						position + 1, mainActivity);
+				return startScreenFragment;
+			case 1:
+				resultListFragment = ResultListFragment.getInstance(
+						position + 1, mainActivity);
+				return resultListFragment;
+			case 2:
+				compMangementFragment = CompMangementFragment.getInstance(
+						position + 1, mainActivity);
+				return compMangementFragment;
 			}
-			
+
 			return null;
 		}
 
@@ -324,6 +419,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 			return null;
 		}
+	}
+
+	public static String generateErrorMessage(Exception e) {
+		String errorMessage = e.getMessage() + "\n";
+		for (StackTraceElement element : e.getStackTrace()) {
+			errorMessage += element.toString() + "\n";
+		}
+		return errorMessage;
 	}
 
 }
