@@ -49,7 +49,18 @@ public class StartScreenFragment extends Fragment {
 	public interface OnNewCardListener {
 		public void onNewCard(Card card);
 	}
+	
+	public void setActivity( MainActivity mainActivity){
+		this.mainActivity = mainActivity;
+		MainApplication.startScreenFragment = this;
+	}
 
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		MainApplication.startScreenFragment = null;
+	}
+	
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);

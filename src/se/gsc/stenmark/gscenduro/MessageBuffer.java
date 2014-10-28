@@ -12,7 +12,7 @@ public class MessageBuffer {
 	
 	
 	public byte[] readByte(){
-		if( position <= buffer.length ){
+		if( position < buffer.length ){
 			byte currentByte = buffer[position];
 			position++;
 			byte[] result = new byte[1];

@@ -23,6 +23,7 @@ public class ResultListFragment extends Fragment {
 								// called from external object and this view is
 								// not active
 	private MainActivity mainActivity;
+	
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -39,7 +40,18 @@ public class ResultListFragment extends Fragment {
 	}
 
 	public ResultListFragment() {
+		MainApplication.resultListFragment = this;
 		isInView = false;
+	}
+	
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		MainApplication.resultListFragment = null;
+	}
+	
+	public void setActivity( MainActivity mainActivity){
+		this.mainActivity = mainActivity;
 	}
 
 	@Override
@@ -129,7 +141,7 @@ public class ResultListFragment extends Fragment {
 				updateResultList();
 			}
 		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			PopupMessage dialog = new PopupMessage(	 MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");
 		}
 	}

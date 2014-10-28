@@ -223,7 +223,21 @@ public class MainActivity extends FragmentActivity implements
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 	}
+	
+	@Override
+	protected void onDestroy () {
+		super.onDestroy();
+//		if (mSectionsPagerAdapter.resultListFragment != null) {
+//			FragmentManager fragmentManager = getSupportFragmentManager();
+//			android.support.v4.app.FragmentTransaction beginTransaction = fragmentManager.beginTransaction();
+//			beginTransaction.remove(mSectionsPagerAdapter.resultListFragment).commit(); 
+//			beginTransaction.remove(mSectionsPagerAdapter.startScreenFragment).commit(); 
+//			beginTransaction.remove(mSectionsPagerAdapter.compMangementFragment).commit(); 
+//		}
+	}
 
+	
+	
 	@Override
 	protected void onResume() {
 		try {
@@ -262,13 +276,20 @@ public class MainActivity extends FragmentActivity implements
 				dialog.show(getSupportFragmentManager(), "popUp");
 				return;
 			}
+			if( MainApplication.resultListFragment != null ){
+				MainApplication.resultListFragment.setActivity(this);
+			}
+			if( MainApplication.startScreenFragment != null ){
+				MainApplication.startScreenFragment.setActivity(this);
+			}
+			if( MainApplication.compMangementFragment != null ){
+				MainApplication.compMangementFragment.setActivity(this);
+			}
 		} catch (Exception e1) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e1));
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e1));
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
@@ -284,8 +305,7 @@ public class MainActivity extends FragmentActivity implements
 			// Create the adapter that will return a fragment for each of the
 			// three
 			// primary sections of the activity.
-			mSectionsPagerAdapter = new SectionsPagerAdapter(
-					getSupportFragmentManager(), this);
+			mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
 			// startScreenFragment = mSectionsPagerAdapter.startScreenFragment;
 			// resultListFragment = mSectionsPagerAdapter.resultListFragment;
 
@@ -317,6 +337,16 @@ public class MainActivity extends FragmentActivity implements
 						.setText(mSectionsPagerAdapter.getPageTitle(i))
 						.setTabListener(this));
 			}
+			if( MainApplication.resultListFragment != null ){
+				MainApplication.resultListFragment.setActivity(this);
+			}
+			if( MainApplication.startScreenFragment != null ){
+				MainApplication.startScreenFragment.setActivity(this);
+			}
+			if( MainApplication.compMangementFragment != null ){
+				MainApplication.compMangementFragment.setActivity(this);
+			}
+			
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(
 					MainActivity.generateErrorMessage(e1));
@@ -376,7 +406,7 @@ public class MainActivity extends FragmentActivity implements
 			super(fm);
 			this.mainActivity = mainActivity;
 		}
-
+		
 		@Override
 		public Fragment getItem(int position) {
 			// getItem is called to instantiate the fragment for the given page.

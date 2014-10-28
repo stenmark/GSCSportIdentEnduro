@@ -36,7 +36,18 @@ public class CompMangementFragment extends Fragment {
 		editViews = new ArrayList<EditText>();
 		deleteButtons = new ArrayList<Button>();
 		modifyButtons = new ArrayList<Button>();
+		MainApplication.compMangementFragment = this;
 		// instance = this;
+	}
+	
+	public void setActivity( MainActivity mainActivity){
+		this.mainActivity = mainActivity;
+	}
+	
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		MainApplication.compMangementFragment = null;
 	}
 
 	@Override
