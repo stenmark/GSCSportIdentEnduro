@@ -110,9 +110,9 @@ public class StartScreenFragment extends Fragment {
 				R.id.editSaveLoadComp);
 		nameOFCompEdit.setText("New");
 
-		if (mainActivity.track != null) {
-			if (!mainActivity.track.isEmpty()) {
-				nameOFCompEdit.setText(mainActivity.track.get(0).compName);
+		if (mainActivity.competition.getTrack() != null) {
+			if (!mainActivity.competition.getTrack().isEmpty()) {
+				nameOFCompEdit.setText(mainActivity.competition.getTrack().get(0).compName);
 			}
 		}
 	}
@@ -192,12 +192,12 @@ public class StartScreenFragment extends Fragment {
 						}
 					}
 
-					mainActivity.competitors.add(competitor);
+					mainActivity.competition.getCompetitors().add(competitor);
 
 					TextView cardInfoTextView = (TextView) getView()
 							.findViewById(R.id.cardInfoTextView);
 					cardInfoTextView.setText("");
-					for (Competitor currentCompetitor : mainActivity.competitors) {
+					for (Competitor currentCompetitor : mainActivity.competition.getCompetitors()) {
 						cardInfoTextView.append("Name: "
 								+ currentCompetitor.name + " Card "
 								+ currentCompetitor.cardNumber + "\n");
@@ -224,13 +224,13 @@ public class StartScreenFragment extends Fragment {
 					}
 					// TODO: work around, using trackmarker object to save
 					// competitions name...
-					if (mainActivity.track != null) {
-						for (TrackMarker trackmarker : mainActivity.track) {
+					if (mainActivity.competition.getTrack() != null) {
+						for (TrackMarker trackmarker : mainActivity.competition.getTrack()) {
 							trackmarker.compName = compName;
 						}
 					}
 					compName.replace(" ", "_");
-					mainActivity.saveSessionData(compName);
+					mainActivity.competition.saveSessionData(compName, getFragmentManager());
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity
 							.generateErrorMessage(e));
@@ -246,8 +246,12 @@ public class StartScreenFragment extends Fragment {
 				try {
 					EditText nameOFCompToLoad = (EditText) getView()
 							.findViewById(R.id.editSaveLoadComp);
-					mainActivity.loadSessionData(nameOFCompToLoad.getText()
-							.toString(), true);
+					mainActivity.competition.loadSessionData(nameOFCompToLoad.getText().toString(), 
+															true, 
+															getFragmentManager(),
+															mainActivity.getResultListFragment(),
+															(TextView) getView().findViewById( R.id.trackInfoTextView),
+															(TextView) getView().findViewById( R.id.cardInfoTextView));
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity
 							.generateErrorMessage(e));
@@ -292,9 +296,14 @@ public class StartScreenFragment extends Fragment {
 					// Hack to use loadseesiondata to update the GUI.
 					// Uses some ugly work arounds due to poor GUI design that i
 					// dont want to duplicate
-					mainActivity.track = new ArrayList<TrackMarker>();
-					mainActivity.competitors = new ArrayList<Competitor>();
-					mainActivity.loadSessionData(null, false);
+					mainActivity.competition.setTrack( new ArrayList<TrackMarker>() );
+					mainActivity.competition.setCompetitors(new ArrayList<Competitor>());
+					mainActivity.competition.loadSessionData(null, 
+															false, 
+															getFragmentManager(),
+															mainActivity.getResultListFragment(),
+															(TextView) getView().findViewById( R.id.trackInfoTextView),
+															(TextView) getView().findViewById( R.id.cardInfoTextView));
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity
 							.generateErrorMessage(e));
@@ -327,7 +336,7 @@ public class StartScreenFragment extends Fragment {
 			TextView status = (TextView) getView().findViewById(
 					R.id.cardInfoTextView);
 			String result = "Name,card number,total time,";
-			for (int i = 0; i < mainActivity.track.size(); i++) {
+			for (int i = 0; i < mainActivity.competition.getTrack().size(); i++) {
 				result += "SS" + (i + 1) + ",";
 			}
 			result += "\n";
@@ -336,9 +345,9 @@ public class StartScreenFragment extends Fragment {
 				try {
 					File sdCard = Environment.getExternalStorageDirectory();
 					String compName = "New";
-					if (mainActivity.track != null) {
-						if (!mainActivity.track.isEmpty()) {
-							compName = mainActivity.track.get(0).compName;
+					if (mainActivity.competition.getTrack() != null) {
+						if (!mainActivity.competition.getTrack().isEmpty()) {
+							compName = mainActivity.competition.getTrack().get(0).compName;
 						}
 					}
 					compName.replace(" ", "_");
@@ -358,10 +367,10 @@ public class StartScreenFragment extends Fragment {
 					status.append("Saving result to file:\n"
 							+ file.getAbsolutePath() + "\n");
 
-					if (mainActivity.competitors != null
-							&& !mainActivity.competitors.isEmpty()) {
-						Collections.sort(mainActivity.competitors);
-						for (Competitor competitor : mainActivity.competitors) {
+					if (mainActivity.competition.getCompetitors() != null
+							&& !mainActivity.competition.getCompetitors().isEmpty()) {
+						Collections.sort(mainActivity.competition.getCompetitors());
+						for (Competitor competitor : mainActivity.competition.getCompetitors()) {
 							status.append(competitor.name + ","
 									+ competitor.cardNumber + ","
 									+ competitor.getTotalTime(false) + ",");
@@ -374,7 +383,7 @@ public class StartScreenFragment extends Fragment {
 									result += time + ",";
 								}
 							} else {
-								for (int i = 0; i < mainActivity.track.size(); i++) {
+								for (int i = 0; i < mainActivity.competition.getTrack().size(); i++) {
 									status.append("0,");
 									result += "0,";
 								}
@@ -420,10 +429,10 @@ public class StartScreenFragment extends Fragment {
 		try {
 			TextView trackInfoTextView = (TextView) getView().findViewById(
 					R.id.trackInfoTextView);
-			if (mainActivity.track != null) {
+			if (mainActivity.competition.getTrack() != null) {
 				trackInfoTextView.setText("Current loaded Track: ");
 				int i = 0;
-				for (TrackMarker trackMarker : mainActivity.track) {
+				for (TrackMarker trackMarker : mainActivity.competition.getTrack()) {
 					i++;
 					trackInfoTextView.append(", SS" + i + ": "
 							+ trackMarker.start + "->" + trackMarker.finish);
@@ -499,11 +508,11 @@ public class StartScreenFragment extends Fragment {
 	private void parseNewTrack(String newTrack) {
 		try {
 			String[] trackMarkers = newTrack.split(",");
-			mainActivity.track = new ArrayList<TrackMarker>();
+			mainActivity.competition.setTrack( new ArrayList<TrackMarker>() );
 			String compName = "New";
-			if (mainActivity.track != null) {
-				if (!mainActivity.track.isEmpty()) {
-					compName = mainActivity.track.get(0).compName;
+			if (mainActivity.competition.getTrack() != null) {
+				if (!mainActivity.competition.getTrack().isEmpty()) {
+					compName = mainActivity.competition.getTrack().get(0).compName;
 				}
 			}
 
@@ -519,7 +528,7 @@ public class StartScreenFragment extends Fragment {
 					dialog.show(getFragmentManager(), "popUp");
 					return;
 				}
-				mainActivity.track.add(new TrackMarker(startMarker,
+				mainActivity.competition.getTrack().add(new TrackMarker(startMarker,
 						finishMarker, compName));
 			}
 		} catch (Exception e) {

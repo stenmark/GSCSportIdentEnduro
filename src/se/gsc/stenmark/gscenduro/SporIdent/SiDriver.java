@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import se.gsc.stenmark.gscenduro.MainActivity;
 import se.gsc.stenmark.gscenduro.SporIdent.CRCCalculator;
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import android.hardware.usb.UsbManager;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
@@ -116,7 +117,7 @@ public class SiDriver {
     	card.numberOfPunches = numberOfPunches;
     	card.errorMsg += "Number of punches: " + numberOfPunches + "\n"; 
     	
-    	byte firstStartMaker = (byte) MainActivity.track.get(0).start;
+    	byte firstStartMaker = (byte) Competition.getTrack().get(0).start;
     	int firstMarkerPos = 0;
     	int i = 0;
     	for( byte data : allData ){

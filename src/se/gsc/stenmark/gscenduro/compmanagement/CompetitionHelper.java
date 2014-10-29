@@ -32,8 +32,7 @@ public class CompetitionHelper {
 		return null;
 	}
 	
-	public static List<Long> extractResultFromCard(Card card) {
-		List<TrackMarker> track = MainActivity.track;
+	public static List<Long> extractResultFromCard(Card card, List<TrackMarker> track) {
 		List<Long> result = new ArrayList<Long>();
 
 		try {

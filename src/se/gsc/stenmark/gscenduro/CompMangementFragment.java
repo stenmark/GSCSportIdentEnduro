@@ -181,7 +181,7 @@ public class CompMangementFragment extends Fragment {
 		try {
 			clearList();
 			int previousViewId = -1;
-			for (Competitor competitor : mainActivity.competitors) {
+			for (Competitor competitor : mainActivity.competition.getCompetitors()) {
 				String cardNumber = String.valueOf(competitor.cardNumber);
 				if (competitor.cardNumber == -1) {
 					cardNumber = "No card added yet";
@@ -248,14 +248,14 @@ public class CompMangementFragment extends Fragment {
 		public void onClick(View arg0) {
 			try {
 				Competitor compToDelete = null;
-				for (Competitor competitor : mainActivity.competitors) {
+				for (Competitor competitor : mainActivity.competition.getCompetitors()) {
 					if (competitor.name.equals(nameToDelete)) {
 						compToDelete = competitor;
 						break;
 					}
 				}
 				if (compToDelete != null) {
-					mainActivity.competitors.remove(compToDelete);
+					mainActivity.competition.getCompetitors().remove(compToDelete);
 				}
 
 				parent.listCompetitors();
@@ -284,7 +284,7 @@ public class CompMangementFragment extends Fragment {
 		public void onClick(View arg0) {
 			try {
 				Competitor compToModify = null;
-				for (Competitor competitor : mainActivity.competitors) {
+				for (Competitor competitor : mainActivity.competition.getCompetitors()) {
 					if (competitor.name.equals(nameToModify)) {
 						compToModify = competitor;
 						break;

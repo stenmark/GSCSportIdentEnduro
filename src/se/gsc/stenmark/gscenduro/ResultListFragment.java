@@ -106,7 +106,7 @@ public class ResultListFragment extends Fragment {
 				latestCardInfoText.setText("");
 			}
 
-			Competitor foundCompetitor = CompetitionHelper.findCompetitor(newCard, mainActivity.competitors);
+			Competitor foundCompetitor = CompetitionHelper.findCompetitor(newCard, mainActivity.competition.getCompetitors());
 			if (foundCompetitor == null) {
 				if (isInView) {
 					latestCardInfoText
@@ -126,7 +126,7 @@ public class ResultListFragment extends Fragment {
 
 			List<Long> results = new ArrayList<Long>();
 			try{
-				results = CompetitionHelper.extractResultFromCard(newCard);
+				results = CompetitionHelper.extractResultFromCard(newCard, mainActivity.competition.getTrack());
 			}
 			catch(NotAllStationsPunchedException e1){
 				PopupMessage dialog = new PopupMessage(	e1.getMessage());
@@ -166,10 +166,9 @@ public class ResultListFragment extends Fragment {
 				TextView resultsText = (TextView) getView().findViewById(
 						R.id.resultsTextView);
 				resultsText.setText("");
-				if (mainActivity.competitors != null
-						&& !mainActivity.competitors.isEmpty()) {
-					Collections.sort(mainActivity.competitors);
-					for (Competitor competitor : mainActivity.competitors) {
+				if (mainActivity.competition.getCompetitors() != null && !mainActivity.competition.getCompetitors().isEmpty()) {
+					Collections.sort(mainActivity.competition.getCompetitors());
+					for (Competitor competitor : mainActivity.competition.getCompetitors()) {
 						if (competitor.hasResult()) {
 							resultsText.append(competitor.name);
 							int i = 0;
