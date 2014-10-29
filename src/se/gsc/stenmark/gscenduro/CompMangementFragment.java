@@ -3,6 +3,9 @@ package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.gsc.stenmark.gscenduro.SporIdent.Punch;
+import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

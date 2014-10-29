@@ -1,4 +1,4 @@
-package se.gsc.stenmark.gscenduro;
+package se.gsc.stenmark.gscenduro.SporIdent;
 
 import java.io.StringWriter;
 
@@ -13,68 +13,6 @@ public class SiMessage {
 	public byte[] sequence() {
 		return sequence;
 	}
-
-	public byte sequence(int i) {
-		return sequence[i];
-	}
-	
-	public byte[] data() {
-		int cmd_length = sequence.length - 4;
-		byte[] command = new byte[cmd_length];
-		System.arraycopy(sequence, 1, command, 0, cmd_length);
-		return command;
-	}
-
-	public byte commandByte() {
-		return sequence[1];
-	}
-
-	public byte startByte() {
-		return sequence[0];
-	}
-
-	public byte endByte() {
-		return sequence[sequence.length - 1];
-	}
-
-	public int extractCRC() {
-		int i = sequence.length;
-		return (sequence[i-3] << 8 & 0xFFFF) | (sequence[i-2] & 0xFF); 
-	}
-	
-	public int computeCRC() {
-		return CRCCalculator.crc(data());
-	}
-	
-	public boolean check(byte command) {
-		return valid() && commandByte() == command;
-	}
-	
-	public boolean valid() {
-		return startByte() == STX && endByte() == ETX && validCRC();
-	}
-	
-	public boolean validCRC() {
-		return computeCRC() == extractCRC();
-	}
-
-	@Override
-	public String toString() {
-		StringWriter buf = new StringWriter(sequence.length);
-		for (int i = 0; i < sequence.length; i++) {
-			buf.write(String.format("%02X ", sequence[i]));// & 0xFF);
-		}
-		return buf.toString();
-	}
-
-	public String toStringCRC() {
-		if( sequence.length >= 6 ) {
-			return String.format("%04X", computeCRC());
-		} else {
-			return "none";
-		}
-	}
-
 
 	/*
 	 * Basic protocol instructions

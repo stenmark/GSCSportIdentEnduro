@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Locale;
 
 import se.gsc.stenmark.gscenduro.StartScreenFragment.OnNewCardListener;
+import se.gsc.stenmark.gscenduro.SporIdent.Card;
+import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
+import se.gsc.stenmark.gscenduro.compmanagement.TrackMarker;
 
 import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;

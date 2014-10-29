@@ -1,4 +1,4 @@
-package se.gsc.stenmark.gscenduro;
+package se.gsc.stenmark.gscenduro.SporIdent;
 
 import java.io.Serializable;
 
@@ -8,7 +8,7 @@ public class Punch implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	Punch(long time, long control){
+	public Punch(long time, long control){
 		this.time = time;
 		this.control = control;
 	}

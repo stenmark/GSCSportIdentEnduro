@@ -1,9 +1,9 @@
-package se.gsc.stenmark.gscenduro;
+package se.gsc.stenmark.gscenduro.SporIdent;
 
 import java.util.Arrays;
 
 public class MessageBuffer {
-	MessageBuffer( byte[] buffer){
+	public MessageBuffer( byte[] buffer){
 		position = 0;
 		this.buffer = buffer;
 	}

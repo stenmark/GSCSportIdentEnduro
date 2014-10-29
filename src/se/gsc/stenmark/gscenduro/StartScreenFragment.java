@@ -5,6 +5,12 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import se.gsc.stenmark.gscenduro.SporIdent.Card;
+import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
+import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
+import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
+import se.gsc.stenmark.gscenduro.compmanagement.TrackMarker;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -540,10 +546,10 @@ public class StartScreenFragment extends Fragment {
 						if (readSiMessage.length >= 2
 								&& (readSiMessage[1] & 0xFF) == 0x66) {
 							siDriver[0]
-									.sendSiMessage(SiMessage.request_si_card6);
+									.sendSiMessage(SiMessage.request_si_card6.sequence());
 							cardData = siDriver[0].getCard6Data();
 
-							siDriver[0].sendSiMessage(SiMessage.ack_sequence);
+							siDriver[0].sendSiMessage(SiMessage.ack_sequence.sequence());
 
 							return cardData;
 						} else if (readSiMessage.length >= 2
@@ -555,13 +561,13 @@ public class StartScreenFragment extends Fragment {
 							}
 
 							siDriver[0]
-									.sendSiMessage(SiMessage.request_si_card5);
+									.sendSiMessage(SiMessage.request_si_card5.sequence());
 							cardData = siDriver[0].getCard5Data();
 							if (cardData == null) {
 								cardData = new Card();
 							}
 
-							siDriver[0].sendSiMessage(SiMessage.ack_sequence);
+							siDriver[0].sendSiMessage(SiMessage.ack_sequence.sequence());
 							return cardData;
 						} else {
 							cardData.errorMsg += "not card6";

@@ -1,4 +1,4 @@
-package se.gsc.stenmark.gscenduro;
+package se.gsc.stenmark.gscenduro.compmanagement;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ public class TrackMarker implements Serializable{
 	public int finish;
 	public String compName;
 	
-	TrackMarker(int start, int finish, String compName){
+	public TrackMarker(int start, int finish, String compName){
 		this.start = start;
 		this.finish = finish;
 		this.compName = compName;

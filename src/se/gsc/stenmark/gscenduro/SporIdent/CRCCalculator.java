@@ -1,4 +1,4 @@
-package se.gsc.stenmark.gscenduro;
+package se.gsc.stenmark.gscenduro.SporIdent;
 
 public class CRCCalculator {
 

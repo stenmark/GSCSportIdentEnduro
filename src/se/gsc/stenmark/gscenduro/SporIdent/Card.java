@@ -1,4 +1,4 @@
-package se.gsc.stenmark.gscenduro;
+package se.gsc.stenmark.gscenduro.SporIdent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class Card implements Serializable {
 	public ArrayList<Punch> doublePunches;
 	public String errorMsg;
 	
-	Card(){
+	public Card(){
 		cardNumber = 0;
 		numberOfPunches = 0;
 		startPunch = new Punch(-1, -1);

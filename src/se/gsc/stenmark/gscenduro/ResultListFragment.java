@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import se.gsc.stenmark.gscenduro.SporIdent.Card;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
+import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
+import se.gsc.stenmark.gscenduro.compmanagement.NotAllStationsPunchedException;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -102,7 +106,7 @@ public class ResultListFragment extends Fragment {
 				latestCardInfoText.setText("");
 			}
 
-			Competitor foundCompetitor = findCompetitor(newCard);
+			Competitor foundCompetitor = CompetitionHelper.findCompetitor(newCard, mainActivity.competitors);
 			if (foundCompetitor == null) {
 				if (isInView) {
 					latestCardInfoText
@@ -120,7 +124,17 @@ public class ResultListFragment extends Fragment {
 						+ foundCompetitor.name + "   ");
 			}
 
-			List<Long> results = extractResultFromCard(newCard);
+			List<Long> results = new ArrayList<Long>();
+			try{
+				results = CompetitionHelper.extractResultFromCard(newCard);
+			}
+			catch(NotAllStationsPunchedException e1){
+				PopupMessage dialog = new PopupMessage(	e1.getMessage());
+				dialog.show(getFragmentManager(), "popUp");
+			}
+			
+
+			
 			foundCompetitor.trackTimes = new ArrayList<Long>();
 			int i = 1;
 			for (Long trackTime : results) {
@@ -182,73 +196,4 @@ public class ResultListFragment extends Fragment {
 			dialog.show(getFragmentManager(), "popUp");
 		}
 	}
-
-	private List<Long> extractResultFromCard(Card card) {
-		try {
-			List<TrackMarker> track = MainActivity.track;
-			List<Long> result = new ArrayList<Long>();
-
-			try {
-				for (int i = 0; i < track.size(); i++) {
-					TrackMarker trackMarker = track.get(i);
-					Punch startPunch = findPunchForStationNrInCard(card,
-							trackMarker.start, i + 1);
-					Punch finishPunch = findPunchForStationNrInCard(card,
-							trackMarker.finish, i + 1);
-
-					long trackTime = finishPunch.time - startPunch.time;
-					result.add(trackTime);
-	
-				}
-			} catch (Exception e) {
-				PopupMessage dialog = new PopupMessage("Not all stations have been checked for card number: " + card.cardNumber);
-				dialog.show(getFragmentManager(), "popUp");
-			}
-
-			return result;
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-			return new ArrayList<Long>();
-		}
-	}
-
-	private Punch findPunchForStationNrInCard(Card card, long stationNumber,
-			int instanceNumber) {
-		try {
-			int i = 0;
-			for (Punch punch : card.punches) {
-				if (punch.control == stationNumber) {
-					i++;
-					if (i == instanceNumber) {
-						return punch;
-					}
-				}
-			}
-			return null;
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-			return new Punch(-1, 0);
-		}
-	}
-
-	private Competitor findCompetitor(Card cardToMatch) {
-		try {
-			for (Competitor competitor : mainActivity.competitors) {
-				if (competitor.cardNumber == cardToMatch.cardNumber) {
-					return competitor;
-				}
-			}
-			return null;
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-			return new Competitor("Error");
-		}
-	}
-
 }

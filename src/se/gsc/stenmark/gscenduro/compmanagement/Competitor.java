@@ -1,7 +1,9 @@
-package se.gsc.stenmark.gscenduro;
+package se.gsc.stenmark.gscenduro.compmanagement;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import se.gsc.stenmark.gscenduro.SporIdent.Card;
 
 
 public class Competitor implements Comparable<Competitor>, Serializable{
@@ -14,7 +16,7 @@ public class Competitor implements Comparable<Competitor>, Serializable{
 	public Card card;
 	public ArrayList<Long> trackTimes;
 	
-	Competitor(String name){
+	public Competitor(String name){
 		this.name = name;
 		this.cardNumber = -1;
 		this.card = null;

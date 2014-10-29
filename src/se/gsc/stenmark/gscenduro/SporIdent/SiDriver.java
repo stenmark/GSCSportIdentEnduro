@@ -1,7 +1,10 @@
-package se.gsc.stenmark.gscenduro;
+package se.gsc.stenmark.gscenduro.SporIdent;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import se.gsc.stenmark.gscenduro.MainActivity;
+import se.gsc.stenmark.gscenduro.SporIdent.CRCCalculator;
 import android.hardware.usb.UsbManager;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
@@ -15,7 +18,7 @@ public class SiDriver {
 	public boolean handShake;
 	public boolean autoSend;
 
-	SiDriver( ){
+	public SiDriver( ){
 		stationId = -1;
 		mode = -1;
 		extended = false;
@@ -41,7 +44,7 @@ public class SiDriver {
     private boolean performHandShake( boolean withStartup){
 		byte[] startupResponse = new byte[16];
     	if( withStartup ){
-			sendSiMessage(SiMessage.startup_sequence);
+			sendSiMessage(SiMessage.startup_sequence.sequence());
 			sleep(700);
 			startupResponse = readSiMessage(16, 500, false);
 		}
@@ -78,9 +81,9 @@ public class SiDriver {
 		}
 	}
     
-    public void sendSiMessage(SiMessage message){
+    public void sendSiMessage(byte[] message){
     	try {
-    		 driver.write(message.sequence(), 1000 );
+    		 driver.write(message, 1000 );
 		} catch (IOException e) {
 
 		}
