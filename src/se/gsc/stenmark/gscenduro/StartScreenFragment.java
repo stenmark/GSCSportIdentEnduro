@@ -12,17 +12,12 @@ import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import se.gsc.stenmark.gscenduro.compmanagement.TrackMarker;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.support.v4.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,8 +128,7 @@ public class StartScreenFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				try {
-					TextView statusTextView = (TextView) getView()
-							.findViewById(R.id.statusText);
+					TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);
 					String connectMsg = connectToSiMaster();
 					statusTextView.setText(connectMsg);
 					disconected = false;
@@ -147,26 +141,22 @@ public class StartScreenFragment extends Fragment {
 			}
 		});
 
-		Button addTrackButton = (Button) rootView
-				.findViewById(R.id.addTrackButton);
+		Button addTrackButton = (Button) rootView.findViewById(R.id.addTrackButton);
 		addTrackButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				try {
-					EditText newTrack = (EditText) getView().findViewById(
-							R.id.editTrackDefinition);
-					parseNewTrack(newTrack.getText().toString());
+					EditText newTrack = (EditText) getView().findViewById(R.id.editTrackDefinition);
+					 mainActivity.competition.addNewTrack( (newTrack.getText().toString()) );
 					updateTrackText();
 				} catch (Exception e) {
-					PopupMessage dialog = new PopupMessage(MainActivity
-							.generateErrorMessage(e));
+					PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
 				}
 			}
 		});
 
-		Button addCompetitorButton = (Button) rootView
-				.findViewById(R.id.addCompetitorButton);
+		Button addCompetitorButton = (Button) rootView.findViewById(R.id.addCompetitorButton);
 		addCompetitorButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -260,17 +250,14 @@ public class StartScreenFragment extends Fragment {
 			}
 		});
 
-		Button listButton = (Button) rootView
-				.findViewById(R.id.listLoadedButton);
+		Button listButton = (Button) rootView.findViewById(R.id.listLoadedButton);
 		listButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				try {
-					TextView statusText = (TextView) getView().findViewById(
-							R.id.cardInfoTextView);
+					TextView statusText = (TextView) getView().findViewById( R.id.cardInfoTextView);
 					statusText.setText("Existing competitions \n");
-					String[] fileList = MainApplication.getAppContext()
-							.fileList();
+					String[] fileList = MainApplication.getAppContext().fileList();
 					for (String file : fileList) {
 						if (file.contains("_list")) {
 							if (!file.equals(CURRENT_COMPETITIOR_LIST_FILE)) {
@@ -313,18 +300,11 @@ public class StartScreenFragment extends Fragment {
 
 		});
 
-		Button exportResultButton = (Button) rootView
-				.findViewById(R.id.exportResultButton);
+		Button exportResultButton = (Button) rootView.findViewById(R.id.exportResultButton);
 		exportResultButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				try {
 					exportResult();
-				} catch (Exception e) {
-					PopupMessage dialog = new PopupMessage(MainActivity
-							.generateErrorMessage(e));
-					dialog.show(getFragmentManager(), "popUp");
-				}
 			}
 		});
 
@@ -333,116 +313,23 @@ public class StartScreenFragment extends Fragment {
 
 	private void exportResult() {
 		try {
-			TextView status = (TextView) getView().findViewById(
-					R.id.cardInfoTextView);
-			String result = "Name,card number,total time,";
-			for (int i = 0; i < mainActivity.competition.getTrack().size(); i++) {
-				result += "SS" + (i + 1) + ",";
-			}
-			result += "\n";
-			status.setText("");
-			if (isExternalStorageWritable()) {
-				try {
-					File sdCard = Environment.getExternalStorageDirectory();
-					String compName = "New";
-					if (mainActivity.competition.getTrack() != null) {
-						if (!mainActivity.competition.getTrack().isEmpty()) {
-							compName = mainActivity.competition.getTrack().get(0).compName;
-						}
-					}
-					compName.replace(" ", "_");
-
-					File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-					if (!dir.exists()) {
-						status.append("Dir does not exist "
-								+ dir.getAbsolutePath());
-						if (!dir.mkdirs()) {
-							status.append("Could not create directory: "
-									+ dir.getAbsolutePath());
-							return;
-						}
-					}
-
-					File file = new File(dir, compName + ".csv");
-					status.append("Saving result to file:\n"
-							+ file.getAbsolutePath() + "\n");
-
-					if (mainActivity.competition.getCompetitors() != null
-							&& !mainActivity.competition.getCompetitors().isEmpty()) {
-						Collections.sort(mainActivity.competition.getCompetitors());
-						for (Competitor competitor : mainActivity.competition.getCompetitors()) {
-							status.append(competitor.name + ","
-									+ competitor.cardNumber + ","
-									+ competitor.getTotalTime(false) + ",");
-							result += competitor.name + ","
-									+ competitor.cardNumber + ","
-									+ competitor.getTotalTime(false) + ",";
-							if (competitor.trackTimes != null) {
-								for (long time : competitor.trackTimes) {
-									status.append(time + ",");
-									result += time + ",";
-								}
-							} else {
-								for (int i = 0; i < mainActivity.competition.getTrack().size(); i++) {
-									status.append("0,");
-									result += "0,";
-								}
-							}
-							status.append("\n");
-							result += "\n\n";
-						}
-					}
-					FileWriter fw = new FileWriter(file);
-					fw.write(result);
-					fw.close();
-				} catch (Exception e) {
-					PopupMessage dialog = new PopupMessage(
-							MainActivity.generateErrorMessage(e));
-					dialog.show(getFragmentManager(), "popUp");
-				}
-			} else {
-				status.setText("External file storage not available, coulr not export results");
-			}
+			TextView status = (TextView) getView().findViewById(R.id.cardInfoTextView);
+			String exportResult = mainActivity.competition.exportResultAsCsv();
+			status.setText(exportResult);	
 		} catch (Exception e) {
 			PopupMessage dialog = new PopupMessage( MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");
 		}
-
 	}
 
-	private boolean isExternalStorageWritable() {
-		try {
-			String state = Environment.getExternalStorageState();
-			if (Environment.MEDIA_MOUNTED.equals(state)) {
-				return true;
-			}
-			return false;
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-			return false;
-		}
-	}
+
 
 	public void updateTrackText() {
 		try {
-			TextView trackInfoTextView = (TextView) getView().findViewById(
-					R.id.trackInfoTextView);
-			if (mainActivity.competition.getTrack() != null) {
-				trackInfoTextView.setText("Current loaded Track: ");
-				int i = 0;
-				for (TrackMarker trackMarker : mainActivity.competition.getTrack()) {
-					i++;
-					trackInfoTextView.append(", SS" + i + ": "
-							+ trackMarker.start + "->" + trackMarker.finish);
-				}
-			} else {
-				trackInfoTextView.setText("No track loaded");
-			}
+			TextView trackInfoTextView = (TextView) getView().findViewById( R.id.trackInfoTextView);
+			trackInfoTextView.setText("Current loaded Track: " + mainActivity.competition.getTrackAsString() );
 		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e));
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");
 		}
 
@@ -453,8 +340,7 @@ public class StartScreenFragment extends Fragment {
 		try {
 			String msg = "";
 			siDriver = new SiDriver();
-			if (siDriver.connectDriver((UsbManager) mainActivity
-					.getSystemService(Context.USB_SERVICE))) {
+			if (siDriver.connectDriver((UsbManager) mainActivity.getSystemService(Context.USB_SERVICE))) {
 				if (siDriver.connectToSiMaster()) {
 					msg = "SiMain " + siDriver.stationId + " connected";
 				} else {
@@ -462,14 +348,14 @@ public class StartScreenFragment extends Fragment {
 				}
 			}
 			if (siDriver.mode != SiMessage.STATION_MODE_READ_CARD) {
-				msg = "SiMain is not configured as Reas Si. Is configured as: "
-						+ SiMessage.getStationMode(siDriver.mode);
+				msg = "SiMain is not configured as Reas Si";
+				PopupMessage dialog = new PopupMessage(	msg + " Is configured as: "	+ SiMessage.getStationMode(siDriver.mode) );
+				dialog.show(getFragmentManager(), "popUp");
 			}
 
 			return msg;
 		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e));
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");
 			return "Fail";
 		}
@@ -477,11 +363,9 @@ public class StartScreenFragment extends Fragment {
 
 	public void writeCard(Card card) {
 		try {
-			TextView cardText = (TextView) getView().findViewById(
-					R.id.cardInfoTextView);
+			TextView cardText = (TextView) getView().findViewById(R.id.cardInfoTextView);
 			if (card.cardNumber != 0) {
 				cardText.setText(card.toString());
-				// cardText.append(card.toString()+"\n");
 				cardText.append("\n" + card.errorMsg + "\n");
 				newCardCallback.onNewCard(card);
 			} else {
@@ -490,51 +374,16 @@ public class StartScreenFragment extends Fragment {
 			if (!disconected) {
 				new SiCardListener().execute(siDriver);
 			} else {
-				TextView statusTextView = (TextView) getView().findViewById(
-						R.id.statusText);
+				TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);
 				statusTextView.setText("Disconnected");
 			}
 		} catch (Exception e) {
 			if (!disconected) {
 				new SiCardListener().execute(siDriver);
 			}
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e));
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");
 
-		}
-	}
-
-	private void parseNewTrack(String newTrack) {
-		try {
-			String[] trackMarkers = newTrack.split(",");
-			mainActivity.competition.setTrack( new ArrayList<TrackMarker>() );
-			String compName = "New";
-			if (mainActivity.competition.getTrack() != null) {
-				if (!mainActivity.competition.getTrack().isEmpty()) {
-					compName = mainActivity.competition.getTrack().get(0).compName;
-				}
-			}
-
-			for (int i = 0; i < trackMarkers.length; i += 2) {
-				int startMarker = 0;
-				int finishMarker = 0;
-				try {
-					startMarker = Integer.parseInt(trackMarkers[i]);
-					finishMarker = Integer.parseInt(trackMarkers[i + 1]);
-				} catch (Exception e) {
-					PopupMessage dialog = new PopupMessage(
-							MainActivity.generateErrorMessage(e));
-					dialog.show(getFragmentManager(), "popUp");
-					return;
-				}
-				mainActivity.competition.getTrack().add(new TrackMarker(startMarker,
-						finishMarker, compName));
-			}
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
 		}
 	}
 

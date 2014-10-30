@@ -1,21 +1,27 @@
 package se.gsc.stenmark.gscenduro.compmanagement;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.MainActivity;
 import se.gsc.stenmark.gscenduro.MainApplication;
 import se.gsc.stenmark.gscenduro.PopupMessage;
+import se.gsc.stenmark.gscenduro.R;
 import se.gsc.stenmark.gscenduro.ResultListFragment;
 import se.gsc.stenmark.gscenduro.StartScreenFragment;
 import android.content.Context;
+import android.os.Environment;
 import android.support.v4.app.FragmentManager;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class Competition {
@@ -42,6 +48,67 @@ public class Competition {
 
 	public void setCompetitors(ArrayList<Competitor> competitors) {
 		this.competitors = competitors;
+	}
+	
+	public void updateCompetitorCardNumber(String nameToModify, String newCardNumber){
+		Competitor compToModify = null;
+		for (Competitor competitor : competitors ) {
+			if (competitor.name.equals(nameToModify)) {
+				compToModify = competitor;
+				break;
+			}
+		}
+		if (compToModify != null) {
+			compToModify.cardNumber = Integer.parseInt(newCardNumber);
+		}
+	}
+	
+	public void removeCompetitor( String nameToDelete ){
+		Competitor compToDelete = null;
+		for (Competitor competitor : competitors ) {
+			if (competitor.name.equals(nameToDelete)) {
+				compToDelete = competitor;
+				break;
+			}
+		}
+		if (compToDelete != null) {
+			competitors.remove(compToDelete);
+		}
+	}
+	
+	public void addNewTrack( String newTrack){
+		String[] trackMarkers = newTrack.split(",");
+		track =  new ArrayList<TrackMarker>();
+		String compName = "New";
+		if( track != null ) {
+			if (!track.isEmpty()) {
+				compName = track.get(0).compName;
+			}
+		}
+
+		for (int i = 0; i < trackMarkers.length; i += 2) {
+			
+			int startMarker = 0;
+			int finishMarker = 0;
+			startMarker = Integer.parseInt(trackMarkers[i]);
+			finishMarker = Integer.parseInt(trackMarkers[i + 1]);
+			track.add(new TrackMarker(startMarker, finishMarker, compName));
+		}
+	}
+	
+	public String getTrackAsString(){
+		String trackAsString = " ";
+		if ( !track.isEmpty() && track != null ) {
+			int i = 0;
+			for (TrackMarker trackMarker : track ) {
+				i++;
+				trackAsString += ", SS" + i + ": "+ trackMarker.start + "->" + trackMarker.finish;
+			}
+		} else {
+			trackAsString += " No track loaded";
+		}
+		return trackAsString;
+	
 	}
 	
 	public void saveSessionData(String competionName, FragmentManager fragmentManager) {
@@ -179,5 +246,70 @@ public class Competition {
 			cardText.append("Name: " + comp.name + " cardnum"
 					+ comp.cardNumber + comp.card + "\n");
 		}
+	}
+	
+	public String exportResultAsCsv() throws IOException{
+		String responseMsg = "";
+		String result = "Name,card number,total time,";
+		for (int i = 0; i < track.size(); i++) {
+			result += "SS" + (i + 1) + ",";
+		}
+		result += "\n";
+
+		if( CompetitionHelper.isExternalStorageWritable() ) {
+			File sdCard = Environment.getExternalStorageDirectory();
+			String compName = "New";
+			if( track != null ) {
+				if (!track.isEmpty()) {
+					compName = track.get(0).compName;
+				}
+			}
+			compName.replace(" ", "_");
+
+			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+			if (!dir.exists()) {
+				responseMsg += "Dir does not exist "	+ dir.getAbsolutePath();
+				if (!dir.mkdirs()) {
+					responseMsg += "Could not create directory: " + dir.getAbsolutePath();
+					return responseMsg;
+				}
+			}
+
+			File file = new File(dir, compName + ".csv");
+			responseMsg += "Saving result to file:\n" + file.getAbsolutePath() + "\n";
+
+			if( competitors!= null && !competitors.isEmpty() ) {
+				Collections.sort(competitors);
+				for (Competitor competitor : competitors) {
+					responseMsg+= competitor.name + ","
+							+ competitor.cardNumber + ","
+							+ competitor.getTotalTime(false) + ",";
+					result += competitor.name + ","
+							+ competitor.cardNumber + ","
+							+ competitor.getTotalTime(false) + ",";
+					if (competitor.trackTimes != null) {
+						for (long time : competitor.trackTimes) {
+							responseMsg += time + ",";
+							result += time + ",";
+						}
+					} else {
+						for (int i = 0; i < track.size(); i++) {
+							responseMsg += "0,";
+							result += "0,";
+						}
+					}
+					responseMsg += "\n";
+					result += "\n\n";
+				}
+			}
+			FileWriter fw = new FileWriter(file);
+			fw.write(result);
+			fw.close();
+		} else {
+			return "External file storage not available, coulr not export results";
+		}
+	
+		responseMsg += "\nResult exported succesfuly";
+		return responseMsg;
 	}
 }

@@ -3,7 +3,10 @@ package se.gsc.stenmark.gscenduro.compmanagement;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.os.Environment;
+
 import se.gsc.stenmark.gscenduro.MainActivity;
+import se.gsc.stenmark.gscenduro.PopupMessage;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
@@ -50,5 +53,17 @@ public class CompetitionHelper {
 		}
 
 		return result;
+	}
+	
+	public static boolean isExternalStorageWritable() {
+		try {
+			String state = Environment.getExternalStorageState();
+			if (Environment.MEDIA_MOUNTED.equals(state)) {
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

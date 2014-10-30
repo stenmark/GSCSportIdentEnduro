@@ -247,17 +247,7 @@ public class CompMangementFragment extends Fragment {
 		@Override
 		public void onClick(View arg0) {
 			try {
-				Competitor compToDelete = null;
-				for (Competitor competitor : mainActivity.competition.getCompetitors()) {
-					if (competitor.name.equals(nameToDelete)) {
-						compToDelete = competitor;
-						break;
-					}
-				}
-				if (compToDelete != null) {
-					mainActivity.competition.getCompetitors().remove(compToDelete);
-				}
-
+				mainActivity.competition.removeCompetitor(nameToDelete);
 				parent.listCompetitors();
 			} catch (Exception e) {
 				PopupMessage dialog = new PopupMessage(
@@ -283,23 +273,8 @@ public class CompMangementFragment extends Fragment {
 		@Override
 		public void onClick(View arg0) {
 			try {
-				Competitor compToModify = null;
-				for (Competitor competitor : mainActivity.competition.getCompetitors()) {
-					if (competitor.name.equals(nameToModify)) {
-						compToModify = competitor;
-						break;
-					}
-				}
-				if (compToModify != null) {
-
-					EditText newCardNumberEdit = (EditText) getView()
-							.findViewById(editViewIdToReadFrom);
-					String newCardNumberString = newCardNumberEdit.getText()
-							.toString();
-					compToModify.cardNumber = Integer
-							.parseInt(newCardNumberString);
-				}
-
+				EditText newCardNumberEdit = (EditText) getView().findViewById(editViewIdToReadFrom);
+				mainActivity.competition.updateCompetitorCardNumber(nameToModify, newCardNumberEdit.getText().toString() );
 				parent.listCompetitors();
 			} catch (Exception e) {
 				PopupMessage dialog = new PopupMessage(
