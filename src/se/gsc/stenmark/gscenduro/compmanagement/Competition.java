@@ -2,44 +2,45 @@ package se.gsc.stenmark.gscenduro.compmanagement;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import se.gsc.stenmark.gscenduro.MainActivity;
 import se.gsc.stenmark.gscenduro.MainApplication;
-import se.gsc.stenmark.gscenduro.PopupMessage;
-import se.gsc.stenmark.gscenduro.R;
-import se.gsc.stenmark.gscenduro.ResultListFragment;
-import se.gsc.stenmark.gscenduro.StartScreenFragment;
 import android.content.Context;
 import android.os.Environment;
-import android.support.v4.app.FragmentManager;
-import android.widget.EditText;
-import android.widget.TextView;
 
-public class Competition {
+public class Competition implements Serializable{
 
-	private static List<TrackMarker> track = null;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public static final String CURRENT_COMPETITION = "current_competition";
+	
+	private List<TrackMarker> track = null;
 	private ArrayList<Competitor> competitors = null;
+	public String competitionName;
 	
 	public Competition(){
 		track = new ArrayList<TrackMarker>();
 		competitors = new ArrayList<Competitor>();
+		competitionName = "New";
 	}
 		
-	public static List<TrackMarker> getTrack() {
+	public List<TrackMarker> getTrack() {
 		return track;
 	}
 
-	public static void setTrack(List<TrackMarker> track) {
-		Competition.track = track;
+	public void setTrack(List<TrackMarker> track) {
+		this.track = track;
 	}
 
 	public ArrayList<Competitor> getCompetitors() {
@@ -48,6 +49,16 @@ public class Competition {
 
 	public void setCompetitors(ArrayList<Competitor> competitors) {
 		this.competitors = competitors;
+	}
+	
+	public void addCompetitor( String name, String cardNumber){
+		Competitor competitor = new Competitor( name );	
+		if (!cardNumber.isEmpty()) {
+			int cardNumberAsInt = Integer.parseInt(cardNumber);
+			competitor.cardNumber = cardNumberAsInt;
+		}
+
+		competitors.add(competitor);		
 	}
 	
 	public void updateCompetitorCardNumber(String nameToModify, String newCardNumber){
@@ -79,20 +90,13 @@ public class Competition {
 	public void addNewTrack( String newTrack){
 		String[] trackMarkers = newTrack.split(",");
 		track =  new ArrayList<TrackMarker>();
-		String compName = "New";
-		if( track != null ) {
-			if (!track.isEmpty()) {
-				compName = track.get(0).compName;
-			}
-		}
-
 		for (int i = 0; i < trackMarkers.length; i += 2) {
 			
 			int startMarker = 0;
 			int finishMarker = 0;
 			startMarker = Integer.parseInt(trackMarkers[i]);
 			finishMarker = Integer.parseInt(trackMarkers[i + 1]);
-			track.add(new TrackMarker(startMarker, finishMarker, compName));
+			track.add(new TrackMarker(startMarker, finishMarker));
 		}
 	}
 	
@@ -111,141 +115,37 @@ public class Competition {
 	
 	}
 	
-	public void saveSessionData(String competionName, FragmentManager fragmentManager) {
-		try {
-			FileOutputStream fileOutputComp;
-			FileOutputStream fileOutputTrack;
-			try {
-				if (competionName == null || competionName.isEmpty()) {
-					fileOutputComp = MainApplication
-							.getAppContext()
-							.openFileOutput(
-									StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE,
-									Context.MODE_PRIVATE);
-				} else {
-					fileOutputComp = MainApplication.getAppContext()
-							.openFileOutput(competionName + "_list",
-									Context.MODE_PRIVATE);
-				}
-
-				ObjectOutputStream objStreamOutComp = new ObjectOutputStream(
-						fileOutputComp);
-				objStreamOutComp.writeObject(competitors);
-				objStreamOutComp.close();
-
-				if (track == null) {
-					track = new ArrayList<TrackMarker>();
-				}
-				if (competionName == null || competionName.isEmpty()) {
-					fileOutputTrack = MainApplication.getAppContext()
-							.openFileOutput(
-									StartScreenFragment.CURRENT_TRACK_FILE,
-									Context.MODE_PRIVATE);
-				} else {
-					fileOutputTrack = MainApplication.getAppContext()
-							.openFileOutput(competionName + "_track",
-									Context.MODE_PRIVATE);
-				}
-				ObjectOutputStream objStreamOutTrack = new ObjectOutputStream(
-						fileOutputTrack);
-				objStreamOutTrack.writeObject(track);
-				objStreamOutTrack.close();
-
-			} catch (FileNotFoundException e) {
-				PopupMessage dialog = new PopupMessage(
-						MainActivity.generateErrorMessage(e));
-				dialog.show( fragmentManager, "popUp");
-				return;
-			} catch (IOException e) {
-				PopupMessage dialog = new PopupMessage(
-						MainActivity.generateErrorMessage(e));
-				dialog.show( fragmentManager, "popUp");
-				return;
-			}
-		} catch (Exception e1) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e1));
-			dialog.show( fragmentManager, "popUp");
+	public void saveSessionData( String competionName ) throws IOException {
+		FileOutputStream fileOutputComp;
+		if (competionName == null || competionName.isEmpty()) {
+			fileOutputComp = MainApplication.getAppContext().openFileOutput( CURRENT_COMPETITION, Context.MODE_PRIVATE);
+		} 
+		else {
+			competionName = competionName.replace(" ", "_");
+			fileOutputComp = MainApplication.getAppContext().openFileOutput(competionName , Context.MODE_PRIVATE);
 		}
+
+		ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);
+		objStreamOutComp.writeObject(this);
+		objStreamOutComp.close();
+
 
 	}
 
-	public void loadSessionData(String competionName, 
-								boolean readFile, 
-								FragmentManager fragmentManager, 
-								ResultListFragment resultListFragment,
-								TextView trackInfoTextView,
-								TextView cardText) {
-		if (readFile) {
-			FileInputStream fileInputTrack = null;
-			FileInputStream fileInputComp = null;
-			try {
-				if (competionName == null || competionName.isEmpty()) {
-					fileInputComp = MainApplication
-							.getAppContext()
-							.openFileInput(
-									StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE);
-				} else {
-					fileInputComp = MainApplication.getAppContext()
-							.openFileInput(competionName + "_list");
-				}
-				ObjectInputStream objStreamInComp = new ObjectInputStream(
-						fileInputComp);
-				competitors = (ArrayList<Competitor>) objStreamInComp.readObject();
-				objStreamInComp.close();
+	public static Competition loadSessionData(String competionName ) throws StreamCorruptedException, IOException, ClassNotFoundException {
+		FileInputStream fileInputComp = null;
 
-				if (competionName == null || competionName.isEmpty()) {
-					fileInputTrack = MainApplication.getAppContext()
-							.openFileInput(
-									StartScreenFragment.CURRENT_TRACK_FILE);
-				} else {
-					fileInputTrack = MainApplication.getAppContext()
-							.openFileInput(competionName + "_track");
-				}
-				ObjectInputStream objStreamInTrack = new ObjectInputStream(
-						fileInputTrack);
-				track = (List<TrackMarker>) objStreamInTrack.readObject();
-				objStreamInTrack.close();
-			} catch (FileNotFoundException e) {
-				PopupMessage dialog = new PopupMessage(
-						MainActivity.generateErrorMessage(e));
-				dialog.show(fragmentManager, "popUp");
-				return;
-			} catch (IOException e) {
-				PopupMessage dialog = new PopupMessage(
-						MainActivity.generateErrorMessage(e));
-				dialog.show(fragmentManager, "popUp");
-				return;
-			} catch (ClassNotFoundException e) {
-				PopupMessage dialog = new PopupMessage(
-						MainActivity.generateErrorMessage(e));
-				dialog.show(fragmentManager, "popUp");
-				return;
-			}
+		if (competionName == null || competionName.isEmpty()) {
+			fileInputComp = MainApplication.getAppContext().openFileInput(CURRENT_COMPETITION);
+		} 
+		else {
+			fileInputComp = MainApplication.getAppContext().openFileInput(competionName);
 		}
-
-		// TODO: some fuck up with this global instances, need to get rid of
-		// them
-		// StartScreenFragment.instance.updateTrackText();
-//		trackInfoTextView = (TextView) findViewById(R.id.trackInfoTextView);
-		trackInfoTextView.setText("Current loaded Track: ");
-		int i = 0;
-		for (TrackMarker trackMarker : track) {
-			i++;
-			trackInfoTextView.append(", SS" + i + " Start: "
-					+ trackMarker.start + " Finish: " + trackMarker.finish);
-		}
+		ObjectInputStream objStreamInComp = new ObjectInputStream( fileInputComp);
+		Competition loadCompetition = (Competition) objStreamInComp.readObject();
+		objStreamInComp.close();
 		
-		if (resultListFragment != null) {
-			resultListFragment.updateResultList();
-		}
-		
-		cardText.setText("Loaded: \n");
-
-		for (Competitor comp : competitors) {
-			cardText.append("Name: " + comp.name + " cardnum"
-					+ comp.cardNumber + comp.card + "\n");
-		}
+		return loadCompetition;
 	}
 	
 	public String exportResultAsCsv() throws IOException{
@@ -258,13 +158,8 @@ public class Competition {
 
 		if( CompetitionHelper.isExternalStorageWritable() ) {
 			File sdCard = Environment.getExternalStorageDirectory();
-			String compName = "New";
-			if( track != null ) {
-				if (!track.isEmpty()) {
-					compName = track.get(0).compName;
-				}
-			}
-			compName.replace(" ", "_");
+			String compName = competitionName;
+			compName = compName.replace(" ", "_");
 
 			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
 			if (!dir.exists()) {

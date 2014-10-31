@@ -1,7 +1,5 @@
 package se.gsc.stenmark.gscenduro.SporIdent;
 
-import java.io.StringWriter;
-
 public class SiMessage {
 
 	private final byte[] sequence;

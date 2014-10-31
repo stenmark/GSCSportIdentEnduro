@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Environment;
-
-import se.gsc.stenmark.gscenduro.MainActivity;
-import se.gsc.stenmark.gscenduro.PopupMessage;
+import se.gsc.stenmark.gscenduro.MainApplication;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
@@ -22,6 +20,18 @@ public class CompetitionHelper {
 		return null;
 	}
 
+	public static String getSavedCompetitions(){
+		String result = "";
+		String[] fileList = MainApplication.getAppContext().fileList();
+		for (String file : fileList) {
+			if (!file.equals(Competition.CURRENT_COMPETITION)) {
+				result += file + "\n";
+			}
+
+		}
+		return result;
+	}
+	
 	public static Punch findPunchForStationNrInCard(Card card, long stationNumber, int instanceNumber) {
 		int i = 0;
 		for (Punch punch : card.punches) {

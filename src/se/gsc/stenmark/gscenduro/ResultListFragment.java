@@ -163,10 +163,9 @@ public class ResultListFragment extends Fragment {
 	public void updateResultList() {
 		try {
 			if (isInView) {
-				TextView resultsText = (TextView) getView().findViewById(
-						R.id.resultsTextView);
+				TextView resultsText = (TextView) getView().findViewById(R.id.resultsTextView);
 				resultsText.setText("");
-				if (mainActivity.competition.getCompetitors() != null && !mainActivity.competition.getCompetitors().isEmpty()) {
+				if (!mainActivity.competition.getCompetitors().isEmpty()) {
 					Collections.sort(mainActivity.competition.getCompetitors());
 					for (Competitor competitor : mainActivity.competition.getCompetitors()) {
 						if (competitor.hasResult()) {
@@ -174,16 +173,13 @@ public class ResultListFragment extends Fragment {
 							int i = 0;
 							for (long trackTime : competitor.trackTimes) {
 								i++;
-								resultsText.append(" SS" + i + " " + trackTime
-										+ ", ");
+								resultsText.append(" SS" + i + " " + trackTime+ ", ");
 							}
 
-							resultsText.append("Total time: "
-									+ competitor.getTotalTime(true));
+							resultsText.append("Total time: "+ competitor.getTotalTime(true) + "\n");
 
 						} else {
-							resultsText
-									.append(competitor.name + " no reuslt\n");
+							resultsText	.append(competitor.name + " no reuslt\n");
 						}
 					}
 				} else {

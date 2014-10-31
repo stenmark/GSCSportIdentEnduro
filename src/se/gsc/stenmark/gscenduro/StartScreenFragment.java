@@ -1,22 +1,14 @@
 package se.gsc.stenmark.gscenduro;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
-import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
-import se.gsc.stenmark.gscenduro.compmanagement.TrackMarker;
-
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,10 +29,6 @@ public class StartScreenFragment extends Fragment {
 	private MainActivity mainActivity;
 	OnNewCardListener newCardCallback;
 	public SiDriver siDriver = null;
-
-	public static final String CURRENT_COMPETITIOR_LIST_FILE = "current_comp_list";
-	public static final String CURRENT_TRACK_FILE = "current_track";
-	public static final String CURRENT_COMPETITION_NAME_FILE = "current_comp_name";
 
 	public static long lastCalltime;
 	public static int disconnectCounter;
@@ -101,29 +89,19 @@ public class StartScreenFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		updateTrackText();
-		EditText nameOFCompEdit = (EditText) getView().findViewById(
-				R.id.editSaveLoadComp);
-		nameOFCompEdit.setText("New");
-
-		if (mainActivity.competition.getTrack() != null) {
-			if (!mainActivity.competition.getTrack().isEmpty()) {
-				nameOFCompEdit.setText(mainActivity.competition.getTrack().get(0).compName);
-			}
-		}
+		EditText nameOFCompEdit = (EditText) getView().findViewById(R.id.editSaveLoadComp);
+		nameOFCompEdit.setText(mainActivity.competition.competitionName);
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		lastCalltime = System.currentTimeMillis();
 		disconnectCounter = 0;
 		disconected = true;
 
-		View rootView = inflater.inflate(R.layout.fragment_main, container,
-				false);
+		View rootView = inflater.inflate(R.layout.fragment_main, container,	false);
 
-		Button connectButton = (Button) rootView
-				.findViewById(R.id.connectButton);
+		Button connectButton = (Button) rootView.findViewById(R.id.connectButton);
 		connectButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -136,7 +114,8 @@ public class StartScreenFragment extends Fragment {
 					statusTextView = null;
 					new SiCardListener().execute(siDriver);
 				} catch (Exception e) {
-
+					PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
+					dialog.show(getFragmentManager(), "popUp");
 				}
 			}
 		});
@@ -161,36 +140,11 @@ public class StartScreenFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				try {
-					EditText competitorName = (EditText) getView()
-							.findViewById(R.id.editCompetitorName);
-					Competitor competitor = new Competitor(competitorName
-							.getText().toString());
-
-					EditText cardNumber = (EditText) getView().findViewById(
-							R.id.editCardNumber);
-					String cardNumberAsString = cardNumber.getText().toString();
-					if (!cardNumberAsString.isEmpty()) {
-						try {
-							int cardNumberAsInt = Integer
-									.parseInt(cardNumberAsString);
-							competitor.cardNumber = cardNumberAsInt;
-
-						} catch (Exception e) {
-							PopupMessage dialog = new PopupMessage(MainActivity
-									.generateErrorMessage(e));
-							dialog.show(getFragmentManager(), "popUp");
-						}
-					}
-
-					mainActivity.competition.getCompetitors().add(competitor);
-
-					TextView cardInfoTextView = (TextView) getView()
-							.findViewById(R.id.cardInfoTextView);
-					cardInfoTextView.setText("");
-					for (Competitor currentCompetitor : mainActivity.competition.getCompetitors()) {
-						cardInfoTextView.append("Name: "
-								+ currentCompetitor.name + " Card "
-								+ currentCompetitor.cardNumber + "\n");
+					EditText competitorName = (EditText) getView().findViewById(R.id.editCompetitorName);
+					EditText cardNumber = (EditText) getView().findViewById( R.id.editCardNumber);
+					mainActivity.competition.addCompetitor(competitorName.getText().toString(), cardNumber.getText().toString() );
+					if (mainActivity.getResultListFragment() != null) {
+						mainActivity.getResultListFragment().updateResultList();
 					}
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity
@@ -206,24 +160,17 @@ public class StartScreenFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				try {
-					EditText nameOFCompToSave = (EditText) getView()
-							.findViewById(R.id.editSaveLoadComp);
+					EditText nameOFCompToSave = (EditText) getView().findViewById(R.id.editSaveLoadComp);
 					String compName = nameOFCompToSave.getText().toString();
 					if (compName.isEmpty()) {
+						PopupMessage dialog = new PopupMessage("No competition name was supplied");
+						dialog.show(getFragmentManager(), "popUp");
 						return;
 					}
-					// TODO: work around, using trackmarker object to save
-					// competitions name...
-					if (mainActivity.competition.getTrack() != null) {
-						for (TrackMarker trackmarker : mainActivity.competition.getTrack()) {
-							trackmarker.compName = compName;
-						}
-					}
-					compName.replace(" ", "_");
-					mainActivity.competition.saveSessionData(compName, getFragmentManager());
+					mainActivity.competition.competitionName = compName;
+					mainActivity.competition.saveSessionData(compName);
 				} catch (Exception e) {
-					PopupMessage dialog = new PopupMessage(MainActivity
-							.generateErrorMessage(e));
+					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
 				}
 			}
@@ -234,17 +181,14 @@ public class StartScreenFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				try {
-					EditText nameOFCompToLoad = (EditText) getView()
-							.findViewById(R.id.editSaveLoadComp);
-					mainActivity.competition.loadSessionData(nameOFCompToLoad.getText().toString(), 
-															true, 
-															getFragmentManager(),
-															mainActivity.getResultListFragment(),
-															(TextView) getView().findViewById( R.id.trackInfoTextView),
-															(TextView) getView().findViewById( R.id.cardInfoTextView));
+					EditText nameOFCompToLoad = (EditText) getView().findViewById(R.id.editSaveLoadComp);
+					mainActivity.competition = Competition.loadSessionData( nameOFCompToLoad.getText().toString() );
+					updateTrackText();
+					if (mainActivity.getResultListFragment() != null) {
+						mainActivity.getResultListFragment().updateResultList();
+					}
 				} catch (Exception e) {
-					PopupMessage dialog = new PopupMessage(MainActivity
-							.generateErrorMessage(e));
+					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
 				}
 			}
@@ -257,19 +201,10 @@ public class StartScreenFragment extends Fragment {
 				try {
 					TextView statusText = (TextView) getView().findViewById( R.id.cardInfoTextView);
 					statusText.setText("Existing competitions \n");
-					String[] fileList = MainApplication.getAppContext().fileList();
-					for (String file : fileList) {
-						if (file.contains("_list")) {
-							if (!file.equals(CURRENT_COMPETITIOR_LIST_FILE)) {
-								String compName = file.replace("_list", "");
-								statusText.append(compName + "\n");
-							}
-						}
+					statusText.append( CompetitionHelper.getSavedCompetitions() );
 
-					}
 				} catch (Exception e) {
-					PopupMessage dialog = new PopupMessage(MainActivity
-							.generateErrorMessage(e));
+					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
 				}
 			}
@@ -280,20 +215,13 @@ public class StartScreenFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				try {
-					// Hack to use loadseesiondata to update the GUI.
-					// Uses some ugly work arounds due to poor GUI design that i
-					// dont want to duplicate
-					mainActivity.competition.setTrack( new ArrayList<TrackMarker>() );
-					mainActivity.competition.setCompetitors(new ArrayList<Competitor>());
-					mainActivity.competition.loadSessionData(null, 
-															false, 
-															getFragmentManager(),
-															mainActivity.getResultListFragment(),
-															(TextView) getView().findViewById( R.id.trackInfoTextView),
-															(TextView) getView().findViewById( R.id.cardInfoTextView));
+					mainActivity.competition = new Competition();
+					updateTrackText();
+					if (mainActivity.getResultListFragment() != null) {
+						mainActivity.getResultListFragment().updateResultList();
+					}
 				} catch (Exception e) {
-					PopupMessage dialog = new PopupMessage(MainActivity
-							.generateErrorMessage(e));
+					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
 				}
 			}
@@ -418,9 +346,8 @@ public class StartScreenFragment extends Fragment {
 								return cardData;
 							}
 
-							siDriver[0]
-									.sendSiMessage(SiMessage.request_si_card5.sequence());
-							cardData = siDriver[0].getCard5Data();
+							siDriver[0].sendSiMessage(SiMessage.request_si_card5.sequence());
+							cardData = siDriver[0].getCard5Data( mainActivity.competition );
 							if (cardData == null) {
 								cardData = new Card();
 							}

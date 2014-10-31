@@ -1,25 +1,13 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-
 import se.gsc.stenmark.gscenduro.StartScreenFragment.OnNewCardListener;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
-import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
-import se.gsc.stenmark.gscenduro.compmanagement.TrackMarker;
-
 import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.Fragment;
@@ -27,7 +15,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener, OnNewCardListener {
 	public String msg = "";
@@ -69,10 +56,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected void onPause() {
 		try {
 			super.onPause();
-			competition.saveSessionData(null, getSupportFragmentManager() );
+			competition.saveSessionData( null );
 		} catch (Exception e1) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e1));
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e1));
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 	}
@@ -81,10 +67,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected void onStop() {
 		try {
 			super.onStop();
-			competition.saveSessionData(null, getSupportFragmentManager() );
+			competition.saveSessionData( null );
 		} catch (Exception e1) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e1));
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e1));
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 	}
@@ -95,36 +80,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		try {
 			super.onResume();
 			try {
-				competition = new Competition();
-				FileInputStream fileInputComp = MainApplication
-						.getAppContext()
-						.openFileInput(
-								StartScreenFragment.CURRENT_COMPETITIOR_LIST_FILE);
-				ObjectInputStream objStreamInComp = new ObjectInputStream(
-						fileInputComp);
-				competition.setCompetitors( (ArrayList<Competitor>) objStreamInComp.readObject() );
-				objStreamInComp.close();
-
-				FileInputStream fileInputTrack = MainApplication
-						.getAppContext().openFileInput(
-								StartScreenFragment.CURRENT_TRACK_FILE);
-				ObjectInputStream objStreamInTrack = new ObjectInputStream(
-						fileInputTrack);
-				competition.setTrack( (List<TrackMarker>) objStreamInTrack.readObject() );
-				objStreamInTrack.close();
+				competition = Competition.loadSessionData(null);
+				
 			} catch (FileNotFoundException e) {
-				PopupMessage dialog = new PopupMessage(
-						MainActivity.generateErrorMessage(e));
-				dialog.show(getSupportFragmentManager(), "popUp");
-				return;
-			} catch (IOException e) {
-				PopupMessage dialog = new PopupMessage(
-						MainActivity.generateErrorMessage(e));
-				dialog.show(getSupportFragmentManager(), "popUp");
-				return;
-			} catch (ClassNotFoundException e) {
-				PopupMessage dialog = new PopupMessage(
-						MainActivity.generateErrorMessage(e));
+				competition = new Competition();
+			} catch (Exception e) {
+				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 				dialog.show(getSupportFragmentManager(), "popUp");
 				return;
 			}

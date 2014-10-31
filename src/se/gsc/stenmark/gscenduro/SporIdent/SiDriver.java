@@ -2,8 +2,6 @@ package se.gsc.stenmark.gscenduro.SporIdent;
 
 import java.io.IOException;
 import java.util.Arrays;
-
-import se.gsc.stenmark.gscenduro.MainActivity;
 import se.gsc.stenmark.gscenduro.SporIdent.CRCCalculator;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import android.hardware.usb.UsbManager;
@@ -94,7 +92,7 @@ public class SiDriver {
     //Work around, ReadDle is not woeking as expected for card5, not found why yet.
     //This one hacks the SI interface by finding the Fist station position in the data array and
     //then just hard fetches 4 bytes at a time from there, removing DLE (0x10) marker and extract station ID and time
-    private Card parseCard5Alt( byte[] dleData, byte[] allData){
+    private Card parseCard5Alt( byte[] dleData, byte[] allData, Competition comp){
     	Card card = new Card();;
     	int dataPos = 0;
     	
@@ -117,7 +115,7 @@ public class SiDriver {
     	card.numberOfPunches = numberOfPunches;
     	card.errorMsg += "Number of punches: " + numberOfPunches + "\n"; 
     	
-    	byte firstStartMaker = (byte) Competition.getTrack().get(0).start;
+    	byte firstStartMaker = (byte) comp.getTrack().get(0).start;
     	int firstMarkerPos = 0;
     	int i = 0;
     	for( byte data : allData ){
@@ -261,7 +259,7 @@ public class SiDriver {
     	
     }
     
-    public Card getCard5Data( ){
+    public Card getCard5Data( Competition comp){
     	String msg = "";
     	byte[] allData = new byte[256];
     	byte[] rawData = readSiMessage(256, 1000, false);
@@ -292,7 +290,7 @@ public class SiDriver {
 //        		msg +=  i + "=0x" + byteToHex(readbyte) + ", ";
 //        		i++;
 //        	}
-    		Card card = parseCard5Alt( allData, rawData );
+    		Card card = parseCard5Alt( allData, rawData, comp );
     		card.errorMsg += "\n" + msg;
     		return card;
     		
