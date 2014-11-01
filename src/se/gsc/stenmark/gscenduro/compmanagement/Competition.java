@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.MainApplication;
+import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -150,6 +151,33 @@ public class Competition implements Serializable{
 		objStreamInComp.close();
 		
 		return loadCompetition;
+	}
+	
+	public String processNewCard( Card newCard){
+		String returnMsg = "";
+		Competitor foundCompetitor = CompetitionHelper.findCompetitor(newCard, competitors);
+		if (foundCompetitor == null) {
+			return "Read new card with card number: " + newCard.cardNumber	+ " Could not find any competitor with this number";
+		}
+		newCard.removeDoublePunches();
+		foundCompetitor.card = newCard;
+
+		returnMsg += "New card read for "+ foundCompetitor.name + " ";
+
+		List<Long> results = new ArrayList<Long>();
+		results = CompetitionHelper.extractResultFromCard(newCard, track );
+	
+		foundCompetitor.trackTimes = new ArrayList<Long>();
+		int i = 1;
+		for (Long trackTime : results) {
+			returnMsg +=", Time for SS " + i + " = " + trackTime + " seconds ";
+			foundCompetitor.trackTimes.add(trackTime);
+			i++;
+		}
+
+		returnMsg += ("Total time was: "+ foundCompetitor.getTotalTime(true) + " seconds \n");
+		
+		return returnMsg;
 	}
 	
 	public String exportResultAsCsv( Fragment fragment) throws IOException{

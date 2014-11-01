@@ -1,13 +1,8 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
-import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
-import se.gsc.stenmark.gscenduro.compmanagement.NotAllStationsPunchedException;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -99,59 +94,11 @@ public class ResultListFragment extends Fragment {
 
 	public void processNewCard(Card newCard) {
 		try {
-			TextView latestCardInfoText = null;
-			if (isInView) {
-				latestCardInfoText = (TextView) getView().findViewById(
-						R.id.latestCardInfo);
-				latestCardInfoText.setText("");
-			}
-
-			Competitor foundCompetitor = CompetitionHelper.findCompetitor(newCard, mainActivity.competition.getCompetitors());
-			if (foundCompetitor == null) {
-				if (isInView) {
-					latestCardInfoText
-							.append("Read new card with card number: "
-									+ newCard.cardNumber
-									+ " Could not find any competitor with this number");
-				}
-				return;
-			}
-			newCard.removeDoublePunches();
-			foundCompetitor.card = newCard;
-
-			if (isInView) {
-				latestCardInfoText.append("New card read for "
-						+ foundCompetitor.name + "   ");
-			}
-
-			List<Long> results = new ArrayList<Long>();
-			try{
-				results = CompetitionHelper.extractResultFromCard(newCard, mainActivity.competition.getTrack());
-			}
-			catch(NotAllStationsPunchedException e1){
-				PopupMessage dialog = new PopupMessage(	e1.getMessage());
-				dialog.show(getFragmentManager(), "popUp");
-			}
+			String newCardInfo = mainActivity.competition.processNewCard(newCard);
 			
-
-			
-			foundCompetitor.trackTimes = new ArrayList<Long>();
-			int i = 1;
-			for (Long trackTime : results) {
-				if (isInView) {
-					latestCardInfoText.append(", Time for SS " + i + " = "
-							+ trackTime + " seconds ");
-				}
-				foundCompetitor.trackTimes.add(trackTime);
-				i++;
-			}
-
 			if (isInView) {
-				latestCardInfoText.append("Total time was: "
-						+ foundCompetitor.getTotalTime(true) + " seconds \n");
-			}
-
-			if (isInView) {
+				TextView latestCardInfoText = (TextView) getView().findViewById(R.id.latestCardInfo);
+				latestCardInfoText.setText(newCardInfo);
 				updateResultList();
 			}
 		} catch (Exception e) {
