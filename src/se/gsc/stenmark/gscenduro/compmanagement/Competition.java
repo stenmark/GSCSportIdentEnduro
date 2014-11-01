@@ -12,9 +12,13 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import se.gsc.stenmark.gscenduro.MainApplication;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
 
 public class Competition implements Serializable{
 
@@ -148,7 +152,7 @@ public class Competition implements Serializable{
 		return loadCompetition;
 	}
 	
-	public String exportResultAsCsv() throws IOException{
+	public String exportResultAsCsv( Fragment fragment) throws IOException{
 		String responseMsg = "";
 		String result = "Name,card number,total time,";
 		for (int i = 0; i < track.size(); i++) {
@@ -199,10 +203,24 @@ public class Competition implements Serializable{
 			}
 			FileWriter fw = new FileWriter(file);
 			fw.write(result);
+
+			if( fragment != null){
+				Intent mailIntent = new Intent(Intent.ACTION_SEND);
+				mailIntent.setType("text/plain");
+				mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
+				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro results for " + compName);
+				mailIntent.putExtra(Intent.EXTRA_TEXT   , "Results in attached file");
+				Uri uri = Uri.fromFile(file);
+				mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+				fragment.startActivity(Intent.createChooser(mailIntent, "Send mail"));
+			}
+
 			fw.close();
 		} else {
 			return "External file storage not available, coulr not export results";
 		}
+		
+
 	
 		responseMsg += "\nResult exported succesfuly";
 		return responseMsg;

@@ -242,8 +242,9 @@ public class StartScreenFragment extends Fragment {
 	private void exportResult() {
 		try {
 			TextView status = (TextView) getView().findViewById(R.id.cardInfoTextView);
-			String exportResult = mainActivity.competition.exportResultAsCsv();
+			String exportResult = mainActivity.competition.exportResultAsCsv(this);
 			status.setText(exportResult);	
+						
 		} catch (Exception e) {
 			PopupMessage dialog = new PopupMessage( MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");
