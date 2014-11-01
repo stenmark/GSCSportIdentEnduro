@@ -2,12 +2,16 @@ package se.gsc.stenmark.gscenduro;
 
 import java.io.FileNotFoundException;
 import java.util.Locale;
-import se.gsc.stenmark.gscenduro.StartScreenFragment.OnNewCardListener;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
+import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
+import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.hardware.usb.UsbManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.Fragment;
@@ -15,10 +19,15 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener, OnNewCardListener {
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 	public String msg = "";
 	public Competition competition = null;
+	public SiDriver siDriver = null;
+	public static long lastCalltime;
+	public static int disconnectCounter;
+	public static boolean disconected;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -41,7 +50,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public void onNewCard(Card card) {
 		try {
 			if (mSectionsPagerAdapter.resultListFragment != null) {
-				mSectionsPagerAdapter.resultListFragment.processNewCard(card);
+				mSectionsPagerAdapter.resultListFragment.displayNewCard(card);
 			}
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(
@@ -107,6 +116,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
+			
+			lastCalltime = System.currentTimeMillis();
+			disconnectCounter = 0;
+			disconected = true;
+			
 			setContentView(R.layout.activity_main);
 
 			competition = new Competition();
@@ -167,6 +181,66 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
+	/** Called when the user clicks the Send button */
+	public String connectToSiMaster() {
+		try {
+			String msg = "";
+			siDriver = new SiDriver();
+			if (siDriver.connectDriver((UsbManager) getSystemService(Context.USB_SERVICE))) {
+				if (siDriver.connectToSiMaster()) {
+					msg = "SiMain " + siDriver.stationId + " connected";
+					disconected = false;
+					disconnectCounter = 0;
+					new SiCardListener().execute(siDriver);
+				} else {
+					msg = "Failed ot connect SI master";
+					disconected = true;
+				}
+			}
+			if (siDriver.mode != SiMessage.STATION_MODE_READ_CARD) {
+				msg = "SiMain is not configured as Reas Si";
+				PopupMessage dialog = new PopupMessage(	msg + " Is configured as: "	+ SiMessage.getStationMode(siDriver.mode) );
+				dialog.show(getSupportFragmentManager(), "popUp");
+				disconected = true;
+			}
+
+			return msg;
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			dialog.show(getSupportFragmentManager(), "popUp");
+			disconected = true;
+			return "Fail";
+		}
+	}
+
+	public void writeCard(Card card) {
+		try {
+			TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
+			if (card.cardNumber != 0) {
+				cardText.setText(card.toString());
+				cardText.append("\n" + card.errorMsg + "\n");
+				if (mSectionsPagerAdapter.resultListFragment != null) {
+					mSectionsPagerAdapter.resultListFragment.displayNewCard(card);
+				}
+			} else {
+				cardText.append("\n" + card.errorMsg);
+			}
+			if (!disconected) {
+				new SiCardListener().execute(siDriver);
+			} else {
+				TextView statusTextView = (TextView) findViewById(R.id.statusText);
+				statusTextView.setText("Disconnected");
+			}
+		} catch (Exception e) {
+			if (!disconected) {
+				new SiCardListener().execute(siDriver);
+			}
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			dialog.show(getSupportFragmentManager(), "popUp");
+
+		}
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -270,6 +344,84 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			errorMessage += element.toString() + "\n";
 		}
 		return errorMessage;
+	}
+	
+	private class SiCardListener extends AsyncTask<SiDriver, Void, Card> {
+		/**
+		 * The system calls this to perform work in a worker thread and delivers
+		 * it the parameters given to AsyncTask.execute()
+		 */
+		protected Card doInBackground(SiDriver... siDriver) {
+			try {
+				Card cardData = new Card();
+				while (true) {
+					byte[] readSiMessage = siDriver[0].readSiMessage(100,
+							50000, false);
+
+					if (readSiMessage.length >= 1
+							&& readSiMessage[0] == SiMessage.STX) {
+						if (readSiMessage.length >= 2
+								&& (readSiMessage[1] & 0xFF) == 0x66) {
+							siDriver[0]
+									.sendSiMessage(SiMessage.request_si_card6.sequence());
+							cardData = siDriver[0].getCard6Data();
+
+							siDriver[0].sendSiMessage(SiMessage.ack_sequence.sequence());
+
+							return cardData;
+						} else if (readSiMessage.length >= 2
+								&& (readSiMessage[1] & 0xFF) == 0x46) {
+							if (readSiMessage.length >= 3
+									&& (readSiMessage[2] & 0xFF) == 0x4f) {
+								cardData.errorMsg += "Card pulled out";
+								return cardData;
+							}
+
+							siDriver[0].sendSiMessage(SiMessage.request_si_card5.sequence());
+							cardData = siDriver[0].getCard5Data( competition );
+							if (cardData == null) {
+								cardData = new Card();
+							}
+
+							siDriver[0].sendSiMessage(SiMessage.ack_sequence.sequence());
+							return cardData;
+						} else {
+							cardData.errorMsg += "not card6";
+							return cardData;
+						}
+
+					} else {
+						// Use this to check if we have been disconnected. If we
+						// have many faulty read outs from the Driver, assume
+						// disconenction.
+						if (System.currentTimeMillis() - MainActivity.lastCalltime < 1000) {
+							disconnectCounter++;
+						} else {
+							disconnectCounter = 0;
+						}
+						if (disconnectCounter > 10) {
+							disconected = true;
+							siDriver[0].closeDriver();
+						}
+						MainActivity.lastCalltime = System.currentTimeMillis();
+						cardData.errorMsg += "not STX or timeout";
+						return cardData;
+					}
+				}
+			} catch (Exception e) {
+				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+				dialog.show(getSupportFragmentManager(), "popUp");
+				return new Card();
+			}
+		}
+
+		/**
+		 * The system calls this to perform work in the UI thread and delivers
+		 * the result from doInBackground()
+		 */
+		protected void onPostExecute(Card newCard) {
+			writeCard(newCard);
+		}
 	}
 
 }

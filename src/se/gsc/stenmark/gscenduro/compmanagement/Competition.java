@@ -68,6 +68,7 @@ public class Competition implements Serializable{
 	
 	public void updateCompetitorCardNumber(String nameToModify, String newCardNumber){
 		Competitor compToModify = null;
+		newCardNumber = newCardNumber.replace(" ", "");
 		for (Competitor competitor : competitors ) {
 			if (competitor.name.equals(nameToModify)) {
 				compToModify = competitor;

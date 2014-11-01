@@ -92,7 +92,7 @@ public class ResultListFragment extends Fragment {
 		}
 	}
 
-	public void processNewCard(Card newCard) {
+	public void displayNewCard(Card newCard) {
 		try {
 			String newCardInfo = mainActivity.competition.processNewCard(newCard);
 			
