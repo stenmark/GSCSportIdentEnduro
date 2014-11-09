@@ -1,6 +1,9 @@
 package se.gsc.stenmark.gscenduro;
+
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -20,6 +23,13 @@ public class StartScreenFragment extends Fragment {
 	 */
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	private MainActivity mainActivity;
+	public String connectionStatus = "";
+	private OnCompetitionChanged onCompetitionChangedCallback;
+	private boolean isInView = false;
+	
+    public interface OnCompetitionChanged {
+        public void onCompetitionChanged();
+    }	
 	
 	public void setActivity( MainActivity mainActivity){
 		this.mainActivity = mainActivity;
@@ -53,10 +63,37 @@ public class StartScreenFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		isInView = true;
+		SharedPreferences settings = mainActivity.getSharedPreferences(	MainActivity.PREF_NAME, 0);
+		connectionStatus = settings.getString("connectionStatus", "NO STATUS");
+		
 		updateTrackText();
-		EditText nameOFCompEdit = (EditText) getView().findViewById(R.id.editSaveLoadComp);
-		nameOFCompEdit.setText(mainActivity.competition.competitionName);
+		updateCompName();
+		updateConnectText();
 	}
+	
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        
+        try {
+            onCompetitionChangedCallback = (OnCompetitionChanged) activity;
+        } catch (ClassCastException e) {
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
+        }
+    }
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+	      SharedPreferences settings = mainActivity.getSharedPreferences(MainActivity.PREF_NAME, 0);
+	      SharedPreferences.Editor editor = settings.edit();
+	      editor.putString("connectionStatus", connectionStatus);
+	      editor.commit();
+	      isInView = false;
+	}
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -67,9 +104,8 @@ public class StartScreenFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				try {
-					TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);
-					String connectMsg = mainActivity.connectToSiMaster();
-					statusTextView.setText(connectMsg);
+					connectionStatus = mainActivity.connectToSiMaster();
+					updateConnectText();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
@@ -100,9 +136,7 @@ public class StartScreenFragment extends Fragment {
 					EditText competitorName = (EditText) getView().findViewById(R.id.editCompetitorName);
 					EditText cardNumber = (EditText) getView().findViewById( R.id.editCardNumber);
 					mainActivity.competition.addCompetitor(competitorName.getText().toString(), cardNumber.getText().toString() );
-					if (mainActivity.getResultListFragment() != null) {
-						mainActivity.getResultListFragment().updateResultList();
-					}
+					onCompetitionChangedCallback.onCompetitionChanged();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity
 							.generateErrorMessage(e));
@@ -141,9 +175,7 @@ public class StartScreenFragment extends Fragment {
 					EditText nameOFCompToLoad = (EditText) getView().findViewById(R.id.editSaveLoadComp);
 					mainActivity.competition = Competition.loadSessionData( nameOFCompToLoad.getText().toString() );
 					updateTrackText();
-					if (mainActivity.getResultListFragment() != null) {
-						mainActivity.getResultListFragment().updateResultList();
-					}
+					onCompetitionChangedCallback.onCompetitionChanged();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
@@ -174,9 +206,7 @@ public class StartScreenFragment extends Fragment {
 				try {
 					mainActivity.competition = new Competition();
 					updateTrackText();
-					if (mainActivity.getResultListFragment() != null) {
-						mainActivity.getResultListFragment().updateResultList();
-					}
+					onCompetitionChangedCallback.onCompetitionChanged();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
@@ -207,13 +237,37 @@ public class StartScreenFragment extends Fragment {
 			dialog.show(getFragmentManager(), "popUp");
 		}
 	}
+	
+	public void updateConnectText(){
+		try {
+			if( isInView ){
+				TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);	
+				statusTextView.setText(connectionStatus);
+			}
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
+		}
+	}
 
-
+	public void updateCompName(){
+		try {
+			if( isInView ){
+				EditText nameOFCompEdit = (EditText) getView().findViewById(R.id.editSaveLoadComp);
+				nameOFCompEdit.setText(mainActivity.competition.competitionName);
+			}
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
+		}
+	}
 
 	public void updateTrackText() {
 		try {
-			TextView trackInfoTextView = (TextView) getView().findViewById( R.id.trackInfoTextView);
-			trackInfoTextView.setText("Current loaded Track: " + mainActivity.competition.getTrackAsString() );
+			if( isInView ){
+				TextView trackInfoTextView = (TextView) getView().findViewById( R.id.trackInfoTextView);
+				trackInfoTextView.setText("Current loaded Track: " + mainActivity.competition.getTrackAsString() );
+			}
 		} catch (Exception e) {
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");

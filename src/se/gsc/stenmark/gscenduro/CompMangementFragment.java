@@ -33,6 +33,7 @@ public class CompMangementFragment extends Fragment {
 	private List<EditText> editViews = null;
 	private List<Button> deleteButtons = null;
 	private List<Button> modifyButtons = null;
+	private boolean isInView = false;
 
 	public CompMangementFragment() {
 		textViews = new ArrayList<TextView>();
@@ -40,7 +41,6 @@ public class CompMangementFragment extends Fragment {
 		deleteButtons = new ArrayList<Button>();
 		modifyButtons = new ArrayList<Button>();
 		MainApplication.compMangementFragment = this;
-		// instance = this;
 	}
 	
 	public void setActivity( MainActivity mainActivity){
@@ -50,13 +50,21 @@ public class CompMangementFragment extends Fragment {
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
+		isInView = false;
 		MainApplication.compMangementFragment = null;
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		isInView = true;
 		listCompetitors();
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		isInView = false;
 	}
 
 	@Override
@@ -178,42 +186,46 @@ public class CompMangementFragment extends Fragment {
 	}
 
 	public void listCompetitors() {
+		
 		try {
-			clearList();
-			int previousViewId = -1;
-			for (Competitor competitor : mainActivity.competition.getCompetitors()) {
-				String cardNumber = String.valueOf(competitor.cardNumber);
-				if (competitor.cardNumber == -1) {
-					cardNumber = "No card added yet";
-				}
-
-				String doublePunches = "";
-				if (competitor.card != null) {
-					if (competitor.card.doublePunches != null) {
-						if (!competitor.card.doublePunches.isEmpty()) {
-							doublePunches += "Double punches: ";
-							for (Punch doublePunch : competitor.card.doublePunches) {
-								doublePunches += " On control: "
-										+ doublePunch.control + " at time: "
-										+ doublePunch.time + ", ";
+			if( isInView ){
+				clearList();
+				int previousViewId = -1;
+				for (Competitor competitor : mainActivity.competition.getCompetitors()) {
+					String cardNumber = String.valueOf(competitor.cardNumber);
+					if (competitor.cardNumber == -1) {
+						cardNumber = "No card added yet";
+					}
+	
+					String doublePunches = "";
+					if (competitor.card != null) {
+						if (competitor.card.doublePunches != null) {
+							if (!competitor.card.doublePunches.isEmpty()) {
+								doublePunches += "Double punches: ";
+								for (Punch doublePunch : competitor.card.doublePunches) {
+									doublePunches += " On control: "
+											+ doublePunch.control + " at time: "
+											+ doublePunch.time + ", ";
+								}
 							}
 						}
 					}
+	
+					previousViewId = addCompetitorText(competitor.name + "  "
+							+ doublePunches, cardNumber, previousViewId);
+					addDeleteButton(competitor.name,
+							editViews.get(editViews.size() - 1).getId());
+					addModifyButton(competitor.name,
+							editViews.get(editViews.size() - 1).getId(),
+							deleteButtons.get(deleteButtons.size() - 1).getId());
+	
 				}
-
-				previousViewId = addCompetitorText(competitor.name + "  "
-						+ doublePunches, cardNumber, previousViewId);
-				addDeleteButton(competitor.name,
-						editViews.get(editViews.size() - 1).getId());
-				addModifyButton(competitor.name,
-						editViews.get(editViews.size() - 1).getId(),
-						deleteButtons.get(deleteButtons.size() - 1).getId());
-
 			}
 		} catch (Exception e) {
 			PopupMessage dialog = new PopupMessage( MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");
 		}
+		
 
 	}
 

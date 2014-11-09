@@ -2,6 +2,8 @@ package se.gsc.stenmark.gscenduro;
 
 import java.io.FileNotFoundException;
 import java.util.Locale;
+
+import se.gsc.stenmark.gscenduro.StartScreenFragment.OnCompetitionChanged;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
@@ -10,6 +12,7 @@ import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,7 +24,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener, OnCompetitionChanged {
+	public static final String PREF_NAME = "GSC_ENDURO_PREFERNCES";
+	
 	public String msg = "";
 	public Competition competition = null;
 	public SiDriver siDriver = null;
@@ -47,6 +52,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		return mSectionsPagerAdapter.resultListFragment;
 	}
 	
+	public CompMangementFragment getCompMangementFragment(){
+		return mSectionsPagerAdapter.compMangementFragment;
+	}
+	
 	public void onNewCard(Card card) {
 		try {
 			if (mSectionsPagerAdapter.resultListFragment != null) {
@@ -59,13 +68,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
-
+	@Override
+	public void onCompetitionChanged() {
+		getResultListFragment().updateResultList();
+		getCompMangementFragment().listCompetitors();
+	}
 
 	@Override
 	protected void onPause() {
 		try {
 			super.onPause();
 			competition.saveSessionData( null );
+			disconected = true;
+		    SharedPreferences settings = getSharedPreferences(MainActivity.PREF_NAME, 0);
+		    SharedPreferences.Editor editor = settings.edit();
+		    editor.putString("connectionStatus", "Disconnected");
+		    editor.commit();
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e1));
 			dialog.show(getSupportFragmentManager(), "popUp");
@@ -228,8 +246,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			if (!disconected) {
 				new SiCardListener().execute(siDriver);
 			} else {
-				TextView statusTextView = (TextView) findViewById(R.id.statusText);
-				statusTextView.setText("Disconnected");
+				mSectionsPagerAdapter.startScreenFragment.connectionStatus = "Disconnected";
+				mSectionsPagerAdapter.startScreenFragment.updateConnectText();
 			}
 		} catch (Exception e) {
 			if (!disconected) {
@@ -423,5 +441,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			writeCard(newCard);
 		}
 	}
+
 
 }

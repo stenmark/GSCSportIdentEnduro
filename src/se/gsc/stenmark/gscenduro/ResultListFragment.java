@@ -22,7 +22,7 @@ public class ResultListFragment extends Fragment {
 								// called from external object and this view is
 								// not active
 	private MainActivity mainActivity;
-	
+
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -48,7 +48,7 @@ public class ResultListFragment extends Fragment {
 		super.onDestroy();
 		MainApplication.resultListFragment = null;
 	}
-	
+		
 	public void setActivity( MainActivity mainActivity){
 		this.mainActivity = mainActivity;
 	}
