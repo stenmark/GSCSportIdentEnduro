@@ -5,7 +5,12 @@ import java.util.ArrayList;
 
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 
-
+/**
+ * Represents a Competitor with a competitor name, an SI-card connected to the competitor and the SI-card number for the competitor.
+ * Also List of Long Integers denote the results for this user in the form of tracktimes.
+ * @author Andreas
+ *
+ */
 public class Competitor implements Comparable<Competitor>, Serializable{
 	/**
 	 * 
@@ -30,6 +35,11 @@ public class Competitor implements Comparable<Competitor>, Serializable{
 		trackTimes = null;
 	}
 	
+	/**
+	 * Calculate the time it took for the competitor complete all tracks in the tracTimes list.
+	 * @param useMaxValueOnEmptyResult
+	 * @return
+	 */
 	public long getTotalTime( boolean useMaxValueOnEmptyResult ){
 		long totalTime = 0;
 		if( trackTimes == null ){

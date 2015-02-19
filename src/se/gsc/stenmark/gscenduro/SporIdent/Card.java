@@ -4,6 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is created when a new SI card is read by the SI main unit.
+ * All essential data is parsed from the SI Card and stored in this class.
+ * @author Andreas
+ *
+ */
 public class Card implements Serializable {
 	/**
 	 * 
@@ -11,9 +17,9 @@ public class Card implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public int numberOfPunches;
 	public long cardNumber;
-	public Punch startPunch;
-	public Punch finishPunch;
-	public Punch checkPunch;
+	public Punch startPunch; //Not used by GSC competitions
+	public Punch finishPunch; //Not used by GSC competitions
+	public Punch checkPunch; //Not used by GSC competitions
 	public ArrayList<Punch> punches;
 	public ArrayList<Punch> doublePunches;
 	public String errorMsg;

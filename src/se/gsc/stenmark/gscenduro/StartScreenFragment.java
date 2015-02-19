@@ -1,8 +1,9 @@
 package se.gsc.stenmark.gscenduro;
-
+import java.util.List;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -172,10 +173,19 @@ public class StartScreenFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				try {
-					EditText nameOFCompToLoad = (EditText) getView().findViewById(R.id.editSaveLoadComp);
-					mainActivity.competition = Competition.loadSessionData( nameOFCompToLoad.getText().toString() );
-					updateTrackText();
-					onCompetitionChangedCallback.onCompetitionChanged();
+					List<String> savedCompetitions = CompetitionHelper.getSavedCompetitionsAsList();
+					CompetitionOnClickListener listener = new CompetitionOnClickListener( savedCompetitions );
+					SelectCompetitionDialog dialog = new SelectCompetitionDialog( savedCompetitions, listener );
+					dialog.show(getFragmentManager(), "comp_select");
+					
+//					EditText nameOFCompToLoad = (EditText) getView().findViewById(R.id.editSaveLoadComp);
+//					mainActivity.competition = Competition.loadSessionData( nameOFCompToLoad.getText().toString() );
+//					updateTrackText();
+//					onCompetitionChangedCallback.onCompetitionChanged();
+					
+
+			
+					
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
@@ -274,5 +284,30 @@ public class StartScreenFragment extends Fragment {
 		}
 
 	}
+	
+    public class CompetitionOnClickListener implements android.content.DialogInterface.OnClickListener{
+    	public String selectedItem;
+    	private List<String> savedCompetitions;
+    	
+    	public CompetitionOnClickListener( List<String> savedCompetitions ) {
+    		this.savedCompetitions = savedCompetitions;
+		}
+    	
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			try {
+				selectedItem = savedCompetitions.get(which);	
+				mainActivity.competition = Competition.loadSessionData( selectedItem );
+				updateTrackText();
+				onCompetitionChangedCallback.onCompetitionChanged();
+			} catch (Exception e) {
+				PopupMessage dialog2 = new PopupMessage(MainActivity.generateErrorMessage(e));
+				dialog2.show(getFragmentManager(), "popUp");
+			}
+		}
+
+
+    	
+    }
 
 }

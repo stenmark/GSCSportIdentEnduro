@@ -24,6 +24,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+/**
+ * Android Main class. This class is the creator of the GUI fragments via the SectionPageer and also implements OnCompetitionChanged
+ * Interface used by the fragments to pass data between the Activity and fragments.
+ * It does also handle the Application lifecycle by killing and creating the fragments when onPause and onResume are called. This is not working very well though...
+ * And finally this class holds a separate thread for listening on the USB interface for new events once the SI main unit has been connected.
+ * @author Andreas
+ *
+ */
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener, OnCompetitionChanged {
 	public static final String PREF_NAME = "GSC_ENDURO_PREFERNCES";
 	
@@ -70,10 +78,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	@Override
 	public void onCompetitionChanged() {
-		getResultListFragment().updateResultList();
-		getCompMangementFragment().listCompetitors();
+		if(getResultListFragment() != null ){
+			getResultListFragment().updateResultList();
+		}
+		if( getCompMangementFragment() != null ){
+			getCompMangementFragment().listCompetitors();
+		}
+		
 	}
 
+	/**
+	 * Disconnect the SI main unit and save all competiotn session data to disc.
+	 */
 	@Override
 	protected void onPause() {
 		try {
@@ -90,6 +106,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
+	/**
+	 * Just to be sure we save critical sessiondata also on onStop, might be unnecessary.
+	 */
 	@Override
 	protected void onStop() {
 		try {
@@ -102,6 +121,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 		
 	
+	/**
+	 * Load competition sessiondata from disc and instantiate the a new competition object.
+	 * Also set handles to the mainActivity for all the fragments. This is not working very well and is a temporary solution.
+	 */
 	@Override
 	protected void onResume() {
 		try {
@@ -116,6 +139,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				dialog.show(getSupportFragmentManager(), "popUp");
 				return;
 			}
+			
+			//TODO: Fix a nicer way to have communication between fragment and activity. This is very error prone and several 
+			//Inexplicable null pointer errors  have been seen, probably due to this construct.
 			if( MainApplication.resultListFragment != null ){
 				MainApplication.resultListFragment.setActivity(this);
 			}
@@ -130,6 +156,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 	}
+	
+	/**
+	 * A lot of template code to get the sectorPager going. Created automagically by eclipse.
+	 * Creates an empty competion object, later to be populated by onResume()
+	 * Initiates the local variables.
+	 * Also set handles to the mainActivity for all the fragments. This is not working very well and is a temporary solution. (just like onResume)
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
@@ -182,6 +215,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 						.setText(mSectionsPagerAdapter.getPageTitle(i))
 						.setTabListener(this));
 			}
+			
+			//TODO: Fix a nicer way to have communication between fragment and activity. This is very error prone and several 
+			//Inexplicable null pointer errors  have been seen, probably due to this construct. Same problem as in onResume()
 			if( MainApplication.resultListFragment != null ){
 				MainApplication.resultListFragment.setActivity(this);
 			}
@@ -199,7 +235,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
-	/** Called when the user clicks the Send button */
+	/** Called when the user clicks the Connect button 
+	 * Connects to the SI main Unit over USB with the SiDriver USB/Serial interface.
+	 * Checks that connection was successful and initiates the supervision counters and connectionStatus.
+	 * Also checks that the SiDriver is in Read mode (to avoid mistakenly clear SI pins)
+	 * Finally it starts the SiCardListener, a separate thread for SI events. The thread listens to events from the SI Main unit and activates callbacks when SI cards are read.
+	 * 
+	 * */
 	public String connectToSiMaster() {
 		try {
 			String msg = "";
@@ -231,9 +273,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
+	/**
+	 * Called by SiListener Callback when SI cards are read by the SI main unit.
+	 * It takes a Card object and updates the GUI in the different SectionAdapter fragments.
+	 * Some uncertainty on how well this works, is it always working to update fragments if they are not null?
+	 * @param card
+	 */
 	public void writeCard(Card card) {
 		try {
 			TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
+			//Update the result fragment with the new card.
+			//TODO: Investigate how well this works, can you always call GUI updating methods from here?
+			//Sometimes the fragment seems to be null, for unknown reasons.
 			if (card.cardNumber != 0) {
 				cardText.setText(card.toString());
 				cardText.append("\n" + card.errorMsg + "\n");
@@ -243,6 +294,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			} else {
 				cardText.append("\n" + card.errorMsg);
 			}
+			//The Listener dies once it has received once message, so kick it again to restart it
 			if (!disconected) {
 				new SiCardListener().execute(siDriver);
 			} else {
@@ -259,6 +311,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 	
+	/**
+	 * Autocrated template code
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -266,6 +321,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		return true;
 	}
 
+	/**
+	 * Autocrated template code
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -278,6 +336,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * Autocrated template code
+	 */
 	@Override
 	public void onTabSelected(ActionBar.Tab tab,
 			FragmentTransaction fragmentTransaction) {
@@ -286,11 +347,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mViewPager.setCurrentItem(tab.getPosition());
 	}
 
+	/**
+	 * Autocrated template code
+	 */
 	@Override
 	public void onTabUnselected(ActionBar.Tab tab,
 			FragmentTransaction fragmentTransaction) {
 	}
 
+	/**
+	 * Autocrated template code
+	 */
 	@Override
 	public void onTabReselected(ActionBar.Tab tab,
 			FragmentTransaction fragmentTransaction) {
@@ -299,6 +366,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	/**
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
 	 * one of the sections/tabs/pages.
+	 * Sketchy code based on Autogenerated code. Creates all the GUI fragments and sends a handle to  the MainActivity to all the fragments.
+	 * Is there a better way to setup the Fragments with a handle to the MainActivity?
+	 * The fragments seem to have different lifecycle than the Activity. 
+	 * Especially for layout changes i.e. flipping the screen. then fragments survive but activity is killed. Causes all sorts of problems.
 	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 		public StartScreenFragment startScreenFragment = null;
@@ -364,10 +435,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		return errorMessage;
 	}
 	
+	/**
+	 * Internal class to handle the SI Main unit events over USB/Serial.
+	 * Uses Android AsyncTask to let Android launch this as a background task.
+	 * Once an SI MainUnit event (i.e. read an SI card) has occured and been processed the Task is killed and has to be spawned again by the MainActivity.
+	 * @author Andreas
+	 *
+	 */
 	private class SiCardListener extends AsyncTask<SiDriver, Void, Card> {
 		/**
 		 * The system calls this to perform work in a worker thread and delivers
 		 * it the parameters given to AsyncTask.execute()
+		 * The creator of the task supplies a handle to the siDriver.
+		 * Use the siDriver to continuously listen for new events.
+		 * When a new event is detected, check which event it was (i.e. read SiCard of type6)
+		 * Validate the message and Create a new Card object and return it.
 		 */
 		protected Card doInBackground(SiDriver... siDriver) {
 			try {
@@ -376,25 +458,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					byte[] readSiMessage = siDriver[0].readSiMessage(100,
 							50000, false);
 
-					if (readSiMessage.length >= 1
-							&& readSiMessage[0] == SiMessage.STX) {
-						if (readSiMessage.length >= 2
-								&& (readSiMessage[1] & 0xFF) == 0x66) {
-							siDriver[0]
-									.sendSiMessage(SiMessage.request_si_card6.sequence());
+					//We got something and it was the STX (Start Transmistion) symbol.
+					if (readSiMessage.length >= 1 && readSiMessage[0] == SiMessage.STX) {
+						
+						//Check if the Magic byte 0x66 was received -> SiCard6 was read
+						if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x66) {
+							siDriver[0].sendSiMessage(SiMessage.request_si_card6.sequence());
 							cardData = siDriver[0].getCard6Data();
-
 							siDriver[0].sendSiMessage(SiMessage.ack_sequence.sequence());
-
 							return cardData;
-						} else if (readSiMessage.length >= 2
-								&& (readSiMessage[1] & 0xFF) == 0x46) {
-							if (readSiMessage.length >= 3
-									&& (readSiMessage[2] & 0xFF) == 0x4f) {
+							
+						//Check if the Magic byte 0x46 was received -> SiCard5 was read, seems to be 0x46 also for card pulled out event
+						} else if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x46) {
+							
+							//If the next bytes are 0xFF and =x4F it seems like this is magic bytes for card pulled out event, return an Empty Card
+							if (readSiMessage.length >= 3 && (readSiMessage[2] & 0xFF) == 0x4f) {
 								cardData.errorMsg += "Card pulled out";
 								return cardData;
 							}
 
+							//If it was not card pulled out it was an SiCard5
 							siDriver[0].sendSiMessage(SiMessage.request_si_card5.sequence());
 							cardData = siDriver[0].getCard5Data( competition );
 							if (cardData == null) {
