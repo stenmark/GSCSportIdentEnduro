@@ -64,18 +64,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		return mSectionsPagerAdapter.compMangementFragment;
 	}
 	
-	public void onNewCard(Card card) {
-		try {
-			if (mSectionsPagerAdapter.resultListFragment != null) {
-				mSectionsPagerAdapter.resultListFragment.displayNewCard(card);
-			}
-		} catch (Exception e1) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e1));
-			dialog.show(getSupportFragmentManager(), "popUp");
-		}
-	}
-
 	@Override
 	public void onCompetitionChanged() {
 		if(getResultListFragment() != null ){
