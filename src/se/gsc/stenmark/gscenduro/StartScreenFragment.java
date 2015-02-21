@@ -285,6 +285,30 @@ public class StartScreenFragment extends Fragment {
 
 	}
 	
+	public void appendCardInfoText(String messageToAppend) {
+		try {
+			if( isInView ){
+				TextView trackInfoTextView = (TextView) getView().findViewById( R.id.cardInfoTextView);
+				trackInfoTextView.append( messageToAppend);
+			}
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
+		}
+	}
+	
+	public void updateCardInfoText(String messageToWrite) {
+		try {
+			if( isInView ){
+				TextView trackInfoTextView = (TextView) getView().findViewById( R.id.cardInfoTextView);
+				trackInfoTextView.setText( messageToWrite);
+			}
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
+		}
+	}
+	
     public class CompetitionOnClickListener implements android.content.DialogInterface.OnClickListener{
     	public String selectedItem;
     	private List<String> savedCompetitions;

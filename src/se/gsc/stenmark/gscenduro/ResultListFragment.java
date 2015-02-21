@@ -92,10 +92,8 @@ public class ResultListFragment extends Fragment {
 		}
 	}
 
-	public void displayNewCard(Card newCard) {
-		try {
-			String newCardInfo = mainActivity.competition.processNewCard(newCard);
-			
+	public void displayNewCard(String newCardInfo ) {
+		try {			
 			if (isInView) {
 				TextView latestCardInfoText = (TextView) getView().findViewById(R.id.latestCardInfo);
 				latestCardInfoText.setText(newCardInfo);

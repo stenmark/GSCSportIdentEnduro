@@ -269,18 +269,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	public void writeCard(Card card) {
 		try {
-			TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
+			String newCardInfo = competition.processNewCard(card);
+			
 			//Update the result fragment with the new card.
 			//TODO: Investigate how well this works, can you always call GUI updating methods from here?
 			//Sometimes the fragment seems to be null, for unknown reasons.
 			if (card.cardNumber != 0) {
-				cardText.setText(card.toString());
-				cardText.append("\n" + card.errorMsg + "\n");
+				mSectionsPagerAdapter.startScreenFragment.updateCardInfoText(card.toString());
+				mSectionsPagerAdapter.startScreenFragment.appendCardInfoText("\n" + card.errorMsg + "\n");
 				if (mSectionsPagerAdapter.resultListFragment != null) {
-					mSectionsPagerAdapter.resultListFragment.displayNewCard(card);
+					mSectionsPagerAdapter.resultListFragment.displayNewCard(newCardInfo);
+				}
+				if (mSectionsPagerAdapter.compMangementFragment != null) {
+					mSectionsPagerAdapter.compMangementFragment.listCompetitors();
 				}
 			} else {
-				cardText.append("\n" + card.errorMsg);
+				mSectionsPagerAdapter.startScreenFragment.appendCardInfoText("\n" + card.errorMsg);
 			}
 			//The Listener dies once it has received once message, so kick it again to restart it
 			if (!disconected) {
@@ -481,7 +485,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 					} else {
 						// Use this to check if we have been disconnected. If we
-						// have many faulty read outs from the Driver, assume
+						// have many faulty read outs from the Driver in a short period of time, assume
 						// disconenction.
 						if (System.currentTimeMillis() - MainActivity.lastCalltime < 1000) {
 							disconnectCounter++;
@@ -492,6 +496,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							disconected = true;
 							siDriver[0].closeDriver();
 						}
+						//Return an empty Card and just fill in the extra debug data.
+						//If disconnected was set to true above we will not be called again.
+						//If disconnected is not set, the we will still be connected and writeCard() method will call Asyntask again
 						MainActivity.lastCalltime = System.currentTimeMillis();
 						cardData.errorMsg += "not STX or timeout";
 						return cardData;

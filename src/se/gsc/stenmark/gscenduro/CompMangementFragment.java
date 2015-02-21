@@ -20,7 +20,13 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 /**
- * A placeholder fragment containing a simple view.
+ * GUI class that gives the user a possibility to manage the competition.
+ * The GUI can delete competitors from the competition
+ * The GUI can modify the name and/or SI card number for each competitor
+ * When the GUI comes in view (OnResume) it will draw the whole GUI dynamically by fetching
+ * the competition from the MainActivity
+ * The possibility to redraw the interface from en external object also exists, it will re-draw the interface
+ * if its in view
  */
 public class CompMangementFragment extends Fragment {
 
@@ -88,6 +94,148 @@ public class CompMangementFragment extends Fragment {
 		return fragment;
 	}
 
+
+	/**
+	 * Update the GUI with all current competitors and their name and card number.
+	 * Builds the GUI dynamically each time from scratch by first clearing the GUI and then re-wrinting it.
+	 * Adds "delete" and "modify" buttons to each competitor.
+	 * 
+	 * Only updates the GUI if the fragment lifecycle is "inView" i.e. after OnResume but before OnPause. 
+	 * This is a bit of hack due to my lack of Android GUI programming. Since this is a public method,
+	 * It can be called from MainActivity or another fragment. To make sure that the view is not Null (i.e. been deallocated by android)
+	 * I have this protection. It also means that this method need to be called when the fragment comes in view i.e. onResume()
+	 */
+	public void listCompetitors() {	
+		try {
+			//TODO: Currently only updates the fragment GUI if the fragment is executing after onResume() but before onPause()
+			//There must be a nicer way to fix this?
+			if( isInView ){
+				clearList();
+				int previousViewId = -1;
+				for (Competitor competitor : mainActivity.competition.getCompetitors()) {
+					String cardNumber = String.valueOf(competitor.cardNumber);
+					if (competitor.cardNumber == -1) {
+						cardNumber = "No card added yet";
+					}
+	
+					String doublePunches = "";
+					if (competitor.card != null) {
+						if (competitor.card.doublePunches != null) {
+							if (!competitor.card.doublePunches.isEmpty()) {
+								doublePunches += "Double punches: ";
+								for (Punch doublePunch : competitor.card.doublePunches) {
+									doublePunches += " On control: "
+											+ doublePunch.control + " at time: "
+											+ doublePunch.time + ", ";
+								}
+							}
+						}
+					}
+	
+					previousViewId = addCompetitorText(competitor.name + "  "
+							+ doublePunches, cardNumber, previousViewId);
+					addDeleteButton(competitor.name,
+							editViews.get(editViews.size() - 1).getId());
+					addModifyButton(competitor.name,
+							editViews.get(editViews.size() - 1).getId(),
+							deleteButtons.get(deleteButtons.size() - 1).getId());
+	
+				}
+			}
+		} catch (Exception e) {
+			PopupMessage dialog = new PopupMessage( MainActivity.generateErrorMessage(e));
+			dialog.show(getFragmentManager(), "popUp");
+		}
+		
+
+	}
+
+	/**
+	 * Internal method for deleting all contents in the GUI
+	 */
+	private void clearList() {
+		RelativeLayout relativeLayout = (RelativeLayout) getView()
+				.findViewById(R.id.comp_management_fragment);
+		for (TextView textView : textViews) {
+			relativeLayout.removeView(textView);
+		}
+		for (EditText editText : editViews) {
+			relativeLayout.removeView(editText);
+		}
+		for (Button button : deleteButtons) {
+			relativeLayout.removeView(button);
+		}
+		for (Button button : modifyButtons) {
+			relativeLayout.removeView(button);
+		}
+	}
+
+	/**
+	 * Internal method for dynamically buidling the GUI
+	 * @author Andreas
+	 *
+	 */
+	private class OnDeleteClickedListener implements OnClickListener {
+		private String nameToDelete;
+		private CompMangementFragment parent;
+
+		OnDeleteClickedListener(String nameToDelete,
+				CompMangementFragment parent) {
+			this.nameToDelete = nameToDelete;
+			this.parent = parent;
+		}
+
+		@Override
+		public void onClick(View arg0) {
+			try {
+				mainActivity.competition.removeCompetitor(nameToDelete);
+				parent.listCompetitors();
+			} catch (Exception e) {
+				PopupMessage dialog = new PopupMessage(
+						MainActivity.generateErrorMessage(e));
+				dialog.show(getFragmentManager(), "popUp");
+			}
+
+		}
+	}
+
+	/**
+	 * Internal method for dynamically buidling the GUI
+	 * @author Andreas
+	 *
+	 */
+	private class OnModifyClickedListener implements OnClickListener {
+		private String nameToModify;
+		private CompMangementFragment parent;
+		private int editViewIdToReadFrom;
+
+		OnModifyClickedListener(String nameToModify, int editViewIdToReadFrom,
+				CompMangementFragment parent) {
+			this.nameToModify = nameToModify;
+			this.parent = parent;
+			this.editViewIdToReadFrom = editViewIdToReadFrom;
+		}
+
+		@Override
+		public void onClick(View arg0) {
+			try {
+				EditText newCardNumberEdit = (EditText) getView().findViewById(editViewIdToReadFrom);
+				mainActivity.competition.updateCompetitorCardNumber(nameToModify, newCardNumberEdit.getText().toString() );
+				parent.listCompetitors();
+			} catch (Exception e) {
+				PopupMessage dialog = new PopupMessage(
+						MainActivity.generateErrorMessage(e));
+				dialog.show(getFragmentManager(), "popUp");
+			}
+
+		}
+	}
+	
+	/**
+	 * Internal method for dynamically buidling the GUI
+	 * @author Andreas
+	 *
+	 */
 	private void addDeleteButton(String nameToDelete, int viewIdToAlign) {
 		try {
 			RelativeLayout relativeLayout = (RelativeLayout) getView()
@@ -113,6 +261,11 @@ public class CompMangementFragment extends Fragment {
 		}
 	}
 
+	/**
+	 * Internal method for dynamically buidling the GUI
+	 * @author Andreas
+	 *
+	 */
 	private void addModifyButton(String nameToModify, int editViewIdToReadFrom,
 			int viewIdToAlign) {
 		try {
@@ -139,6 +292,11 @@ public class CompMangementFragment extends Fragment {
 		}
 	}
 
+	/**
+	 * Internal method for dynamically buidling the GUI
+	 * @author Andreas
+	 *
+	 */
 	private int addCompetitorText(String name, String card, int previousViewId) {
 		try {
 			RelativeLayout relativeLayout = (RelativeLayout) getView()
@@ -182,118 +340,6 @@ public class CompMangementFragment extends Fragment {
 			PopupMessage dialog = new PopupMessage( MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");
 			return 0;
-		}
-	}
-
-	public void listCompetitors() {
-		
-		try {
-			if( isInView ){
-				clearList();
-				int previousViewId = -1;
-				for (Competitor competitor : mainActivity.competition.getCompetitors()) {
-					String cardNumber = String.valueOf(competitor.cardNumber);
-					if (competitor.cardNumber == -1) {
-						cardNumber = "No card added yet";
-					}
-	
-					String doublePunches = "";
-					if (competitor.card != null) {
-						if (competitor.card.doublePunches != null) {
-							if (!competitor.card.doublePunches.isEmpty()) {
-								doublePunches += "Double punches: ";
-								for (Punch doublePunch : competitor.card.doublePunches) {
-									doublePunches += " On control: "
-											+ doublePunch.control + " at time: "
-											+ doublePunch.time + ", ";
-								}
-							}
-						}
-					}
-	
-					previousViewId = addCompetitorText(competitor.name + "  "
-							+ doublePunches, cardNumber, previousViewId);
-					addDeleteButton(competitor.name,
-							editViews.get(editViews.size() - 1).getId());
-					addModifyButton(competitor.name,
-							editViews.get(editViews.size() - 1).getId(),
-							deleteButtons.get(deleteButtons.size() - 1).getId());
-	
-				}
-			}
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage( MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-		}
-		
-
-	}
-
-	private void clearList() {
-		RelativeLayout relativeLayout = (RelativeLayout) getView()
-				.findViewById(R.id.comp_management_fragment);
-		for (TextView textView : textViews) {
-			relativeLayout.removeView(textView);
-		}
-		for (EditText editText : editViews) {
-			relativeLayout.removeView(editText);
-		}
-		for (Button button : deleteButtons) {
-			relativeLayout.removeView(button);
-		}
-		for (Button button : modifyButtons) {
-			relativeLayout.removeView(button);
-		}
-	}
-
-	private class OnDeleteClickedListener implements OnClickListener {
-		private String nameToDelete;
-		private CompMangementFragment parent;
-
-		OnDeleteClickedListener(String nameToDelete,
-				CompMangementFragment parent) {
-			this.nameToDelete = nameToDelete;
-			this.parent = parent;
-		}
-
-		@Override
-		public void onClick(View arg0) {
-			try {
-				mainActivity.competition.removeCompetitor(nameToDelete);
-				parent.listCompetitors();
-			} catch (Exception e) {
-				PopupMessage dialog = new PopupMessage(
-						MainActivity.generateErrorMessage(e));
-				dialog.show(getFragmentManager(), "popUp");
-			}
-
-		}
-	}
-
-	private class OnModifyClickedListener implements OnClickListener {
-		private String nameToModify;
-		private CompMangementFragment parent;
-		private int editViewIdToReadFrom;
-
-		OnModifyClickedListener(String nameToModify, int editViewIdToReadFrom,
-				CompMangementFragment parent) {
-			this.nameToModify = nameToModify;
-			this.parent = parent;
-			this.editViewIdToReadFrom = editViewIdToReadFrom;
-		}
-
-		@Override
-		public void onClick(View arg0) {
-			try {
-				EditText newCardNumberEdit = (EditText) getView().findViewById(editViewIdToReadFrom);
-				mainActivity.competition.updateCompetitorCardNumber(nameToModify, newCardNumberEdit.getText().toString() );
-				parent.listCompetitors();
-			} catch (Exception e) {
-				PopupMessage dialog = new PopupMessage(
-						MainActivity.generateErrorMessage(e));
-				dialog.show(getFragmentManager(), "popUp");
-			}
-
 		}
 	}
 
