@@ -1,5 +1,6 @@
 package se.gsc.stenmark.gscenduro.compmanagement;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,11 +39,18 @@ public class CompetitionHelper {
 	 * @return
 	 */
 	public static List<String> getSavedCompetitionsAsList(){
+		File sdCard = Environment.getExternalStorageDirectory();
+		File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+		if (!dir.exists()) {
+			return new ArrayList<String>();
+		}
+		
+		File[] fileList = dir.listFiles();
 		List<String> result = new ArrayList<String>();
-		String[] fileList = MainApplication.getAppContext().fileList();
-		for (String file : fileList) {
-			if (!file.equals(Competition.CURRENT_COMPETITION)) {
-				result.add(file);			}
+		for (File file : fileList) {
+			if (file.getName().contains(".dat")) {
+				result.add(file.getName().replace(".dat", ""));	
+				}
 
 		}
 		return result;
@@ -53,11 +61,17 @@ public class CompetitionHelper {
 	 * @return
 	 */
 	public static String getSavedCompetitions(){
+		File sdCard = Environment.getExternalStorageDirectory();
+		File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+		if (!dir.exists()) {
+			return "";
+		}
+			
 		String result = "";
-		String[] fileList = MainApplication.getAppContext().fileList();
-		for (String file : fileList) {
-			if (!file.equals(Competition.CURRENT_COMPETITION)) {
-				result += file + "\n";
+		File[] fileList = dir.listFiles();
+		for (File file : fileList) {
+			if (file.getName().contains(".dat")) {
+				result += file.getName().replace(".dat", "") + "\n";
 			}
 
 		}

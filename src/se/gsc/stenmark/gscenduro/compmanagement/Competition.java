@@ -163,21 +163,29 @@ public class Competition implements Serializable{
 	 * @throws IOException
 	 */
 	public void saveSessionData( String competionName ) throws IOException {
-		FileOutputStream fileOutputComp;
-		if (competionName == null || competionName.isEmpty()) {
-			fileOutputComp = MainApplication.getAppContext().openFileOutput( CURRENT_COMPETITION, Context.MODE_PRIVATE);
-		} 
-		else {
-			competionName = competionName.replace(" ", "_");
-			fileOutputComp = MainApplication.getAppContext().openFileOutput(competionName , Context.MODE_PRIVATE);
+		
+		if( CompetitionHelper.isExternalStorageWritable() ) {
+			FileOutputStream fileOutputComp;
+			if (competionName == null || competionName.isEmpty()) {
+				fileOutputComp = MainApplication.getAppContext().openFileOutput( CURRENT_COMPETITION, Context.MODE_PRIVATE);
+			} 
+			else {
+				File sdCard = Environment.getExternalStorageDirectory();
+				competionName = competionName.replace(" ", "_");
+				File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}
+				File file = new File(dir, competionName + ".dat");
+				fileOutputComp = new FileOutputStream(file);
+			}
+	
+			ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);
+			objStreamOutComp.writeObject(this);
+			objStreamOutComp.close();
 		}
-
-		ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);
-		objStreamOutComp.writeObject(this);
-		objStreamOutComp.close();
-
-
 	}
+	
 
 	/**
 	 * Loads a serialized competition object from Android file system and returns the competition loaded from disc.
@@ -196,7 +204,16 @@ public class Competition implements Serializable{
 			fileInputComp = MainApplication.getAppContext().openFileInput(CURRENT_COMPETITION);
 		} 
 		else {
-			fileInputComp = MainApplication.getAppContext().openFileInput(competionName);
+			File sdCard = Environment.getExternalStorageDirectory();
+			competionName = competionName.replace(" ", "_");
+			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+			File file = new File(dir, competionName + ".dat");
+			fileInputComp = new FileInputStream(file);
+			
+			//fileInputComp = MainApplication.getAppContext().openFileInput(competionName);
 		}
 		ObjectInputStream objStreamInComp = new ObjectInputStream( fileInputComp);
 		Competition loadCompetition = (Competition) objStreamInComp.readObject();

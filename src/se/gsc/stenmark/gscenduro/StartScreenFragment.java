@@ -177,15 +177,6 @@ public class StartScreenFragment extends Fragment {
 					CompetitionOnClickListener listener = new CompetitionOnClickListener( savedCompetitions );
 					SelectCompetitionDialog dialog = new SelectCompetitionDialog( savedCompetitions, listener );
 					dialog.show(getFragmentManager(), "comp_select");
-					
-//					EditText nameOFCompToLoad = (EditText) getView().findViewById(R.id.editSaveLoadComp);
-//					mainActivity.competition = Competition.loadSessionData( nameOFCompToLoad.getText().toString() );
-//					updateTrackText();
-//					onCompetitionChangedCallback.onCompetitionChanged();
-					
-
-			
-					
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
@@ -323,6 +314,7 @@ public class StartScreenFragment extends Fragment {
 				selectedItem = savedCompetitions.get(which);	
 				mainActivity.competition = Competition.loadSessionData( selectedItem );
 				updateTrackText();
+				updateCompName();
 				onCompetitionChangedCallback.onCompetitionChanged();
 			} catch (Exception e) {
 				PopupMessage dialog2 = new PopupMessage(MainActivity.generateErrorMessage(e));
