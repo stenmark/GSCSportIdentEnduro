@@ -62,6 +62,6 @@ public class ResultListFragment extends ListFragment {
 
 	public void displayNewCard(Card newCard) {
 		mMainActivity.competition.processNewCard(newCard);
-		mMainActivity.UpdateFragments();
+		mMainActivity.updateFragments();
 	}
 }

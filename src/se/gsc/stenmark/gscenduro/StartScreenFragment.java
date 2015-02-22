@@ -195,7 +195,7 @@ public class StartScreenFragment extends Fragment {
 						
 						Toast.makeText(mMainActivity, "Competitor added: " + competitorName.getText().toString() + ", " + cardNumber.getText().toString(), Toast.LENGTH_SHORT).show();
 						onCompetitionChangedCallback.onCompetitionChanged();
-						mMainActivity.UpdateFragments();
+						mMainActivity.updateFragments();
 					}
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity
@@ -236,8 +236,6 @@ public class StartScreenFragment extends Fragment {
 					CompetitionOnClickListener listener = new CompetitionOnClickListener( savedCompetitions );
 					SelectCompetitionDialog dialog = new SelectCompetitionDialog( savedCompetitions, listener );
 					dialog.show(getFragmentManager(), "comp_select");
-										
-					mMainActivity.UpdateFragments();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
@@ -269,6 +267,7 @@ public class StartScreenFragment extends Fragment {
 					mMainActivity.competition = new Competition();
 					updateTrackText();
 					onCompetitionChangedCallback.onCompetitionChanged();
+					mMainActivity.updateFragments();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
@@ -377,6 +376,7 @@ public class StartScreenFragment extends Fragment {
 				updateTrackText();
 				updateCompName();
 				onCompetitionChangedCallback.onCompetitionChanged();
+				mMainActivity.updateFragments();
 			} catch (Exception e) {
 				PopupMessage dialog2 = new PopupMessage(MainActivity.generateErrorMessage(e));
 				dialog2.show(getFragmentManager(), "popUp");

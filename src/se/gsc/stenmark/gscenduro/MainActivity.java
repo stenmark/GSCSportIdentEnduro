@@ -22,7 +22,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 /**
  * Android Main class. This class is the creator of the GUI fragments via the SectionPageer and also implements OnCompetitionChanged
@@ -56,7 +55,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	ViewPager mViewPager;
 	
-	public void UpdateFragments() {
+	public void updateFragments() {
 		if (mSectionsPagerAdapter.compMangementFragment != null
 				&& mSectionsPagerAdapter.compMangementFragment instanceof CompMangementFragment) {
 			mSectionsPagerAdapter.compMangementFragment.FetchItems();

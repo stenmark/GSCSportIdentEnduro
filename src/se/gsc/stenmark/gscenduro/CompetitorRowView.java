@@ -83,7 +83,7 @@ public class CompetitorRowView extends LinearLayout {
 									((MainActivity) mContext).competition
 											.removeCompetitor((String) mName
 													.getText());									
-									((MainActivity) mContext).UpdateFragments();
+									((MainActivity) mContext).updateFragments();
 								}
 							})
 					.setNegativeButton("No",
@@ -141,7 +141,7 @@ public class CompetitorRowView extends LinearLayout {
 															.toString(),
 													mCardNumber.getText()
 															.toString());
-									((MainActivity) mContext).UpdateFragments();
+									((MainActivity) mContext).updateFragments();
 								}
 							})
 					.setNegativeButton("Cancel",
