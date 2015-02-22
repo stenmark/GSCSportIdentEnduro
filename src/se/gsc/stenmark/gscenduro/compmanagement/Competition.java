@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.MainApplication;
@@ -62,6 +63,30 @@ public class Competition implements Serializable{
 		this.competitors = competitors;
 	}
 	
+	public Boolean checkNameExists(String Name){
+		
+		for (int i = 0; i < competitors.size(); i++)
+		{
+			if (Name.equalsIgnoreCase(competitors.get(i).name))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Boolean checkCardNumberExists(int cardNumber){
+		
+		for (int i = 0; i < competitors.size(); i++)
+		{
+			if (cardNumber == competitors.get(i).cardNumber)
+			{
+				return true;
+			}
+		}
+		return false;
+	}	
+	
 	/**
 	 * Add a new Competitor to the competition.
 	 * @param name 
@@ -83,18 +108,22 @@ public class Competition implements Serializable{
 	 * @param nameToModify
 	 * @param newCardNumber 
 	 */
-	public void updateCompetitorCardNumber(String nameToModify, String newCardNumber){
-		Competitor compToModify = null;
+	public void updateCompetitorCardNumber(int index, String newName, String newCardNumber){
+		Competitor newCompetitor = null;		
 		newCardNumber = newCardNumber.replace(" ", "");
-		for (Competitor competitor : competitors ) {
-			if (competitor.name.equals(nameToModify)) {
-				compToModify = competitor;
-				break;
-			}
-		}
-		if (compToModify != null) {
-			compToModify.cardNumber = Integer.parseInt(newCardNumber);
-		}
+		
+		newCompetitor = competitors.get(index);
+		newCompetitor.name = newName;
+		newCompetitor.cardNumber = Integer.parseInt(newCardNumber);
+
+		competitors.set(index, newCompetitor);
+			
+	    Collections.sort(competitors, new Comparator<Competitor>() {
+	        @Override
+	        public int compare(Competitor s1, Competitor s2) {
+	            return s1.name.compareToIgnoreCase(s2.name);
+	        }
+	    });
 	}
 	
 	/**
@@ -103,15 +132,11 @@ public class Competition implements Serializable{
 	 * @param nameToDelete
 	 */
 	public void removeCompetitor( String nameToDelete ){
-		Competitor compToDelete = null;
 		for (Competitor competitor : competitors ) {
 			if (competitor.name.equals(nameToDelete)) {
-				compToDelete = competitor;
+				competitors.remove(competitor);
 				break;
 			}
-		}
-		if (compToDelete != null) {
-			competitors.remove(compToDelete);
 		}
 	}
 	
@@ -164,12 +189,18 @@ public class Competition implements Serializable{
 	 */
 	public void saveSessionData( String competionName ) throws IOException {
 		
+
+
 		if( CompetitionHelper.isExternalStorageWritable() ) {
 			FileOutputStream fileOutputComp;
 			if (competionName == null || competionName.isEmpty()) {
 				fileOutputComp = MainApplication.getAppContext().openFileOutput( CURRENT_COMPETITION, Context.MODE_PRIVATE);
 			} 
+
+
+
 			else {
+
 				File sdCard = Environment.getExternalStorageDirectory();
 				competionName = competionName.replace(" ", "_");
 				File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
@@ -181,12 +212,30 @@ public class Competition implements Serializable{
 			}
 	
 			ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);
+
+
+
 			objStreamOutComp.writeObject(this);
 			objStreamOutComp.close();
 		}
 	}
-	
+/*	
+	public void saveSessionData( String competionName ) throws IOException {
+		FileOutputStream fileOutputComp;
+		if (competionName == null || competionName.isEmpty()) {
+			fileOutputComp = MainApplication.getAppContext().openFileOutput( CURRENT_COMPETITION, Context.MODE_PRIVATE);
+		} 
+		else {
+			competionName = competionName.replace(" ", "_");
+			fileOutputComp = MainApplication.getAppContext().openFileOutput(competionName , Context.MODE_PRIVATE);
+		}
 
+		ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);
+		objStreamOutComp.writeObject(this);
+		objStreamOutComp.close();
+	}
+*/
+	
 	/**
 	 * Loads a serialized competition object from Android file system and returns the competition loaded from disc.
 	 * If the competition name is empty it will be treated as "current competition" 
@@ -220,8 +269,24 @@ public class Competition implements Serializable{
 		objStreamInComp.close();
 		
 		return loadCompetition;
+	}	
+/*	
+	public static Competition loadSessionData(String competionName ) throws StreamCorruptedException, IOException, ClassNotFoundException {
+		FileInputStream fileInputComp = null;
+
+		if (competionName == null || competionName.isEmpty()) {
+			fileInputComp = MainApplication.getAppContext().openFileInput(CURRENT_COMPETITION);
+		} 
+		else {
+			fileInputComp = MainApplication.getAppContext().openFileInput(competionName);
+		}
+		ObjectInputStream objStreamInComp = new ObjectInputStream( fileInputComp);
+		Competition loadCompetition = (Competition) objStreamInComp.readObject();
+		objStreamInComp.close();
+		
+		return loadCompetition;
 	}
-	
+*/	
 	/**
 	 * When a new card is read call this method to add the SI card data to the competition.
 	 * Will first search for the card number to find which competitor it belongs to.

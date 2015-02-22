@@ -1,203 +1,369 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/start_screen_fragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="se.gsc.stenmark.gscenduro.MainActivity$PlaceholderFragment" >
-
-    <TextView
-        android:id="@+id/section_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-  
-    <Button
-        android:id="@+id/connectButton"
-        android:layout_width="85sp"
-        android:layout_height="45sp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textSize="12sp"
-        android:text="Connect" />
-    
-    <TextView
-        android:id="@+id/statusText"
-        android:layout_width="167sp"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/connectButton"
-        android:layout_below="@+id/connectButton"
-        android:textSize="11sp"
-        android:text="Not Connected" />  
-          
-    <Button
-        android:id="@+id/addCompetitorButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="85sp"
-        android:layout_height="45sp"
-        android:layout_alignLeft="@+id/connectButton"
-        android:layout_below="@+id/connectButton"
-        android:text="Add\ncompetitor"
-        android:layout_marginTop="40sp"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/textViewName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/addCompetitorButton"
-        android:layout_toRightOf="@+id/addCompetitorButton"
-        android:text="Name"
-        android:textAppearance="?android:attr/textAppearanceSmall" />         
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    tools:context="se.gsc.stenmark.gscenduro.MainActivity$PlaceholderFragment"
+    android:scrollbars="vertical"  
+    android:layout_weight="1"
+    >
+   
+    <LinearLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginLeft="4dp"
+		android:layout_marginRight="4dp"			
+		>    
         
-    <EditText
-        android:id="@+id/editCompetitorName"
-        android:layout_width="120sp"
-        android:layout_height="30sp"
-        android:layout_alignLeft="@+id/textViewName"
-        android:layout_below="@+id/textViewName"
-        android:inputType="textPersonName"
-        android:textSize="10sp" />
+		<TextView
+		   android:layout_width="wrap_content"
+		   android:layout_height="wrap_content"
+		   android:textSize="24sp"
+		   android:text="@string/start_connection_status"
+		   android:textStyle="bold"
+		   android:layout_weight="1"		
+		   android:textColor="@color/black"			   	        
+		   />          
+        
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:layout_weight="1"				
+			>    
+			
+		     <TextView
+		        android:id="@+id/statusText"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="16sp"
+		        android:text="Not Connected"        
+		        />  
+		        
+			<TextView
+			    android:id="@+id/connectButton"
+	    		android:layout_width="wrap_content"
+	    		android:layout_height="wrap_content"
+	    		android:layout_marginLeft="8dp"			    
+			    android:layout_marginRight="8dp"
+			    android:layout_gravity="center_vertical|right"
+	    		android:textSize="16sp"
+	    		android:textStyle="bold"
+	    		android:text="@string/start_connect"
+	    		android:textColor="@color/blue"	    		 	    	
+	    	/>		    
+		</LinearLayout>
+		
+		<View
+		    android:layout_marginTop="12dp"
+		    android:layout_marginBottom="12dp"
+		    android:layout_width="fill_parent"
+		    android:layout_height="1dp"
+		    android:background="@android:color/darker_gray"/>
+		
+		<TextView
+		   android:layout_width="wrap_content"
+		   android:layout_height="wrap_content"
+		   android:textSize="24sp"
+		   android:text="@string/start_competitor"
+		   android:textStyle="bold"
+		   android:layout_weight="1"
+		   android:textColor="@color/black"		        
+		   /> 		
+		   
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:layout_weight="1"
+			>    
+			
+			<LinearLayout 
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"	
+				> 		    
+		    
+				<LinearLayout 
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					> 		    
+					<TextView
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:textSize="16sp"
+				        android:text="@string/start_name"/>         
+				        
+				    <EditText
+				        android:id="@+id/editCompetitorName"
+				        android:layout_width="fill_parent"
+				        android:layout_height="wrap_content"
+				        android:inputType="textPersonName"
+				        android:textSize="16sp"/>
+				</LinearLayout>
+					
+				<LinearLayout 
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					> 	
+				    <TextView
+				        android:id="@+id/textCardNumber"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:textSize="16sp"
+				        android:text="@string/start_card_number"/>     
+				    
+				     <EditText
+				         android:id="@+id/editCardNumber"
+				         android:layout_width="fill_parent"
+				         android:layout_height="wrap_content"
+				         android:inputType="number"
+				         android:textSize="16sp"/>    
+			    </LinearLayout>
+		    </LinearLayout>
+		    
+			<TextView
+			    android:id="@+id/addCompetitorButton"
+	    		android:layout_width="wrap_content"
+	    		android:layout_height="wrap_content"
+	    		android:layout_marginLeft="8dp"			    
+			    android:layout_marginRight="8dp"
+			    android:layout_gravity="center_vertical|right"
+	    		android:textSize="16sp"
+	    		android:textStyle="bold"
+	    		android:text="@string/start_add"
+	    		android:textColor="@color/blue"	    		 	    	
+	    	/>		    
+		</LinearLayout>		
+		
+		<View
+		    android:layout_marginTop="12dp"
+		    android:layout_marginBottom="12dp"
+		    android:layout_width="fill_parent"
+		    android:layout_height="1dp"
+		    android:background="@android:color/darker_gray"/>
+		
+		<TextView
+		   android:layout_width="wrap_content"
+		   android:layout_height="wrap_content"
+		   android:textSize="24sp"
+		   android:text="@string/start_track"
+		   android:textStyle="bold"
+		   android:layout_weight="1"
+		   android:textColor="@color/black"		        
+		   /> 			
+		
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:layout_weight="1"
+			>    
+			
+		   	<LinearLayout 
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"				
+				> 
+			   	<TextView
+		        	android:id="@+id/addTrackInfo"
+		        	android:layout_width="wrap_content"
+		        	android:layout_height="wrap_content"
+		        	android:textSize="12sp"
+		        	android:text="@string/start_add_track_info" />			
+			    
+			    <EditText
+			        android:id="@+id/editTrackDefinition"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:text="@string/start_track_definition"
+			        android:textSize="16sp"/>	
+			        
+				<TextView
+			        android:id="@+id/trackInfoTextView"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:textSize="8sp"
+			        android:text="@string/start_track_info" />
+			</LinearLayout>
+		</LinearLayout>								
+		
+		<TextView
+		    android:id="@+id/addTrackButton"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_marginLeft="8dp"			    
+		    android:layout_marginRight="8dp"
+		    android:layout_gravity="center_vertical|right"
+    		android:textSize="16sp"
+    		android:textStyle="bold"
+    		android:text="@string/start_add"
+    		android:textColor="@color/blue"/>	
+	
+		<View
+		    android:layout_marginTop="12dp"
+		    android:layout_marginBottom="12dp"
+		    android:layout_width="fill_parent"
+		    android:layout_height="1dp"
+		    android:background="@android:color/darker_gray"/>	    
+	    
+		<TextView
+		   android:layout_width="wrap_content"
+		   android:layout_height="wrap_content"
+		   android:textSize="24sp"
+		   android:text="@string/start_competition"
+		   android:textStyle="bold"
+		   android:layout_weight="1"	
+		   android:textColor="@color/black"	        
+		   /> 			
+		
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:layout_weight="1"
+			>   	    	    
 
-    <TextView
-        android:id="@+id/textCardNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/editCardNumber"
-        android:layout_alignLeft="@+id/editCardNumber"
-        android:text="Card Number"
-        android:textAppearance="?android:attr/textAppearanceSmall" />     
-    
-     <EditText
-         android:id="@+id/editCardNumber"
-         android:layout_width="80sp"
-         android:layout_height="30sp"
-         android:layout_alignTop="@+id/editCompetitorName"
-         android:layout_toRightOf="@+id/editCompetitorName"
-         android:inputType="number"
-         android:textSize="10sp" />    
+			<LinearLayout 
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				> 			    
+				<TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center_vertical|right"
+			        android:textSize="16sp"
+			        android:text="@string/start_name"/>   
+			    
+			    <EditText
+	        		android:id="@+id/editSaveLoadComp"
+	        		android:layout_width="fill_parent"
+	        		android:layout_height="wrap_content"
+	        		android:inputType="textPersonName"
+	        		android:layout_gravity="center_vertical|right"
+			        android:textSize="16sp"/>
+			</LinearLayout>
+					    
+		   	<LinearLayout 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_gravity="right"
+				>  
+		    
+				<TextView
+				    android:id="@+id/newCompButton"
+		    		android:layout_width="wrap_content"
+		    		android:layout_height="wrap_content"
+		    		android:layout_marginLeft="8dp"			    
+				    android:layout_marginRight="8dp"
+				    android:layout_gravity="center_vertical"
+		    		android:textSize="16sp"
+		    		android:textStyle="bold"
+		    		android:text="@string/start_new"
+		    		android:textColor="@color/blue"/>			    
+			    
+				<TextView
+				    android:id="@+id/saveButton"
+		    		android:layout_width="wrap_content"
+		    		android:layout_height="wrap_content"
+		    		android:layout_marginLeft="8dp"			    
+				    android:layout_marginRight="8dp"
+				    android:layout_gravity="center_vertical"
+		    		android:textSize="16sp"
+		    		android:textStyle="bold"
+		    		android:text="@string/start_save"
+		    		android:textColor="@color/blue"/>		
+		    		
+				<TextView
+				    android:id="@+id/loadButton"
+		    		android:layout_width="wrap_content"
+		    		android:layout_height="wrap_content"
+		    		android:layout_marginLeft="8dp"			    
+				    android:layout_marginRight="8dp"
+				    android:layout_gravity="center_vertical"
+		    		android:textSize="16sp"
+		    		android:textStyle="bold"
+		    		android:text="@string/start_load"
+		    		android:textColor="@color/blue"/>		
+		    		
+				<TextView
+				    android:id="@+id/listLoadedButton"
+		    		android:layout_width="wrap_content"
+		    		android:layout_height="wrap_content"
+		    		android:layout_marginLeft="8dp"			    
+				    android:layout_marginRight="8dp"
+				    android:layout_gravity="center_vertical"
+		    		android:textSize="16sp"
+		    		android:textStyle="bold"
+		    		android:text="@string/start_list"
+		    		android:textColor="@color/blue"/>					
+			</LinearLayout>		    
+		</LinearLayout>
 
-     <Button
-        android:id="@+id/addTrackButton"
-        android:layout_width="85sp"
-        android:layout_height="45sp"
-        android:layout_alignLeft="@+id/addCompetitorButton"
-        android:layout_below="@+id/addCompetitorButton"
-        android:layout_marginTop="18sp"
-        android:textSize="12sp"
-        android:text="Add track" />
-    
-    <TextView
-        android:id="@+id/addTrackInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editTrackDefinition"
-        android:layout_below="@+id/editTrackDefinition"
-        android:textSize="8sp"
-        android:text="Add track in format start,stop,start,stop e.g. 71,72,71,72" />
-       
-    <EditText
-        android:id="@+id/editTrackDefinition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/addTrackButton"
-        android:layout_alignTop="@+id/addTrackButton"
-        android:layout_marginLeft="5dp"
-        android:text="71,72,71,72,71,72"
-        android:textSize="10sp" >
-    </EditText>
-    
-    <TextView
-        android:id="@+id/trackInfoTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/addTrackButton"
-        android:layout_below="@+id/addTrackButton"
-        android:textSize="10sp"
-        android:text="No track loaded" />
+		<View
+		    android:layout_marginTop="12dp"
+		    android:layout_marginBottom="12dp"
+		    android:layout_width="fill_parent"
+		    android:layout_height="1dp"
+		    android:background="@android:color/darker_gray"/>		
+		
+		<TextView
+		   android:layout_width="wrap_content"
+		   android:layout_height="wrap_content"
+		   android:textSize="24sp"
+		   android:text="@string/start_result"
+		   android:textStyle="bold"
+		   android:layout_weight="1"	
+		   android:textColor="@color/black"	        
+		   /> 
 
-    <Button
-        android:id="@+id/exportResultButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="85sp"
-        android:layout_height="45sp"
-        android:layout_alignLeft="@+id/trackInfoTextView"
-        android:layout_below="@+id/trackInfoTextView"
-        android:textSize="11sp"
-        android:layout_marginTop="8sp"
-        android:text="Export\nresult" />    
-    
-    <ScrollView 
-     android:visibility="visible" 
-     android:layout_height="wrap_content" 
-     android:layout_width="wrap_content"
-     android:keepScreenOn="true" 
-     android:scrollbarStyle="insideInset" 
-     android:id="@+id/scrollViewMain"
-	 android:layout_below="@+id/exportResultButton"
-	 android:layout_alignLeft="@+id/exportResultButton"
-	 android:layout_marginTop="10sp"
-     android:scrollbars="vertical" > 
-	    <TextView
-	        android:id="@+id/cardInfoTextView"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="No cards read yet" />
-    
-    </ScrollView>
+		<TextView
+		    android:id="@+id/exportResultButton"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_marginLeft="8dp"			    
+		    android:layout_marginRight="8dp"
+		    android:layout_gravity="center_vertical|right"
+    		android:textSize="16sp"
+    		android:textStyle="bold"
+    		android:text="@string/start_export"
+    		android:textColor="@color/blue"/>	
 
-    <Button
-        android:id="@+id/listLoadedButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="70sp"
-        android:layout_height="35sp"
-        android:layout_alignTop="@+id/connectButton"
-        android:layout_toRightOf="@+id/connectButton"
-        android:textSize="8sp"
-        android:layout_marginLeft="8sp"
-        android:text="List saved\nCompetitions" />
-    
-    <Button
-        android:id="@+id/saveButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="67sp"
-        android:layout_height="35sp"
-        android:layout_alignTop="@+id/listLoadedButton"
-        android:layout_toRightOf="@+id/listLoadedButton"
-        android:textSize="8sp"
-        android:text="Save\nCompetition" />
-
-    <Button
-        android:id="@+id/loadButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="67sp"
-        android:layout_height="35sp"
-        android:layout_alignTop="@+id/saveButton"
-        android:layout_toRightOf="@+id/saveButton"
-        android:textSize="8sp"
-        android:text="Load\nCompetition" />
-    
-        <EditText
-        android:id="@+id/editSaveLoadComp"
-        android:layout_width="134sp"
-        android:layout_height="30sp"
-        android:layout_alignLeft="@+id/saveButton"
-        android:layout_below="@+id/saveButton"
-        android:inputType="textPersonName"
-        android:textSize="10sp" />
-
-     <Button
-        android:id="@+id/newCompButton"
-        style="?android:attr/buttonStyleSmall"
-      	android:layout_width="35sp"
-      	android:layout_height="64sp"
-       	android:layout_alignTop="@+id/loadButton"
-       	android:layout_toRightOf="@+id/loadButton"
-        android:text="N\nE\nW" 
-       	android:textSize="10sp" />
-     
- 
-
-</RelativeLayout>
+		<View
+		    android:layout_marginTop="12dp"
+		    android:layout_marginBottom="12dp"
+		    android:layout_width="fill_parent"
+		    android:layout_height="1dp"
+		    android:background="@android:color/darker_gray"/>							
+		
+	    <ScrollView 
+	        android:id="@+id/scrollViewMain"
+	     	android:visibility="visible" 
+	     	android:layout_height="wrap_content" 
+	     	android:layout_width="wrap_content"
+	     	android:keepScreenOn="true" 	     	
+	     	android:scrollbars="vertical" > 
+		    <TextView
+		        android:id="@+id/cardInfoTextView"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="No cards read yet" />
+	    
+	    </ScrollView>		
+	    
+		<View
+		    android:layout_marginTop="12dp"
+		    android:layout_marginBottom="12dp"
+		    android:layout_width="fill_parent"
+		    android:layout_height="1dp"
+		    android:background="@android:color/darker_gray"/>
+   	</LinearLayout>      
+</ScrollView>

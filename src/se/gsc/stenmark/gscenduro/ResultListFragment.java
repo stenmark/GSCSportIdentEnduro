@@ -1,139 +1,67 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.support.v4.app.ListFragment;
 
-/**
- * A placeholder fragment containing a simple view.
- */
-public class ResultListFragment extends Fragment {
-	/**
-	 * The fragment argument representing the section number for this fragment.
-	 */
+public class ResultListFragment extends ListFragment {
+	
+	static ResultListFragment mResultListFragment;
+	MainActivity mMainActivity = null;
+	protected ListResultAdapter mResultAdapter;
+	protected List<Competitor> mAllCompetitor = new ArrayList<Competitor>();
+	protected List<Competitor> mCompetitor = new ArrayList<Competitor>();
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	private boolean isInView; // TODO: hack to make the view not update when its
-								// called from external object and this view is
-								// not active
-	private MainActivity mainActivity;
 
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		setListShownNoAnimation(true);
+		setHasOptionsMenu(true);
+		
+		mMainActivity = ((MainActivity) getActivity());
+		FetchItems();
+	}
+	
+	protected void FetchItems() {
+		mAllCompetitor = mMainActivity.competition.getCompetitors();
+		FillList();	
+	}
+	
+	protected void FillList() {
+		PopulateList();
+		if (mResultAdapter == null) {
+			mResultAdapter = new ListResultAdapter(mMainActivity,
+					mResultListFragment, mCompetitor);
+			setListAdapter(mResultAdapter);
+		} else {
+			mResultAdapter.notifyDataSetChanged();
+		}
+	}
+
+	protected void PopulateList() {
+		mCompetitor.clear();
+		for (int i = 0; i < mAllCompetitor.size(); i++) {
+			mCompetitor.add(mAllCompetitor.get(i));
+		}
+	}	
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
-	public static ResultListFragment getInstance(int sectionNumber,
-			MainActivity mainActivity) {
-		ResultListFragment fragment = null;
-		fragment = new ResultListFragment();
+	public static ResultListFragment getInstance(int sectionNumber) {
+		mResultListFragment = new ResultListFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-		fragment.setArguments(args);
-		fragment.mainActivity = mainActivity;
-		return fragment;
+		mResultListFragment.setArguments(args);
+		return mResultListFragment;
 	}
 
-	public ResultListFragment() {
-		MainApplication.resultListFragment = this;
-		isInView = false;
-	}
-	
-	@Override
-	public void onDestroy(){
-		super.onDestroy();
-		MainApplication.resultListFragment = null;
-	}
-		
-	public void setActivity( MainActivity mainActivity){
-		this.mainActivity = mainActivity;
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		try {
-			View rootView = inflater.inflate(R.layout.fragment_result_list,
-					container, false);
-
-			return rootView;
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-		}
-		return null;
-
-	}
-
-	@Override
-	public void onResume() {
-		try {
-			super.onResume();
-			isInView = true;
-			updateResultList();
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-		}
-	}
-
-	@Override
-	public void onPause() {
-		try {
-			super.onPause();
-			isInView = false;
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-		}
-	}
-
-	public void displayNewCard(String newCardInfo ) {
-		try {			
-			if (isInView) {
-				TextView latestCardInfoText = (TextView) getView().findViewById(R.id.latestCardInfo);
-				latestCardInfoText.setText(newCardInfo);
-				updateResultList();
-			}
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(	 MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-		}
-	}
-
-	public void updateResultList() {
-		try {
-			if (isInView) {
-				TextView resultsText = (TextView) getView().findViewById(R.id.resultsTextView);
-				resultsText.setText("");
-				if (!mainActivity.competition.getCompetitors().isEmpty()) {
-					Collections.sort(mainActivity.competition.getCompetitors());
-					for (Competitor competitor : mainActivity.competition.getCompetitors()) {
-						if (competitor.hasResult()) {
-							resultsText.append(competitor.name);
-							int i = 0;
-							for (long trackTime : competitor.trackTimes) {
-								i++;
-								resultsText.append(" SS" + i + " " + trackTime+ ", ");
-							}
-
-							resultsText.append("Total time: "+ competitor.getTotalTime(true) + "\n");
-
-						} else {
-							resultsText	.append(competitor.name + " no reuslt\n");
-						}
-					}
-				} else {
-					resultsText.setText("No results yet\n");
-				}
-			}
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-		}
+	public void displayNewCard(Card newCard) {
+		mMainActivity.competition.processNewCard(newCard);
+		mMainActivity.UpdateFragments();
 	}
 }

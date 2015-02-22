@@ -55,34 +55,48 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
-
-	public ResultListFragment getResultListFragment(){
-		return mSectionsPagerAdapter.resultListFragment;
-	}
 	
-	public CompMangementFragment getCompMangementFragment(){
-		return mSectionsPagerAdapter.compMangementFragment;
-	}
-	
-	@Override
-	public void onCompetitionChanged() {
-		if(getResultListFragment() != null ){
-			getResultListFragment().updateResultList();
+	public void UpdateFragments() {
+		if (mSectionsPagerAdapter.compMangementFragment != null
+				&& mSectionsPagerAdapter.compMangementFragment instanceof CompMangementFragment) {
+			mSectionsPagerAdapter.compMangementFragment.FetchItems();
 		}
-		if( getCompMangementFragment() != null ){
-			getCompMangementFragment().listCompetitors();
+		if (mSectionsPagerAdapter.resultListFragment != null
+				&& mSectionsPagerAdapter.resultListFragment instanceof ResultListFragment) {
+			mSectionsPagerAdapter.resultListFragment.FetchItems();
 		}
 		
+		try {
+			competition.saveSessionData( null );
+		} catch (Exception e1) {
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e1));
+			dialog.show(getSupportFragmentManager(), "popUp");
+		}		
+	}
+	
+	public void onNewCard(Card card) {
+		try {
+			if (mSectionsPagerAdapter.resultListFragment != null) {
+				mSectionsPagerAdapter.resultListFragment.displayNewCard(card);
+			}
+		} catch (Exception e1) {
+			PopupMessage dialog = new PopupMessage(
+					MainActivity.generateErrorMessage(e1));
+			dialog.show(getSupportFragmentManager(), "popUp");
+		}
+	}
+
+	@Override
+	public void onCompetitionChanged() {
 	}
 
 	/**
-	 * Disconnect the SI main unit and save all competiotn session data to disc.
+	 * Disconnect the SI main unit and save all competition session data to disc.
 	 */
 	@Override
 	protected void onPause() {
 		try {
 			super.onPause();
-			competition.saveSessionData( null );
 			disconected = true;
 		    SharedPreferences settings = getSharedPreferences(MainActivity.PREF_NAME, 0);
 		    SharedPreferences.Editor editor = settings.edit();
@@ -93,58 +107,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 	}
-
-	/**
-	 * Just to be sure we save critical sessiondata also on onStop, might be unnecessary.
-	 */
-	@Override
-	protected void onStop() {
-		try {
-			super.onStop();
-			competition.saveSessionData( null );
-		} catch (Exception e1) {
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e1));
-			dialog.show(getSupportFragmentManager(), "popUp");
-		}
-	}
 		
-	
-	/**
-	 * Load competition sessiondata from disc and instantiate the a new competition object.
-	 * Also set handles to the mainActivity for all the fragments. This is not working very well and is a temporary solution.
-	 */
-	@Override
-	protected void onResume() {
-		try {
-			super.onResume();
-			try {
-				competition = Competition.loadSessionData(null);
-				
-			} catch (FileNotFoundException e) {
-				competition = new Competition();
-			} catch (Exception e) {
-				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
-				dialog.show(getSupportFragmentManager(), "popUp");
-				return;
-			}
-			
-			//TODO: Fix a nicer way to have communication between fragment and activity. This is very error prone and several 
-			//Inexplicable null pointer errors  have been seen, probably due to this construct.
-			if( MainApplication.resultListFragment != null ){
-				MainApplication.resultListFragment.setActivity(this);
-			}
-			if( MainApplication.startScreenFragment != null ){
-				MainApplication.startScreenFragment.setActivity(this);
-			}
-			if( MainApplication.compMangementFragment != null ){
-				MainApplication.compMangementFragment.setActivity(this);
-			}
-		} catch (Exception e1) {
-			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e1));
-			dialog.show(getSupportFragmentManager(), "popUp");
-		}
-	}
-	
 	/**
 	 * A lot of template code to get the sectorPager going. Created automagically by eclipse.
 	 * Creates an empty competion object, later to be populated by onResume()
@@ -162,8 +125,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			
 			setContentView(R.layout.activity_main);
 
-			competition = new Competition();
-
+			try {
+				competition = Competition.loadSessionData(null);
+				
+			} catch (FileNotFoundException e) {
+				competition = new Competition();
+			} catch (Exception e) {
+				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+				dialog.show(getSupportFragmentManager(), "popUp");
+				return;
+			}		
+			
 			// Set up the action bar.
 			final ActionBar actionBar = getActionBar();
 			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -172,8 +144,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// three
 			// primary sections of the activity.
 			mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
-			// startScreenFragment = mSectionsPagerAdapter.startScreenFragment;
-			// resultListFragment = mSectionsPagerAdapter.resultListFragment;
 
 			// Set up the ViewPager with the sections adapter.
 			mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -202,20 +172,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				actionBar.addTab(actionBar.newTab()
 						.setText(mSectionsPagerAdapter.getPageTitle(i))
 						.setTabListener(this));
-			}
-			
-			//TODO: Fix a nicer way to have communication between fragment and activity. This is very error prone and several 
-			//Inexplicable null pointer errors  have been seen, probably due to this construct. Same problem as in onResume()
-			if( MainApplication.resultListFragment != null ){
-				MainApplication.resultListFragment.setActivity(this);
-			}
-			if( MainApplication.startScreenFragment != null ){
-				MainApplication.startScreenFragment.setActivity(this);
-			}
-			if( MainApplication.compMangementFragment != null ){
-				MainApplication.compMangementFragment.setActivity(this);
-			}
-			
+			}			
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(
 					MainActivity.generateErrorMessage(e1));
@@ -269,23 +226,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	public void writeCard(Card card) {
 		try {
-			String newCardInfo = competition.processNewCard(card);
-			
+			//TODO: Move this to something smarter
+//			TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
 			//Update the result fragment with the new card.
 			//TODO: Investigate how well this works, can you always call GUI updating methods from here?
 			//Sometimes the fragment seems to be null, for unknown reasons.
 			if (card.cardNumber != 0) {
-				mSectionsPagerAdapter.startScreenFragment.updateCardInfoText(card.toString());
-				mSectionsPagerAdapter.startScreenFragment.appendCardInfoText("\n" + card.errorMsg + "\n");
+//				cardText.setText(card.toString());
+//				cardText.append("\n" + card.errorMsg + "\n");
 				if (mSectionsPagerAdapter.resultListFragment != null) {
-					mSectionsPagerAdapter.resultListFragment.displayNewCard(newCardInfo);
+					mSectionsPagerAdapter.resultListFragment.displayNewCard(card);
 				}
-				if (mSectionsPagerAdapter.compMangementFragment != null) {
-					mSectionsPagerAdapter.compMangementFragment.listCompetitors();
-				}
-			} else {
-				mSectionsPagerAdapter.startScreenFragment.appendCardInfoText("\n" + card.errorMsg);
-			}
+			} 
+//			else {
+//				cardText.append("\n" + card.errorMsg);
+//			}
 			//The Listener dies once it has received once message, so kick it again to restart it
 			if (!disconected) {
 				new SiCardListener().execute(siDriver);
@@ -367,12 +322,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		public StartScreenFragment startScreenFragment = null;
 		public ResultListFragment resultListFragment = null;
 		public CompMangementFragment compMangementFragment = null;
-		private MainActivity mainActivity = null;
 
 		public SectionsPagerAdapter(FragmentManager fm,
 				MainActivity mainActivity) {
 			super(fm);
-			this.mainActivity = mainActivity;
 		}
 		
 		@Override
@@ -382,16 +335,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// below).
 			switch (position) {
 			case 0:
-				startScreenFragment = StartScreenFragment.getInstance(
-						position + 1, mainActivity);
+				startScreenFragment = StartScreenFragment.getInstance(0);
 				return startScreenFragment;
 			case 1:
-				resultListFragment = ResultListFragment.getInstance(
-						position + 1, mainActivity);
+				resultListFragment = ResultListFragment.getInstance(1);
 				return resultListFragment;
 			case 2:
-				compMangementFragment = CompMangementFragment.getInstance(
-						position + 1, mainActivity);
+				compMangementFragment = CompMangementFragment.getInstance(2);
 				return compMangementFragment;
 			}
 
@@ -485,7 +435,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 					} else {
 						// Use this to check if we have been disconnected. If we
-						// have many faulty read outs from the Driver in a short period of time, assume
+						// have many faulty read outs from the Driver, assume
 						// disconenction.
 						if (System.currentTimeMillis() - MainActivity.lastCalltime < 1000) {
 							disconnectCounter++;
@@ -496,9 +446,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							disconected = true;
 							siDriver[0].closeDriver();
 						}
-						//Return an empty Card and just fill in the extra debug data.
-						//If disconnected was set to true above we will not be called again.
-						//If disconnected is not set, the we will still be connected and writeCard() method will call Asyntask again
 						MainActivity.lastCalltime = System.currentTimeMillis();
 						cardData.errorMsg += "not STX or timeout";
 						return cardData;
@@ -519,6 +466,4 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			writeCard(newCard);
 		}
 	}
-
-
 }

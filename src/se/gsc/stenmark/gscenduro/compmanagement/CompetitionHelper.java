@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Environment;
-import se.gsc.stenmark.gscenduro.MainApplication;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
@@ -54,8 +53,19 @@ public class CompetitionHelper {
 
 		}
 		return result;
+	}	
+/*	
+	public static List<String> getSavedCompetitionsAsList(){
+		List<String> result = new ArrayList<String>();
+		String[] fileList = MainApplication.getAppContext().fileList();
+		for (String file : fileList) {
+			if (!file.equals(Competition.CURRENT_COMPETITION)) {
+				result.add(file);			}
+
+		}
+		return result;
 	}
-	
+*/	
 	/**
 	 * Does the same as getSavedCompetitionsAsList() but instead of returning a list it returns a new line separated String of competitions.
 	 * @return
@@ -73,11 +83,22 @@ public class CompetitionHelper {
 			if (file.getName().contains(".dat")) {
 				result += file.getName().replace(".dat", "") + "\n";
 			}
+		}
+		return result;
+	}	
+/*	
+	public static String getSavedCompetitions(){
+		String result = "";
+		String[] fileList = MainApplication.getAppContext().fileList();
+		for (String file : fileList) {
+			if (!file.equals(Competition.CURRENT_COMPETITION)) {
+				result += file + "\n";
+			}
 
 		}
 		return result;
 	}
-	
+*/	
 	/**
 	 * Will map a specific punch for the supplied card for a specific SI card station. 
 	 * It will find the n:th punch of the specified station number on the card, denoted by instanceNumber.

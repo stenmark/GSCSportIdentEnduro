@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal"
+	android:background="@color/white">
+	   					    
+    <LinearLayout 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginLeft="4dp"
+		android:layout_weight="1"
+		>
+		
+		<TextView		 	
+		    android:id="@+id/competitor_name"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginLeft="8dp"			    
+		    android:layout_marginRight="8dp"
+		    android:textSize="16dp"
+		    android:text="Namn Namnsson"	
+		    android:textStyle="bold"			      		   
+	   	/>		   
+  					
+		<TextView		 	
+		    android:id="@+id/competitor_cardnumber"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginLeft="8dp"			    
+		    android:layout_marginRight="8dp"
+		    android:textSize="12dp"		    
+		    android:text="123456789"
+		    android:layout_weight="1"	         	     	    	    		    	    	   
+	   	/>	
+   	
+	</LinearLayout>
+	
+    <LinearLayout 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginRight="4dp"			
+		android:layout_gravity="center_vertical|right"			
+	>
+    
+		<TextView
+		    android:id="@+id/competitor_delete"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_marginLeft="8dp"			    
+		    android:layout_marginRight="8dp"
+		    android:layout_gravity="center_vertical|right"
+    		android:textSize="16dp"
+    		android:textStyle="bold"
+    		android:text="DELETE"
+    		android:textColor="@color/blue"	    	
+    	/>
+
+		<TextView
+		    android:id="@+id/competitor_modify"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_marginLeft="8dp"			    
+		    android:layout_marginRight="8dp"
+		    android:layout_gravity="center_vertical|right"
+    		android:textSize="16dp"
+    		android:textStyle="bold"
+    		android:text="MODIFY"
+    		android:textColor="@color/blue"	    		
+    	/>
+	</LinearLayout>
+
+</LinearLayout>	
