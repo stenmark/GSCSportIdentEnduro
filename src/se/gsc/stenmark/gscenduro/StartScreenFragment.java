@@ -27,7 +27,6 @@ public class StartScreenFragment extends Fragment {
 	static StartScreenFragment mStartScreenFragment;
 	MainActivity mMainActivity;
 	public String connectionStatus = "";
-	private OnCompetitionChanged onCompetitionChangedCallback;
 	private boolean isInView = false;
 	
     @Override
@@ -37,9 +36,6 @@ public class StartScreenFragment extends Fragment {
         mMainActivity = ((MainActivity) getActivity());   
     }
 
-    public interface OnCompetitionChanged {
-        public void onCompetitionChanged();
-    }	
 	
 	@Override
 	public void onDestroy(){
@@ -73,19 +69,7 @@ public class StartScreenFragment extends Fragment {
 		updateCompName();
 		updateConnectText();
 	}
-	
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        
-        try {
-            onCompetitionChangedCallback = (OnCompetitionChanged) activity;
-        } catch (ClassCastException e) {
-			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-        }
-    }
-	
+		
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -194,7 +178,6 @@ public class StartScreenFragment extends Fragment {
 						mMainActivity.competition.addCompetitor(competitorName.getText().toString(), cardNumber.getText().toString() );
 						
 						Toast.makeText(mMainActivity, "Competitor added: " + competitorName.getText().toString() + ", " + cardNumber.getText().toString(), Toast.LENGTH_SHORT).show();
-						onCompetitionChangedCallback.onCompetitionChanged();
 						mMainActivity.updateFragments();
 					}
 				} catch (Exception e) {
@@ -234,7 +217,7 @@ public class StartScreenFragment extends Fragment {
 				try {
 					List<String> savedCompetitions = CompetitionHelper.getSavedCompetitionsAsList();
 					CompetitionOnClickListener listener = new CompetitionOnClickListener( savedCompetitions );
-					SelectCompetitionDialog dialog = new SelectCompetitionDialog( savedCompetitions, listener );
+					SelectCompetitionDialog dialog = new SelectCompetitionDialog( savedCompetitions, listener, mMainActivity, mStartScreenFragment, listener );
 					dialog.show(getFragmentManager(), "comp_select");
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
@@ -266,7 +249,6 @@ public class StartScreenFragment extends Fragment {
 				try {
 					mMainActivity.competition = new Competition();
 					updateTrackText();
-					onCompetitionChangedCallback.onCompetitionChanged();
 					mMainActivity.updateFragments();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
@@ -361,26 +343,14 @@ public class StartScreenFragment extends Fragment {
 	}	
 	
     public class CompetitionOnClickListener implements android.content.DialogInterface.OnClickListener{
-    	public String selectedItem;
-    	private List<String> savedCompetitions;
+    	public int which = 0;
     	
     	public CompetitionOnClickListener( List<String> savedCompetitions ) {
-    		this.savedCompetitions = savedCompetitions;
 		}
     	
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
-			try {
-				selectedItem = savedCompetitions.get(which);	
-				mMainActivity.competition = Competition.loadSessionData( selectedItem );
-				updateTrackText();
-				updateCompName();
-				onCompetitionChangedCallback.onCompetitionChanged();
-				mMainActivity.updateFragments();
-			} catch (Exception e) {
-				PopupMessage dialog2 = new PopupMessage(MainActivity.generateErrorMessage(e));
-				dialog2.show(getFragmentManager(), "popUp");
-			}
+			this.which = which;
 		}
 
 

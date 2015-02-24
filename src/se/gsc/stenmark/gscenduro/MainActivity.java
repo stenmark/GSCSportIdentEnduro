@@ -3,7 +3,6 @@ package se.gsc.stenmark.gscenduro;
 import java.io.FileNotFoundException;
 import java.util.Locale;
 
-import se.gsc.stenmark.gscenduro.StartScreenFragment.OnCompetitionChanged;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
@@ -31,7 +30,7 @@ import android.view.MenuItem;
  * @author Andreas
  *
  */
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener, OnCompetitionChanged {
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 	public static final String PREF_NAME = "GSC_ENDURO_PREFERNCES";
 	
 	public String msg = "";
@@ -85,9 +84,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
-	@Override
-	public void onCompetitionChanged() {
-	}
 
 	/**
 	 * Disconnect the SI main unit and save all competition session data to disc.
