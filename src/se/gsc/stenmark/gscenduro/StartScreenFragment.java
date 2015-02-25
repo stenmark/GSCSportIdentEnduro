@@ -2,7 +2,6 @@ package se.gsc.stenmark.gscenduro;
 import java.util.List;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -104,6 +103,10 @@ public class StartScreenFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				try {
+					SharedPreferences settings = mMainActivity.getSharedPreferences(	MainActivity.PREF_NAME, 0);
+					int startStationNumner = settings.getInt("START_STATION_NUMBER", 71);
+					int finishStationNumner = settings.getInt("FINISH_STATION_NUMBER", 72);
+					
 					EditText newTrack = (EditText) getView().findViewById(R.id.editTrackDefinition);
 					
 					if(newTrack.getText().length() == 0)
@@ -120,7 +123,23 @@ public class StartScreenFragment extends Fragment {
 					}
 					else
 					{
-						mMainActivity.competition.addNewTrack( (newTrack.getText().toString()) );
+						int numberOfSs = 1;
+						try{
+							numberOfSs = Integer.parseInt(newTrack.getText().toString());
+						}
+						catch( NumberFormatException e){
+							PopupMessage dialog = new PopupMessage("Invalid number entered");
+							dialog.show(getFragmentManager(), "popUp");
+							return;
+						}
+						
+						String trackString = "";
+						for(int i = 0; i < numberOfSs;  i++){
+							trackString += startStationNumner + "," + finishStationNumner + ",";
+						}
+						trackString = trackString.substring(0, trackString.length()-1);   //remove last ","
+						
+						mMainActivity.competition.addNewTrack( trackString );
 						updateTrackText();
 					}
 				} catch (Exception e) {
