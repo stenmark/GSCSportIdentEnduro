@@ -40,7 +40,7 @@ public class SelectCompetitionDialog extends DialogFragment {
         	items[i] = competition;
         	i++;
         }
-		builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				try {
@@ -53,6 +53,11 @@ public class SelectCompetitionDialog extends DialogFragment {
 					PopupMessage dialog2 = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog2.show(getFragmentManager(), "popUp");
 				}
+			}
+		});
+		builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
 			}
 		});
     	builder.setSingleChoiceItems(items,0, competitionOnClickListener );
