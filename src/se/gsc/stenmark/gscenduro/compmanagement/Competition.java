@@ -1,5 +1,6 @@
 package se.gsc.stenmark.gscenduro.compmanagement;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,18 +10,30 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import se.gsc.stenmark.gscenduro.MainActivity;
 import se.gsc.stenmark.gscenduro.MainApplication;
+import se.gsc.stenmark.gscenduro.Result;
+import se.gsc.stenmark.gscenduro.TrackResult;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.Fragment;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * Represents a competition with a track, List of competitors and the name of the competition.
@@ -39,14 +52,14 @@ public class Competition implements Serializable{
 	
 	private List<TrackMarker> track = null;
 	private ArrayList<Competitor> competitors = null;
-	public String competitionName;
+	public String competitionName;		
 	
 	public Competition(){
 		track = new ArrayList<TrackMarker>();
 		competitors = new ArrayList<Competitor>();
 		competitionName = "New";
 	}
-		
+	
 	public List<TrackMarker> getTrack() {
 		return track;
 	}
@@ -54,7 +67,7 @@ public class Competition implements Serializable{
 	public void setTrack(List<TrackMarker> track) {
 		this.track = track;
 	}
-
+	
 	public ArrayList<Competitor> getCompetitors() {
 		return competitors;
 	}
@@ -92,15 +105,79 @@ public class Competition implements Serializable{
 	 * @param name 
 	 * @param cardNumber the number of the SI card for this user
 	 */
-	public void addCompetitor( String name, String cardNumber){
+	public void addCompetitor(String name, int cardNumber){
 		Competitor competitor = new Competitor( name );	
-		if (!cardNumber.isEmpty()) {
-			int cardNumberAsInt = Integer.parseInt(cardNumber);
-			competitor.cardNumber = cardNumberAsInt;
-		}
-
+		competitor.cardNumber = cardNumber;
 		competitors.add(competitor);		
 	}
+		
+	public String addMultiCompetitors(String multiCompetitors) throws IOException{
+		String name = "";
+		String cardNumber = "";
+		String status = "";
+		int pos = 0;
+		
+		//multiCompetitors = "a;1\nb;2\nc;3";
+												
+		BufferedReader bufReader = new BufferedReader(new StringReader(multiCompetitors));
+		String line = null;
+		int lineNumber = 0;
+		while((line = bufReader.readLine()) != null)
+		{
+			lineNumber++;
+			
+			status += Integer.toString(lineNumber) + ". "; 
+					
+			//count so only one ; each line
+			int number = 0;
+			for (int i = 0, len = line.length(); i < len; ++i) {
+                Character c = line.charAt(i);
+                if (c == ';')
+                {
+                	number++;
+                }
+            }
+			
+			if (number != 1) 
+			{
+				if (line.length() == 0)
+				{
+					status += "Error adding, because of empty line\n";
+				}
+				else
+				{
+					status += "Error adding, because of ; = " + line +"\n";
+				}
+			}
+			else
+			{
+				pos = line.indexOf(";", 0);							
+				name = line.substring(0, pos);	
+				cardNumber = multiCompetitors.substring(pos + 1, line.length());
+
+			
+				if (!cardNumber.matches("\\d+"))
+				{
+					status += "Error, cardnumber not a number\n";
+				}
+				else if (checkNameExists(name))
+				{
+					status += "Error adding " + name + ", it already exists a competitor with that name\n";
+				}
+				else if (checkCardNumberExists(Integer.parseInt(cardNumber)))
+				{
+					status += "Error adding " + name + ", it already exists a competitor with that cardnumber\n";
+				} 
+				else 
+				{	
+					addCompetitor(name, Integer.parseInt(cardNumber));
+					status += name + ", " + cardNumber + " added\n";
+				}									
+			}
+			
+		}		
+		return status;
+	}	
 	
 	/**
 	 * Will find and update the SI card number for the given user
@@ -138,6 +215,14 @@ public class Competition implements Serializable{
 				break;
 			}
 		}
+	}
+	
+	public int getNumberOfTracks(){
+		if (track != null)
+		{
+			return track.size();
+		}
+		return 0;		
 	}
 	
 	/**
@@ -325,6 +410,65 @@ public class Competition implements Serializable{
 		return returnMsg;
 	}
 	
+	public void messageAlert(Activity activity, String title, String message)
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+	    builder.setIcon(android.R.drawable.ic_dialog_alert);
+	    builder.setMessage(message).setTitle(title).setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener()
+	    {
+	        public void onClick(DialogInterface dialog, int which) {}
+	    });
+	
+	    AlertDialog alert = builder.create();
+	    alert.show();	
+	}	
+	
+	public int getPosition(int cardNumber, ArrayList<TrackResult> trackResults)
+	{
+		int i = 0;
+		for (TrackResult trackResult : trackResults) {			
+			if (trackResult.getCardNumber() == cardNumber)
+			{
+				return i; 
+			}
+			i++;
+		}
+		return -1;
+	}
+	
+	public static void setStringArrayPref(Context context, String key, ArrayList<String> values) {	    
+	    SharedPreferences prefs = context.getSharedPreferences(MainActivity.PREF_NAME, 0);
+	    SharedPreferences.Editor editor = prefs.edit();
+	    JSONArray a = new JSONArray();
+	    for (int i = 0; i < values.size(); i++) {
+	        a.put(values.get(i));
+	    }
+	    if (!values.isEmpty()) {
+	        editor.putString(key, a.toString());
+	    } else {
+	        editor.putString(key, null);
+	    }
+	    editor.commit();
+	}
+
+	public static ArrayList<String> getStringArrayPref(Context context, String key) {
+		SharedPreferences prefs = context.getSharedPreferences(MainActivity.PREF_NAME, 0);
+	    String json = prefs.getString(key, null);
+	    ArrayList<String> pointsTable = new ArrayList<String>();
+	    if (json != null) {
+	        try {
+	            JSONArray a = new JSONArray(json);
+	            for (int i = 0; i < a.length(); i++) {
+	                String points = a.optString(i);
+	                pointsTable.add(points);
+	            }
+	        } catch (JSONException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    return pointsTable;
+	}
+	
 	/**
 	 * Will take the whole competition and create CSV file, Comma Separated Value file.
 	 * This is intended to analyze the competition results in an external program, like excel.
@@ -334,14 +478,13 @@ public class Competition implements Serializable{
 	 * @return a results string with information intended for the GUI on how the export progress went
 	 * @throws IOException
 	 */
-	public String exportResultAsCsv( Fragment fragment) throws IOException{
-		String responseMsg = "";
-		String result = "Name,card number,total time,";
-		for (int i = 0; i < track.size(); i++) {
-			result += "SS" + (i + 1) + ",";
-		}
-		result += "\n";
+	public void exportResultAsCsv(Activity activity) throws IOException{
+		String errorMsg = "";
+		String outputData = "";	
 
+		ArrayList<String> pointsTable = null;
+		pointsTable = getStringArrayPref(activity, "POINTSTABLE");
+		
 		if( CompetitionHelper.isExternalStorageWritable() ) {
 			File sdCard = Environment.getExternalStorageDirectory();
 			String compName = competitionName;
@@ -349,44 +492,73 @@ public class Competition implements Serializable{
 
 			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
 			if (!dir.exists()) {
-				responseMsg += "Dir does not exist "	+ dir.getAbsolutePath();
+				errorMsg += "Dir does not exist " + dir.getAbsolutePath();
 				if (!dir.mkdirs()) {
-					responseMsg += "Could not create directory: " + dir.getAbsolutePath();
-					return responseMsg;
+					errorMsg += "Could not create directory: " + dir.getAbsolutePath();
+					messageAlert(activity, "Error", errorMsg);
+					return;
 				}
 			}
 
 			File file = new File(dir, compName + ".csv");
-			responseMsg += "Saving result to file:\n" + file.getAbsolutePath() + "\n";
 
-			if( competitors!= null && !competitors.isEmpty() ) {
+			List<Result> allResults = getResults();
+			
+			if(competitors!= null && !competitors.isEmpty()) {
 				Collections.sort(competitors);
+
+				outputData = "Rank,Name,Card Number,Total Time,Points,";
+				for (int i = 0; i < track.size(); i++) {
+					outputData += "Stage " + (i + 1) + ",RK,";
+				}
+				outputData += "\n";
+				int rank = 1;
 				for (Competitor competitor : competitors) {
-					responseMsg+= competitor.name + ","
+					outputData += String.valueOf(rank) + "," 
+							+ competitor.name + ","
 							+ competitor.cardNumber + ","
-							+ competitor.getTotalTime(false) + ",";
-					result += competitor.name + ","
-							+ competitor.cardNumber + ","
-							+ competitor.getTotalTime(false) + ",";
+							+ secToMinSec(competitor.getTotalTime(false)) + ",";
+					
+					if ((rank > pointsTable.size()) || (competitor.getTotalTime(false) == 0))
+					{					
+						outputData += "0,";
+					}
+					else
+					{
+						outputData += pointsTable.get(rank - 1) + ",";
+					}
+					rank++;
 					if (competitor.trackTimes != null) {
+						int stage = 1;
 						for (long time : competitor.trackTimes) {
-							responseMsg += time + ",";
-							result += time + ",";
+							outputData += secToMinSec(time) + ",";
+							
+							int pos = getPosition(competitor.cardNumber, allResults.get(stage).getTrackResult());
+							if (pos == -1)
+							{
+								outputData += "DNF,";
+							}
+							else
+							{
+								outputData += String.valueOf(pos + 1) + ",";
+							}
+							stage++;
 						}
 					} else {
 						for (int i = 0; i < track.size(); i++) {
-							responseMsg += "0,";
-							result += "0,";
+							outputData += "-,DNF,";
 						}
 					}
-					responseMsg += "\n";
-					result += "\n\n";
+					outputData += "\n";
 				}
 			}
+			
+			outputData += "\n\n";					
+		
 			FileWriter fw = new FileWriter(file);
-			fw.write(result);
+			fw.write(outputData);
 
-			if( fragment != null){
+			if(activity != null){
 				Intent mailIntent = new Intent(Intent.ACTION_SEND);
 				mailIntent.setType("text/plain");
 				mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
@@ -394,17 +566,163 @@ public class Competition implements Serializable{
 				mailIntent.putExtra(Intent.EXTRA_TEXT   , "Results in attached file");
 				Uri uri = Uri.fromFile(file);
 				mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-				fragment.startActivity(Intent.createChooser(mailIntent, "Send mail"));
+				activity.startActivity(Intent.createChooser(mailIntent, "Send mail"));
 			}
 
 			fw.close();
 		} else {
-			return "External file storage not available, coulr not export results";
+			errorMsg = "External file storage not available, could not export results";			
+			messageAlert(activity, "Error", errorMsg);
+			return;			
 		}
-		
+	}
 
 	
-		responseMsg += "\nResult exported succesfuly";
-		return responseMsg;
+	public void exportCompetitorsAsCsv(Activity activity) throws IOException{
+		String errorMsg = "";
+		
+		String competitorList = "Name,card number\n";
+
+		if(CompetitionHelper.isExternalStorageWritable()) {
+			File sdCard = Environment.getExternalStorageDirectory();
+			String compName = competitionName;
+			compName = compName.replace(" ", "_");
+
+			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+			if (!dir.exists()) {
+				errorMsg += "Dir does not exist " + dir.getAbsolutePath();
+				if (!dir.mkdirs()) {
+					errorMsg += "Could not create directory: " + dir.getAbsolutePath();
+					
+					messageAlert(activity, "Error", errorMsg);
+					return;
+				}
+			}
+
+			File file = new File(dir, compName + "_competitors.csv");
+
+			if(competitors!= null && !competitors.isEmpty() ) {
+				Collections.sort(competitors);
+				for (Competitor competitor : competitors) {
+					competitorList += competitor.name + ","	+ competitor.cardNumber + "\n";
+				}
+			}
+			
+			FileWriter fw = new FileWriter(file);
+			fw.write(competitorList);
+
+			if(activity != null){
+				Intent mailIntent = new Intent(Intent.ACTION_SEND);
+				mailIntent.setType("text/plain");
+				mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
+				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro competitors for " + compName);
+				mailIntent.putExtra(Intent.EXTRA_TEXT   , "Competitors in attached file");
+				Uri uri = Uri.fromFile(file);
+				mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+				activity.startActivity(Intent.createChooser(mailIntent, "Send mail"));
+			}
+
+			fw.close();
+		} else {
+			errorMsg = "External file storage not available, could not export competitors";
+			messageAlert(activity, "Error", errorMsg);
+			return;
+		}
+	}
+	
+	public String secToMinSec(Long sec)
+	{
+		if (sec == Integer.MAX_VALUE)
+		{
+			return "no result";
+		}
+		else
+		{		
+			Long totalTime_sec = sec;
+			Long toltalTime_min = sec / 60;
+			totalTime_sec -= toltalTime_min * 60;
+	
+			return String.format("%02d:%02d", toltalTime_min, totalTime_sec);
+		}
+	}	
+	
+	public List<Result> getResults()
+	{
+		int i, j;
+		List<Result> allResults = new ArrayList<Result>();
+		allResults.clear();
+		
+		Result result;
+		result = new Result("Total time");		
+		allResults.add(result);
+				
+		// Add track titles
+		for (i = 1; i < getTrack().size() + 1; i++) {
+			result = new Result("Stage " + i);		
+			allResults.add(result);
+		}		
+		
+		// Add total times
+		String name;	
+		int cardNumber;
+		Long trackTime = (long) 0;
+		Long trackTimeBack = (long) 0;
+		TrackResult trackResult;
+		
+		for (i = 0; i < competitors.size(); i++) {
+			trackResult = new TrackResult(competitors.get(i).getName(), competitors.get(i).getCardNumber(), competitors.get(i).getTotalTime(true)); 
+			allResults.get(0).mTrackResult.add(trackResult);
+		}
+		
+		Collections.sort(allResults.get(0).mTrackResult, new Comparator<TrackResult>() {
+			@Override
+			public int compare(TrackResult lhs, TrackResult rhs) {
+				// TODO Auto-generated method stub
+				return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
+			}
+		});		
+		
+		// Add track times
+		for (j = 1; j < allResults.size(); j++) {
+			for (i = 0; i < competitors.size(); i++) {
+				name = competitors.get(i).getName();		
+				cardNumber = competitors.get(i).getCardNumber();
+				
+				if (competitors.get(i).hasResult()) {
+					trackTime = competitors.get(i).trackTimes.get(j - 1);
+				}
+				else
+				{
+					trackTime = (long) Integer.MAX_VALUE;
+				}	
+					
+				trackResult = new TrackResult(name, cardNumber, trackTime); 
+				allResults.get(j).mTrackResult.add(trackResult);
+			}
+			
+			Collections.sort(allResults.get(j).mTrackResult, new Comparator<TrackResult>() {
+				@Override
+				public int compare(TrackResult lhs, TrackResult rhs) {
+					// TODO Auto-generated method stub
+					return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
+				}
+			});											
+		}
+		for (j = 0; j < allResults.size(); j++) {
+			for (i = 0; i < allResults.get(j).mTrackResult.size(); i++) {			
+				if (allResults.get(j).mTrackResult.get(i).getTrackTimes() == (long) Integer.MAX_VALUE)				
+				{
+					trackTimeBack = (long) Integer.MAX_VALUE;					
+				}
+				else
+				{
+					if (allResults.get(j).mTrackResult.size() > 0) {			
+						trackTimeBack = allResults.get(j).mTrackResult.get(i).getTrackTimes() - allResults.get(j).mTrackResult.get(0).getTrackTimes();
+					}
+				}	
+				allResults.get(j).mTrackResult.get(i).setTrackTimesBack(trackTimeBack);
+			}
+		}
+		return allResults;
 	}
 }

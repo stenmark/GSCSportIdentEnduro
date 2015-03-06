@@ -14,6 +14,7 @@
 		android:layout_marginBottom="8dp"
 		android:layout_marginLeft="4dp"
 		android:layout_weight="1"
+		
 		>
 		
 		<TextView		 	
@@ -22,9 +23,10 @@
 		    android:layout_height="wrap_content"
 		    android:layout_marginLeft="8dp"			    
 		    android:layout_marginRight="8dp"
-		    android:textSize="16dp"
+		    android:textSize="16sp"
 		    android:text="Namn Namnsson"	
-		    android:textStyle="bold"			      		   
+		    android:textStyle="bold"
+		    android:layout_weight="1"			      		   
 	   	/>		   
   					
 		<TextView		 	
@@ -33,9 +35,9 @@
 		    android:layout_height="wrap_content"
 		    android:layout_marginLeft="8dp"			    
 		    android:layout_marginRight="8dp"
-		    android:textSize="12dp"		    
-		    android:text="123456789"
-		    android:layout_weight="1"	         	     	    	    		    	    	   
+		    android:textSize="12sp"		    
+		    android:text="123456789"   
+		    android:layout_weight="1"     	     	    	    		    	    	   
 	   	/>	
    	
 	</LinearLayout>
@@ -43,35 +45,34 @@
     <LinearLayout 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:layout_marginRight="4dp"			
+		android:orientation="horizontal"	
 		android:layout_gravity="center_vertical|right"			
 	>
     
-		<TextView
+		<Button
 		    android:id="@+id/competitor_delete"
-    		android:layout_width="wrap_content"
-    		android:layout_height="wrap_content"
-    		android:layout_marginLeft="8dp"			    
-		    android:layout_marginRight="8dp"
-		    android:layout_gravity="center_vertical|right"
-    		android:textSize="16dp"
-    		android:textStyle="bold"
-    		android:text="DELETE"
-    		android:textColor="@color/blue"	    	
-    	/>
+		    android:layout_width="wrap_content"
+		    android:layout_height="40dp"
+		    android:layout_margin="8dp"		    
+		    android:textSize="16sp"
+		   	android:textStyle="bold"
+		    android:text="DELETE"		    
+		    android:textColor="@color/button_text"
+		    android:background="@drawable/button" 
+		    android:layout_gravity="center_vertical|right"	
+		    />
 
-		<TextView
+		<Button
 		    android:id="@+id/competitor_modify"
     		android:layout_width="wrap_content"
-    		android:layout_height="wrap_content"
-    		android:layout_marginLeft="8dp"			    
-		    android:layout_marginRight="8dp"
-		    android:layout_gravity="center_vertical|right"
-    		android:textSize="16dp"
+    		android:layout_height="40dp"
+    		android:layout_margin="8dp"
+    		android:textSize="16sp"
     		android:textStyle="bold"
     		android:text="MODIFY"
-    		android:textColor="@color/blue"	    		
+    		android:textColor="@color/button_text"   
+    		android:background="@drawable/button"	
+    		android:layout_gravity="center_vertical|right"		
     	/>
 	</LinearLayout>
 

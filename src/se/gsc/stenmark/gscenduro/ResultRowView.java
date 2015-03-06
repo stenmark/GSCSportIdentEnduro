@@ -9,8 +9,11 @@ import android.widget.TextView;
 public class ResultRowView extends LinearLayout {
 	Context mContext;
 	ListFragment mListFragment;
-	TextView mName;
-	TextView mTrackTime;
+	TextView mTitle;
+	TextView mResultRank;
+	TextView mResultName;
+	TextView mResultTime;
+	TextView mResultTimeBack;
 	int mPosition;
 	LinearLayout mCompoundView;
 
@@ -24,8 +27,11 @@ public class ResultRowView extends LinearLayout {
 		mCompoundView = (LinearLayout) inflater.inflate(
 				R.layout.result_row, this);
 
-		mName = (TextView) mCompoundView.findViewById(R.id.result_name);
-		mTrackTime = (TextView) mCompoundView.findViewById(R.id.result_tracktime);
+		mTitle = (TextView) mCompoundView.findViewById(R.id.result_title);
+		mResultRank = (TextView) mCompoundView.findViewById(R.id.result_rank);
+		mResultName = (TextView) mCompoundView.findViewById(R.id.result_name);
+		mResultTime = (TextView) mCompoundView.findViewById(R.id.result_time);
+		mResultTimeBack = (TextView) mCompoundView.findViewById(R.id.result_time_back);
 	}
 
 	public ResultRowView(Context context, ListFragment listFragment) {
@@ -33,9 +39,9 @@ public class ResultRowView extends LinearLayout {
 		Init(context, listFragment);
 	}
 
-	public void setName(String Name) {
-		if (mName != null) {
-			mName.setText(Name);
+	public void setTitle(String Title) {
+		if (mTitle != null) {
+			mTitle.setText(Title);
 		}
 	}
 
@@ -43,9 +49,27 @@ public class ResultRowView extends LinearLayout {
 		mPosition = Position;
 	}
 	
-	public void setTrackTime(String TrackTime) {
-		if (mTrackTime != null) {
-			mTrackTime.setText(TrackTime);
+	public void setResultRank(String ResultRank) {
+		if (mResultRank != null) {
+			mResultRank.setText(ResultRank);
 		}
 	}
+	
+	public void setResultName(String ResultName) {
+		if (mResultName != null) {
+			mResultName.setText(ResultName);
+		}
+	}
+	
+	public void setResultTime(String ResultTime) {
+		if (mResultTime != null) {
+			mResultTime.setText(ResultTime);
+		}
+	}
+	
+	public void setResultTimeBack(String ResultTimeBack) {
+		if (mResultTimeBack != null) {
+			mResultTimeBack.setText(ResultTimeBack);
+		}
+	}	
 }

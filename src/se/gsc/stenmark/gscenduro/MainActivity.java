@@ -1,6 +1,9 @@
 package se.gsc.stenmark.gscenduro;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
@@ -11,7 +14,9 @@ import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,8 +24,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 /**
  * Android Main class. This class is the creator of the GUI fragments via the SectionPageer and also implements OnCompetitionChanged
@@ -130,7 +137,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				dialog.show(getSupportFragmentManager(), "popUp");
 				return;
 			}		
-			
+								
 			// Set up the action bar.
 			final ActionBar actionBar = getActionBar();
 			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -272,10 +279,34 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		
+		switch(id)
+		{
+		case R.id.action_settings:
+	        Intent settingsIntent = new Intent();
+	        settingsIntent.setClass(this, SettingsActivity.class);
+	        startActivity(settingsIntent);			
 			return true;
-		}
-		return super.onOptionsItemSelected(item);
+			
+		case R.id.action_export_competitors:
+			try {
+				this.competition.exportCompetitorsAsCsv(this);
+			} catch (Exception e) {
+				Toast.makeText(this, Log.getStackTraceString(e), Toast.LENGTH_SHORT).show();
+			}
+			return true;
+			
+		case R.id.action_export_results:
+			try {
+				this.competition.exportResultAsCsv(this);
+			} catch (Exception e) {
+				Toast.makeText(this, Log.getStackTraceString(e), Toast.LENGTH_SHORT).show();
+			}
+			return true;
+			
+		default:
+			return super.onOptionsItemSelected(item);
+		}		
 	}
 
 	/**

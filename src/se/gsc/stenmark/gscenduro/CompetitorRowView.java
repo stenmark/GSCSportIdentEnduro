@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,8 +16,8 @@ public class CompetitorRowView extends LinearLayout {
 	ListFragment mListFragment;
 	TextView mName;
 	TextView mCardNumber;
-	TextView mDelete;
-	TextView mModify;
+	Button mDelete;
+	Button mModify;
 	int mPosition;
 	LinearLayout mCompoundView;
 
@@ -33,8 +34,8 @@ public class CompetitorRowView extends LinearLayout {
 		mName = (TextView) mCompoundView.findViewById(R.id.competitor_name);
 		mCardNumber = (TextView) mCompoundView
 				.findViewById(R.id.competitor_cardnumber);
-		mDelete = (TextView) mCompoundView.findViewById(R.id.competitor_delete);
-		mModify = (TextView) mCompoundView.findViewById(R.id.competitor_modify);
+		mDelete = (Button) mCompoundView.findViewById(R.id.competitor_delete);
+		mModify = (Button) mCompoundView.findViewById(R.id.competitor_modify);
 
 		mDelete.setOnClickListener(mOnDeleteClickListener);
 		mModify.setOnClickListener(mOnModifyClickListener);

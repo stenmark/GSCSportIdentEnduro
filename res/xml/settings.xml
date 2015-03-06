@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+     
+    <PreferenceCategory android:title="General Settings">
+        
+        <EditTextPreference
+                android:key="MAX_NUMBER_OF_STAGES"
+                android:title="Set Max Number of Stages"
+                android:summary="Set Max Number of Stages that can be added"
+                android:dialogTitle="Set Max Number of Stages"
+                android:defaultValue="15" />
+        
+        <EditTextPreference
+                android:key="START_STATION_NUMBER"
+                android:title="Set Start Number"
+                android:summary="Set SPORTident Start Station Number"
+                android:dialogTitle="Set SPORTident Start Station Number"
+                android:defaultValue="71" />               
+
+        <EditTextPreference
+                android:key="FINISH_STATION_NUMBER"
+                android:title="Set Finish Number"
+                android:summary="Set SPORTident Finish Station Number"
+                android:dialogTitle="Set SPORTident Finish Station Number"
+                android:defaultValue="72" />                                        
+        
+    </PreferenceCategory>       
+  
+</PreferenceScreen>

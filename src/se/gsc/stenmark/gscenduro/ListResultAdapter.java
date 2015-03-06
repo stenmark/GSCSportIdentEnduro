@@ -3,10 +3,9 @@ package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
-
 import android.content.Context;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,22 +13,22 @@ import android.widget.BaseAdapter;
 public class ListResultAdapter extends BaseAdapter {
 	private Context mContext;
 	private ListFragment mListFragment;
-	private List<Competitor> mCompetitor = new ArrayList<Competitor>();
+	private List<Result> mResult = new ArrayList<Result>();
 
-	public ListResultAdapter(Context context, ListFragment listFragment, List<Competitor> Items) {
+	public ListResultAdapter(Context context, ListFragment listFragment, List<Result> Items) {
 		mContext = context;
-		mCompetitor = Items;
+		mResult = Items;
 		mListFragment = listFragment;
 	}		
 	
 	@Override
 	public int getCount() {
-		return mCompetitor.size();
+		return mResult.size();
 	}
 
 	@Override
-	public Competitor getItem(int position) {
-		return mCompetitor.get(position);
+	public Result getItem(int position) {
+		return mResult.get(position);
 	}
 
 	@Override
@@ -40,30 +39,34 @@ public class ListResultAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ResultRowView ResultRowV = null;
-		String TrackTime = "";
 
 		if (convertView == null) {
 			ResultRowV = new ResultRowView(mContext, mListFragment);
 		} else {
 			ResultRowV = (ResultRowView) convertView;
 		}
-
-		ResultRowV.setName(Integer.toString(position + 1) + ". " + mCompetitor.get(position).getName());
 		
-		if (mCompetitor.get(position).hasResult()) {
-			int i = 0;
-			for (long trackTime : mCompetitor.get(position).trackTimes) {
-				i++;
-				TrackTime += "SS" + i + ": " + trackTime + "\n";
-			}
-
-			TrackTime += "Total time: " + mCompetitor.get(position).getTotalTime(true);
-
-		} else {
-			TrackTime = "no result\n";
+		ResultRowV.setTitle(mResult.get(position).getTitle());
+		
+		String Rank = "";
+		String Name = "";
+		String Time = "";
+		String TimeBack = "";
+		
+		for(int i = 0; i < mResult.get(position).getTrackResult().size(); i++)
+		{
+			Rank += Integer.toString((i + 1)) +"\n";
+			Name += mResult.get(position).getTrackResult().get(i).getName() + "\n";	
+			Time += ((MainActivity)mContext).competition.secToMinSec(mResult.get(position).getTrackResult().get(i).getTrackTimes()) + "\n";
+			TimeBack += ((MainActivity)mContext).competition.secToMinSec(mResult.get(position).getTrackResult().get(i).getTrackTimesBack()) + "\n";
+			
 		}
 		
-		ResultRowV.setTrackTime(TrackTime);
+		ResultRowV.setResultRank(Rank);		
+		ResultRowV.setResultName(Name);
+		ResultRowV.setResultTime(Time);
+		ResultRowV.setResultTimeBack(TimeBack);	
+		
 		ResultRowV.setPosition(position);
 
 		return ResultRowV;

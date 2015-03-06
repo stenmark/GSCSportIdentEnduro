@@ -7,5 +7,17 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
+    
+    <item
+        android:id="@+id/action_export_competitors"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_export_competitors"/>    
 
+    <item
+        android:id="@+id/action_export_results"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_export_results"/>        
+    
 </menu>

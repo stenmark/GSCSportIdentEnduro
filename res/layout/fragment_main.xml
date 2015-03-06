@@ -15,25 +15,28 @@
 		android:orientation="vertical"
 		android:layout_marginTop="8dp"
 		android:layout_marginBottom="8dp"
-		android:layout_marginLeft="4dp"
-		android:layout_marginRight="4dp"			
+		android:layout_marginLeft="8dp"
+		android:layout_marginRight="8dp"			
 		>    
         
 		<TextView
-		   android:layout_width="wrap_content"
+		   android:layout_width="fill_parent"
 		   android:layout_height="wrap_content"
-		   android:textSize="24sp"
+		   android:textSize="16sp"
 		   android:text="@string/start_connection_status"
 		   android:textStyle="bold"
 		   android:layout_weight="1"		
-		   android:textColor="@color/black"			   	        
+		   android:padding="4dp"
+		   android:textColor="@color/white"		
+		   android:background="@color/black"   	        
 		   />          
         
 		<LinearLayout 
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical"
-			android:layout_weight="1"				
+			android:layout_weight="1"		
+			android:padding="4dp"		
 			>    
 			
 		     <TextView
@@ -44,35 +47,30 @@
 		        android:text="Not Connected"        
 		        />  
 		        
-			<TextView
+			<Button
 			    android:id="@+id/connectButton"
 	    		android:layout_width="wrap_content"
-	    		android:layout_height="wrap_content"
-	    		android:layout_marginLeft="8dp"			    
-			    android:layout_marginRight="8dp"
+	    		android:layout_height="40dp"
+	    		android:layout_margin="8dp"			    
 			    android:layout_gravity="center_vertical|right"
 	    		android:textSize="16sp"
 	    		android:textStyle="bold"
 	    		android:text="@string/start_connect"
-	    		android:textColor="@color/blue"	    		 	    	
+    			android:textColor="@color/button_text"   
+    			android:background="@drawable/button"	    		 	    	
 	    	/>		    
 		</LinearLayout>
-		
-		<View
-		    android:layout_marginTop="12dp"
-		    android:layout_marginBottom="12dp"
-		    android:layout_width="fill_parent"
-		    android:layout_height="1dp"
-		    android:background="@android:color/darker_gray"/>
-		
+				
 		<TextView
-		   android:layout_width="wrap_content"
+		   android:layout_width="fill_parent"
 		   android:layout_height="wrap_content"
-		   android:textSize="24sp"
+		   android:textSize="16sp"
 		   android:text="@string/start_competitor"
 		   android:textStyle="bold"
 		   android:layout_weight="1"
-		   android:textColor="@color/black"		        
+		   android:padding="4dp"
+		   android:textColor="@color/white"		
+		   android:background="@color/black" 	        
 		   /> 		
 		   
 		<LinearLayout 
@@ -80,6 +78,7 @@
 			android:layout_height="wrap_content"
 			android:orientation="vertical"
 			android:layout_weight="1"
+			android:padding="4dp"
 			>    
 			
 			<LinearLayout 
@@ -128,35 +127,64 @@
 			    </LinearLayout>
 		    </LinearLayout>
 		    
-			<TextView
+			<Button
 			    android:id="@+id/addCompetitorButton"
 	    		android:layout_width="wrap_content"
-	    		android:layout_height="wrap_content"
-	    		android:layout_marginLeft="8dp"			    
-			    android:layout_marginRight="8dp"
+	    		android:layout_height="40dp"
+	    		android:layout_margin="8dp"			    
 			    android:layout_gravity="center_vertical|right"
 	    		android:textSize="16sp"
 	    		android:textStyle="bold"
 	    		android:text="@string/start_add"
-	    		android:textColor="@color/blue"	    		 	    	
-	    	/>		    
-		</LinearLayout>		
-		
-		<View
-		    android:layout_marginTop="12dp"
-		    android:layout_marginBottom="12dp"
-		    android:layout_width="fill_parent"
-		    android:layout_height="1dp"
-		    android:background="@android:color/darker_gray"/>
+    			android:textColor="@color/button_text"   
+    			android:background="@drawable/button"		 	    	
+	    	/>		
+	    </LinearLayout>
+	   
 		
 		<TextView
-		   android:layout_width="wrap_content"
+		   android:layout_width="fill_parent"
 		   android:layout_height="wrap_content"
-		   android:textSize="24sp"
+		   android:textSize="16sp"
+		   android:text="@string/start_multicompetitor"
+		   android:textStyle="bold"
+		   android:layout_weight="1"
+		   android:padding="4dp"
+		   android:textColor="@color/white"		
+		   android:background="@color/black" 		        
+		   /> 	
+		   		
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:layout_weight="1"
+			android:padding="4dp"
+			>   			
+			<Button
+			    android:id="@+id/addMultiCompetitorButton"
+	    		android:layout_width="wrap_content"
+	    		android:layout_height="40dp"
+	    		android:layout_margin="8dp"			    
+			    android:layout_gravity="center_vertical|right"
+	    		android:textSize="16sp"
+	    		android:textStyle="bold"
+	    		android:text="@string/start_add"
+	    		android:textColor="@color/button_text"   
+    			android:background="@drawable/button"	
+	    	/>				
+		</LinearLayout>		
+		
+		<TextView
+		   android:layout_width="fill_parent"
+		   android:layout_height="wrap_content"
+		   android:textSize="16sp"
 		   android:text="@string/start_track"
 		   android:textStyle="bold"
 		   android:layout_weight="1"
-		   android:textColor="@color/black"		        
+		   android:padding="4dp"
+		   android:textColor="@color/white"		
+		   android:background="@color/black" 		        
 		   /> 			
 		
 		<LinearLayout 
@@ -164,63 +192,60 @@
 			android:layout_height="wrap_content"
 			android:orientation="vertical"
 			android:layout_weight="1"
+			android:padding="4dp"
 			>    
 			
 		   	<LinearLayout 
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:orientation="vertical"				
+				android:orientation="horizontal"				
 				> 
 			   	<TextView
 		        	android:id="@+id/addTrackInfo"
 		        	android:layout_width="wrap_content"
 		        	android:layout_height="wrap_content"
-		        	android:textSize="12sp"
-		        	android:text="@string/start_add_track_info" />			
+		        	android:textSize="16sp"
+		        	android:text="@string/start_add_stages_info" />					    
 			    
-			    <EditText
-			        android:id="@+id/editTrackDefinition"
-			        android:layout_width="fill_parent"
-			        android:layout_height="wrap_content"
-			        android:text="@string/start_track_definition"
-			        android:textSize="16sp"/>	
-			        
-				<TextView
-			        android:id="@+id/trackInfoTextView"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:textSize="8sp"
-			        android:text="@string/start_track_info" />
+    			<Spinner
+        			android:id="@+id/spinnerTrackDefinition"
+        			android:layout_width="fill_parent"
+        			android:layout_height="wrap_content"
+        			android:prompt="@string/start_add_stages_info"
+    			/>			    
+			    
 			</LinearLayout>
+			
+			<TextView
+		        android:id="@+id/trackInfoTextView"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="8sp"
+		        android:text="@string/start_track_info" />	
+		        
+			<Button
+			    android:id="@+id/addTrackButton"
+	    		android:layout_width="wrap_content"
+	    		android:layout_height="40dp"
+	    		android:layout_margin="8dp"			    
+			    android:layout_gravity="center_vertical|right"
+	    		android:textSize="16sp"
+	    		android:textStyle="bold"
+	    		android:text="@string/start_add"
+	    		android:textColor="@color/button_text"   
+	    		android:background="@drawable/button"	/>
 		</LinearLayout>								
-		
+				
 		<TextView
-		    android:id="@+id/addTrackButton"
-    		android:layout_width="wrap_content"
-    		android:layout_height="wrap_content"
-    		android:layout_marginLeft="8dp"			    
-		    android:layout_marginRight="8dp"
-		    android:layout_gravity="center_vertical|right"
-    		android:textSize="16sp"
-    		android:textStyle="bold"
-    		android:text="@string/start_add"
-    		android:textColor="@color/blue"/>	
-	
-		<View
-		    android:layout_marginTop="12dp"
-		    android:layout_marginBottom="12dp"
-		    android:layout_width="fill_parent"
-		    android:layout_height="1dp"
-		    android:background="@android:color/darker_gray"/>	    
-	    
-		<TextView
-		   android:layout_width="wrap_content"
+		   android:layout_width="fill_parent"
 		   android:layout_height="wrap_content"
-		   android:textSize="24sp"
+		   android:textSize="16sp"
 		   android:text="@string/start_competition"
 		   android:textStyle="bold"
 		   android:layout_weight="1"	
-		   android:textColor="@color/black"	        
+		   android:padding="4dp"
+		   android:textColor="@color/white"		
+		   android:background="@color/black"        
 		   /> 			
 		
 		<LinearLayout 
@@ -228,6 +253,7 @@
 			android:layout_height="wrap_content"
 			android:orientation="vertical"
 			android:layout_weight="1"
+			android:padding="4dp"
 			>   	    	    
 
 			<LinearLayout 
@@ -258,85 +284,88 @@
 				android:layout_gravity="right"
 				>  
 		    
-				<TextView
+				<Button
 				    android:id="@+id/newCompButton"
 		    		android:layout_width="wrap_content"
-		    		android:layout_height="wrap_content"
-		    		android:layout_marginLeft="8dp"			    
-				    android:layout_marginRight="8dp"
+		    		android:layout_height="40dp"
+		    		android:layout_margin="8dp"
 				    android:layout_gravity="center_vertical"
 		    		android:textSize="16sp"
 		    		android:textStyle="bold"
 		    		android:text="@string/start_new"
-		    		android:textColor="@color/blue"/>			    
+		    		android:textColor="@color/button_text"   
+    				android:background="@drawable/button"	/>			    
 			    
-				<TextView
+				<Button
 				    android:id="@+id/saveButton"
 		    		android:layout_width="wrap_content"
-		    		android:layout_height="wrap_content"
-		    		android:layout_marginLeft="8dp"			    
-				    android:layout_marginRight="8dp"
+		    		android:layout_height="40dp"
+		    		android:layout_margin="8dp"
 				    android:layout_gravity="center_vertical"
 		    		android:textSize="16sp"
 		    		android:textStyle="bold"
 		    		android:text="@string/start_save"
-		    		android:textColor="@color/blue"/>		
+		    		android:textColor="@color/button_text"   
+    				android:background="@drawable/button"	/>		
 		    		
-				<TextView
+				<Button
 				    android:id="@+id/loadButton"
 		    		android:layout_width="wrap_content"
-		    		android:layout_height="wrap_content"
-		    		android:layout_marginLeft="8dp"			    
-				    android:layout_marginRight="8dp"
+		    		android:layout_height="40dp"
+		    		android:layout_margin="8dp"
 				    android:layout_gravity="center_vertical"
 		    		android:textSize="16sp"
 		    		android:textStyle="bold"
 		    		android:text="@string/start_load"
-		    		android:textColor="@color/blue"/>		
+		    		android:textColor="@color/button_text"   
+    				android:background="@drawable/button"/>		
 		    		
-				<TextView
+				<Button
 				    android:id="@+id/listLoadedButton"
 		    		android:layout_width="wrap_content"
-		    		android:layout_height="wrap_content"
-		    		android:layout_marginLeft="8dp"			    
-				    android:layout_marginRight="8dp"
+		    		android:layout_height="40dp"
+		    		android:layout_margin="8dp"
 				    android:layout_gravity="center_vertical"
 		    		android:textSize="16sp"
 		    		android:textStyle="bold"
 		    		android:text="@string/start_list"
-		    		android:textColor="@color/blue"/>					
+		    		android:textColor="@color/button_text"   
+    				android:background="@drawable/button"/>					
 			</LinearLayout>		    
 		</LinearLayout>
-
-		<View
-		    android:layout_marginTop="12dp"
-		    android:layout_marginBottom="12dp"
-		    android:layout_width="fill_parent"
-		    android:layout_height="1dp"
-		    android:background="@android:color/darker_gray"/>		
 		
 		<TextView
-		   android:layout_width="wrap_content"
+		   android:layout_width="fill_parent"
 		   android:layout_height="wrap_content"
-		   android:textSize="24sp"
-		   android:text="@string/start_result"
+		   android:textSize="16sp"
+		   android:text="@string/start_points_table"
 		   android:textStyle="bold"
 		   android:layout_weight="1"	
-		   android:textColor="@color/black"	        
-		   /> 
-
-		<TextView
-		    android:id="@+id/exportResultButton"
-    		android:layout_width="wrap_content"
-    		android:layout_height="wrap_content"
-    		android:layout_marginLeft="8dp"			    
-		    android:layout_marginRight="8dp"
-		    android:layout_gravity="center_vertical|right"
-    		android:textSize="16sp"
-    		android:textStyle="bold"
-    		android:text="@string/start_export"
-    		android:textColor="@color/blue"/>	
-
+		   android:padding="4dp"
+		   android:textColor="@color/white"		
+		   android:background="@color/black"         
+		   /> 	
+		   		
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:layout_weight="1"
+			android:padding="4dp"
+			>   		
+			<Button
+			    android:id="@+id/addPointsTableButton"
+		   		android:layout_width="wrap_content"
+		   		android:layout_height="40dp"
+		   		android:layout_margin="8dp"
+			    android:layout_gravity="center_vertical|right"
+		   		android:textSize="16sp"
+		   		android:textStyle="bold"
+		   		android:text="@string/start_add"
+		   		android:textColor="@color/button_text"   
+	    		android:background="@drawable/button"/>				
+		</LinearLayout>				
+		
 		<View
 		    android:layout_marginTop="12dp"
 		    android:layout_marginBottom="12dp"

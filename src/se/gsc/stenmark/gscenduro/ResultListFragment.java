@@ -1,12 +1,15 @@
 package se.gsc.stenmark.gscenduro;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 
 public class ResultListFragment extends ListFragment {
 	
@@ -14,7 +17,11 @@ public class ResultListFragment extends ListFragment {
 	MainActivity mMainActivity = null;
 	protected ListResultAdapter mResultAdapter;
 	protected List<Competitor> mAllCompetitor = new ArrayList<Competitor>();
-	protected List<Competitor> mCompetitor = new ArrayList<Competitor>();
+	
+		
+	protected List<Result> mAllResults = new ArrayList<Result>();
+	protected List<Result> mResult = new ArrayList<Result>();
+	
 	private static final String ARG_SECTION_NUMBER = "section_number";
 
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -22,12 +29,17 @@ public class ResultListFragment extends ListFragment {
 		setListShownNoAnimation(true);
 		setHasOptionsMenu(true);
 		
+		getListView().setDivider(null);
+		getListView().setDividerHeight(0);
+		
 		mMainActivity = ((MainActivity) getActivity());
 		FetchItems();
 	}
-	
-	protected void FetchItems() {
-		mAllCompetitor = mMainActivity.competition.getCompetitors();
+		
+	protected void FetchItems() {	
+		mAllCompetitor = mMainActivity.competition.getCompetitors();		
+		mAllResults = mMainActivity.competition.getResults();
+				
 		FillList();	
 	}
 	
@@ -35,7 +47,7 @@ public class ResultListFragment extends ListFragment {
 		PopulateList();
 		if (mResultAdapter == null) {
 			mResultAdapter = new ListResultAdapter(mMainActivity,
-					mResultListFragment, mCompetitor);
+					mResultListFragment, mResult);
 			setListAdapter(mResultAdapter);
 		} else {
 			mResultAdapter.notifyDataSetChanged();
@@ -43,9 +55,9 @@ public class ResultListFragment extends ListFragment {
 	}
 
 	protected void PopulateList() {
-		mCompetitor.clear();
-		for (int i = 0; i < mAllCompetitor.size(); i++) {
-			mCompetitor.add(mAllCompetitor.get(i));
+		mResult.clear();
+		for (int i = 0; i < mAllResults.size(); i++) {
+			mResult.add(mAllResults.get(i));
 		}
 	}	
 
