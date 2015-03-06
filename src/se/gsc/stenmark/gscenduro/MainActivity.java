@@ -1,9 +1,6 @@
 package se.gsc.stenmark.gscenduro;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
@@ -15,8 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -40,12 +35,16 @@ import android.widget.Toast;
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 	public static final String PREF_NAME = "GSC_ENDURO_PREFERNCES";
 	
-	public String msg = "";
 	public Competition competition = null;
 	public SiDriver siDriver = null;
 	public static long lastCalltime;
 	public static int disconnectCounter;
 	public static boolean disconected;
+	private String connectionStatus = "";
+
+	public String getConnectionStatus() {
+		return connectionStatus;
+	}
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -100,10 +99,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		try {
 			super.onPause();
 			disconected = true;
-		    SharedPreferences settings = getSharedPreferences(MainActivity.PREF_NAME, 0);
-		    SharedPreferences.Editor editor = settings.edit();
-		    editor.putString("connectionStatus", "Disconnected");
-		    editor.commit();
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e1));
 			dialog.show(getSupportFragmentManager(), "popUp");
@@ -124,6 +119,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			lastCalltime = System.currentTimeMillis();
 			disconnectCounter = 0;
 			disconected = true;
+			connectionStatus = "Disconnected";
 			
 			setContentView(R.layout.activity_main);
 
@@ -189,34 +185,32 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * Finally it starts the SiCardListener, a separate thread for SI events. The thread listens to events from the SI Main unit and activates callbacks when SI cards are read.
 	 * 
 	 * */
-	public String connectToSiMaster() {
+	public void connectToSiMaster() {
 		try {
-			String msg = "";
 			siDriver = new SiDriver();
 			if (siDriver.connectDriver((UsbManager) getSystemService(Context.USB_SERVICE))) {
 				if (siDriver.connectToSiMaster()) {
-					msg = "SiMain " + siDriver.stationId + " connected";
+					connectionStatus = "SiMain " + siDriver.stationId + " connected";
 					disconected = false;
 					disconnectCounter = 0;
 					new SiCardListener().execute(siDriver);
 				} else {
-					msg = "Failed ot connect SI master";
+					connectionStatus = "Failed ot connect SI master";
 					disconected = true;
+					return;
 				}
 			}
 			if (siDriver.mode != SiMessage.STATION_MODE_READ_CARD) {
-				msg = "SiMain is not configured as Reas Si";
-				PopupMessage dialog = new PopupMessage(	msg + " Is configured as: "	+ SiMessage.getStationMode(siDriver.mode) );
+				connectionStatus = "SiMain is not configured as Reas Si";
+				PopupMessage dialog = new PopupMessage(	connectionStatus + " Is configured as: "	+ SiMessage.getStationMode(siDriver.mode) );
 				dialog.show(getSupportFragmentManager(), "popUp");
 				disconected = true;
 			}
-
-			return msg;
 		} catch (Exception e) {
+			connectionStatus = "Unknown connection problem";
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 			dialog.show(getSupportFragmentManager(), "popUp");
 			disconected = true;
-			return "Fail";
 		}
 	}
 
@@ -247,7 +241,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			if (!disconected) {
 				new SiCardListener().execute(siDriver);
 			} else {
-				mSectionsPagerAdapter.startScreenFragment.connectionStatus = "Disconnected";
+				connectionStatus = "Disconnected";
 				mSectionsPagerAdapter.startScreenFragment.updateConnectText();
 			}
 		} catch (Exception e) {
@@ -423,9 +417,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			try {
 				Card cardData = new Card();
 				while (true) {
-					byte[] readSiMessage = siDriver[0].readSiMessage(100,
-							50000, false);
+					byte[] readSiMessage = siDriver[0].readSiMessage(100, 2000, false);
 
+					if(disconected){
+						cardData.errorMsg += "Was disconnected";
+						siDriver[0].closeDriver();
+						return cardData;
+					}
+					
 					//We got something and it was the STX (Start Transmistion) symbol.
 					if (readSiMessage.length >= 1 && readSiMessage[0] == SiMessage.STX) {
 						
@@ -461,8 +460,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 					} else {
 						// Use this to check if we have been disconnected. If we
-						// have many faulty read outs from the Driver, assume
-						// disconenction.
+						// have many faulty read outs from the Driver in a short time span, 
+						// assume disconnection.
 						if (System.currentTimeMillis() - MainActivity.lastCalltime < 1000) {
 							disconnectCounter++;
 						} else {

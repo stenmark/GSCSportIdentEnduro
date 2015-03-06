@@ -32,7 +32,6 @@ public class StartScreenFragment extends Fragment {
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	static StartScreenFragment mStartScreenFragment;
 	MainActivity mMainActivity;
-	public String connectionStatus = "";
 	private boolean isInView = false;
 	
     @Override
@@ -69,8 +68,6 @@ public class StartScreenFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		isInView = true;
-		SharedPreferences settings = mMainActivity.getSharedPreferences(	MainActivity.PREF_NAME, 0);
-		connectionStatus = settings.getString("connectionStatus", "NO STATUS");
 		
 		updateTrackText();
 		updateCompName();
@@ -80,10 +77,6 @@ public class StartScreenFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
-	      SharedPreferences settings = mMainActivity.getSharedPreferences(MainActivity.PREF_NAME, 0);
-	      SharedPreferences.Editor editor = settings.edit();
-	      editor.putString("connectionStatus", connectionStatus);
-	      editor.commit();
 	      isInView = false;
 	}	
 	
@@ -123,7 +116,7 @@ public class StartScreenFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				try {
-					connectionStatus = mMainActivity.connectToSiMaster();
+					mMainActivity.connectToSiMaster();
 					updateConnectText();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
@@ -177,6 +170,7 @@ public class StartScreenFragment extends Fragment {
 						mMainActivity.competition.addNewTrack( trackString );
 						updateTrackText();
 					}
+					mMainActivity.updateFragments();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
@@ -406,7 +400,8 @@ public class StartScreenFragment extends Fragment {
 					AlertDialog alertDialog = alertDialogBuilder.create();
 
 					// show it
-					alertDialog.show();										
+					alertDialog.show();	
+					mMainActivity.updateFragments();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
@@ -422,7 +417,7 @@ public class StartScreenFragment extends Fragment {
 		try {
 			if( isInView ){
 				TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);	
-				statusTextView.setText(connectionStatus);
+				statusTextView.setText(mMainActivity.getConnectionStatus());
 			}
 		} catch (Exception e) {
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));

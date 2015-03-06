@@ -32,8 +32,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
 /**
  * Represents a competition with a track, List of competitors and the name of the competition.

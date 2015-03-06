@@ -1,15 +1,12 @@
 package se.gsc.stenmark.gscenduro;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 
 public class ResultListFragment extends ListFragment {
 	
