@@ -188,6 +188,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public void connectToSiMaster() {
 		try {
 			siDriver = new SiDriver();
+
 			if (siDriver.connectDriver((UsbManager) getSystemService(Context.USB_SERVICE))) {
 				if (siDriver.connectToSiMaster()) {
 					connectionStatus = "SiMain " + siDriver.stationId + " connected";
@@ -195,19 +196,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					disconnectCounter = 0;
 					new SiCardListener().execute(siDriver);
 				} else {
-					connectionStatus = "Failed ot connect SI master";
+					connectionStatus = "Failed ot connect SI master.Try to reconnect USB and answer yes when the program want to autostart";
 					disconected = true;
 					return;
 				}
 			}
+			else{
+				connectionStatus = "Failed ot connect SI master.Try to reconnect USB and answer yes when the program want to autostart";
+				disconected = true;
+				return;
+			}
 			if (siDriver.mode != SiMessage.STATION_MODE_READ_CARD) {
-				connectionStatus = "SiMain is not configured as Reas Si";
+				connectionStatus = "SiMain is not configured as Read Si";
 				PopupMessage dialog = new PopupMessage(	connectionStatus + " Is configured as: "	+ SiMessage.getStationMode(siDriver.mode) );
 				dialog.show(getSupportFragmentManager(), "popUp");
 				disconected = true;
 			}
 		} catch (Exception e) {
-			connectionStatus = "Unknown connection problem";
+			connectionStatus = "Unknown connection problem. Try to reconnect USB and answer yes when the program want to autostart";
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 			dialog.show(getSupportFragmentManager(), "popUp");
 			disconected = true;

@@ -50,6 +50,9 @@ public class SiDriver {
 		if( (startupResponse.length >= 1 && startupResponse[0]== SiMessage.STX ) || (withStartup == false)) {
 			sendMessage( appendMarkesAndCrcToMessage(SiMessage.read_system_data.sequence() ));
 			byte[] systemData = readSiMessage(32, 8000, false);
+			if(systemData.length == 0){
+				return false;
+			}
 			if( (systemData[0] == SiMessage.STX) &&  
 				(systemData.length > 14) ){
 				stationId = makeIntFromBytes( systemData[4], systemData[3] );
@@ -399,8 +402,9 @@ public class SiDriver {
 			return false;
 		}
 
-		driver = UsbSerialProber.acquire(manager);
-
+		if(driver == null){
+			driver = UsbSerialProber.acquire(manager);
+		}
 		if (driver != null) {
 			try {
 				driver.open();
@@ -422,7 +426,14 @@ public class SiDriver {
     
 	public void closeDriver(){
 		try {
-			driver.close();
+			stationId = -1;
+			mode = -1;
+			extended = false;
+			handShake = false;
+			autoSend = false;
+			if( driver != null){
+				driver.close();
+			}
 		} catch (IOException e) {
 
 		}
