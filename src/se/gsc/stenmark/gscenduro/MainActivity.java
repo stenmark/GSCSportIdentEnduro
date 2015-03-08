@@ -120,7 +120,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 	
 	public void displayNewCard(Card newCard) {
-		competition.processNewCard(newCard);
+		String processNewCardStatus = competition.processNewCard(newCard);
+		if(processNewCardStatus.contains("Could not find any competitor")){
+			PopupMessage dialog = new PopupMessage( processNewCardStatus );
+			dialog.show( getSupportFragmentManager(), "popUp");
+		}
+		if(processNewCardStatus.contains("Not all station punched")){
+			PopupMessage dialog = new PopupMessage("Warning!\n" +
+					"Not all station on all tracks have been punched.\n" +
+					"You might have to edit this competitor manually");
+			dialog.show( getSupportFragmentManager(), "popUp");
+		}
+		if(processNewCardStatus.contains("double punch")){
+			PopupMessage dialog = new PopupMessage("Warning!\n" +
+					"Double punche(s) was detected for at least one station\n" +
+					"You might have to edit this competitor manually");
+			dialog.show( getSupportFragmentManager(), "popUp");
+		}
 		updateFragments();
 	}
     

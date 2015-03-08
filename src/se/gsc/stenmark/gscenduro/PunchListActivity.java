@@ -33,10 +33,6 @@ public class PunchListActivity extends ListActivity {
 			
 			if (mUpdatedCard != null)
 			{
-				for(Punch punch : mUpdatedCard.doublePunches){
-					mUpdatedCard.punches.add(punch);				
-				}
-				mUpdatedCard.doublePunches.clear();
 				mUpdatedCard.numberOfPunches = mUpdatedCard.punches.size();
 				
 			    Collections.sort(mUpdatedCard.punches, new Comparator<Punch>() {
@@ -59,11 +55,15 @@ public class PunchListActivity extends ListActivity {
 	
 	@Override
     public void onBackPressed() {
-        backButtonHandler();
+		backButtonHandler();
         return;
     }   
 	
 	public void sendCard(){
+		//Need to reset the doublePunch marker and let the main prgoram re-evaluate after someone manually edited the card
+		for( Punch punch : mUpdatedCard.punches){
+			punch.markAsDoublePunch = false;
+		}
 		Intent intent = new Intent(this, MainActivity.class);		
 		
 		Bundle bundle = new Bundle();

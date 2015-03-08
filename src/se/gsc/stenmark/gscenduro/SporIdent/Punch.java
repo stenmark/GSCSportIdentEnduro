@@ -17,9 +17,11 @@ public class Punch implements Serializable{
 	public Punch(long time, long control){
 		this.time = time;
 		this.control = control;
+		markAsDoublePunch = false;
 	}
 	public long time;
 	public long control;
+	public boolean markAsDoublePunch;
 	
 	public Long getTime() {
 	    return time;

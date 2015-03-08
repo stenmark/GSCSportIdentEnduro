@@ -386,7 +386,7 @@ public class Competition implements Serializable{
 		if (foundCompetitor == null) {
 			return "Read new card with card number: " + newCard.cardNumber	+ " Could not find any competitor with this number";			
 		}		
-		newCard.removeDoublePunches();
+		newCard.findDoublePunches();
 		foundCompetitor.card = newCard;
 
 		returnMsg += "New card read for "+ foundCompetitor.name + " ";
@@ -395,6 +395,7 @@ public class Competition implements Serializable{
 		//i.e. first entry will be for SS1, second SS2 etc.
 		List<Long> results = new ArrayList<Long>();
 		results = CompetitionHelper.extractResultFromCard(newCard, track );
+		
 	
 		foundCompetitor.trackTimes = new ArrayList<Long>();
 		int i = 1;
@@ -404,6 +405,10 @@ public class Competition implements Serializable{
 			i++;
 		}
 
+		if( results.size() != track.size() ){
+			return "Not all station punched";
+		}
+		
 		returnMsg += ("Total time was: "+ foundCompetitor.getTotalTime(true) + " seconds \n");
 				
 		return returnMsg;
@@ -502,11 +507,7 @@ public class Competition implements Serializable{
 					
 					if (card != null)
 					{
-						for(Punch punch : card.doublePunches){
-							card.punches.add(punch);				
-						}
-						card.doublePunches.clear();
-						card.numberOfPunches = card.punches.size();
+
 						
 					    Collections.sort(card.punches, new Comparator<Punch>() {
 					        @Override
@@ -764,7 +765,7 @@ public class Competition implements Serializable{
 				name = competitors.get(i).getName();		
 				cardNumber = competitors.get(i).getCardNumber();
 				
-				if (competitors.get(i).hasResult()) {
+				if ( (competitors.get(i).hasResult()) && (competitors.get(i).trackTimes.size() > j - 1) ) {
 					trackTime = competitors.get(i).trackTimes.get(j - 1);
 				}
 				else

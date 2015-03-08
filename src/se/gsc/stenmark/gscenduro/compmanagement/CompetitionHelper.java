@@ -117,9 +117,11 @@ public class CompetitionHelper {
 		int i = 0;
 		for (Punch punch : card.punches) {
 			if (punch.control == stationNumber) {
-				i++;
-				if (i == instanceNumber) {
-					return punch;
+				if( !punch.markAsDoublePunch ){
+					i++;
+					if (i == instanceNumber) {
+						return punch;
+					}
 				}
 			}
 		}
@@ -147,7 +149,7 @@ public class CompetitionHelper {
 				result.add(trackTime);
 			}
 		} catch (Exception e) {
-			throw new NotAllStationsPunchedException("Not all stations have been checked for card number: " + card.cardNumber);
+			
 		}
 
 		return result;

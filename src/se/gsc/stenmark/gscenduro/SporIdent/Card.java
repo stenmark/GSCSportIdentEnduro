@@ -2,7 +2,6 @@ package se.gsc.stenmark.gscenduro.SporIdent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class is created when a new SI card is read by the SI main unit.
@@ -21,7 +20,7 @@ public class Card implements Serializable {
 	public Punch finishPunch; //Not used by GSC competitions
 	public Punch checkPunch; //Not used by GSC competitions
 	public ArrayList<Punch> punches;
-	public ArrayList<Punch> doublePunches;
+
 	public String errorMsg;
 	
 	public Card(){
@@ -31,7 +30,6 @@ public class Card implements Serializable {
 		finishPunch = new Punch(-1, -1);
 		checkPunch = new Punch(-1, -1);
 		punches = new ArrayList<Punch>();
-		doublePunches = new ArrayList<Punch>();
 		errorMsg = "";
 	}
 	
@@ -51,19 +49,12 @@ public class Card implements Serializable {
 		return result;
 	}
 	
-	public void removeDoublePunches(){		
-		List<Integer> doublePunchesPos = new ArrayList<Integer>();
+	public void findDoublePunches(){		
 		for( int i = 0; i < punches.size()-1; i++){
 			if(punches.get(i).control == punches.get(i+1).control ){
-				doublePunchesPos.add(i);
+				punches.get(i).markAsDoublePunch = true;
 			}
 		}
-		
-		for(int doublePunchPos : doublePunchesPos){
-			doublePunches.add( punches.get(doublePunchPos));
-			punches.remove(doublePunchPos);
-		}
-
 		
 	}
 }
