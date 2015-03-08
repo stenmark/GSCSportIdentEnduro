@@ -41,7 +41,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public static int disconnectCounter;
 	public static boolean disconected;
 	private String connectionStatus = "";
-
+		
 	public String getConnectionStatus() {
 		return connectionStatus;
 	}
@@ -60,7 +60,41 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	ViewPager mViewPager;
 	
-	public void updateFragments() {
+	public void listPunches(int position) {		
+		try{
+			Intent punchListIntent = new Intent();		
+			punchListIntent.setClass(this, PunchListActivity.class);		
+			
+			Bundle bundle = new Bundle();
+			bundle.putSerializable("Card", mSectionsPagerAdapter.compMangementFragment.mCompetitor.get(position).card);
+			punchListIntent.putExtras(bundle);
+			
+			startActivityForResult(punchListIntent, 2);		
+		}
+		catch( Exception e){
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			dialog.show( getSupportFragmentManager(), "popUp");
+	
+		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		// check if the request code is same as what is passed here it is 2
+		if (requestCode == 2) {		
+			Card updatedCard = new Card();
+	    	updatedCard = (Card) data.getExtras().getSerializable("updateCard");
+	    	
+	    	if (updatedCard.punches.size() > 0)
+	    	{
+	    		writeCard(updatedCard);
+	    	}
+		}
+	}
+	
+    public void updateFragments() {
 		if (mSectionsPagerAdapter.compMangementFragment != null
 				&& mSectionsPagerAdapter.compMangementFragment instanceof CompMangementFragment) {
 			mSectionsPagerAdapter.compMangementFragment.FetchItems();
@@ -78,16 +112,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}		
 	}
 	
+	public void displayNewCard(Card newCard) {
+		competition.processNewCard(newCard);
+		updateFragments();
+	}
+    
 	public void onNewCard(Card card) {
-		try {
-			if (mSectionsPagerAdapter.resultListFragment != null) {
-				mSectionsPagerAdapter.resultListFragment.displayNewCard(card);
-			}
-		} catch (Exception e1) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e1));
-			dialog.show(getSupportFragmentManager(), "popUp");
-		}
+		displayNewCard(card);
 	}
 
 
@@ -104,7 +135,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 	}
-		
+	
 	/**
 	 * A lot of template code to get the sectorPager going. Created automagically by eclipse.
 	 * Creates an empty competion object, later to be populated by onResume()
@@ -133,7 +164,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				dialog.show(getSupportFragmentManager(), "popUp");
 				return;
 			}		
-								
+			
 			// Set up the action bar.
 			final ActionBar actionBar = getActionBar();
 			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -188,7 +219,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public void connectToSiMaster() {
 		try {
 			siDriver = new SiDriver();
-
 			if (siDriver.connectDriver((UsbManager) getSystemService(Context.USB_SERVICE))) {
 				if (siDriver.connectToSiMaster()) {
 					connectionStatus = "SiMain " + siDriver.stationId + " connected";
@@ -196,24 +226,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					disconnectCounter = 0;
 					new SiCardListener().execute(siDriver);
 				} else {
-					connectionStatus = "Failed ot connect SI master.Try to reconnect USB and answer yes when the program want to autostart";
+					connectionStatus = "Failed ot connect SI master";
 					disconected = true;
 					return;
 				}
 			}
-			else{
-				connectionStatus = "Failed ot connect SI master.Try to reconnect USB and answer yes when the program want to autostart";
-				disconected = true;
-				return;
-			}
 			if (siDriver.mode != SiMessage.STATION_MODE_READ_CARD) {
-				connectionStatus = "SiMain is not configured as Read Si";
+				connectionStatus = "SiMain is not configured as Reas Si";
 				PopupMessage dialog = new PopupMessage(	connectionStatus + " Is configured as: "	+ SiMessage.getStationMode(siDriver.mode) );
 				dialog.show(getSupportFragmentManager(), "popUp");
 				disconected = true;
 			}
 		} catch (Exception e) {
-			connectionStatus = "Unknown connection problem. Try to reconnect USB and answer yes when the program want to autostart";
+			connectionStatus = "Unknown connection problem";
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 			dialog.show(getSupportFragmentManager(), "popUp");
 			disconected = true;
@@ -228,21 +253,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	public void writeCard(Card card) {
 		try {
-			//TODO: Move this to something smarter
-//			TextView cardText = (TextView) findViewById(R.id.cardInfoTextView);
-			//Update the result fragment with the new card.
-			//TODO: Investigate how well this works, can you always call GUI updating methods from here?
-			//Sometimes the fragment seems to be null, for unknown reasons.
 			if (card.cardNumber != 0) {
-//				cardText.setText(card.toString());
-//				cardText.append("\n" + card.errorMsg + "\n");
-				if (mSectionsPagerAdapter.resultListFragment != null) {
-					mSectionsPagerAdapter.resultListFragment.displayNewCard(card);
-				}
+				displayNewCard(card);
 			} 
-//			else {
-//				cardText.append("\n" + card.errorMsg);
-//			}
 			//The Listener dies once it has received once message, so kick it again to restart it
 			if (!disconected) {
 				new SiCardListener().execute(siDriver);
@@ -348,6 +361,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		public StartScreenFragment startScreenFragment = null;
 		public ResultListFragment resultListFragment = null;
 		public CompMangementFragment compMangementFragment = null;
+		public PunchListActivity punchListFragment = null;
 
 		public SectionsPagerAdapter(FragmentManager fm,
 				MainActivity mainActivity) {
@@ -368,7 +382,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				return resultListFragment;
 			case 2:
 				compMangementFragment = CompMangementFragment.getInstance(2);
-				return compMangementFragment;
+				return compMangementFragment;				
 			}
 
 			return null;

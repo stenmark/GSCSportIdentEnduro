@@ -3,7 +3,6 @@ package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -67,10 +66,5 @@ public class ResultListFragment extends ListFragment {
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		mResultListFragment.setArguments(args);
 		return mResultListFragment;
-	}
-
-	public void displayNewCard(Card newCard) {
-		mMainActivity.competition.processNewCard(newCard);
-		mMainActivity.updateFragments();
 	}
 }

@@ -9,7 +9,7 @@
     <LinearLayout 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
+		android:orientation="horizontal"
 		android:layout_marginTop="8dp"
 		android:layout_marginBottom="8dp"
 		android:layout_marginLeft="4dp"
@@ -18,31 +18,40 @@
 		>
 		
 		<TextView		 	
-		    android:id="@+id/competitor_name"
+		    android:id="@+id/punch_control"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:layout_marginLeft="8dp"			    
 		    android:layout_marginRight="8dp"
 		    android:textSize="16sp"
-		    android:text="Namn Namnsson"	
-		    android:textStyle="bold"
+		    android:text="71"	
 		    android:layout_weight="1"			      		   
 	   	/>		   
-  					
+  	
 		<TextView		 	
-		    android:id="@+id/competitor_cardnumber"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:layout_marginLeft="8dp"			    
 		    android:layout_marginRight="8dp"
-		    android:textSize="12sp"		    
-		    android:text="123456789"   
+		    android:textSize="16sp"		    
+		    android:text="-"   
+		    android:layout_weight="1"     	     	    	    		    	    	   
+	   	/>	
+						
+		<TextView		 	
+		    android:id="@+id/punch_time"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginLeft="8dp"			    
+		    android:layout_marginRight="8dp"
+		    android:textSize="16sp"		    
+		    android:text="2"   
 		    android:layout_weight="1"     	     	    	    		    	    	   
 	   	/>	
    	
 	</LinearLayout>
 	
-    <LinearLayout 
+   <LinearLayout 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"	
@@ -50,7 +59,7 @@
 	>
     
 		<Button
-		    android:id="@+id/competitor_delete"
+		    android:id="@+id/punch_delete"
 		    android:layout_width="wrap_content"
 		    android:layout_height="32dp"
 		    android:layout_margin="8dp"		    
@@ -63,7 +72,7 @@
 		    />
 
 		<Button
-		    android:id="@+id/competitor_modify"
+		    android:id="@+id/punch_modify"
     		android:layout_width="wrap_content"
     		android:layout_height="32dp"
     		android:layout_margin="8dp"
@@ -74,19 +83,7 @@
     		android:background="@drawable/button"	
     		android:layout_gravity="center_vertical|right"		
     	/>
-		
-		<Button
-		    android:id="@+id/competitor_punch"
-    		android:layout_width="wrap_content"
-    		android:layout_height="32dp"
-    		android:layout_margin="8dp"
-    		android:textSize="16sp"
-    		android:textStyle="bold"
-    		android:text="PUNCHES"
-    		android:textColor="@color/button_text"   
-    		android:background="@drawable/button"	
-    		android:layout_gravity="center_vertical|right"		
-    	/>		
+
 	</LinearLayout>
 
 </LinearLayout>	

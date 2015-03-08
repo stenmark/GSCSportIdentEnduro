@@ -21,6 +21,10 @@ public class Punch implements Serializable{
 	public long time;
 	public long control;
 	
+	public Long getTime() {
+	    return time;
+	}
+	
 	@Override
 	public String toString(){
 		return "Control=" + control + "  Time="+time;

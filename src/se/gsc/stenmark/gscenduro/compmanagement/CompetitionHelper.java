@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Environment;
+import android.util.Log;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
@@ -135,7 +136,7 @@ public class CompetitionHelper {
 	 * @param track
 	 * @return a list of Long Integers denoting the time it took to get through each pair of track markers
 	 */
-	public static List<Long> extractResultFromCard(Card card, List<TrackMarker> track) {
+	public static List<Long> extractResultFromCard(Card card, List<TrackMarker> track) {		
 		List<Long> result = new ArrayList<Long>();
 
 		try {

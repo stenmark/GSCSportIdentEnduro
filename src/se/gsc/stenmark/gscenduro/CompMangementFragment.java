@@ -46,8 +46,7 @@ public class CompMangementFragment extends ListFragment {
 	protected void FillList() {
 		PopulateList();
 		if (mCompetitorAdapter == null) {
-			mCompetitorAdapter = new ListCompetitorAdapter(mMainActivity,
-					mCompMangementFragment, mCompetitor);
+			mCompetitorAdapter = new ListCompetitorAdapter(mMainActivity, mCompetitor);
 			setListAdapter(mCompetitorAdapter);
 		} else {
 			mCompetitorAdapter.notifyDataSetChanged();

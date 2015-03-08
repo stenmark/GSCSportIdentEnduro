@@ -379,12 +379,12 @@ public class Competition implements Serializable{
 	 * @param newCard the SI card read and that should be added to a competitor 
 	 * @return a message String informing on have the parsing of the SI card data went
 	 */
-	public String processNewCard( Card newCard){
+	public String processNewCard(Card newCard){	
 		String returnMsg = "";
 		Competitor foundCompetitor = CompetitionHelper.findCompetitor(newCard, competitors);
 		if (foundCompetitor == null) {
-			return "Read new card with card number: " + newCard.cardNumber	+ " Could not find any competitor with this number";
-		}
+			return "Read new card with card number: " + newCard.cardNumber	+ " Could not find any competitor with this number";			
+		}		
 		newCard.removeDoublePunches();
 		foundCompetitor.card = newCard;
 
@@ -404,7 +404,7 @@ public class Competition implements Serializable{
 		}
 
 		returnMsg += ("Total time was: "+ foundCompetitor.getTotalTime(true) + " seconds \n");
-		
+				
 		return returnMsg;
 	}
 	
@@ -675,7 +675,6 @@ public class Competition implements Serializable{
 		Collections.sort(allResults.get(0).mTrackResult, new Comparator<TrackResult>() {
 			@Override
 			public int compare(TrackResult lhs, TrackResult rhs) {
-				// TODO Auto-generated method stub
 				return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
 			}
 		});		
@@ -701,7 +700,6 @@ public class Competition implements Serializable{
 			Collections.sort(allResults.get(j).mTrackResult, new Comparator<TrackResult>() {
 				@Override
 				public int compare(TrackResult lhs, TrackResult rhs) {
-					// TODO Auto-generated method stub
 					return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
 				}
 			});											

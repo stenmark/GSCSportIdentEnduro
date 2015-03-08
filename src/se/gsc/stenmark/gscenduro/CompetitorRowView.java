@@ -16,17 +16,17 @@ public class CompetitorRowView extends LinearLayout {
 	ListFragment mListFragment;
 	TextView mName;
 	TextView mCardNumber;
-	Button mDelete;
-	Button mModify;
+	Button mDeleteButton;
+	Button mModifyButton;
+	Button mCardButton;
 	int mPosition;
 	LinearLayout mCompoundView;
 
-	protected void Init(Context context, ListFragment listFragment) {
+	protected void Init(Context context) {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		mContext = context;
-		mListFragment = listFragment;
 
 		mCompoundView = (LinearLayout) inflater.inflate(
 				R.layout.competitor_row, this);
@@ -34,130 +34,189 @@ public class CompetitorRowView extends LinearLayout {
 		mName = (TextView) mCompoundView.findViewById(R.id.competitor_name);
 		mCardNumber = (TextView) mCompoundView
 				.findViewById(R.id.competitor_cardnumber);
-		mDelete = (Button) mCompoundView.findViewById(R.id.competitor_delete);
-		mModify = (Button) mCompoundView.findViewById(R.id.competitor_modify);
+		mDeleteButton = (Button) mCompoundView.findViewById(R.id.competitor_delete);
+		mModifyButton = (Button) mCompoundView.findViewById(R.id.competitor_modify);
+		mCardButton = (Button) mCompoundView.findViewById(R.id.competitor_punch);
 
-		mDelete.setOnClickListener(mOnDeleteClickListener);
-		mModify.setOnClickListener(mOnModifyClickListener);
+		mDeleteButton.setOnClickListener(mOnDeleteClickListener);
+		mModifyButton.setOnClickListener(mOnModifyClickListener);
+		mCardButton.setOnClickListener(mOnPunchClickListener);
 	}
 
-	public CompetitorRowView(Context context, ListFragment listFragment) {
+	public CompetitorRowView(Context context) {
 		super(context);
-		Init(context, listFragment);
+		try{		
+			Init(context);
+		}
+		catch( Exception e){
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
+	
+		}
 	}
 
 	public void setName(String Name) {
-		if (mName != null) {
-			mName.setText(Name);
+		try{
+			if (mName != null) {
+				mName.setText(Name);
+			}
+		}
+		catch( Exception e){
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
+	
 		}
 	}
 
 	public void setCardNumber(String CardNumber) {
-		if (mCardNumber != null) {
-			mCardNumber.setText(CardNumber);
+		try{
+			if (mCardNumber != null) {
+				mCardNumber.setText(CardNumber);
+			}
+		}
+		catch( Exception e){
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
+	
 		}
 	}
 
 	public void setPosition(int Position) {
-		mPosition = Position;
+		try{
+			mPosition = Position;
+		}
+		catch( Exception e){
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
+	
+		}
+		
 	}
 
 	private OnClickListener mOnDeleteClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			LayoutInflater li = LayoutInflater.from(mContext);
-			View promptsView = li.inflate(R.layout.delete_competitor, null);
-
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-					mContext);
-
-			// set prompts.xml to alertdialog builder
-			alertDialogBuilder.setView(promptsView);
-
-			// set dialog message
-			alertDialogBuilder
-					.setCancelable(false)
-					.setPositiveButton("Yes",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									((MainActivity) mContext).competition
-											.removeCompetitor((String) mName
-													.getText());									
-									((MainActivity) mContext).updateFragments();
-								}
-							})
-					.setNegativeButton("No",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
-
-			// create alert dialog
-			AlertDialog alertDialog = alertDialogBuilder.create();
-
-			// show it
-			alertDialog.show();
+			try{
+				LayoutInflater li = LayoutInflater.from(mContext);
+				View promptsView = li.inflate(R.layout.delete_competitor, null);
+	
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+						mContext);
+	
+				// set prompts.xml to alertdialog builder
+				alertDialogBuilder.setView(promptsView);
+	
+				// set dialog message
+				alertDialogBuilder
+						.setCancelable(false)
+						.setPositiveButton("Yes",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										((MainActivity) mContext).competition
+												.removeCompetitor((String) mName
+														.getText());									
+										((MainActivity) mContext).updateFragments();
+									}
+								})
+						.setNegativeButton("No",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										dialog.cancel();
+									}
+								});
+	
+				// create alert dialog
+				AlertDialog alertDialog = alertDialogBuilder.create();
+	
+				// show it
+				alertDialog.show();
+			}
+			catch( Exception e){
+				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+				dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
+	
+			}
 		}
 	};
 
 	private OnClickListener mOnModifyClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			LayoutInflater li = LayoutInflater.from(mContext);
-			View promptsView = li.inflate(R.layout.modify_competitor, null);
+			try{
+				LayoutInflater li = LayoutInflater.from(mContext);
+				View promptsView = li.inflate(R.layout.modify_competitor, null);
+	
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+						mContext);
+	
+				// set prompts.xml to alertdialog builder
+				alertDialogBuilder.setView(promptsView);
+	
+				final EditText NameInput = (EditText) promptsView
+						.findViewById(R.id.editTextNameInput);
+	
+				NameInput.setText(mName.getText());
+	
+				final EditText CardNumberInput = (EditText) promptsView
+						.findViewById(R.id.editTextCardNumberInput);
+	
+				CardNumberInput.setText(mCardNumber.getText());
+	
+				// set dialog message
+				alertDialogBuilder
+						.setCancelable(false)
+						.setPositiveButton("Modify",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										mName.setText(NameInput.getText());
+										mCardNumber.setText(CardNumberInput
+												.getText());
+	
+										((MainActivity) mContext).competition
+												.updateCompetitorCardNumber(
+														mPosition, mName.getText()
+																.toString(),
+														mCardNumber.getText()
+																.toString());
+										((MainActivity) mContext).updateFragments();
+									}
+								})
+						.setNegativeButton("Cancel",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										dialog.cancel();
+									}
+								});
+	
+				// create alert dialog
+				AlertDialog alertDialog = alertDialogBuilder.create();
+	
+				// show it
+				alertDialog.show();
+			}
+			catch( Exception e){
+				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+				dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
 
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-					mContext);
+			}
+		}
+	};
+	
+	private OnClickListener mOnPunchClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			try{
+				((MainActivity)mContext).listPunches(mPosition);
+			}
+			catch( Exception e){
+				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+				dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
 
-			// set prompts.xml to alertdialog builder
-			alertDialogBuilder.setView(promptsView);
-
-			final EditText NameInput = (EditText) promptsView
-					.findViewById(R.id.editTextNameInput);
-
-			NameInput.setText(mName.getText());
-
-			final EditText CardNumberInput = (EditText) promptsView
-					.findViewById(R.id.editTextCardNumberInput);
-
-			CardNumberInput.setText(mCardNumber.getText());
-
-			// set dialog message
-			alertDialogBuilder
-					.setCancelable(false)
-					.setPositiveButton("Modify",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									mName.setText(NameInput.getText());
-									mCardNumber.setText(CardNumberInput
-											.getText());
-
-									((MainActivity) mContext).competition
-											.updateCompetitorCardNumber(
-													mPosition, mName.getText()
-															.toString(),
-													mCardNumber.getText()
-															.toString());
-									((MainActivity) mContext).updateFragments();
-								}
-							})
-					.setNegativeButton("Cancel",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
-
-			// create alert dialog
-			AlertDialog alertDialog = alertDialogBuilder.create();
-
-			// show it
-			alertDialog.show();
+			}
 		}
 	};
 }

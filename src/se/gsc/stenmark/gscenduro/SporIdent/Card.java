@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.Log;
+
 /**
  * This class is created when a new SI card is read by the SI main unit.
  * All essential data is parsed from the SI Card and stored in this class.
@@ -51,7 +53,7 @@ public class Card implements Serializable {
 		return result;
 	}
 	
-	public void removeDoublePunches(){
+	public void removeDoublePunches(){		
 		List<Integer> doublePunchesPos = new ArrayList<Integer>();
 		for( int i = 0; i < punches.size()-1; i++){
 			if(punches.get(i).control == punches.get(i+1).control ){
