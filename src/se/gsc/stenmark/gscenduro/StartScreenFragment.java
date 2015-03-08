@@ -38,10 +38,8 @@ public class StartScreenFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        mMainActivity = ((MainActivity) getActivity());   
-           
+        mMainActivity = ((MainActivity) getActivity());              
     }
-
 	
 	@Override
 	public void onDestroy(){
@@ -68,9 +66,7 @@ public class StartScreenFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		isInView = true;
-		
-		updateTrackText();
-		updateCompName();
+						
 		updateConnectText();
 	}
 		
@@ -125,6 +121,53 @@ public class StartScreenFragment extends Fragment {
 			}
 		});
 
+		Button addManualTrackButton = (Button) rootView.findViewById(R.id.addManualTrackButton);
+		addManualTrackButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					LayoutInflater li = LayoutInflater.from(mMainActivity);
+					View promptsView = li.inflate(R.layout.add_manually_track, null);					
+					
+					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+							mMainActivity);
+
+					// set prompts.xml to alertdialog builder
+					alertDialogBuilder.setView(promptsView);
+
+					final EditText ManualTrackInput = (EditText) promptsView.findViewById(R.id.editTextManualTrackInput);
+					
+					// set dialog message
+					alertDialogBuilder
+							.setCancelable(false)
+							.setPositiveButton("Ok",
+									new DialogInterface.OnClickListener() {
+										public void onClick(DialogInterface dialog,
+												int id) {
+											mMainActivity.competition.addNewTrack(ManualTrackInput.getText().toString());
+											mMainActivity.updateFragments();
+										}
+									})
+							.setNegativeButton("Cancel",
+									new DialogInterface.OnClickListener() {
+										public void onClick(DialogInterface dialog,
+												int id) {
+											dialog.cancel();
+										}
+									});
+
+					// create alert dialog
+					AlertDialog alertDialog = alertDialogBuilder.create();
+
+					// show it
+					alertDialog.show();										
+				} catch (Exception e) {
+					PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
+					dialog.show(getFragmentManager(), "popUp");
+				}
+			}
+		});
+		
 		Button addTrackButton = (Button) rootView.findViewById(R.id.addTrackButton);
 		addTrackButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -168,7 +211,6 @@ public class StartScreenFragment extends Fragment {
 						trackString = trackString.substring(0, trackString.length()-1);   //remove last ","
 						
 						mMainActivity.competition.addNewTrack( trackString );
-						updateTrackText();
 					}
 					mMainActivity.updateFragments();
 				} catch (Exception e) {
@@ -332,11 +374,17 @@ public class StartScreenFragment extends Fragment {
 		listButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				try {
-					TextView statusText = (TextView) getView().findViewById( R.id.cardInfoTextView);
-					statusText.setText("Existing competitions \n");
-					statusText.append( CompetitionHelper.getSavedCompetitions() );
-
+				try {					
+					AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
+			        builder.setIcon(android.R.drawable.ic_dialog_alert);
+			        builder.setMessage(CompetitionHelper.getSavedCompetitions()).setTitle("Existing competitions").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener()
+			        {
+			            public void onClick(DialogInterface dialog, int which) {}
+			        });
+			 
+			        AlertDialog alert = builder.create();
+			        alert.show();	
+					
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
@@ -350,7 +398,6 @@ public class StartScreenFragment extends Fragment {
 			public void onClick(View v) {
 				try {
 					mMainActivity.competition = new Competition();
-					updateTrackText();
 					mMainActivity.updateFragments();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
@@ -449,31 +496,7 @@ public class StartScreenFragment extends Fragment {
 		}
 
 	}
-	
-	public void appendCardInfoText(String messageToAppend) {
-		try {
-			if( isInView ){
-				TextView trackInfoTextView = (TextView) getView().findViewById( R.id.cardInfoTextView);
-				trackInfoTextView.append( messageToAppend);
-			}
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-		}
-	}
-	
-	public void updateCardInfoText(String messageToWrite) {
-		try {
-			if( isInView ){
-				TextView trackInfoTextView = (TextView) getView().findViewById( R.id.cardInfoTextView);
-				trackInfoTextView.setText( messageToWrite);
-			}
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
-		}
-	}	
-	
+			
     public class CompetitionOnClickListener implements android.content.DialogInterface.OnClickListener{
     	public int which = 0;
     	

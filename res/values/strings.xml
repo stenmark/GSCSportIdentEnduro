@@ -18,6 +18,7 @@
     <string name="start_name">Name:</string>
     <string name="start_card_number">Card Number:</string>
     <string name="start_add">ADD</string>
+    <string name="start_manual_add">ADD MANUALLY</string>
     <string name="start_multicompetitor">MULTIPLE COMPETITORS</string>             
     
     <string name="start_track">STAGES</string>
@@ -34,7 +35,8 @@
     <string name="start_points_table">POINTS TABLE</string>
     
     <string name="action_export_competitors">Export competitors</string>
-    <string name="action_export_results">Export results</string>    
+    <string name="action_export_results">Export results</string>
+    <string name="action_export_punches">Export punches</string>        
     
     
     

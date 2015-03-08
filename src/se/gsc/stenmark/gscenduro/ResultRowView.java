@@ -1,14 +1,13 @@
 package se.gsc.stenmark.gscenduro;
 
+import se.gsc.stenmark.gscenduro.R;
 import android.content.Context;
-import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class ResultRowView extends LinearLayout {
 	Context mContext;
-	ListFragment mListFragment;
 	TextView mTitle;
 	TextView mResultRank;
 	TextView mResultName;
@@ -17,12 +16,11 @@ public class ResultRowView extends LinearLayout {
 	int mPosition;
 	LinearLayout mCompoundView;
 
-	protected void Init(Context context, ListFragment listFragment) {
+	protected void Init(Context context) {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		mContext = context;
-		mListFragment = listFragment;
 
 		mCompoundView = (LinearLayout) inflater.inflate(
 				R.layout.result_row, this);
@@ -34,9 +32,9 @@ public class ResultRowView extends LinearLayout {
 		mResultTimeBack = (TextView) mCompoundView.findViewById(R.id.result_time_back);
 	}
 
-	public ResultRowView(Context context, ListFragment listFragment) {
+	public ResultRowView(Context context) {
 		super(context);
-		Init(context, listFragment);
+		Init(context);
 	}
 
 	public void setTitle(String Title) {

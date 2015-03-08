@@ -46,7 +46,6 @@ public class SelectCompetitionDialog extends DialogFragment {
 				try {
 					String selectedItem = competitions.get(radioButtonListener.which);
 					mMainActivity.competition = Competition.loadSessionData(selectedItem);
-					startScreenFragment.updateTrackText();
 					startScreenFragment.updateCompName();
 					mMainActivity.updateFragments();
 				} catch (Exception e) {

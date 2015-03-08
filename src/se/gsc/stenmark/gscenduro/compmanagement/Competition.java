@@ -24,6 +24,7 @@ import se.gsc.stenmark.gscenduro.MainApplication;
 import se.gsc.stenmark.gscenduro.Result;
 import se.gsc.stenmark.gscenduro.TrackResult;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
+import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -467,6 +468,84 @@ public class Competition implements Serializable{
 	    return pointsTable;
 	}
 	
+	public void exportPunchesAsCsv(Activity activity) throws IOException{
+		String errorMsg = "";
+		
+		String PunchList = "Name,Card Number\n";
+
+		if(CompetitionHelper.isExternalStorageWritable()) {
+			File sdCard = Environment.getExternalStorageDirectory();
+			String compName = competitionName;
+			compName = compName.replace(" ", "_");
+
+			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+			if (!dir.exists()) {
+				errorMsg += "Dir does not exist " + dir.getAbsolutePath();
+				if (!dir.mkdirs()) {
+					errorMsg += "Could not create directory: " + dir.getAbsolutePath();
+					
+					messageAlert(activity, "Error", errorMsg);
+					return;
+				}
+			}
+
+			File file = new File(dir, compName + "_competitors.csv");
+
+			if(competitors!= null && !competitors.isEmpty()) {
+				Collections.sort(competitors);
+				for (Competitor competitor : competitors) {
+					PunchList += competitor.name + ","	+ competitor.cardNumber + ",";
+					
+					Card card = new Card();
+					
+					card = competitor.card;
+					
+					if (card != null)
+					{
+						for(Punch punch : card.doublePunches){
+							card.punches.add(punch);				
+						}
+						card.doublePunches.clear();
+						card.numberOfPunches = card.punches.size();
+						
+					    Collections.sort(card.punches, new Comparator<Punch>() {
+					        @Override
+					        public int compare(Punch s1, Punch s2) {
+					            return s1.getTime().compareTo(s2.getTime());
+					        }
+					    });	
+					    
+					    for(Punch punch : card.punches){
+					    	PunchList += punch.control + "," + punch.time + ",";					    	
+					    }
+					    
+					    PunchList += "\n";
+					}											
+				}
+			}
+			
+			FileWriter fw = new FileWriter(file);
+			fw.write(PunchList);
+
+			if(activity != null){
+				Intent mailIntent = new Intent(Intent.ACTION_SEND);
+				mailIntent.setType("text/plain");
+				mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
+				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro punches for " + compName);
+				mailIntent.putExtra(Intent.EXTRA_TEXT   , "Punches in attached file");
+				Uri uri = Uri.fromFile(file);
+				mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+				activity.startActivity(Intent.createChooser(mailIntent, "Send mail"));
+			}
+
+			fw.close();
+		} else {
+			errorMsg = "External file storage not available, could not export punches";
+			messageAlert(activity, "Error", errorMsg);
+			return;
+		}		
+	}
+	
 	/**
 	 * Will take the whole competition and create CSV file, Comma Separated Value file.
 	 * This is intended to analyze the competition results in an external program, like excel.
@@ -579,7 +658,7 @@ public class Competition implements Serializable{
 	public void exportCompetitorsAsCsv(Activity activity) throws IOException{
 		String errorMsg = "";
 		
-		String competitorList = "Name,card number\n";
+		String competitorList = "Name,Card Number\n";
 
 		if(CompetitionHelper.isExternalStorageWritable()) {
 			File sdCard = Environment.getExternalStorageDirectory();

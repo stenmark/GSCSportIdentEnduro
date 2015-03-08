@@ -5,6 +5,7 @@ import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;

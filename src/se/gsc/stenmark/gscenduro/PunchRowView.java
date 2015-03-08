@@ -1,5 +1,6 @@
 package se.gsc.stenmark.gscenduro;
 
+import se.gsc.stenmark.gscenduro.R;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;

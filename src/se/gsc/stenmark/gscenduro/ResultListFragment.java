@@ -32,7 +32,7 @@ public class ResultListFragment extends ListFragment {
 		FetchItems();
 	}
 		
-	protected void FetchItems() {	
+	public void FetchItems() {	
 		mAllCompetitor = mMainActivity.competition.getCompetitors();		
 		mAllResults = mMainActivity.competition.getResults();
 				
@@ -42,8 +42,7 @@ public class ResultListFragment extends ListFragment {
 	protected void FillList() {
 		PopulateList();
 		if (mResultAdapter == null) {
-			mResultAdapter = new ListResultAdapter(mMainActivity,
-					mResultListFragment, mResult);
+			mResultAdapter = new ListResultAdapter(mMainActivity, mResult);
 			setListAdapter(mResultAdapter);
 		} else {
 			mResultAdapter.notifyDataSetChanged();

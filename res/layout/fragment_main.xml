@@ -50,7 +50,7 @@
 			<Button
 			    android:id="@+id/connectButton"
 	    		android:layout_width="wrap_content"
-	    		android:layout_height="40dp"
+	    		android:layout_height="32dp"
 	    		android:layout_margin="8dp"			    
 			    android:layout_gravity="center_vertical|right"
 	    		android:textSize="16sp"
@@ -130,7 +130,7 @@
 			<Button
 			    android:id="@+id/addCompetitorButton"
 	    		android:layout_width="wrap_content"
-	    		android:layout_height="40dp"
+	    		android:layout_height="32dp"
 	    		android:layout_margin="8dp"			    
 			    android:layout_gravity="center_vertical|right"
 	    		android:textSize="16sp"
@@ -164,7 +164,7 @@
 			<Button
 			    android:id="@+id/addMultiCompetitorButton"
 	    		android:layout_width="wrap_content"
-	    		android:layout_height="40dp"
+	    		android:layout_height="32dp"
 	    		android:layout_margin="8dp"			    
 			    android:layout_gravity="center_vertical|right"
 	    		android:textSize="16sp"
@@ -222,18 +222,38 @@
 		        android:layout_height="wrap_content"
 		        android:textSize="8sp"
 		        android:text="@string/start_track_info" />	
-		        
-			<Button
-			    android:id="@+id/addTrackButton"
-	    		android:layout_width="wrap_content"
-	    		android:layout_height="40dp"
-	    		android:layout_margin="8dp"			    
-			    android:layout_gravity="center_vertical|right"
-	    		android:textSize="16sp"
-	    		android:textStyle="bold"
-	    		android:text="@string/start_add"
-	    		android:textColor="@color/button_text"   
-	    		android:background="@drawable/button"	/>
+
+		   	<LinearLayout 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"	
+				android:layout_gravity="right"		
+				> 			
+							
+				<Button
+				    android:id="@+id/addManualTrackButton"
+		    		android:layout_width="wrap_content"
+		    		android:layout_height="32dp"
+		    		android:layout_margin="8dp"			    				   
+		    		android:textSize="16sp"
+		    		android:textStyle="bold"
+		    		android:text="@string/start_manual_add"
+		    		android:textColor="@color/button_text"   
+		    		android:background="@drawable/button"
+		    		android:layout_gravity="center_vertical"	/>
+						        
+				<Button
+				    android:id="@+id/addTrackButton"
+		    		android:layout_width="wrap_content"
+		    		android:layout_height="32dp"
+		    		android:layout_margin="8dp"			    				    
+		    		android:textSize="16sp"
+		    		android:textStyle="bold"
+		    		android:text="@string/start_add"
+		    		android:textColor="@color/button_text"   
+		    		android:background="@drawable/button"
+		    		android:layout_gravity="center_vertical"/>
+			</LinearLayout>
 		</LinearLayout>								
 				
 		<TextView
@@ -287,7 +307,7 @@
 				<Button
 				    android:id="@+id/newCompButton"
 		    		android:layout_width="wrap_content"
-		    		android:layout_height="40dp"
+		    		android:layout_height="32dp"
 		    		android:layout_margin="8dp"
 				    android:layout_gravity="center_vertical"
 		    		android:textSize="16sp"
@@ -299,7 +319,7 @@
 				<Button
 				    android:id="@+id/saveButton"
 		    		android:layout_width="wrap_content"
-		    		android:layout_height="40dp"
+		    		android:layout_height="32dp"
 		    		android:layout_margin="8dp"
 				    android:layout_gravity="center_vertical"
 		    		android:textSize="16sp"
@@ -311,7 +331,7 @@
 				<Button
 				    android:id="@+id/loadButton"
 		    		android:layout_width="wrap_content"
-		    		android:layout_height="40dp"
+		    		android:layout_height="32dp"
 		    		android:layout_margin="8dp"
 				    android:layout_gravity="center_vertical"
 		    		android:textSize="16sp"
@@ -323,7 +343,7 @@
 				<Button
 				    android:id="@+id/listLoadedButton"
 		    		android:layout_width="wrap_content"
-		    		android:layout_height="40dp"
+		    		android:layout_height="32dp"
 		    		android:layout_margin="8dp"
 				    android:layout_gravity="center_vertical"
 		    		android:textSize="16sp"
@@ -356,7 +376,7 @@
 			<Button
 			    android:id="@+id/addPointsTableButton"
 		   		android:layout_width="wrap_content"
-		   		android:layout_height="40dp"
+		   		android:layout_height="32dp"
 		   		android:layout_margin="8dp"
 			    android:layout_gravity="center_vertical|right"
 		   		android:textSize="16sp"
@@ -365,34 +385,5 @@
 		   		android:textColor="@color/button_text"   
 	    		android:background="@drawable/button"/>				
 		</LinearLayout>				
-		
-		<View
-		    android:layout_marginTop="12dp"
-		    android:layout_marginBottom="12dp"
-		    android:layout_width="fill_parent"
-		    android:layout_height="1dp"
-		    android:background="@android:color/darker_gray"/>							
-		
-	    <ScrollView 
-	        android:id="@+id/scrollViewMain"
-	     	android:visibility="visible" 
-	     	android:layout_height="wrap_content" 
-	     	android:layout_width="wrap_content"
-	     	android:keepScreenOn="true" 	     	
-	     	android:scrollbars="vertical" > 
-		    <TextView
-		        android:id="@+id/cardInfoTextView"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:text="No cards read yet" />
-	    
-	    </ScrollView>		
-	    
-		<View
-		    android:layout_marginTop="12dp"
-		    android:layout_marginBottom="12dp"
-		    android:layout_width="fill_parent"
-		    android:layout_height="1dp"
-		    android:background="@android:color/darker_gray"/>
    	</LinearLayout>      
 </ScrollView>

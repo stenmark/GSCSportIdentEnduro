@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Environment;
-import android.util.Log;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 

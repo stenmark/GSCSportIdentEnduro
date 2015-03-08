@@ -33,7 +33,7 @@ import android.widget.Toast;
  *
  */
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
-	public static final String PREF_NAME = "GSC_ENDURO_PREFERNCES";
+	public static final String PREF_NAME = "GSC_ENDURO_PREFERENCES";
 	
 	public Competition competition = null;
 	public SiDriver siDriver = null;
@@ -99,11 +99,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				&& mSectionsPagerAdapter.compMangementFragment instanceof CompMangementFragment) {
 			mSectionsPagerAdapter.compMangementFragment.FetchItems();
 		}
+		
 		if (mSectionsPagerAdapter.resultListFragment != null
 				&& mSectionsPagerAdapter.resultListFragment instanceof ResultListFragment) {
 			mSectionsPagerAdapter.resultListFragment.FetchItems();
 		}
-		
+
+		if (mSectionsPagerAdapter.startScreenFragment != null
+				&& mSectionsPagerAdapter.startScreenFragment instanceof StartScreenFragment) {
+			mSectionsPagerAdapter.startScreenFragment.updateTrackText();
+			mSectionsPagerAdapter.startScreenFragment.updateCompName();
+		}
+
 		try {
 			competition.saveSessionData( null );
 		} catch (Exception e1) {
@@ -117,11 +124,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		updateFragments();
 	}
     
-	public void onNewCard(Card card) {
-		displayNewCard(card);
-	}
-
-
 	/**
 	 * Disconnect the SI main unit and save all competition session data to disc.
 	 */
@@ -201,7 +203,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				actionBar.addTab(actionBar.newTab()
 						.setText(mSectionsPagerAdapter.getPageTitle(i))
 						.setTabListener(this));
-			}			
+			}					
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(
 					MainActivity.generateErrorMessage(e1));
@@ -316,6 +318,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				Toast.makeText(this, Log.getStackTraceString(e), Toast.LENGTH_SHORT).show();
 			}
 			return true;
+			
+		case R.id.action_export_punches:
+			try {
+				this.competition.exportPunchesAsCsv(this);
+			} catch (Exception e) {
+				Toast.makeText(this, Log.getStackTraceString(e), Toast.LENGTH_SHORT).show();
+			}
+			return true;			
 			
 		default:
 			return super.onOptionsItemSelected(item);

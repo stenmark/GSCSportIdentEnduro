@@ -3,21 +3,20 @@ package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 import android.content.Context;
-import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 public class ListResultAdapter extends BaseAdapter {
 	private Context mContext;
-	private ListFragment mListFragment;
 	private List<Result> mResult = new ArrayList<Result>();
 
-	public ListResultAdapter(Context context, ListFragment listFragment, List<Result> Items) {
+	public ListResultAdapter(Context context, List<Result> Items) {
 		mContext = context;
-		mResult = Items;
-		mListFragment = listFragment;
+		mResult = Items;		
 	}		
 	
 	@Override
@@ -40,7 +39,7 @@ public class ListResultAdapter extends BaseAdapter {
 		ResultRowView ResultRowV = null;
 
 		if (convertView == null) {
-			ResultRowV = new ResultRowView(mContext, mListFragment);
+			ResultRowV = new ResultRowView(mContext);
 		} else {
 			ResultRowV = (ResultRowView) convertView;
 		}

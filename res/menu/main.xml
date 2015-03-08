@@ -18,6 +18,12 @@
         android:id="@+id/action_export_results"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/action_export_results"/>        
+        android:title="@string/action_export_results"/>
+    
+   <item
+        android:id="@+id/action_export_punches"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_export_punches"/>            
     
 </menu>

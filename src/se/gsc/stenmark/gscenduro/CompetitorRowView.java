@@ -1,9 +1,9 @@
 package se.gsc.stenmark.gscenduro;
 
+import se.gsc.stenmark.gscenduro.R;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 public class CompetitorRowView extends LinearLayout {
 	Context mContext;
-	ListFragment mListFragment;
 	TextView mName;
 	TextView mCardNumber;
 	Button mDeleteButton;

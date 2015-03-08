@@ -15,7 +15,7 @@ public class CompMangementFragment extends ListFragment {
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	protected ListCompetitorAdapter mCompetitorAdapter;
 	protected List<Competitor> mAllCompetitor = new ArrayList<Competitor>();
-	protected List<Competitor> mCompetitor = new ArrayList<Competitor>();
+	public List<Competitor> mCompetitor = new ArrayList<Competitor>();
 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -27,7 +27,7 @@ public class CompMangementFragment extends ListFragment {
 		FetchItems();
 	}
 
-	protected void FetchItems() {
+	public void FetchItems() {
 		mAllCompetitor = mMainActivity.competition.getCompetitors();
 		FillList();
 	}
