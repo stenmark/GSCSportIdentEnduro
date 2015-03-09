@@ -65,6 +65,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Intent punchListIntent = new Intent();		
 			punchListIntent.setClass(this, PunchListActivity.class);		
 			
+			if (mSectionsPagerAdapter.compMangementFragment.mCompetitor.get(position).card == null)
+			{
+				mSectionsPagerAdapter.compMangementFragment.mCompetitor.get(position).card = new Card();				
+				mSectionsPagerAdapter.compMangementFragment.mCompetitor.get(position).card.cardNumber = mSectionsPagerAdapter.compMangementFragment.mCompetitor.get(position).cardNumber;
+			}
+			
 			Bundle bundle = new Bundle();
 			bundle.putSerializable("Card", mSectionsPagerAdapter.compMangementFragment.mCompetitor.get(position).card);
 			punchListIntent.putExtras(bundle);
@@ -87,8 +93,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Card updatedCard = new Card();
 	    	updatedCard = (Card) data.getExtras().getSerializable("updateCard");
 	    	
+	    	Log.d("onActivityResult", "updatedCard = " + updatedCard);
+	    	
 	    	if (updatedCard.punches.size() > 0)
 	    	{
+	    		Log.d("onActivityResult", "updatedCard.punches.size() > 0");
 	    		writeCard(updatedCard);
 	    	}
 		}
