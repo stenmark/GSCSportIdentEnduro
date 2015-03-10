@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout 
+    android:layout_width="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="fill_parent">
+    
+    <TableRow 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout 
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/white" >
+            
+            <TextView 
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"
+                android:text="Control - Time"
+                android:layout_gravity="center_vertical"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:layout_marginLeft="8dp"			    
+		    	android:layout_marginRight="8dp" />            
+                        
+            <Button
+			    android:id="@+id/punch_list_add"
+	    		android:layout_width="wrap_content"
+	    		android:layout_height="32dp"
+	    		android:layout_margin="8dp"			    
+			    android:layout_gravity="center_vertical|right"
+	    		android:textSize="16sp"
+	    		android:textStyle="bold"
+	    		android:text="@string/start_add"
+    			android:textColor="@color/button_text"   
+    			android:background="@drawable/button"	    		 	    	
+	    	/>	            
+        </LinearLayout>
+    </TableRow>
+    
+    <TableRow 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        
+        <LinearLayout 
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content" 
+            android:layout_height="1dp"
+            android:orientation="horizontal"
+            android:background="@color/black"   >        
+        </LinearLayout>
+    </TableRow>
+        
+    <TableRow 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ListView 
+                android:id="@android:id/list"
+                android:layout_width="fill_parent" 
+                android:layout_height="wrap_content"
+                android:scrollbars="none" />
+            <TextView 
+                android:id="@+id/empty"
+                android:layout_width="fill_parent" 
+                android:layout_height="wrap_content"
+                android:paddingTop="10dip"
+                android:text="There are no punches made" />
+        </LinearLayout>
+    </TableRow>
+</TableLayout>
