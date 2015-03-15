@@ -43,22 +43,11 @@
 				android:layout_marginLeft="8dp"			    
 		    	android:layout_marginRight="8dp"
 				android:padding="4dp">
- 
+ 			   
 				<TextView		 	
 				    android:layout_width="wrap_content"
 				    android:layout_height="wrap_content"
-				    android:textSize="12dp"		    
-				    android:text="RANK"
-				    android:textStyle="bold"	
-				    android:textColor="@color/white"
-				    android:layout_weight="1"	
-				    android:layout_column="0"			    
-			   	/>	
-			   	
-				<TextView		 	
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:textSize="12dp"		    
+				    android:textSize="16dp"		    
 				    android:text="NAME"
 				    android:textStyle="bold"	
 				    android:textColor="@color/white"
@@ -69,23 +58,25 @@
 				<TextView		 	
 				    android:layout_width="wrap_content"
 				    android:layout_height="wrap_content"
-				    android:textSize="12dp"		    
+				    android:textSize="16dp"		    
 				    android:text="TIME"
 				    android:textStyle="bold"
 				    android:textColor="@color/white"
 				    android:layout_weight="1"	
 				    android:layout_column="2"	
+				    android:gravity="center_horizontal" 
 			   	/>	
 			   	
 				<TextView		 	
 				    android:layout_width="wrap_content"
 				    android:layout_height="wrap_content"
-				    android:textSize="12dp"		    
+				    android:textSize="16dp"		    
 				    android:text="TIME BACK"
 				    android:textStyle="bold"	
 				    android:textColor="@color/white"
 				    android:layout_weight="1"	
 				    android:layout_column="3"
+				    android:gravity="center_horizontal" 
 			   	/>					
 
     		</TableRow>
@@ -98,22 +89,12 @@
 				android:layout_marginLeft="8dp"			    
 		    	android:layout_marginRight="8dp"
 				android:padding="4dp">
-
-				<TextView		 	
-				    android:id="@+id/result_rank"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:textSize="12dp"		    
-				    android:text="1"
-				    android:layout_weight="1"
-				    android:layout_column="0"
-			   	/>			
 	
 				<TextView		 	
 				    android:id="@+id/result_name"
 				    android:layout_width="wrap_content"
 				    android:layout_height="wrap_content"
-				    android:textSize="12dp"		    
+				    android:textSize="16dp"		    
 				    android:text="1"
 				    android:layout_weight="1"
 				    android:layout_column="1"
@@ -124,20 +105,22 @@
 				    android:id="@+id/result_time"
 				    android:layout_width="wrap_content"
 				    android:layout_height="wrap_content"
-				    android:textSize="12dp"		    
+				    android:textSize="16dp"		    
 				    android:text="1"
 				    android:layout_weight="1"
 				 	android:layout_column="2"
+				 	android:gravity="center_horizontal" 
 			   	/>				   				
 			   	
 				<TextView		 	
 				    android:id="@+id/result_time_back"
 				    android:layout_width="wrap_content"
 				    android:layout_height="wrap_content"
-				    android:textSize="12dp"		    
+				    android:textSize="16dp"		    
 				    android:text="1"
 				    android:layout_weight="1"
-				    android:layout_column="3"
+				    android:layout_column="3"			
+				    android:gravity="center_horizontal" 	    
 			   	/>			            
 	            
     		</TableRow>

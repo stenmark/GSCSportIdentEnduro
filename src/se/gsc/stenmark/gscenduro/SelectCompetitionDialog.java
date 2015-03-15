@@ -46,8 +46,9 @@ public class SelectCompetitionDialog extends DialogFragment {
 				try {
 					String selectedItem = competitions.get(radioButtonListener.which);
 					mMainActivity.competition = Competition.loadSessionData(selectedItem);
+					mMainActivity.competition.calculateResults();
+					mMainActivity.updateFragments();						
 					startScreenFragment.updateCompName();
-					mMainActivity.updateFragments();
 				} catch (Exception e) {
 					PopupMessage dialog2 = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog2.show(getFragmentManager(), "popUp");

@@ -127,53 +127,40 @@
 			    </LinearLayout>
 		    </LinearLayout>
 		    
-			<Button
-			    android:id="@+id/addCompetitorButton"
-	    		android:layout_width="wrap_content"
-	    		android:layout_height="32dp"
-	    		android:layout_margin="8dp"			    
-			    android:layout_gravity="center_vertical|right"
-	    		android:textSize="16sp"
-	    		android:textStyle="bold"
-	    		android:text="@string/start_add"
-    			android:textColor="@color/button_text"   
-    			android:background="@drawable/button"		 	    	
-	    	/>		
+		   	<LinearLayout 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_gravity="right"
+				>  			
+			
+				<Button
+				    android:id="@+id/addMultiCompetitorButton"
+		    		android:layout_width="wrap_content"
+		    		android:layout_height="32dp"
+		    		android:layout_margin="8dp"			    
+				    android:layout_gravity="center_vertical|right"
+		    		android:textSize="16sp"
+		    		android:textStyle="bold"
+		    		android:text="@string/start_multiadd"
+		    		android:textColor="@color/button_text"   
+	    			android:background="@drawable/button"	
+		    	/>			
+				
+				<Button
+				    android:id="@+id/addCompetitorButton"
+		    		android:layout_width="wrap_content"
+		    		android:layout_height="32dp"
+		    		android:layout_margin="8dp"			    
+				    android:layout_gravity="center_vertical|right"
+		    		android:textSize="16sp"
+		    		android:textStyle="bold"
+		    		android:text="@string/start_add"
+	    			android:textColor="@color/button_text"   
+	    			android:background="@drawable/button"		 	    	
+		    	/>
+			</LinearLayout>
 	    </LinearLayout>
-	   
-		
-		<TextView
-		   android:layout_width="fill_parent"
-		   android:layout_height="wrap_content"
-		   android:textSize="16sp"
-		   android:text="@string/start_multicompetitor"
-		   android:textStyle="bold"
-		   android:layout_weight="1"
-		   android:padding="4dp"
-		   android:textColor="@color/white"		
-		   android:background="@color/black" 		        
-		   /> 	
-		   		
-		<LinearLayout 
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			android:layout_weight="1"
-			android:padding="4dp"
-			>   			
-			<Button
-			    android:id="@+id/addMultiCompetitorButton"
-	    		android:layout_width="wrap_content"
-	    		android:layout_height="32dp"
-	    		android:layout_margin="8dp"			    
-			    android:layout_gravity="center_vertical|right"
-	    		android:textSize="16sp"
-	    		android:textStyle="bold"
-	    		android:text="@string/start_add"
-	    		android:textColor="@color/button_text"   
-    			android:background="@drawable/button"	
-	    	/>				
-		</LinearLayout>		
 		
 		<TextView
 		   android:layout_width="fill_parent"
@@ -338,52 +325,10 @@
 		    		android:textStyle="bold"
 		    		android:text="@string/start_load"
 		    		android:textColor="@color/button_text"   
-    				android:background="@drawable/button"/>		
-		    		
-				<Button
-				    android:id="@+id/listLoadedButton"
-		    		android:layout_width="wrap_content"
-		    		android:layout_height="32dp"
-		    		android:layout_margin="8dp"
-				    android:layout_gravity="center_vertical"
-		    		android:textSize="16sp"
-		    		android:textStyle="bold"
-		    		android:text="@string/start_list"
-		    		android:textColor="@color/button_text"   
     				android:background="@drawable/button"/>					
 			</LinearLayout>		    
 		</LinearLayout>
 		
-		<TextView
-		   android:layout_width="fill_parent"
-		   android:layout_height="wrap_content"
-		   android:textSize="16sp"
-		   android:text="@string/start_points_table"
-		   android:textStyle="bold"
-		   android:layout_weight="1"	
-		   android:padding="4dp"
-		   android:textColor="@color/white"		
-		   android:background="@color/black"         
-		   /> 	
-		   		
-		<LinearLayout 
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			android:layout_weight="1"
-			android:padding="4dp"
-			>   		
-			<Button
-			    android:id="@+id/addPointsTableButton"
-		   		android:layout_width="wrap_content"
-		   		android:layout_height="32dp"
-		   		android:layout_margin="8dp"
-			    android:layout_gravity="center_vertical|right"
-		   		android:textSize="16sp"
-		   		android:textStyle="bold"
-		   		android:text="@string/start_add"
-		   		android:textColor="@color/button_text"   
-	    		android:background="@drawable/button"/>				
-		</LinearLayout>				
+
    	</LinearLayout>      
 </ScrollView>

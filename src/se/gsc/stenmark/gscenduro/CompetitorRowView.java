@@ -114,7 +114,7 @@ public class CompetitorRowView extends LinearLayout {
 											int id) {
 										((MainActivity) mContext).competition
 												.removeCompetitor((String) mName
-														.getText());									
+														.getText());	
 										((MainActivity) mContext).updateFragments();
 									}
 								})

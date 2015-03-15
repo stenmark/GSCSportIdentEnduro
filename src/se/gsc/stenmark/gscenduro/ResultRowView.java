@@ -9,7 +9,6 @@ import android.widget.TextView;
 public class ResultRowView extends LinearLayout {
 	Context mContext;
 	TextView mTitle;
-	TextView mResultRank;
 	TextView mResultName;
 	TextView mResultTime;
 	TextView mResultTimeBack;
@@ -26,7 +25,6 @@ public class ResultRowView extends LinearLayout {
 				R.layout.result_row, this);
 
 		mTitle = (TextView) mCompoundView.findViewById(R.id.result_title);
-		mResultRank = (TextView) mCompoundView.findViewById(R.id.result_rank);
 		mResultName = (TextView) mCompoundView.findViewById(R.id.result_name);
 		mResultTime = (TextView) mCompoundView.findViewById(R.id.result_time);
 		mResultTimeBack = (TextView) mCompoundView.findViewById(R.id.result_time_back);
@@ -46,13 +44,7 @@ public class ResultRowView extends LinearLayout {
 	public void setPosition(int Position) {
 		mPosition = Position;
 	}
-	
-	public void setResultRank(String ResultRank) {
-		if (mResultRank != null) {
-			mResultRank.setText(ResultRank);
-		}
-	}
-	
+		
 	public void setResultName(String ResultName) {
 		if (mResultName != null) {
 			mResultName.setText(ResultName);

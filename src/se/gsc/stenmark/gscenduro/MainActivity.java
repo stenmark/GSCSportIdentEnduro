@@ -45,7 +45,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public String getConnectionStatus() {
 		return connectionStatus;
 	}
-
+	
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a {@link FragmentPagerAdapter}
@@ -65,14 +65,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Intent punchListIntent = new Intent();		
 			punchListIntent.setClass(this, PunchListActivity.class);		
 			
-			if (mSectionsPagerAdapter.compMangementFragment.mCompetitor.get(position).card == null)
+			if (this.competition.getCompetitors().get(position).card == null)
 			{
-				mSectionsPagerAdapter.compMangementFragment.mCompetitor.get(position).card = new Card();				
-				mSectionsPagerAdapter.compMangementFragment.mCompetitor.get(position).card.cardNumber = mSectionsPagerAdapter.compMangementFragment.mCompetitor.get(position).cardNumber;
-			}
-			
+				this.competition.getCompetitors().get(position).card = new Card();				
+				this.competition.getCompetitors().get(position).card.cardNumber = this.competition.getCompetitors().get(position).cardNumber;
+			}			
+
 			Bundle bundle = new Bundle();
-			bundle.putSerializable("Card", mSectionsPagerAdapter.compMangementFragment.mCompetitor.get(position).card);
+			bundle.putSerializable("Card", this.competition.getCompetitors().get(position).card);
 			punchListIntent.putExtras(bundle);
 			
 			startActivityForResult(punchListIntent, 2);		
@@ -93,40 +93,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Card updatedCard = new Card();
 	    	updatedCard = (Card) data.getExtras().getSerializable("updateCard");
 	    	
-	    	Log.d("onActivityResult", "updatedCard = " + updatedCard);
-	    	
 	    	if (updatedCard.punches.size() > 0)
 	    	{
-	    		Log.d("onActivityResult", "updatedCard.punches.size() > 0");
-	    		writeCard(updatedCard);
-	    	}
+				if (updatedCard.cardNumber != 0) {
+					displayNewCard(updatedCard);
+				}
+	    	}	    		    
 		}
 	}
 	
     public void updateFragments() {
 		if (mSectionsPagerAdapter.compMangementFragment != null
 				&& mSectionsPagerAdapter.compMangementFragment instanceof CompMangementFragment) {
-			mSectionsPagerAdapter.compMangementFragment.FetchItems();
+			mSectionsPagerAdapter.compMangementFragment.ReloadData();
 		}
 		
 		if (mSectionsPagerAdapter.resultListFragment != null
 				&& mSectionsPagerAdapter.resultListFragment instanceof ResultListFragment) {
-			mSectionsPagerAdapter.resultListFragment.FetchItems();
+			mSectionsPagerAdapter.resultListFragment.ReloadData();
 		}
-
-		if (mSectionsPagerAdapter.startScreenFragment != null
-				&& mSectionsPagerAdapter.startScreenFragment instanceof StartScreenFragment) {
-			mSectionsPagerAdapter.startScreenFragment.updateTrackText();
-			mSectionsPagerAdapter.startScreenFragment.updateCompName();
-		}
-
-		try {
-			competition.saveSessionData( null );
-		} catch (Exception e1) {
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e1));
-			dialog.show(getSupportFragmentManager(), "popUp");
-		}		
-	}
+	}	
 	
 	public void displayNewCard(Card newCard) {
 		String processNewCardStatus = competition.processNewCard(newCard);
@@ -146,6 +132,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					"You might have to edit this competitor manually");
 			dialog.show( getSupportFragmentManager(), "popUp");
 		}
+		
 		updateFragments();
 	}
     
@@ -191,7 +178,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				dialog.show(getSupportFragmentManager(), "popUp");
 				return;
 			}		
-			
+						
 			// Set up the action bar.
 			final ActionBar actionBar = getActionBar();
 			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -228,7 +215,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				actionBar.addTab(actionBar.newTab()
 						.setText(mSectionsPagerAdapter.getPageTitle(i))
 						.setTabListener(this));
-			}					
+			}				
+			
+			updateFragments();
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(
 					MainActivity.generateErrorMessage(e1));

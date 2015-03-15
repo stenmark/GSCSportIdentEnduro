@@ -30,6 +30,10 @@ public class ListCompetitorAdapter extends BaseAdapter {
 		return mCompetitor.get(position);
 	}
 
+	public List<Competitor> getData() {
+	    return mCompetitor;
+	}
+	
 	@Override
 	public long getItemId(int position) {
 		return position;

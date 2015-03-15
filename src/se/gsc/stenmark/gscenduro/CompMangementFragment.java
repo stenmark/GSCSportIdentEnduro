@@ -1,6 +1,5 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
@@ -14,8 +13,6 @@ public class CompMangementFragment extends ListFragment {
 	MainActivity mMainActivity = null;
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	protected ListCompetitorAdapter mCompetitorAdapter;
-	protected List<Competitor> mAllCompetitor = new ArrayList<Competitor>();
-	public List<Competitor> mCompetitor = new ArrayList<Competitor>();
 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -23,15 +20,19 @@ public class CompMangementFragment extends ListFragment {
 		setHasOptionsMenu(true);
 		
 		mMainActivity = ((MainActivity) getActivity());
-		
-		FetchItems();
+				
+		List<Competitor> competitors = mMainActivity.competition.getCompetitors();
+		mCompetitorAdapter = new ListCompetitorAdapter(mMainActivity, competitors);
+		setListAdapter(mCompetitorAdapter);
 	}
 
-	public void FetchItems() {
-		mAllCompetitor = mMainActivity.competition.getCompetitors();
-		FillList();
+	@Override
+	public void onResume() {
+		super.onResume();
+						
+		ReloadData();
 	}
-
+	
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
@@ -42,22 +43,8 @@ public class CompMangementFragment extends ListFragment {
 		mCompMangementFragment.setArguments(args);
 		return mCompMangementFragment;
 	}
-
-	protected void FillList() {
-		PopulateList();
-		if (mCompetitorAdapter == null) {
-			mCompetitorAdapter = new ListCompetitorAdapter(mMainActivity, mCompetitor);
-			setListAdapter(mCompetitorAdapter);
-		} else {
-			mCompetitorAdapter.notifyDataSetChanged();
-		}
+	
+	public void ReloadData() {
+		mCompetitorAdapter.notifyDataSetChanged();
 	}
-
-	protected void PopulateList() {
-		mCompetitor.clear();
-		for (int i = 0; i < mAllCompetitor.size(); i++) {
-			mCompetitor.add(mAllCompetitor.get(i));
-		}
-	}
-
 }

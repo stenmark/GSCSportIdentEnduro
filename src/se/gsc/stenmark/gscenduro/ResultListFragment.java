@@ -1,9 +1,8 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 
@@ -11,12 +10,8 @@ public class ResultListFragment extends ListFragment {
 	
 	static ResultListFragment mResultListFragment;
 	MainActivity mMainActivity = null;
-	protected ListResultAdapter mResultAdapter;
-	protected List<Competitor> mAllCompetitor = new ArrayList<Competitor>();
-	
-		
-	protected List<Result> mAllResults = new ArrayList<Result>();
-	protected List<Result> mResult = new ArrayList<Result>();
+	protected ListResultAdapter mResultsAdapter;
+	protected ListResultLandscapeAdapter mResultLandscapeAdapter;
 	
 	private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -28,34 +23,30 @@ public class ResultListFragment extends ListFragment {
 		getListView().setDivider(null);
 		getListView().setDividerHeight(0);
 		
-		mMainActivity = ((MainActivity) getActivity());
-		FetchItems();
-	}
+		mMainActivity = ((MainActivity) getActivity());		 
 		
-	public void FetchItems() {	
-		mAllCompetitor = mMainActivity.competition.getCompetitors();		
-		mAllResults = mMainActivity.competition.getResults();
-				
-		FillList();	
+		Configuration configuration = getResources().getConfiguration(); 						
+		if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+		{
+			List<Result> results = mMainActivity.competition.getResults();
+			mResultsAdapter = new ListResultAdapter(mMainActivity, results);	
+			setListAdapter(mResultsAdapter);
+		} 
+		else if(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE )
+		{
+			List<ResultLandscape> resultLandscape = mMainActivity.competition.getResultLandscape();		
+			mResultLandscapeAdapter = new ListResultLandscapeAdapter(mMainActivity, resultLandscape);			
+			setListAdapter(mResultLandscapeAdapter);
+		}
 	}
 	
-	protected void FillList() {
-		PopulateList();
-		if (mResultAdapter == null) {
-			mResultAdapter = new ListResultAdapter(mMainActivity, mResult);
-			setListAdapter(mResultAdapter);
-		} else {
-			mResultAdapter.notifyDataSetChanged();
-		}
-	}
-
-	protected void PopulateList() {
-		mResult.clear();
-		for (int i = 0; i < mAllResults.size(); i++) {
-			mResult.add(mAllResults.get(i));
-		}
+	@Override
+	public void onResume() {
+		super.onResume();
+						
+		ReloadData();
 	}	
-
+	
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
@@ -65,5 +56,17 @@ public class ResultListFragment extends ListFragment {
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		mResultListFragment.setArguments(args);
 		return mResultListFragment;
-	}
+	}	
+	
+	public void ReloadData() {
+		Configuration configuration = getResources().getConfiguration(); 			
+		if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+		{	
+			mResultsAdapter.notifyDataSetChanged();
+		} 
+		else if(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE )
+		{			
+			mResultLandscapeAdapter.notifyDataSetChanged();
+		}
+	}	
 }

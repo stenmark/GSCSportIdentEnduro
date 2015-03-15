@@ -29,6 +29,10 @@ public class ListResultAdapter extends BaseAdapter {
 		return mResult.get(position);
 	}
 
+	public List<Result> getData() {
+	    return mResult;
+	}
+	
 	@Override
 	public long getItemId(int position) {
 		return position;
@@ -46,21 +50,18 @@ public class ListResultAdapter extends BaseAdapter {
 		
 		ResultRowV.setTitle(mResult.get(position).getTitle());
 		
-		String Rank = "";
 		String Name = "";
 		String Time = "";
 		String TimeBack = "";
 		
 		for(int i = 0; i < mResult.get(position).getTrackResult().size(); i++)
 		{
-			Rank += Integer.toString((i + 1)) +"\n";
-			Name += mResult.get(position).getTrackResult().get(i).getName() + "\n";	
+			Name += Integer.toString((i + 1)) + ". " + mResult.get(position).getTrackResult().get(i).getName() + "\n";	
 			Time += ((MainActivity)mContext).competition.secToMinSec(mResult.get(position).getTrackResult().get(i).getTrackTimes()) + "\n";
 			TimeBack += ((MainActivity)mContext).competition.secToMinSec(mResult.get(position).getTrackResult().get(i).getTrackTimesBack()) + "\n";
 			
 		}
-		
-		ResultRowV.setResultRank(Rank);		
+				
 		ResultRowV.setResultName(Name);
 		ResultRowV.setResultTime(Time);
 		ResultRowV.setResultTimeBack(TimeBack);	

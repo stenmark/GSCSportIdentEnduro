@@ -79,7 +79,6 @@ public class PunchRowView extends LinearLayout {
 								public void onClick(DialogInterface dialog,
 										int id) {
 									((PunchListActivity) mContext).removePunch(mPosition);									
-									((PunchListActivity) mContext).fetchItems();
 								}
 							})
 					.setNegativeButton("No",
@@ -131,7 +130,6 @@ public class PunchRowView extends LinearLayout {
 									mTime.setText(TimeInput.getText());
 
 									((PunchListActivity) mContext).updatePunch(mPosition, Long.valueOf(mControl.getText().toString()), Long.valueOf(mTime.getText().toString()));
-									((PunchListActivity) mContext).fetchItems();
 								}
 							})
 					.setNegativeButton("Cancel",

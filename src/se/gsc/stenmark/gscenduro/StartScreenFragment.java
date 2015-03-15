@@ -1,7 +1,4 @@
 package se.gsc.stenmark.gscenduro;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
@@ -11,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,21 +30,14 @@ public class StartScreenFragment extends Fragment {
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	static StartScreenFragment mStartScreenFragment;
 	MainActivity mMainActivity;
-	private boolean isInView = false;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        mMainActivity = ((MainActivity) getActivity());              
+        mMainActivity = ((MainActivity) getActivity());      
     }
-	
-	@Override
-	public void onDestroy(){
-		super.onDestroy();
-		MainApplication.startScreenFragment = null;
-	}
-	
+		
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
@@ -56,36 +47,15 @@ public class StartScreenFragment extends Fragment {
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		mStartScreenFragment.setArguments(args);
 		return mStartScreenFragment;
-
-	}
-
-	public StartScreenFragment() {
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		isInView = true;
-						
+					
 		updateConnectText();
-	}
-		
-	@Override
-	public void onPause() {
-		super.onPause();
-	      isInView = false;
-	}	
-	
-	public void addPointsTable(String points) throws IOException
-	{
-		ArrayList<String> pointsTable = new ArrayList<String>();											
-		BufferedReader bufReader = new BufferedReader(new StringReader(points));
-		String line = null;
-		while((line = bufReader.readLine()) != null)
-		{
-			pointsTable.add(line);
-		}
-		mMainActivity.competition.setStringArrayPref(mMainActivity, "POINTSTABLE", pointsTable);
+		updateTrackText();
+		updateCompName();
 	}
 	
 	@Override
@@ -128,16 +98,11 @@ public class StartScreenFragment extends Fragment {
 				try {
 					LayoutInflater li = LayoutInflater.from(mMainActivity);
 					View promptsView = li.inflate(R.layout.add_manually_track, null);					
-					
-					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-							mMainActivity);
-
-					// set prompts.xml to alertdialog builder
-					alertDialogBuilder.setView(promptsView);
 
 					final EditText ManualTrackInput = (EditText) promptsView.findViewById(R.id.editTextManualTrackInput);
 					
-					// set dialog message
+					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);
+					alertDialogBuilder.setView(promptsView);
 					alertDialogBuilder
 							.setCancelable(false)
 							.setPositiveButton("Ok",
@@ -156,10 +121,7 @@ public class StartScreenFragment extends Fragment {
 										}
 									});
 
-					// create alert dialog
 					AlertDialog alertDialog = alertDialogBuilder.create();
-
-					// show it
 					alertDialog.show();										
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
@@ -208,11 +170,12 @@ public class StartScreenFragment extends Fragment {
 						for(int i = 0; i < numberOfSs;  i++){
 							trackString += startStationNumner + "," + finishStationNumner + ",";
 						}
-						trackString = trackString.substring(0, trackString.length()-1);   //remove last ","
+						trackString = trackString.substring(0, trackString.length() - 1);   //remove last ","
 						
-						mMainActivity.competition.addNewTrack( trackString );
+						mMainActivity.competition.addNewTrack(trackString);
+						mMainActivity.updateFragments();
 					}
-					mMainActivity.updateFragments();
+					updateTrackText();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
@@ -233,7 +196,6 @@ public class StartScreenFragment extends Fragment {
 
 				final EditText MultiCompetitorsInput = (EditText) promptsView.findViewById(R.id.editTextMultiCompetitorsInput);
 
-				// set dialog message
 				alertDialogBuilder
 						.setCancelable(false)
 						.setPositiveButton("Add",
@@ -241,6 +203,7 @@ public class StartScreenFragment extends Fragment {
 									public void onClick(DialogInterface dialog,	int id) {		
 										try {
 											String status = mMainActivity.competition.addMultiCompetitors(MultiCompetitorsInput.getText().toString());
+											mMainActivity.updateFragments();
 											
 											AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 									        builder.setIcon(android.R.drawable.ic_dialog_alert);
@@ -256,7 +219,6 @@ public class StartScreenFragment extends Fragment {
 													.generateErrorMessage(e));
 											dialog1.show(getFragmentManager(), "popUp");
 										}																					
-										mMainActivity.updateFragments();
 									}
 								})
 						.setNegativeButton("Cancel",
@@ -267,10 +229,7 @@ public class StartScreenFragment extends Fragment {
 									}
 								});
 
-				// create alert dialog
 				AlertDialog alertDialog = alertDialogBuilder.create();
-
-				// show it
 				alertDialog.show();				
 			}		
 		});
@@ -362,92 +321,23 @@ public class StartScreenFragment extends Fragment {
 					List<String> savedCompetitions = CompetitionHelper.getSavedCompetitionsAsList();
 					CompetitionOnClickListener listener = new CompetitionOnClickListener( savedCompetitions );
 					SelectCompetitionDialog dialog = new SelectCompetitionDialog( savedCompetitions, listener, mMainActivity, mStartScreenFragment, listener );
-					dialog.show(getFragmentManager(), "comp_select");
+					dialog.show(getFragmentManager(), "comp_select");				
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 					dialog.show(getFragmentManager(), "popUp");
 				}
-			}
-		});
-
-		Button listButton = (Button) rootView.findViewById(R.id.listLoadedButton);
-		listButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				try {					
-					AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
-			        builder.setIcon(android.R.drawable.ic_dialog_alert);
-			        builder.setMessage(CompetitionHelper.getSavedCompetitions()).setTitle("Existing competitions").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener()
-			        {
-			            public void onClick(DialogInterface dialog, int which) {}
-			        });
-			 
-			        AlertDialog alert = builder.create();
-			        alert.show();	
-					
-				} catch (Exception e) {
-					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-					dialog.show(getFragmentManager(), "popUp");
-				}
-			}
+			}			
 		});
 
 		Button newButton = (Button) rootView.findViewById(R.id.newCompButton);
 		newButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				try {
+				try 
+				{
+					mMainActivity.competition.getCompetitors().clear();
 					mMainActivity.competition = new Competition();
-					mMainActivity.updateFragments();
-				} catch (Exception e) {
-					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-					dialog.show(getFragmentManager(), "popUp");
-				}
-			}
-
-		});
-
-		Button addPointsTableButton = (Button) rootView.findViewById(R.id.addPointsTableButton);
-		addPointsTableButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				try {
-					//Set up Points Table
-					LayoutInflater li = LayoutInflater.from(mMainActivity);
-					View promptsView = li.inflate(R.layout.add_points_table, null);
-					
-					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);
-
-					alertDialogBuilder.setView(promptsView);
-
-					final EditText PointsTableInput = (EditText) promptsView.findViewById(R.id.editTextPointsTableInput);
-					alertDialogBuilder
-							.setCancelable(false)
-							.setPositiveButton("Add",
-									new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog,	int id) {			
-											try {
-												addPointsTable(PointsTableInput.getText().toString());
-												mMainActivity.updateFragments();
-											} catch (Exception e) {
-												PopupMessage dialog1 = new PopupMessage(MainActivity.generateErrorMessage(e));
-												dialog1.show(getFragmentManager(), "popUp");
-											}												
-										}
-									})
-							.setNegativeButton("Cancel",
-									new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog,
-												int id) {
-											dialog.cancel();
-										}
-									});
-
-					// create alert dialog
-					AlertDialog alertDialog = alertDialogBuilder.create();
-
-					// show it
-					alertDialog.show();	
+					updateCompName();
 					mMainActivity.updateFragments();
 				} catch (Exception e) {
 					PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
@@ -462,10 +352,8 @@ public class StartScreenFragment extends Fragment {
 	
 	public void updateConnectText(){
 		try {
-			if( isInView ){
-				TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);	
-				statusTextView.setText(mMainActivity.getConnectionStatus());
-			}
+			TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);	
+			statusTextView.setText(mMainActivity.getConnectionStatus());
 		} catch (Exception e) {
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");
@@ -474,10 +362,8 @@ public class StartScreenFragment extends Fragment {
 
 	public void updateCompName(){
 		try {
-			if( isInView ){
-				EditText nameOFCompEdit = (EditText) getView().findViewById(R.id.editSaveLoadComp);
-				nameOFCompEdit.setText(mMainActivity.competition.competitionName);
-			}
+			EditText nameOFCompEdit = (EditText) getView().findViewById(R.id.editSaveLoadComp);
+			nameOFCompEdit.setText(mMainActivity.competition.competitionName);
 		} catch (Exception e) {
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");
@@ -486,10 +372,8 @@ public class StartScreenFragment extends Fragment {
 
 	public void updateTrackText() {
 		try {
-			if( isInView ){
-				TextView trackInfoTextView = (TextView) getView().findViewById( R.id.trackInfoTextView);
-				trackInfoTextView.setText("Current loaded Stages: " + mMainActivity.competition.getTrackAsString() );
-			}
+			TextView trackInfoTextView = (TextView) getView().findViewById( R.id.trackInfoTextView);
+			trackInfoTextView.setText("Current loaded Stages: " + mMainActivity.competition.getTrackAsString() );
 		} catch (Exception e) {
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 			dialog.show(getFragmentManager(), "popUp");
