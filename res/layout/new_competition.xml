@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="10dp" >
+ 
+    <LinearLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginLeft="8dp"
+		android:layout_marginRight="8dp"			
+		>  
+
+		<TextView
+		   android:layout_width="fill_parent"
+		   android:layout_height="wrap_content"
+		   android:textSize="16sp"
+		   android:text="New competition"
+		   android:textStyle="bold"
+		   android:layout_weight="1"		
+		   android:padding="4dp"
+		   android:textColor="@color/white"		
+		   android:background="@color/black"   	        
+		   />          
+    
+	   	<LinearLayout 
+	   	    android:id="@+id/layoutAddTrackSpinner"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"	
+			android:layout_weight="1"	
+			android:padding="4dp"			
+			> 
+			
+		   	<TextView
+	        	android:id="@+id/addTrackInfo"
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:textSize="16sp"
+	        	android:text="@string/start_add_stages_info" />					    
+		    
+  			<Spinner
+      			android:id="@+id/spinnerTrackDefinition"
+      			android:layout_width="fill_parent"
+      			android:layout_height="wrap_content"
+      			android:prompt="@string/start_add_stages_info"
+  			/>			    		    
+		</LinearLayout>		
+		
+		<LinearLayout 
+		    android:id="@+id/layoutAddTrackManually"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:layout_weight="1"		
+			android:padding="4dp"
+			android:visibility="gone"> 
+			   
+			<LinearLayout 
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				> 
+			     <TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:textSize="16sp"
+			        android:text="Track:"        
+			        />  
+			        
+			    <EditText
+			        android:id="@+id/editTextAddTrackManually"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content" >
+			    </EditText>	    
+			</LinearLayout>
+		    <TextView
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:textSize="8sp"
+		        android:text="@string/start_track_info" />	
+		</LinearLayout>			   	
+	   	
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_weight="1"		
+			android:padding="4dp"		
+			>    
+			
+		     <TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="16sp"
+		        android:text="Name:"        
+		        />  
+		        
+		    <EditText
+		        android:id="@+id/editTextNewCompetitionInput"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		    </EditText>	    
+		</LinearLayout>		
+		
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:layout_weight="1"		
+			android:padding="4dp"		
+			>
+			<CheckBox
+    			android:id="@+id/checkbox_keep_competitors"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:onClick="itemClicked"
+    			android:text="Keep competitors" />		    
+
+			<CheckBox
+    			android:id="@+id/checkbox_add_track_manually"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:onClick="itemClicked"
+    			android:text="Add Track Manually" />				
+			
+		</LinearLayout>			
+	</LinearLayout>    		
+</LinearLayout>

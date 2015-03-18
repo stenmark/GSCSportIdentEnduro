@@ -27,12 +27,10 @@ public class CompetitorRowView extends LinearLayout {
 
 		mContext = context;
 
-		mCompoundView = (LinearLayout) inflater.inflate(
-				R.layout.competitor_row, this);
+		mCompoundView = (LinearLayout) inflater.inflate(R.layout.competitor_row, this);
 
 		mName = (TextView) mCompoundView.findViewById(R.id.competitor_name);
-		mCardNumber = (TextView) mCompoundView
-				.findViewById(R.id.competitor_cardnumber);
+		mCardNumber = (TextView) mCompoundView.findViewById(R.id.competitor_cardnumber);
 		mDeleteButton = (Button) mCompoundView.findViewById(R.id.competitor_delete);
 		mModifyButton = (Button) mCompoundView.findViewById(R.id.competitor_modify);
 		mCardButton = (Button) mCompoundView.findViewById(R.id.competitor_punch);
@@ -49,8 +47,7 @@ public class CompetitorRowView extends LinearLayout {
 		}
 		catch( Exception e){
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
-	
+			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
 		}
 	}
 
@@ -62,8 +59,7 @@ public class CompetitorRowView extends LinearLayout {
 		}
 		catch( Exception e){
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
-	
+			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
 		}
 	}
 
@@ -75,8 +71,7 @@ public class CompetitorRowView extends LinearLayout {
 		}
 		catch( Exception e){
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
-	
+			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
 		}
 	}
 
@@ -86,10 +81,8 @@ public class CompetitorRowView extends LinearLayout {
 		}
 		catch( Exception e){
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
-	
-		}
-		
+			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
+		}		
 	}
 
 	private OnClickListener mOnDeleteClickListener = new OnClickListener() {
@@ -99,43 +92,31 @@ public class CompetitorRowView extends LinearLayout {
 				LayoutInflater li = LayoutInflater.from(mContext);
 				View promptsView = li.inflate(R.layout.delete_competitor, null);
 	
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-						mContext);
-	
-				// set prompts.xml to alertdialog builder
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);	
 				alertDialogBuilder.setView(promptsView);
-	
-				// set dialog message
 				alertDialogBuilder
 						.setCancelable(false)
 						.setPositiveButton("Yes",
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int id) {
-										((MainActivity) mContext).competition
-												.removeCompetitor((String) mName
-														.getText());	
+										((MainActivity) mContext).competition.removeCompetitor((String) mName.getText());	
 										((MainActivity) mContext).updateFragments();
 									}
 								})
 						.setNegativeButton("No",
 								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
+									public void onClick(DialogInterface dialog, int id) {
 										dialog.cancel();
 									}
 								});
 	
-				// create alert dialog
 				AlertDialog alertDialog = alertDialogBuilder.create();
-	
-				// show it
 				alertDialog.show();
 			}
 			catch( Exception e){
 				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 				dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
-	
 			}
 		}
 	};
@@ -150,57 +131,39 @@ public class CompetitorRowView extends LinearLayout {
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 						mContext);
 	
-				// set prompts.xml to alertdialog builder
 				alertDialogBuilder.setView(promptsView);
 	
-				final EditText NameInput = (EditText) promptsView
-						.findViewById(R.id.editTextNameInput);
+				final EditText NameInput = (EditText) promptsView.findViewById(R.id.editTextNameInput);
 	
 				NameInput.setText(mName.getText());
 	
-				final EditText CardNumberInput = (EditText) promptsView
-						.findViewById(R.id.editTextCardNumberInput);
+				final EditText CardNumberInput = (EditText) promptsView.findViewById(R.id.editTextCardNumberInput);
 	
 				CardNumberInput.setText(mCardNumber.getText());
 	
-				// set dialog message
 				alertDialogBuilder
 						.setCancelable(false)
 						.setPositiveButton("Modify",
 								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
+									public void onClick(DialogInterface dialog, int id) {
 										mName.setText(NameInput.getText());
-										mCardNumber.setText(CardNumberInput
-												.getText());
-	
-										((MainActivity) mContext).competition
-												.updateCompetitorCardNumber(
-														mPosition, mName.getText()
-																.toString(),
-														mCardNumber.getText()
-																.toString());
+										mCardNumber.setText(CardNumberInput.getText());	
+										((MainActivity) mContext).competition.updateCompetitorCardNumber(mPosition, mName.getText().toString(),mCardNumber.getText().toString());
 										((MainActivity) mContext).updateFragments();
 									}
 								})
 						.setNegativeButton("Cancel",
 								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
+									public void onClick(DialogInterface dialog, int id) {
 										dialog.cancel();
 									}
 								});
-	
-				// create alert dialog
 				AlertDialog alertDialog = alertDialogBuilder.create();
-	
-				// show it
 				alertDialog.show();
 			}
 			catch( Exception e){
 				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 				dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
-
 			}
 		}
 	};
@@ -214,7 +177,6 @@ public class CompetitorRowView extends LinearLayout {
 			catch( Exception e){
 				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 				dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
-
 			}
 		}
 	};

@@ -3,8 +3,6 @@ package se.gsc.stenmark.gscenduro;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-
-
 public class Result implements Serializable {
 	private static final long serialVersionUID = 201111020001L; 
 	

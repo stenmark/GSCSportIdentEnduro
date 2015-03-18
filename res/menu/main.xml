@@ -2,28 +2,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="se.gsc.stenmark.gscenduro.MainActivity" >
 
+	<item
+        android:id="@+id/action_new"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_new"/>
+        
+    <item
+        android:id="@+id/action_load"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_load"/>
+    
+    <item
+        android:id="@+id/action_save"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_save"/>    
+    
+    <item
+        android:id="@+id/action_export"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_export"/>
+    
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
-    
-    <item
-        android:id="@+id/action_export_competitors"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_export_competitors"/>    
-
-    <item
-        android:id="@+id/action_export_results"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_export_results"/>
-    
-   <item
-        android:id="@+id/action_export_punches"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_export_punches"/>            
-    
 </menu>

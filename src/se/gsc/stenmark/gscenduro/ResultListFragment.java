@@ -1,5 +1,6 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.res.Configuration;
@@ -12,6 +13,8 @@ public class ResultListFragment extends ListFragment {
 	MainActivity mMainActivity = null;
 	protected ListResultAdapter mResultsAdapter;
 	protected ListResultLandscapeAdapter mResultLandscapeAdapter;
+	protected List<Result> mResults = new ArrayList<Result>();
+	protected List<ResultLandscape> mResultLandscape = new ArrayList<ResultLandscape>();
 	
 	private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -28,14 +31,18 @@ public class ResultListFragment extends ListFragment {
 		Configuration configuration = getResources().getConfiguration(); 						
 		if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
 		{
-			List<Result> results = mMainActivity.competition.getResults();
-			mResultsAdapter = new ListResultAdapter(mMainActivity, results);	
+			for (Result result : mMainActivity.competition.getResults()) {
+				mResults.add(result);
+			}
+			mResultsAdapter = new ListResultAdapter(mMainActivity, mResults);	
 			setListAdapter(mResultsAdapter);
 		} 
 		else if(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE )
 		{
-			List<ResultLandscape> resultLandscape = mMainActivity.competition.getResultLandscape();		
-			mResultLandscapeAdapter = new ListResultLandscapeAdapter(mMainActivity, resultLandscape);			
+			for (ResultLandscape resultLandscape : mMainActivity.competition.getResultLandscape()) {
+				mResultLandscape.add(resultLandscape);
+			}	
+			mResultLandscapeAdapter = new ListResultLandscapeAdapter(mMainActivity, mResultLandscape);			
 			setListAdapter(mResultLandscapeAdapter);
 		}
 	}
@@ -62,10 +69,22 @@ public class ResultListFragment extends ListFragment {
 		Configuration configuration = getResources().getConfiguration(); 			
 		if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
 		{	
+			mResults.clear();
+			
+			for (Result result : mMainActivity.competition.getResults()) {
+				mResults.add(result);
+			}
+						
 			mResultsAdapter.notifyDataSetChanged();
 		} 
 		else if(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE )
 		{			
+			mResultLandscape.clear();
+			
+			for (ResultLandscape resultLandscape : mMainActivity.competition.getResultLandscape()) {
+				mResultLandscape.add(resultLandscape);
+			}			
+	
 			mResultLandscapeAdapter.notifyDataSetChanged();
 		}
 	}	

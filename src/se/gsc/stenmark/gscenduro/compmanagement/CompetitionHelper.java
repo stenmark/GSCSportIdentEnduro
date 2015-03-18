@@ -2,9 +2,13 @@ package se.gsc.stenmark.gscenduro.compmanagement;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.os.Environment;
+import se.gsc.stenmark.gscenduro.ResultLandscape;
+import se.gsc.stenmark.gscenduro.TrackResult;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
@@ -16,6 +20,144 @@ import se.gsc.stenmark.gscenduro.SporIdent.Punch;
  */
 public class CompetitionHelper {
 
+	public static int getPosition(int cardNumber, ArrayList<TrackResult> trackResults)
+	{
+		int i = 1;
+		for (TrackResult trackResult : trackResults) {					
+			if (trackResult.getCardNumber() == cardNumber)
+			{
+				return i; 
+			}
+			i++;
+		}		
+		return -1;
+	}	
+	
+	public static String secToMinSec(Long sec)
+	{
+		if (sec == Integer.MAX_VALUE)
+		{
+			return "no result";
+		}
+		else
+		{		
+			Long totalTime_sec = sec;
+			Long toltalTime_min = sec / 60;
+			totalTime_sec -= toltalTime_min * 60;
+	
+			return String.format("%02d:%02d", toltalTime_min, totalTime_sec);
+		}
+	}	
+	
+	public static String getResultsAsCsvString(List<TrackMarker> Track, List<ResultLandscape> ResultLandscape){
+		String resultData = "";	
+
+		resultData = "Rank,Name,Card Number,Total Time,";
+		for (int i = 0; i < Track.size(); i++) {
+			resultData += "Stage " + (i + 1) + ",RK,";
+		}
+		resultData += "\n";
+		
+		int rank = 1;
+		for (ResultLandscape res : ResultLandscape)
+		{			
+			resultData += String.valueOf(rank) + "," 
+					+ res.getName() + ","
+					+ res.getCardNumber() + ",";
+			
+			if (res.getTotalTime() == Integer.MAX_VALUE)
+			{
+				resultData += "--:--" + ",";
+			}
+			else
+			{					
+				if (res.getTotalTime() == 0)
+				{
+					resultData += "--:--" + ",";
+				}
+				else
+				{
+					
+					resultData += CompetitionHelper.secToMinSec(res.getTotalTime()) + ",";						
+				}	
+			}				
+			
+			int i = 0;
+			for (Long Time : res.getTime()) {												
+				if (Time == Integer.MAX_VALUE)
+				{
+					resultData += "--:--" + ",";
+				}
+				else
+				{
+					resultData += CompetitionHelper.secToMinSec(Time) + ",";
+				}											
+				
+				int pos = res.getRank().get(i);	
+				if (pos == (long) Integer.MAX_VALUE)
+				{
+					resultData += "-,";
+				}
+				else
+				{
+					resultData += String.valueOf(pos) + ",";
+				}
+				i++;
+			}
+			rank++;
+			resultData += "\n";
+		}
+		
+		resultData += "\n\n";		
+		
+		return resultData;
+	}		
+	
+	public static String getPunchesAsCsvString(List<Competitor> competitors){	
+		String PunchList = "Name,Card Number\n";
+
+		if(competitors!= null && !competitors.isEmpty()) {
+			Collections.sort(competitors);
+			for (Competitor competitor : competitors) {
+				PunchList += competitor.name + ","	+ competitor.cardNumber + ",";
+				
+				Card card = new Card();
+				
+				card = competitor.card;
+				
+				if (card != null)
+				{
+				    Collections.sort(card.punches, new Comparator<Punch>() {
+				        @Override
+				        public int compare(Punch s1, Punch s2) {
+				            return s1.getTime().compareTo(s2.getTime());
+				        }
+				    });	
+				    
+				    for(Punch punch : card.punches){
+				    	PunchList += punch.control + "," + punch.time + ",";					    	
+				    }
+				    
+				    PunchList += "\n";
+				}											
+			}
+		}	
+		return PunchList;
+	}	
+	
+	public static String getCompetitorsAsCsvString(List<Competitor> competitors){		
+		String competitorList = "Name,Card Number\n";
+		
+		if(competitors!= null && !competitors.isEmpty() ) {
+			Collections.sort(competitors);
+			for (Competitor competitor : competitors) {
+				competitorList += competitor.name + ","	+ competitor.cardNumber + "\n";
+			}
+		}
+		
+		return competitorList;
+	}	
+	
 	/**
 	 * Finds a competitor in  list of competitors supplied, it searches for the competitors card number.
 	 * If no competitor with the supplied cardNumer is found, null is returned.

@@ -14,27 +14,23 @@
     <string name="start_connection_status">CONNECTION STATUS</string>
     <string name="start_connect">CONNECT</string>
     
-    <string name="start_competitor">COMPETITORS</string>
     <string name="start_name">Name:</string>
     <string name="start_card_number">Card Number:</string>
     <string name="start_add">ADD</string>
     <string name="start_multiadd">MULTI ADD</string>
-    <string name="start_manual_add">ADD MANUALLY</string>
-    <string name="start_multicompetitor">MULTIPLE COMPETITORS</string>             
+    <string name="start_manual_add">ADD MANUALLY</string>               
     
-    <string name="start_track">STAGES</string>
     <string name="start_add_stages_info">Number of stages:</string>
-    <string name="start_track_definition"></string>
-    <string name="start_track_info">No tracks added</string>
+    <string name="start_track_info">Add track in format start,stop,start,stop e.g. 71,72,71,72</string>
     
-    <string name="start_competition">COMPETITIONS</string>
     <string name="start_save">SAVE</string>
     <string name="start_load">LOAD</string>
     <string name="start_new">NEW</string>   
     
-    <string name="action_export_competitors">Export competitors</string>
-    <string name="action_export_results">Export results</string>
-    <string name="action_export_punches">Export punches</string>        
+    <string name="action_new">New</string>
+    <string name="action_load">Load</string>
+    <string name="action_save">Save</string>
+    <string name="action_export">Export as csv</string>                
     
     
     

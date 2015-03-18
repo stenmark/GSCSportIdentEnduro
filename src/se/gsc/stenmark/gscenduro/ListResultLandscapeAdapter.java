@@ -3,6 +3,8 @@ package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
@@ -70,7 +72,7 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 			else
 			{
 				
-				TotalTime = ((MainActivity)mContext).competition.secToMinSec(mResultLandscape.get(position).getTotalTime());
+				TotalTime = CompetitionHelper.secToMinSec(mResultLandscape.get(position).getTotalTime());
 				
 			}	
 			ResultLandscapeRowV.setResultLandscapeTotalTime(TotalTime);
@@ -90,7 +92,7 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 			}
 			else
 			{
-				StageTime = ((MainActivity)mContext).competition.secToMinSec(mResultLandscape.get(position).getTime().get(i));
+				StageTime = CompetitionHelper.secToMinSec(mResultLandscape.get(position).getTime().get(i));
 			}			
 			
 			int color;

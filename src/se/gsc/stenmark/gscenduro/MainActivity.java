@@ -1,17 +1,23 @@
 package se.gsc.stenmark.gscenduro;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,8 +26,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 /**
@@ -309,43 +322,229 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		
+		LayoutInflater li;
+		View promptsView;
+		
 		switch(id)
 		{
+		case R.id.action_new:				
+			SharedPreferences settings = getSharedPreferences(MainActivity.PREF_NAME, 0);
+			int maxNumberOfStages = Integer.parseInt(settings.getString("MAX_NUMBER_OF_STAGES", "15"));
+			
+	        List<String> numerOfStages = new ArrayList<String>();
+	        for (int i = 1; i < (maxNumberOfStages + 1); i++){
+	        	numerOfStages.add(Integer.toString(i));
+	        }
+	        						
+			li = LayoutInflater.from(this);
+			promptsView = li.inflate(R.layout.new_competition, null);					
+
+			final LinearLayout layoutAddTrackSpinner = (LinearLayout) promptsView.findViewById(R.id.layoutAddTrackSpinner);
+			final LinearLayout layoutAddTrackManually = (LinearLayout) promptsView.findViewById(R.id.layoutAddTrackManually);
+			
+			final EditText AddTrackManuallyInput = (EditText) promptsView.findViewById(R.id.editTextAddTrackManually);
+			AddTrackManuallyInput.setText("");
+			
+			final EditText NewCompetitionInput = (EditText) promptsView.findViewById(R.id.editTextNewCompetitionInput);
+			NewCompetitionInput.setText("New");
+
+			final CheckBox checkboxAddTrackManually = (CheckBox) promptsView.findViewById(R.id.checkbox_add_track_manually);
+			checkboxAddTrackManually.setOnClickListener(new View.OnClickListener() {
+			      public void onClick(View v) {
+			    	  if (checkboxAddTrackManually.isChecked())
+			    	  {
+			    		  layoutAddTrackSpinner.setVisibility(View.GONE);
+			    		  layoutAddTrackManually.setVisibility(View.VISIBLE);
+			    	  }
+			    	  else
+			    	  {
+			    		  layoutAddTrackSpinner.setVisibility(View.VISIBLE);
+			    		  layoutAddTrackManually.setVisibility(View.GONE);
+			    	  }
+			      }
+			});			
+			
+			final CheckBox checkBoxKeepCompetitors = (CheckBox) promptsView.findViewById(R.id.checkbox_keep_competitors);
+			checkBoxKeepCompetitors.setOnClickListener(new View.OnClickListener() {
+			      public void onClick(View v) {
+			      }
+			});
+			
+			final Spinner spinner = (Spinner) promptsView.findViewById(R.id.spinnerTrackDefinition);	
+	        ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, numerOfStages);
+	        LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
+	        spinner.setAdapter(LTRadapter);			
+	        spinner.setSelection(competition.getNumberOfTracks() - 1);			
+		
+			AlertDialog.Builder newAlertDialogBuilder = new AlertDialog.Builder(this);
+			newAlertDialogBuilder.setView(promptsView);
+			newAlertDialogBuilder
+					.setCancelable(false)
+					.setPositiveButton("Create",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {															
+									
+									if (checkBoxKeepCompetitors.isChecked())
+									{
+										competition.getTrack().clear();
+										competition.getResults().clear();
+										competition.getResultLandscape().clear();
+										competition.clearCompetitors();
+										competition.competitionName = NewCompetitionInput.getText().toString();										
+										Log.d("action_new","isChecked");
+									}
+									else
+									{
+										competition.getCompetitors().clear();
+										competition = new Competition();
+										Log.d("action_new","Not checked");
+									}
+									
+									SharedPreferences settings = getSharedPreferences(MainActivity.PREF_NAME, 0);
+									int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
+									int finishStationNumner = Integer.parseInt(settings.getString("FINISH_STATION_NUMBER", "72"));
+										
+									if (checkboxAddTrackManually.isChecked())
+									{
+										competition.addNewTrack(AddTrackManuallyInput.getText().toString());
+									}
+									else
+									{
+										String newTrack = spinner.getSelectedItem().toString();	
+									
+										if(newTrack.length() == 0)
+										{
+									        Toast.makeText(MainActivity.this, "Track is empty", Toast.LENGTH_LONG).show();
+										}
+										else
+										{
+											int numberOfSs = 1;
+											try{
+												numberOfSs = Integer.parseInt(newTrack);
+											}
+											catch( NumberFormatException e){											
+												Toast.makeText(MainActivity.this, "Invalid track is entered", Toast.LENGTH_LONG).show();
+												return;
+											}
+											
+											String trackString = "";
+											for(int i = 0; i < numberOfSs;  i++){
+												trackString += startStationNumner + "," + finishStationNumner + ",";
+											}
+											trackString = trackString.substring(0, trackString.length() - 1);   //remove last ","
+											
+											competition.addNewTrack(trackString);										
+										}					
+									}
+									
+									Toast.makeText(MainActivity.this, "Current loaded Stages: " + competition.getTrackAsString(), Toast.LENGTH_LONG).show();									
+									updateFragments();
+								}
+							})
+					.setNegativeButton("Cancel",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+
+			AlertDialog newAlertDialog = newAlertDialogBuilder.create();
+			newAlertDialog.show();					
+			return true;
+			
+		case R.id.action_load:			
+			List<String> savedCompetitions = CompetitionHelper.getSavedCompetitionsAsList();
+			CompetitionOnClickListener competitionOnClickListener = new CompetitionOnClickListener(savedCompetitions);
+			SelectCompetitionDialog selectCompetitionDialog = new SelectCompetitionDialog(savedCompetitions, competitionOnClickListener, this, competitionOnClickListener);
+			selectCompetitionDialog.createSelectCompetitionDialog();
+			return true;			    
+			
+		case R.id.action_save:			
+			li = LayoutInflater.from(this);
+			promptsView = li.inflate(R.layout.save_competition, null);					
+
+			final EditText SaveCompetitionInput = (EditText) promptsView.findViewById(R.id.editTextSaveCompetitionInput);
+			SaveCompetitionInput.setText(competition.competitionName);
+			
+			AlertDialog.Builder saveAlertDialogBuilder = new AlertDialog.Builder(this);
+			saveAlertDialogBuilder.setView(promptsView);
+			saveAlertDialogBuilder
+					.setCancelable(false)
+					.setPositiveButton("Save",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+
+									String compName = SaveCompetitionInput.getText().toString();
+									if (compName.isEmpty()) {
+										Toast.makeText(MainActivity.this, "Competition not saved! No competition name was supplied", Toast.LENGTH_LONG).show();
+									}
+									else
+									{
+										try {
+											competition.competitionName = compName;
+											competition.saveSessionData(compName);
+										} catch (Exception e) {
+											Log.d("action_save", "Error = " + Log.getStackTraceString(e));
+										}											
+									}									
+								}
+							})
+					.setNegativeButton("Cancel",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+
+			AlertDialog saveAlertDialog = saveAlertDialogBuilder.create();
+			saveAlertDialog.show();							
+			return true;			
+			
 		case R.id.action_settings:
 	        Intent settingsIntent = new Intent();
 	        settingsIntent.setClass(this, SettingsActivity.class);
 	        startActivity(settingsIntent);			
 			return true;
 			
-		case R.id.action_export_competitors:
-			try {
-				this.competition.exportCompetitorsAsCsv(this);
-			} catch (Exception e) {
-				Toast.makeText(this, Log.getStackTraceString(e), Toast.LENGTH_SHORT).show();
-			}
-			return true;
-			
-		case R.id.action_export_results:
-			try {
-				this.competition.exportResultAsCsv(this);
-			} catch (Exception e) {
-				Toast.makeText(this, Log.getStackTraceString(e), Toast.LENGTH_SHORT).show();
-			}
-			return true;
-			
-		case R.id.action_export_punches:
-			try {
-				this.competition.exportPunchesAsCsv(this);
-			} catch (Exception e) {
-				Toast.makeText(this, Log.getStackTraceString(e), Toast.LENGTH_SHORT).show();
-			}
+		case R.id.action_export:
+			ExportOnClickListener exportOnClickListener = new ExportOnClickListener();
+			SelectExportDialog selectExportDialog = new SelectExportDialog(exportOnClickListener, this, exportOnClickListener);
+			selectExportDialog.createExportDialog();			
 			return true;			
 			
 		default:
 			return super.onOptionsItemSelected(item);
 		}		
-	}
-
+	}	
+	
+    public class CompetitionOnClickListener implements android.content.DialogInterface.OnClickListener{
+    	public int which = 0;
+    	
+    	public CompetitionOnClickListener( List<String> savedCompetitions ) {
+		}
+    	
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			this.which = which;
+		}
+    }		
+	
+    public class ExportOnClickListener implements android.content.DialogInterface.OnClickListener{
+    	public int which = 0;
+    	
+    	public ExportOnClickListener() {
+		}
+    	
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			this.which = which;
+		}
+    }	    
+    
 	/**
 	 * Autocrated template code
 	 */

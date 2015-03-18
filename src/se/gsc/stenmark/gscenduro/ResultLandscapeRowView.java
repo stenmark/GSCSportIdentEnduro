@@ -35,15 +35,13 @@ public class ResultLandscapeRowView extends LinearLayout {
 
 		mContext = context;
 
-		mCompoundView = (LinearLayout) inflater.inflate(
-				R.layout.result_landscape_row, this);
+		mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_landscape_row, this);
 		
 		mResultLandscapeTitle = (LinearLayout) mCompoundView.findViewById(R.id.result_landscape_title);
 		mResultLandscapeComp = (LinearLayout) mCompoundView.findViewById(R.id.result_landscape_comp);
 		
 		mResultLandscapeName = (TextView) mCompoundView.findViewById(R.id.result_landscape_name);
 		mResultLandscapeTotalTime = (TextView) mCompoundView.findViewById(R.id.result_landscape_total_time);
-		
 		
 		mResultLandscapeStageTime1 = (TextView) mCompoundView.findViewById(R.id.result_landscape_ss1_time);
 		mResultLandscapeStageTime2 = (TextView) mCompoundView.findViewById(R.id.result_landscape_ss2_time);

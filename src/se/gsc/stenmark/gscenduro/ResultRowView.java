@@ -21,8 +21,7 @@ public class ResultRowView extends LinearLayout {
 
 		mContext = context;
 
-		mCompoundView = (LinearLayout) inflater.inflate(
-				R.layout.result_row, this);
+		mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_row, this);
 
 		mTitle = (TextView) mCompoundView.findViewById(R.id.result_title);
 		mResultName = (TextView) mCompoundView.findViewById(R.id.result_name);

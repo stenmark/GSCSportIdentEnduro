@@ -26,8 +26,7 @@ public class PunchRowView extends LinearLayout {
 
 		mContext = context;
 
-		mCompoundView = (LinearLayout) inflater.inflate(
-				R.layout.punch_row, this);
+		mCompoundView = (LinearLayout) inflater.inflate(R.layout.punch_row, this);
 
 		mControl = (TextView) mCompoundView.findViewById(R.id.punch_control);
 		mTime = (TextView) mCompoundView.findViewById(R.id.punch_time);
@@ -65,34 +64,24 @@ public class PunchRowView extends LinearLayout {
 			LayoutInflater li = LayoutInflater.from(mContext);
 			View promptsView = li.inflate(R.layout.delete_punch, null);
 
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-					mContext);
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
 
-			// set prompts.xml to alertdialog builder
 			alertDialogBuilder.setView(promptsView);
-
-			// set dialog message
 			alertDialogBuilder
 					.setCancelable(false)
 					.setPositiveButton("Yes",
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
+								public void onClick(DialogInterface dialog, int id) {
 									((PunchListActivity) mContext).removePunch(mPosition);									
 								}
 							})
 					.setNegativeButton("No",
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
+								public void onClick(DialogInterface dialog, int id) {
 									dialog.cancel();
 								}
 							});
-
-			// create alert dialog
 			AlertDialog alertDialog = alertDialogBuilder.create();
-
-			// show it
 			alertDialog.show();
 		}
 	};
@@ -103,47 +92,32 @@ public class PunchRowView extends LinearLayout {
 			LayoutInflater li = LayoutInflater.from(mContext);
 			View promptsView = li.inflate(R.layout.modify_punch, null);
 
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-					mContext);
-
-			// set prompts.xml to alertdialog builder
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
 			alertDialogBuilder.setView(promptsView);
 
-			final EditText ControlInput = (EditText) promptsView
-					.findViewById(R.id.editTextControlInput);
-
+			final EditText ControlInput = (EditText) promptsView.findViewById(R.id.editTextControlInput);
 			ControlInput.setText(mControl.getText());
 
-			final EditText TimeInput = (EditText) promptsView
-					.findViewById(R.id.editTextTimeInput);
-
+			final EditText TimeInput = (EditText) promptsView.findViewById(R.id.editTextTimeInput);
 			TimeInput.setText(mTime.getText());
 
-			// set dialog message
 			alertDialogBuilder
 					.setCancelable(false)
 					.setPositiveButton("Modify",
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
+								public void onClick(DialogInterface dialog, int id) {
 									mControl.setText(ControlInput.getText());
 									mTime.setText(TimeInput.getText());
-
 									((PunchListActivity) mContext).updatePunch(mPosition, Long.valueOf(mControl.getText().toString()), Long.valueOf(mTime.getText().toString()));
 								}
 							})
 					.setNegativeButton("Cancel",
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
+								public void onClick(DialogInterface dialog, int id) {
 									dialog.cancel();
 								}
 							});
-
-			// create alert dialog
 			AlertDialog alertDialog = alertDialogBuilder.create();
-
-			// show it
 			alertDialog.show();						
 		}
 	};

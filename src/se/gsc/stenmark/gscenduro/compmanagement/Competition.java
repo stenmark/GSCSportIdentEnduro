@@ -21,7 +21,6 @@ import se.gsc.stenmark.gscenduro.Result;
 import se.gsc.stenmark.gscenduro.ResultLandscape;
 import se.gsc.stenmark.gscenduro.TrackResult;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
-import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -107,6 +106,23 @@ public class Competition implements Serializable{
 		return false;
 	}	
 	
+	public void sortCompetitors(){
+		Collections.sort(competitors, new Comparator<Competitor>() {
+			@Override
+			public int compare(Competitor s1, Competitor s2) {
+				return s1.name.compareToIgnoreCase(s2.name);
+			}
+		});
+	}
+	
+	public void sortTrackResult(ArrayList<TrackResult> trackResult){	
+		Collections.sort(trackResult, new Comparator<TrackResult>() {
+			@Override
+			public int compare(TrackResult lhs, TrackResult rhs) {
+				return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
+			}
+		});		
+	}
 	/**
 	 * Add a new Competitor to the competition.
 	 * @param name 
@@ -116,9 +132,20 @@ public class Competition implements Serializable{
 		Competitor competitor = new Competitor( name );	
 		competitor.cardNumber = cardNumber;
 		competitors.add(competitor);		
+		
+		sortCompetitors();
+		
 		calculateResults();
 	}
-		
+	
+	public void clearCompetitors(){					
+		for (int i = 0; i < competitors.size(); i++)
+		{
+			competitors.get(i).card = null;
+			competitors.get(i).trackTimes = null;
+		}												
+	}	
+	
 	public String addMultiCompetitors(String multiCompetitors) throws IOException{
 		String name = "";
 		String cardNumber = "";
@@ -202,14 +229,9 @@ public class Competition implements Serializable{
 		newCompetitor.name = newName;
 		newCompetitor.cardNumber = Integer.parseInt(newCardNumber);
 
-		competitors.set(index, newCompetitor);
-			
-	    Collections.sort(competitors, new Comparator<Competitor>() {
-	        @Override
-	        public int compare(Competitor s1, Competitor s2) {
-	            return s1.name.compareToIgnoreCase(s2.name);
-	        }
-	    });
+		competitors.set(index, newCompetitor);	    
+	    
+	    sortCompetitors();
 	    
 	    calculateResults();
 	}
@@ -265,12 +287,16 @@ public class Competition implements Serializable{
 	 * @return
 	 */
 	public String getTrackAsString(){
-		String trackAsString = " ";
+		String trackAsString = "";
 		if ( !track.isEmpty() && track != null ) {
 			int i = 0;
 			for (TrackMarker trackMarker : track ) {
 				i++;
-				trackAsString += ", SS" + i + ": "+ trackMarker.start + "->" + trackMarker.finish;
+				if (i != 1)
+				{
+					trackAsString += " ,";
+				}
+				trackAsString += "SS" + i + ": "+ trackMarker.start + "->" + trackMarker.finish;
 			}
 		} else {
 			trackAsString += " No track loaded";
@@ -435,23 +461,8 @@ public class Competition implements Serializable{
 	    alert.show();	
 	}	
 	
-	public int getPosition(int cardNumber, ArrayList<TrackResult> trackResults)
-	{
-		int i = 1;
-		for (TrackResult trackResult : trackResults) {					
-			if (trackResult.getCardNumber() == cardNumber)
-			{
-				return i; 
-			}
-			i++;
-		}		
-		return -1;
-	}
-	
-	public void exportPunchesAsCsv(Activity activity) throws IOException{
+	public void exportString(Activity activity, String StringToSend) throws IOException{
 		String errorMsg = "";
-		
-		String PunchList = "Name,Card Number\n";
 
 		if(CompetitionHelper.isExternalStorageWritable()) {
 			File sdCard = Environment.getExternalStorageDirectory();
@@ -469,199 +480,10 @@ public class Competition implements Serializable{
 				}
 			}
 
-			File file = new File(dir, compName + "_competitors.csv");
-
-			if(competitors!= null && !competitors.isEmpty()) {
-				Collections.sort(competitors);
-				for (Competitor competitor : competitors) {
-					PunchList += competitor.name + ","	+ competitor.cardNumber + ",";
-					
-					Card card = new Card();
-					
-					card = competitor.card;
-					
-					if (card != null)
-					{
-					    Collections.sort(card.punches, new Comparator<Punch>() {
-					        @Override
-					        public int compare(Punch s1, Punch s2) {
-					            return s1.getTime().compareTo(s2.getTime());
-					        }
-					    });	
-					    
-					    for(Punch punch : card.punches){
-					    	PunchList += punch.control + "," + punch.time + ",";					    	
-					    }
-					    
-					    PunchList += "\n";
-					}											
-				}
-			}
-			
-			FileWriter fw = new FileWriter(file);
-			fw.write(PunchList);
-
-			if(activity != null){
-				Intent mailIntent = new Intent(Intent.ACTION_SEND);
-				mailIntent.setType("text/plain");
-				mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
-				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro punches for " + compName);
-				mailIntent.putExtra(Intent.EXTRA_TEXT   , "Punches in attached file");
-				Uri uri = Uri.fromFile(file);
-				mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-				activity.startActivity(Intent.createChooser(mailIntent, "Send mail"));
-			}
-
-			fw.close();
-		} else {
-			errorMsg = "External file storage not available, could not export punches";
-			messageAlert(activity, "Error", errorMsg);
-			return;
-		}		
-	}
-	
-	/**
-	 * Will take the whole competition and create CSV file, Comma Separated Value file.
-	 * This is intended to analyze the competition results in an external program, like excel.
-	 * The result will not be exported to a file but directly to a mail client of choice for the Android user.
-	 * The format of the CSV is for each column "Name,card number, total time, Time for SS1, Time for SS2,...,Time for SSn"
-	 * @param fragment need to send the result to a mail client
-	 * @return a results string with information intended for the GUI on how the export progress went
-	 * @throws IOException
-	 */
-	public void exportResultAsCsv(Activity activity) throws IOException{
-		String errorMsg = "";
-		String outputData = "";	
-
-		if( CompetitionHelper.isExternalStorageWritable() ) {
-			File sdCard = Environment.getExternalStorageDirectory();
-			String compName = competitionName;
-			compName = compName.replace(" ", "_");
-
-			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-			if (!dir.exists()) {
-				errorMsg += "Dir does not exist " + dir.getAbsolutePath();
-				if (!dir.mkdirs()) {
-					errorMsg += "Could not create directory: " + dir.getAbsolutePath();
-					messageAlert(activity, "Error", errorMsg);
-					return;
-				}
-			}
-
-			File file = new File(dir, compName + ".csv");
-
-			outputData = "Rank,Name,Card Number,Total Time,";
-			for (int i = 0; i < track.size(); i++) {
-				outputData += "Stage " + (i + 1) + ",RK,";
-			}
-			outputData += "\n";
-			
-			int rank = 1;
-			for (ResultLandscape res : mResultLandscape)
-			{			
-				outputData += String.valueOf(rank) + "," 
-						+ res.getName() + ","
-						+ res.getCardNumber() + ",";
+			File file = new File(dir, compName + "_competitors.csv");		
 				
-				if (res.getTotalTime() == Integer.MAX_VALUE)
-				{
-					outputData += "--:--" + ",";
-				}
-				else
-				{					
-					if (res.getTotalTime() == 0)
-					{
-						outputData += "--:--" + ",";
-					}
-					else
-					{
-						
-						outputData += secToMinSec(res.getTotalTime()) + ",";						
-					}	
-				}				
-				
-				int i = 0;
-				for (Long Time : res.getTime()) {												
-					if (Time == Integer.MAX_VALUE)
-					{
-						outputData += "--:--" + ",";
-					}
-					else
-					{
-						outputData += secToMinSec(Time) + ",";
-					}											
-					
-					int pos = res.getRank().get(i);	
-					if (pos == (long) Integer.MAX_VALUE)
-					{
-						outputData += "-,";
-					}
-					else
-					{
-						outputData += String.valueOf(pos) + ",";
-					}
-					i++;
-				}
-				rank++;
-				outputData += "\n";
-			}
-			
-			outputData += "\n\n";					
-		
 			FileWriter fw = new FileWriter(file);
-			fw.write(outputData);
-
-			if(activity != null){
-				Intent mailIntent = new Intent(Intent.ACTION_SEND);
-				mailIntent.setType("text/plain");
-				mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
-				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro results for " + compName);
-				mailIntent.putExtra(Intent.EXTRA_TEXT   , "Results in attached file");
-				Uri uri = Uri.fromFile(file);
-				mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-				activity.startActivity(Intent.createChooser(mailIntent, "Send mail"));
-			}
-
-			fw.close();
-		} else {
-			errorMsg = "External file storage not available, could not export results";			
-			messageAlert(activity, "Error", errorMsg);
-			return;			
-		}
-	}	
-	
-	public void exportCompetitorsAsCsv(Activity activity) throws IOException{
-		String errorMsg = "";
-		
-		String competitorList = "Name,Card Number\n";
-
-		if(CompetitionHelper.isExternalStorageWritable()) {
-			File sdCard = Environment.getExternalStorageDirectory();
-			String compName = competitionName;
-			compName = compName.replace(" ", "_");
-
-			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-			if (!dir.exists()) {
-				errorMsg += "Dir does not exist " + dir.getAbsolutePath();
-				if (!dir.mkdirs()) {
-					errorMsg += "Could not create directory: " + dir.getAbsolutePath();
-					
-					messageAlert(activity, "Error", errorMsg);
-					return;
-				}
-			}
-
-			File file = new File(dir, compName + "_competitors.csv");
-
-			if(competitors!= null && !competitors.isEmpty() ) {
-				Collections.sort(competitors);
-				for (Competitor competitor : competitors) {
-					competitorList += competitor.name + ","	+ competitor.cardNumber + "\n";
-				}
-			}
-			
-			FileWriter fw = new FileWriter(file);
-			fw.write(competitorList);
+			fw.write(StringToSend);
 
 			if(activity != null){
 				Intent mailIntent = new Intent(Intent.ACTION_SEND);
@@ -679,28 +501,46 @@ public class Competition implements Serializable{
 			errorMsg = "External file storage not available, could not export competitors";
 			messageAlert(activity, "Error", errorMsg);
 			return;
-		}
+		}			
 	}
 	
-	public String secToMinSec(Long sec)
-	{
-		if (sec == Integer.MAX_VALUE)
-		{
-			return "no result";
-		}
-		else
-		{		
-			Long totalTime_sec = sec;
-			Long toltalTime_min = sec / 60;
-			totalTime_sec -= toltalTime_min * 60;
+	public void exportCompetitorsAsCsv(Activity activity) throws IOException{		
+		String competitorList = CompetitionHelper.getCompetitorsAsCsvString(competitors);
+		exportString(activity, competitorList);
+	}
 	
-			return String.format("%02d:%02d", toltalTime_min, totalTime_sec);
-		}
+	public void exportResultsAsCsv(Activity activity) throws IOException{		
+		String resultList = CompetitionHelper.getResultsAsCsvString(track, mResultLandscape);
+		exportString(activity, resultList);
+	}
+	
+	public void exportPunchesAsCsv(Activity activity) throws IOException{		
+		String punchList = CompetitionHelper.getPunchesAsCsvString(competitors);
+		exportString(activity, punchList);
+	}	
+	
+	public void exportAllAsCsv(Activity activity) throws IOException{
+		String AllList = "";
+		AllList += "Competitors\n";
+		AllList += CompetitionHelper.getCompetitorsAsCsvString(competitors);
+		AllList += "\n\n";
+		AllList += "Results\n";
+		AllList += CompetitionHelper.getResultsAsCsvString(track, mResultLandscape);		
+		AllList += "\n\n";
+		AllList += "Punches\n";
+		AllList += CompetitionHelper.getPunchesAsCsvString(competitors);
+
+		exportString(activity, AllList);
 	}	
 	
 	public void calculateResults()
 	{
-		int i, j;	
+		int i, j;
+		ArrayList<Competitor> tempCompetitors = new ArrayList<Competitor>();		
+		for (Competitor competitor : competitors) {
+			tempCompetitors.add(competitor);
+		}
+			
 		mResults.clear();
 		
 		Result result;
@@ -720,26 +560,20 @@ public class Competition implements Serializable{
 		Long trackTimeBack = (long) 0;
 		TrackResult trackResult;
 		
-		for (i = 0; i < competitors.size(); i++) {
-			trackResult = new TrackResult(competitors.get(i).getName(), competitors.get(i).getCardNumber(), competitors.get(i).getTotalTime(true)); 
+		for (i = 0; i < tempCompetitors.size(); i++) {
+			trackResult = new TrackResult(tempCompetitors.get(i).getName(), tempCompetitors.get(i).getCardNumber(), tempCompetitors.get(i).getTotalTime(true)); 
 			mResults.get(0).mTrackResult.add(trackResult);
 		}
 		
-		Collections.sort(mResults.get(0).mTrackResult, new Comparator<TrackResult>() {
-			@Override
-			public int compare(TrackResult lhs, TrackResult rhs) {
-				return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
-			}
-		});		
-		
+		sortTrackResult(mResults.get(0).mTrackResult);
 		// Add track times
 		for (j = 1; j < mResults.size(); j++) {
-			for (i = 0; i < competitors.size(); i++) {
-				name = competitors.get(i).getName();		
-				cardNumber = competitors.get(i).getCardNumber();
+			for (i = 0; i < tempCompetitors.size(); i++) {
+				name = tempCompetitors.get(i).getName();		
+				cardNumber = tempCompetitors.get(i).getCardNumber();
 				
-				if ( (competitors.get(i).hasResult()) && (competitors.get(i).trackTimes.size() > j - 1) ) {
-					trackTime = competitors.get(i).trackTimes.get(j - 1);
+				if ( (tempCompetitors.get(i).hasResult()) && (tempCompetitors.get(i).trackTimes.size() > j - 1) ) {
+					trackTime = tempCompetitors.get(i).trackTimes.get(j - 1);
 				}
 				else
 				{
@@ -750,12 +584,7 @@ public class Competition implements Serializable{
 				mResults.get(j).mTrackResult.add(trackResult);
 			}
 			
-			Collections.sort(mResults.get(j).mTrackResult, new Comparator<TrackResult>() {
-				@Override
-				public int compare(TrackResult lhs, TrackResult rhs) {
-					return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
-				}
-			});											
+			sortTrackResult(mResults.get(j).mTrackResult);
 		}
 		for (j = 0; j < mResults.size(); j++) {
 			for (i = 0; i < mResults.get(j).mTrackResult.size(); i++) {			
@@ -777,10 +606,10 @@ public class Competition implements Serializable{
 		if(mResults != null && !mResults.isEmpty()) {		
 			ResultLandscape resultLandscapeObject = null;
 
-			if(competitors != null && !competitors.isEmpty()) {
-				Collections.sort(competitors);
+			if(tempCompetitors != null && !tempCompetitors.isEmpty()) {
+				Collections.sort(tempCompetitors);
 
-				for (Competitor competitor : competitors) {
+				for (Competitor competitor : tempCompetitors) {
 					resultLandscapeObject = new ResultLandscape();
 					resultLandscapeObject.setName(competitor.name);
 					resultLandscapeObject.setCardNumber(competitor.cardNumber);
@@ -793,7 +622,7 @@ public class Competition implements Serializable{
 													
 							if (stage < mResults.size())
 							{
-								int pos = getPosition(competitor.cardNumber, mResults.get(stage).getTrackResult());
+								int pos = CompetitionHelper.getPosition(competitor.cardNumber, mResults.get(stage).getTrackResult());
 								if (pos == -1)
 								{
 									resultLandscapeObject.getRank().add(Integer.MAX_VALUE);

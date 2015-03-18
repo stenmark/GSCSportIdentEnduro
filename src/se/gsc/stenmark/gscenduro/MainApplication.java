@@ -14,9 +14,8 @@ public class MainApplication extends Application{
 	    public static Context getAppContext() {
 	        return MainApplication.context;
 	    }
-
 	    
 		public static StartScreenFragment startScreenFragment = null;
 		public static ResultListFragment resultListFragment = null;
-		public static  CompMangementFragment compMangementFragment = null;
+		public static CompMangementFragment compMangementFragment = null;
 }
