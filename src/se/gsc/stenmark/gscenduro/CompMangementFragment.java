@@ -92,7 +92,11 @@ public class CompMangementFragment extends ListFragment {
 			
 		super.onActivityCreated(savedInstanceState);
 	}
-		
+	
+	public ListCompetitorAdapter getListCompetitorAdapter() {
+		return mCompetitorAdapter;
+	}		
+	
 	@Override
 	public void onResume() {
 		super.onResume();

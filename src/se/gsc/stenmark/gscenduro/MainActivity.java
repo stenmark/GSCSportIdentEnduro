@@ -119,6 +119,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		if (mSectionsPagerAdapter.resultListFragment != null
 				&& mSectionsPagerAdapter.resultListFragment instanceof ResultListFragment) {
 			mSectionsPagerAdapter.resultListFragment.getResultAdapter().updateResult(competition.getResults());
+			mSectionsPagerAdapter.resultListFragment.getResultLandscapeAdapter().updateResultLandscape(competition.getResultLandscape());
 		}
 	}	
 	
@@ -387,13 +388,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 										competition.getResultLandscape().clear();
 										competition.clearCompetitors();
 										competition.competitionName = NewCompetitionInput.getText().toString();										
-										Log.d("action_new","isChecked");
 									}
 									else
 									{
 										competition.getCompetitors().clear();
 										competition = new Competition();
-										Log.d("action_new","Not checked");
 									}
 									
 									SharedPreferences settings = getSharedPreferences(MainActivity.PREF_NAME, 0);

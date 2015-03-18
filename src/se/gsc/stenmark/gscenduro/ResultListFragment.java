@@ -47,6 +47,10 @@ public class ResultListFragment extends ListFragment {
 		return mResultsAdapter;
 	}	
 	
+	public ListResultLandscapeAdapter getResultLandscapeAdapter() {
+		return mResultLandscapeAdapter;
+	}		
+	
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
