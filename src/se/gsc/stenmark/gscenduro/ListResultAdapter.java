@@ -32,9 +32,9 @@ public class ListResultAdapter extends BaseAdapter {
 	    return mResult;
 	}
 	
-	public void updateResult (List<Result> Items)
+	public void updateResult ()
 	{
-		mResult = Items;
+		mResult = ((MainActivity) mContext).competition.getResults();
 		this.notifyDataSetChanged();	
 	}	
 	

@@ -34,9 +34,9 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 	    return mResultLandscape;
 	}	
 	
-	public void updateResultLandscape (List<ResultLandscape> Items)
+	public void updateResultLandscape ()
 	{
-		mResultLandscape = Items;
+		mResultLandscape = ((MainActivity) mContext).competition.getResultLandscape();
 		this.notifyDataSetChanged();	
 	}		
 	
@@ -76,10 +76,8 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 				TotalTime = "--:--";
 			}
 			else
-			{
-				
-				TotalTime = CompetitionHelper.secToMinSec(mResultLandscape.get(position).getTotalTime());
-				
+			{				
+				TotalTime = CompetitionHelper.secToMinSec(mResultLandscape.get(position).getTotalTime());				
 			}	
 			ResultLandscapeRowV.setResultLandscapeTotalTime(TotalTime);
 		}

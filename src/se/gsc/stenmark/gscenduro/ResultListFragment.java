@@ -23,7 +23,10 @@ public class ResultListFragment extends ListFragment {
 		
 		mMainActivity = ((MainActivity) getActivity());		 
 		
-		Configuration configuration = getResources().getConfiguration(); 						
+		mResultsAdapter = new ListResultAdapter(mMainActivity, mMainActivity.competition.getResults());	
+		setListAdapter(mResultsAdapter);
+		
+		/*Configuration configuration = getResources().getConfiguration(); 						
 		if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
 		{
 			mResultsAdapter = new ListResultAdapter(mMainActivity, mMainActivity.competition.getResults());	
@@ -34,14 +37,8 @@ public class ResultListFragment extends ListFragment {
 			mResultLandscapeAdapter = new ListResultLandscapeAdapter(mMainActivity, mMainActivity.competition.getResultLandscape());			
 			setListAdapter(mResultLandscapeAdapter);
 		}
+		*/
 	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-						
-		ReloadData();
-	}	
 	
 	public ListResultAdapter getResultAdapter() {
 		return mResultsAdapter;
@@ -60,19 +57,5 @@ public class ResultListFragment extends ListFragment {
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		mResultListFragment.setArguments(args);
 		return mResultListFragment;
-	}	
-	
-	public void ReloadData() {
-		Configuration configuration = getResources().getConfiguration(); 			
-		if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
-		{	
-			mResultsAdapter.updateResult(mMainActivity.competition.getResults());
-			mResultsAdapter.notifyDataSetChanged();
-		} 
-		else if(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE )
-		{			
-			mResultLandscapeAdapter.updateResultLandscape(mMainActivity.competition.getResultLandscape());
-			mResultLandscapeAdapter.notifyDataSetChanged();
-		}
-	}	
+	}		
 }

@@ -118,9 +118,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void updateFragments() {
 		if (mSectionsPagerAdapter.resultListFragment != null
 				&& mSectionsPagerAdapter.resultListFragment instanceof ResultListFragment) {
-			mSectionsPagerAdapter.resultListFragment.getResultAdapter().updateResult(competition.getResults());
-			mSectionsPagerAdapter.resultListFragment.getResultLandscapeAdapter().updateResultLandscape(competition.getResultLandscape());
+			if (mSectionsPagerAdapter.resultListFragment.getResultAdapter() != null)
+			{
+				mSectionsPagerAdapter.resultListFragment.getResultAdapter().updateResult();
+			}
+			if (mSectionsPagerAdapter.resultListFragment.getResultLandscapeAdapter() != null)
+			{
+				mSectionsPagerAdapter.resultListFragment.getResultLandscapeAdapter().updateResultLandscape();
+			}
 		}
+		
+		if (mSectionsPagerAdapter.compMangementFragment != null
+				&& mSectionsPagerAdapter.compMangementFragment instanceof CompMangementFragment) {
+			if (mSectionsPagerAdapter.compMangementFragment.getListCompetitorAdapter() != null)
+			{
+				mSectionsPagerAdapter.compMangementFragment.getListCompetitorAdapter().updateCompetitors();
+			}
+		}		
 	}	
 	
 	public void displayNewCard(Card newCard) {

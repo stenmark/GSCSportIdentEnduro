@@ -96,14 +96,7 @@ public class CompMangementFragment extends ListFragment {
 	public ListCompetitorAdapter getListCompetitorAdapter() {
 		return mCompetitorAdapter;
 	}		
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-						
-		ReloadData();
-	}
-		
+			
 	@Override
 	public void onDestroyView()
 	{
@@ -123,12 +116,7 @@ public class CompMangementFragment extends ListFragment {
 		mCompMangementFragment.setArguments(args);
 		return mCompMangementFragment;
 	}
-	
-	public void ReloadData() {
-		mCompetitorAdapter.updateCompetitors(mMainActivity.competition.getCompetitors());
-		mCompetitorAdapter.notifyDataSetChanged();
-	}
-	
+		
 	public void addCompetitorAlert(){
 		LayoutInflater li = LayoutInflater.from(mMainActivity);
 		View promptsView = li.inflate(R.layout.add_competitor, null);
@@ -144,7 +132,7 @@ public class CompMangementFragment extends ListFragment {
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,	int id) {
 								addCompetitor(NameInput.getText().toString(), CardNumberInput.getText().toString());
-								ReloadData();
+								mMainActivity.updateFragments();
 							}
 						})
 				.setNegativeButton("Cancel",

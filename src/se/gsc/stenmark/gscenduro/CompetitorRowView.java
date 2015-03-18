@@ -103,7 +103,6 @@ public class CompetitorRowView extends LinearLayout {
 									public void onClick(DialogInterface dialog,
 											int id) {
 										((MainActivity) mContext).competition.removeCompetitor((String) mName.getText());											
-										mAdapter.updateCompetitors(((MainActivity) mContext).competition.getCompetitors());										
 										((MainActivity) mContext).updateFragments();
 									}
 								})
@@ -152,7 +151,6 @@ public class CompetitorRowView extends LinearLayout {
 										mName.setText(NameInput.getText());
 										mCardNumber.setText(CardNumberInput.getText());	
 										((MainActivity) mContext).competition.updateCompetitorCardNumber(mPosition, mName.getText().toString(),mCardNumber.getText().toString());
-										mAdapter.updateCompetitors(((MainActivity) mContext).competition.getCompetitors());
 										((MainActivity) mContext).updateFragments();
 									}
 								})

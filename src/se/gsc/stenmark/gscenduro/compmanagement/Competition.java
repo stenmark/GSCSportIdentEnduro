@@ -601,7 +601,7 @@ public class Competition implements Serializable{
 				mResults.get(j).mTrackResult.get(i).setTrackTimesBack(trackTimeBack);
 			}
 		}
-				
+		/*
 		mResultLandscape.clear();
 		if(mResults != null && !mResults.isEmpty()) {		
 			ResultLandscape resultLandscapeObject = null;
@@ -643,8 +643,9 @@ public class Competition implements Serializable{
 
 					mResultLandscape.add(resultLandscapeObject);
 				}				
-			}					
+			}							
 		}
+		*/
 		
 		try {
 			saveSessionData( null );
