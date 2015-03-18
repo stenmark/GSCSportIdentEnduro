@@ -20,6 +20,7 @@ public class CompetitorRowView extends LinearLayout {
 	Button mCardButton;
 	int mPosition;
 	LinearLayout mCompoundView;
+	ListCompetitorAdapter mAdapter;
 
 	protected void Init(Context context) {
 		LayoutInflater inflater = (LayoutInflater) context
@@ -40,10 +41,11 @@ public class CompetitorRowView extends LinearLayout {
 		mCardButton.setOnClickListener(mOnPunchClickListener);
 	}
 
-	public CompetitorRowView(Context context) {
+	public CompetitorRowView(Context context, ListCompetitorAdapter Adapter) {
 		super(context);
 		try{		
 			Init(context);
+			mAdapter = Adapter;
 		}
 		catch( Exception e){
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
@@ -100,7 +102,8 @@ public class CompetitorRowView extends LinearLayout {
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int id) {
-										((MainActivity) mContext).competition.removeCompetitor((String) mName.getText());	
+										((MainActivity) mContext).competition.removeCompetitor((String) mName.getText());											
+										mAdapter.updateCompetitors(((MainActivity) mContext).competition.getCompetitors());										
 										((MainActivity) mContext).updateFragments();
 									}
 								})
@@ -149,6 +152,7 @@ public class CompetitorRowView extends LinearLayout {
 										mName.setText(NameInput.getText());
 										mCardNumber.setText(CardNumberInput.getText());	
 										((MainActivity) mContext).competition.updateCompetitorCardNumber(mPosition, mName.getText().toString(),mCardNumber.getText().toString());
+										mAdapter.updateCompetitors(((MainActivity) mContext).competition.getCompetitors());
 										((MainActivity) mContext).updateFragments();
 									}
 								})

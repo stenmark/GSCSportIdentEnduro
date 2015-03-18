@@ -1,10 +1,5 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -22,7 +17,6 @@ public class CompMangementFragment extends ListFragment {
 	MainActivity mMainActivity = null;
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	protected ListCompetitorAdapter mCompetitorAdapter;
-	protected List<Competitor> mCompetitors = new ArrayList<Competitor>();;
 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		setListShownNoAnimation(true);
@@ -35,13 +29,9 @@ public class CompMangementFragment extends ListFragment {
 			getListView().addHeaderView(listView);
 		}
 				
-		for (Competitor competitor : mMainActivity.competition.getCompetitors()) {
-			mCompetitors.add(competitor);
-		}
-								
-		mCompetitorAdapter = new ListCompetitorAdapter(mMainActivity, mCompetitors);
-		setListAdapter(mCompetitorAdapter);		
-
+		mCompetitorAdapter = new ListCompetitorAdapter(mMainActivity, mMainActivity.competition.getCompetitors());
+		setListAdapter(mCompetitorAdapter);				
+		
         Button addCompetitorButton = (Button) getView().findViewById(R.id.addCompetitorButton);
         addCompetitorButton.setOnClickListener(new Button.OnClickListener() {
 			@Override
@@ -131,11 +121,7 @@ public class CompMangementFragment extends ListFragment {
 	}
 	
 	public void ReloadData() {
-		mCompetitors.clear();
-		for (Competitor competitor : mMainActivity.competition.getCompetitors()) {
-			mCompetitors.add(competitor);
-		}
-		
+		mCompetitorAdapter.updateCompetitors(mMainActivity.competition.getCompetitors());
 		mCompetitorAdapter.notifyDataSetChanged();
 	}
 	
@@ -154,6 +140,7 @@ public class CompMangementFragment extends ListFragment {
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,	int id) {
 								addCompetitor(NameInput.getText().toString(), CardNumberInput.getText().toString());
+								ReloadData();
 							}
 						})
 				.setNegativeButton("Cancel",
@@ -207,7 +194,6 @@ public class CompMangementFragment extends ListFragment {
 		{
 			mMainActivity.competition.addCompetitor(CompetitorName, Integer.parseInt(CardNumber));																					
 			Toast.makeText(mMainActivity, "Competitor added: " + CompetitorName + ", " + CardNumber, Toast.LENGTH_SHORT).show();
-			mMainActivity.updateFragments();
 		}	
 	}
 }

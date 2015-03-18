@@ -34,6 +34,12 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 	    return mResultLandscape;
 	}	
 	
+	public void updateResultLandscape (List<ResultLandscape> Items)
+	{
+		mResultLandscape = Items;
+		this.notifyDataSetChanged();	
+	}		
+	
 	@Override
 	public long getItemId(int position) {
 		return position;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
-
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +31,12 @@ public class ListResultAdapter extends BaseAdapter {
 	public List<Result> getData() {
 	    return mResult;
 	}
+	
+	public void updateResult (List<Result> Items)
+	{
+		mResult = Items;
+		this.notifyDataSetChanged();	
+	}	
 	
 	@Override
 	public long getItemId(int position) {

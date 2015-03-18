@@ -116,14 +116,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 	
     public void updateFragments() {
-		if (mSectionsPagerAdapter.compMangementFragment != null
-				&& mSectionsPagerAdapter.compMangementFragment instanceof CompMangementFragment) {
-			mSectionsPagerAdapter.compMangementFragment.ReloadData();
-		}
-		
 		if (mSectionsPagerAdapter.resultListFragment != null
 				&& mSectionsPagerAdapter.resultListFragment instanceof ResultListFragment) {
-			mSectionsPagerAdapter.resultListFragment.ReloadData();
+			mSectionsPagerAdapter.resultListFragment.getResultAdapter().updateResult(competition.getResults());
 		}
 	}	
 	

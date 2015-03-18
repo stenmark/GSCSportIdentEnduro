@@ -34,6 +34,12 @@ public class ListCompetitorAdapter extends BaseAdapter {
 	    return mCompetitor;
 	}
 	
+	public void updateCompetitors (List<Competitor> Items)
+	{
+		mCompetitor = Items;
+		this.notifyDataSetChanged();	
+	}
+	
 	@Override
 	public long getItemId(int position) {
 		return position;
@@ -44,7 +50,7 @@ public class ListCompetitorAdapter extends BaseAdapter {
 		CompetitorRowView CompetitorRowV = null;
 
 		if (convertView == null) {
-			CompetitorRowV = new CompetitorRowView(mContext);
+			CompetitorRowV = new CompetitorRowView(mContext, this);
 		} else {
 			CompetitorRowV = (CompetitorRowView) convertView;
 		}
