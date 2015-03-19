@@ -26,7 +26,7 @@ public class ResultListFragment extends ListFragment {
 		mResultsAdapter = new ListResultAdapter(mMainActivity, mMainActivity.competition.getResults());	
 		setListAdapter(mResultsAdapter);
 		
-		/*Configuration configuration = getResources().getConfiguration(); 						
+		Configuration configuration = getResources().getConfiguration(); 						
 		if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
 		{
 			mResultsAdapter = new ListResultAdapter(mMainActivity, mMainActivity.competition.getResults());	
@@ -36,9 +36,8 @@ public class ResultListFragment extends ListFragment {
 		{
 			mResultLandscapeAdapter = new ListResultLandscapeAdapter(mMainActivity, mMainActivity.competition.getResultLandscape());			
 			setListAdapter(mResultLandscapeAdapter);
-		}
-		*/
-	}
+		}		
+	}	
 	
 	public ListResultAdapter getResultAdapter() {
 		return mResultsAdapter;

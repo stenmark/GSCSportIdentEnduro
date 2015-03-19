@@ -26,10 +26,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -116,25 +118,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 	
     public void updateFragments() {
-		if (mSectionsPagerAdapter.resultListFragment != null
-				&& mSectionsPagerAdapter.resultListFragment instanceof ResultListFragment) {
-			if (mSectionsPagerAdapter.resultListFragment.getResultAdapter() != null)
-			{
-				mSectionsPagerAdapter.resultListFragment.getResultAdapter().updateResult();
+     	SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());
+     	
+		ResultListFragment resultListFragment = (ResultListFragment)mAdapter.getRegisteredFragment(1);
+		if (resultListFragment != null){
+			if (resultListFragment.getResultAdapter() != null) {
+				resultListFragment.getResultAdapter().updateResult();				
 			}
-			if (mSectionsPagerAdapter.resultListFragment.getResultLandscapeAdapter() != null)
-			{
-				mSectionsPagerAdapter.resultListFragment.getResultLandscapeAdapter().updateResultLandscape();
+			if (resultListFragment.getResultLandscapeAdapter() != null) {				
+				resultListFragment.getResultLandscapeAdapter().updateResultLandscape();
 			}
 		}
-		
-		if (mSectionsPagerAdapter.compMangementFragment != null
-				&& mSectionsPagerAdapter.compMangementFragment instanceof CompMangementFragment) {
-			if (mSectionsPagerAdapter.compMangementFragment.getListCompetitorAdapter() != null)
-			{
-				mSectionsPagerAdapter.compMangementFragment.getListCompetitorAdapter().updateCompetitors();
+
+		CompMangementFragment compMangementFragment = (CompMangementFragment)mAdapter.getRegisteredFragment(2);
+		if (compMangementFragment != null){
+			if (compMangementFragment.getListCompetitorAdapter() != null) {
+				compMangementFragment.getListCompetitorAdapter().updateCompetitors();
 			}
-		}		
+		}     	
 	}	
 	
 	public void displayNewCard(Card newCard) {
@@ -299,8 +300,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			if (!disconected) {
 				new SiCardListener().execute(siDriver);
 			} else {
-				connectionStatus = "Disconnected";
-				mSectionsPagerAdapter.startScreenFragment.updateConnectText();
+				connectionStatus = "Disconnected";				
+		     	SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());
+		     	
+		     	StartScreenFragment startScreenFragment = (StartScreenFragment)mAdapter.getRegisteredFragment(0);
+				if (startScreenFragment != null){
+					startScreenFragment.updateConnectText();
+				}								
 			}
 		} catch (Exception e) {
 			if (!disconected) {
@@ -589,11 +595,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * Especially for layout changes i.e. flipping the screen. then fragments survive but activity is killed. Causes all sorts of problems.
 	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
-		public StartScreenFragment startScreenFragment = null;
-		public ResultListFragment resultListFragment = null;
-		public CompMangementFragment compMangementFragment = null;
-		public PunchListActivity punchListFragment = null;
-
+		SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
+		
 		public SectionsPagerAdapter(FragmentManager fm,
 				MainActivity mainActivity) {
 			super(fm);
@@ -601,22 +604,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		
 		@Override
 		public Fragment getItem(int position) {
-			// getItem is called to instantiate the fragment for the given page.
-			// Return a PlaceholderFragment (defined as a static inner class
-			// below).
+			Fragment fragment = null; 
 			switch (position) {
 			case 0:
-				startScreenFragment = StartScreenFragment.getInstance(0);
-				return startScreenFragment;
+				fragment = new StartScreenFragment();
+				break;
 			case 1:
-				resultListFragment = ResultListFragment.getInstance(1);
-				return resultListFragment;
+				fragment = new ResultListFragment();
+				break;
 			case 2:
-				compMangementFragment = CompMangementFragment.getInstance(2);
-				return compMangementFragment;				
+				fragment = new CompMangementFragment();
+				break;				
 			}
 
-			return null;
+			return fragment;
 		}
 
 		@Override
@@ -638,6 +639,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 			return null;
 		}
+		
+		@Override
+		public Object instantiateItem(ViewGroup container, int position) {
+			Fragment fragment = (Fragment) super.instantiateItem(container,	position);
+			registeredFragments.put(position, fragment);
+			return fragment;
+		}		
+		
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object) {
+			super.destroyItem(container, position, object);
+			registeredFragments.remove(position);
+		}		
+		
+		public Fragment getRegisteredFragment(int position) {
+			return registeredFragments.get(position);
+		}		
 	}
 
 	public static String generateErrorMessage(Exception e) {
