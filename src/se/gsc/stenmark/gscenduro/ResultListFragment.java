@@ -5,13 +5,9 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 
 public class ResultListFragment extends ListFragment {
-	
-	static ResultListFragment mResultListFragment;
 	MainActivity mMainActivity = null;
 	protected ListResultAdapter mResultsAdapter;
 	protected ListResultLandscapeAdapter mResultLandscapeAdapter;
-	
-	private static final String ARG_SECTION_NUMBER = "section_number";
 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -45,16 +41,5 @@ public class ResultListFragment extends ListFragment {
 	
 	public ListResultLandscapeAdapter getResultLandscapeAdapter() {
 		return mResultLandscapeAdapter;
-	}		
-	
-	/**
-	 * Returns a new instance of this fragment for the given section number.
-	 */
-	public static ResultListFragment getInstance(int sectionNumber) {
-		mResultListFragment = new ResultListFragment();
-		Bundle args = new Bundle();
-		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-		mResultListFragment.setArguments(args);
-		return mResultListFragment;
-	}		
+	}			
 }

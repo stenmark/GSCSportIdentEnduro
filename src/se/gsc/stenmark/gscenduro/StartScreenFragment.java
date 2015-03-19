@@ -11,11 +11,6 @@ import android.widget.TextView;
  * A placeholder fragment containing a simple view.
  */
 public class StartScreenFragment extends Fragment {
-	/**
-	 * The fragment argument representing the section number for this fragment.
-	 */
-	private static final String ARG_SECTION_NUMBER = "section_number";
-	static StartScreenFragment mStartScreenFragment;
 	MainActivity mMainActivity;
 	private boolean inView = false;
 	
@@ -25,17 +20,6 @@ public class StartScreenFragment extends Fragment {
         
         mMainActivity = ((MainActivity) getActivity());      
     }
-		
-	/**
-	 * Returns a new instance of this fragment for the given section number.
-	 */
-	public static StartScreenFragment getInstance(int sectionNumber) {
-		mStartScreenFragment = new StartScreenFragment();
-		Bundle args = new Bundle();
-		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-		mStartScreenFragment.setArguments(args);
-		return mStartScreenFragment;
-	}
 
 	@Override
 	public void onResume() {
