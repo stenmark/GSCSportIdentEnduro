@@ -17,6 +17,7 @@ public class StartScreenFragment extends Fragment {
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	static StartScreenFragment mStartScreenFragment;
 	MainActivity mMainActivity;
+	private boolean inView = false;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,8 +40,14 @@ public class StartScreenFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		inView = true;
 					
 		updateConnectText();
+	}
+	
+	public void onPause(){
+		super.onPause();
+		inView = false;
 	}
 	
 	@Override
@@ -64,12 +71,14 @@ public class StartScreenFragment extends Fragment {
 	}
 	
 	public void updateConnectText(){
-		try {
-			TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);	
-			statusTextView.setText(mMainActivity.getConnectionStatus());
-		} catch (Exception e) {
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(getFragmentManager(), "popUp");
+		if(inView){
+			try {
+				TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);	
+				statusTextView.setText(mMainActivity.getConnectionStatus());
+			} catch (Exception e) {
+				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+				dialog.show(getFragmentManager(), "popUp");
+			}
 		}
 	}
 }
