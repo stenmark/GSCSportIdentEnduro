@@ -1,12 +1,12 @@
 package se.gsc.stenmark.gscenduro;
 
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -28,64 +28,18 @@ public class CompMangementFragment extends ListFragment {
 				
 		mCompetitorAdapter = new ListCompetitorAdapter(mMainActivity, mMainActivity.competition.getCompetitors());
 		setListAdapter(mCompetitorAdapter);				
+
+		final EditText NameInput = (EditText) getView().findViewById(R.id.editCompetitorName);
+		final EditText CardNumberInput = (EditText) getView().findViewById(R.id.editCardNumber);
 		
         Button addCompetitorButton = (Button) getView().findViewById(R.id.addCompetitorButton);
         addCompetitorButton.setOnClickListener(new Button.OnClickListener() {
 			@Override
-			public void onClick(View v) {
-				addCompetitorAlert();
+			public void onClick(View v) {				
+				addCompetitor(NameInput.getText().toString(), CardNumberInput.getText().toString());
+				mMainActivity.updateFragments();
 			}
 		});		
-		
-		Button addMultiCompetitorButton = (Button) getView().findViewById(R.id.addMultiCompetitorButton);
-		addMultiCompetitorButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				LayoutInflater li = LayoutInflater.from(mMainActivity);
-				View promptsView = li.inflate(R.layout.add_multi_competitors, null);
-
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);
-
-				alertDialogBuilder.setView(promptsView);
-
-				final EditText MultiCompetitorsInput = (EditText) promptsView.findViewById(R.id.editTextMultiCompetitorsInput);
-
-				alertDialogBuilder
-						.setCancelable(false)
-						.setPositiveButton("Add",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,	int id) {		
-										try {
-											String status = mMainActivity.competition.addMultiCompetitors(MultiCompetitorsInput.getText().toString());
-											mMainActivity.updateFragments();
-											
-											AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
-									        builder.setIcon(android.R.drawable.ic_dialog_alert);
-									        builder.setMessage(status).setTitle("Add Multi Competitor Status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener()
-									        {
-									            public void onClick(DialogInterface dialog, int which) {}
-									        });
-									 
-									        AlertDialog alert = builder.create();
-									        alert.show();																					
-										} catch (Exception e) {
-											PopupMessage dialog1 = new PopupMessage(MainActivity.generateErrorMessage(e));
-											dialog1.show(getFragmentManager(), "popUp");
-										}																					
-									}
-								})
-						.setNegativeButton("Cancel",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										dialog.cancel();
-									}
-								});
-
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				alertDialog.show();				
-			}		
-		});	
 			
 		super.onActivityCreated(savedInstanceState);
 	}
@@ -103,35 +57,6 @@ public class CompMangementFragment extends ListFragment {
 	    setListAdapter(null);
 	}	
 		
-	public void addCompetitorAlert(){
-		LayoutInflater li = LayoutInflater.from(mMainActivity);
-		View promptsView = li.inflate(R.layout.add_competitor, null);
-	
-		final EditText NameInput = (EditText) promptsView.findViewById(R.id.editCompetitorName);
-		final EditText CardNumberInput = (EditText) promptsView.findViewById(R.id.editCardNumber);
-
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);
-		alertDialogBuilder.setView(promptsView);
-		alertDialogBuilder
-				.setCancelable(false)
-				.setPositiveButton("Add",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,	int id) {
-								addCompetitor(NameInput.getText().toString(), CardNumberInput.getText().toString());
-								mMainActivity.updateFragments();
-							}
-						})
-				.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int id) {
-								dialog.cancel();
-							}
-						});
-		AlertDialog alertDialog = alertDialogBuilder.create();
-		alertDialog.show();
-	}
-	
 	public void addCompetitor(String CompetitorName, String CardNumber) {
 		if((CompetitorName.length() == 0) && (CardNumber.length() == 0))
 		{
@@ -145,7 +70,7 @@ public class CompMangementFragment extends ListFragment {
 	        AlertDialog alert = builder.create();
 	        alert.show();	
 			
-		}else if (mMainActivity.competition.checkNameExists(CompetitorName))
+		}else if (CompetitionHelper.checkNameExists(mMainActivity.competition.getCompetitors(), CompetitorName))
 		{
 			AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 	        builder.setIcon(android.R.drawable.ic_dialog_alert);
@@ -157,7 +82,7 @@ public class CompMangementFragment extends ListFragment {
 	        AlertDialog alert = builder.create();
 	        alert.show();						
 			
-		}else if (mMainActivity.competition.checkCardNumberExists(Integer.parseInt(CardNumber)))
+		}else if (CompetitionHelper.checkCardNumberExists(mMainActivity.competition.getCompetitors(), Integer.parseInt(CardNumber)))
 		{
 			AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 	        builder.setIcon(android.R.drawable.ic_dialog_alert);

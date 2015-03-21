@@ -10,8 +10,7 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Name : "
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="Name : "/>
  
     <EditText
         android:id="@+id/editTextNameInput"
@@ -26,8 +25,7 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CardNumber : "
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="CardNumber : "/>
  
     <EditText
         android:id="@+id/editTextCardNumberInput"

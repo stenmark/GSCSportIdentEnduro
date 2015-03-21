@@ -1,12 +1,18 @@
 package se.gsc.stenmark.gscenduro.compmanagement;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
+import android.widget.Toast;
 import se.gsc.stenmark.gscenduro.ResultLandscape;
 import se.gsc.stenmark.gscenduro.TrackResult;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
@@ -48,6 +54,36 @@ public class CompetitionHelper {
 			return String.format("%02d:%02d", toltalTime_min, totalTime_sec);
 		}
 	}	
+	
+	public static String getCompetitionAsCsvString(String CompetitionName, List<TrackMarker> Track, ArrayList<Competitor> Competitors) {
+		String competitionData = "";	
+		
+		//Competition Name
+		competitionData += "competitionName," + CompetitionName +"\n";
+		
+		//Track
+		competitionData += "track";
+		for (TrackMarker trackMarker : Track)
+		{	
+			competitionData += "," + trackMarker.start + "," + trackMarker.finish;
+		}
+		competitionData += "\n";
+		
+		//Competitor
+		for (Competitor competitor : Competitors)
+		{
+			competitionData += "competitor," + competitor.name + "," + competitor.cardNumber;
+			
+			for (Punch punch : competitor.card.punches)
+			{
+				competitionData += "," + punch.time + "," + punch.control;
+			}		
+			competitionData += "\n";
+		}
+		competitionData += "\n";
+		
+		return competitionData;		
+	}
 	
 	public static String getResultsAsCsvString(List<TrackMarker> Track, List<ResultLandscape> ResultLandscape){
 		String resultData = "";	
@@ -113,13 +149,37 @@ public class CompetitionHelper {
 		return resultData;
 	}		
 	
+	public static Boolean checkNameExists(List<Competitor> competitors, String Name){
+		
+		for (int i = 0; i < competitors.size(); i++)
+		{
+			if (Name.equalsIgnoreCase(competitors.get(i).name))
+			{
+				return true;
+			}
+		}
+		return false;
+	}	
+	
+	public static Boolean checkCardNumberExists(List<Competitor> competitors, int cardNumber){
+		
+		for (int i = 0; i < competitors.size(); i++)
+		{
+			if (cardNumber == competitors.get(i).cardNumber)
+			{
+				return true;
+			}
+		}
+		return false;
+	}	
+	
 	public static String getPunchesAsCsvString(List<Competitor> competitors){	
-		String PunchList = "Name,Card Number\n";
+		String PunchList = "";
 
 		if(competitors!= null && !competitors.isEmpty()) {
 			Collections.sort(competitors);
 			for (Competitor competitor : competitors) {
-				PunchList += competitor.name + ","	+ competitor.cardNumber + ",";
+				PunchList += competitor.cardNumber + ",";
 				
 				Card card = new Card();
 				
@@ -146,7 +206,7 @@ public class CompetitionHelper {
 	}	
 	
 	public static String getCompetitorsAsCsvString(List<Competitor> competitors){		
-		String competitorList = "Name,Card Number\n";
+		String competitorList = "";
 		
 		if(competitors!= null && !competitors.isEmpty() ) {
 			Collections.sort(competitors);
@@ -312,4 +372,46 @@ public class CompetitionHelper {
 			return false;
 		}
 	}
+	
+	public static void exportString(Activity activity, String StringToSend, String filetype, String compName) throws IOException{
+		String errorMsg = "";
+
+		if(CompetitionHelper.isExternalStorageWritable()) {
+			File sdCard = Environment.getExternalStorageDirectory();
+			compName = compName.replace(" ", "_");
+
+			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+			if (!dir.exists()) {
+				errorMsg += "Dir does not exist " + dir.getAbsolutePath();
+				if (!dir.mkdirs()) {
+					errorMsg += "Could not create directory: " + dir.getAbsolutePath();
+					
+					Toast.makeText(activity, "Error = " + errorMsg, Toast.LENGTH_LONG).show();
+					return;
+				}
+			}
+
+			File file = new File(dir, compName + "_" + filetype + ".csv");		
+				
+			FileWriter fw = new FileWriter(file);
+			fw.write(StringToSend);
+
+			if(activity != null){
+				Intent mailIntent = new Intent(Intent.ACTION_SEND);
+				mailIntent.setType("text/plain");
+				mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
+				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro " + filetype + " for " + compName);
+				mailIntent.putExtra(Intent.EXTRA_TEXT   , filetype + " in attached file");
+				Uri uri = Uri.fromFile(file);
+				mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+				activity.startActivity(Intent.createChooser(mailIntent, "Send mail"));
+			}
+
+			fw.close();
+		} else {
+			errorMsg = "External file storage not available, could not export competitors";
+			Toast.makeText(activity, "Error = " + errorMsg, Toast.LENGTH_LONG).show();
+			return;
+		}			
+	}	
 }

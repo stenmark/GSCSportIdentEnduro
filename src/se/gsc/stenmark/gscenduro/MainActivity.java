@@ -136,6 +136,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				compMangementFragment.getListCompetitorAdapter().updateCompetitors();
 			}
 		}     	
+
+		StartScreenFragment startScreenFragment = (StartScreenFragment)mAdapter.getRegisteredFragment(0);
+		if (startScreenFragment != null){
+			startScreenFragment.updateCompetitionStatus();
+		}
 	}	
 	
 	public void displayNewCard(Card newCard) {
@@ -301,8 +306,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				new SiCardListener().execute(siDriver);
 			} else {
 				connectionStatus = "Disconnected";				
-		     	SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());
-		     	
+		     	SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());		     	
 		     	StartScreenFragment startScreenFragment = (StartScreenFragment)mAdapter.getRegisteredFragment(0);
 				if (startScreenFragment != null){
 					startScreenFragment.updateConnectText();
@@ -524,11 +528,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        startActivity(settingsIntent);			
 			return true;
 			
+		case R.id.action_import:
+			ImportOnClickListener importOnClickListener = new ImportOnClickListener();
+			SelectImportDialog selectIportDialog = new SelectImportDialog(importOnClickListener, this, importOnClickListener);
+			selectIportDialog.createImportDialog();	
+			return true;	
+			
 		case R.id.action_export:
 			ExportOnClickListener exportOnClickListener = new ExportOnClickListener();
 			SelectExportDialog selectExportDialog = new SelectExportDialog(exportOnClickListener, this, exportOnClickListener);
 			selectExportDialog.createExportDialog();			
-			return true;			
+			return true;				
 			
 		default:
 			return super.onOptionsItemSelected(item);
@@ -547,6 +557,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
     }		
 	
+    public class ImportOnClickListener implements android.content.DialogInterface.OnClickListener{
+    	public int which = 0;
+    	
+    	public ImportOnClickListener() {
+		}
+    	
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			this.which = which;
+		}
+    }	    
+    
     public class ExportOnClickListener implements android.content.DialogInterface.OnClickListener{
     	public int which = 0;
     	

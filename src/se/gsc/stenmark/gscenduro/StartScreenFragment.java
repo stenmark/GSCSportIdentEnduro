@@ -27,6 +27,7 @@ public class StartScreenFragment extends Fragment {
 		inView = true;
 					
 		updateConnectText();
+		updateCompetitionStatus();
 	}
 	
 	public void onPause(){
@@ -59,6 +60,24 @@ public class StartScreenFragment extends Fragment {
 			try {
 				TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);	
 				statusTextView.setText(mMainActivity.getConnectionStatus());
+			} catch (Exception e) {
+				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+				dialog.show(getFragmentManager(), "popUp");
+			}
+		}
+	}
+	
+	public void updateCompetitionStatus(){
+		if(inView){
+			try {
+				TextView statusTextView = (TextView) getView().findViewById(R.id.CompetitionName);	
+				statusTextView.setText("Name: " + mMainActivity.competition.competitionName);
+				
+				statusTextView = (TextView) getView().findViewById(R.id.TrackStatus);	
+				statusTextView.setText("Track: " + mMainActivity.competition.getTrackAsString());
+				
+				statusTextView = (TextView) getView().findViewById(R.id.CompetitorStatus);	
+				statusTextView.setText("Number of competitors: " + mMainActivity.competition.getNumbeofCompetitors());
 			} catch (Exception e) {
 				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 				dialog.show(getFragmentManager(), "popUp");

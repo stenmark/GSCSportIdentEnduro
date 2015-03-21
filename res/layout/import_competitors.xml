@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="10dp" >
+ 
+    <LinearLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginLeft="8dp"
+		android:layout_marginRight="8dp"			
+		>  
+
+		<TextView
+		   android:layout_width="fill_parent"
+		   android:layout_height="wrap_content"
+		   android:textSize="16sp"
+		   android:text="Import competitors"
+		   android:textStyle="bold"
+		   android:layout_weight="1"		
+		   android:padding="4dp"
+		   android:textColor="@color/white"		
+		   android:background="@color/black"   	        
+		   />          
+		       
+	   	<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"	
+			android:layout_weight="1"	
+			android:padding="4dp"			
+			> 
+			    
+		    <TextView
+		        android:id="@+id/textView1"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="12sp"
+		        android:text="Enter competitors in the following way.\n\nName1,CardNumber1\nName2,CardNumber2\nName3,CardNumber3"/>
+		 
+		    <EditText
+		        android:id="@+id/editTextImportCompetitorsInput"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" 
+		        android:lines="8" 
+		    	android:minLines="6">
+		 
+		    </EditText>
+		</LinearLayout>		    
+	</LinearLayout> 
+</LinearLayout>

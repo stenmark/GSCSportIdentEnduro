@@ -1,12 +1,10 @@
-<ScrollView 
+<LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/start_screen_fragment"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    tools:context="se.gsc.stenmark.gscenduro.MainActivity$PlaceholderFragment"
+    android:layout_height="fill_parent"
     android:scrollbars="vertical"  
-    android:layout_weight="1"
     >
    
     <LinearLayout 
@@ -34,7 +32,7 @@
 		<LinearLayout 
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:orientation="vertical"
+			android:orientation="horizontal"
 			android:layout_weight="1"		
 			android:padding="4dp"		
 			>    
@@ -44,7 +42,8 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:textSize="16sp"
-		        android:text="Not Connected"        
+		        android:text="Not Connected"     
+		        android:layout_weight="1"	   
 		        />  
 		        
 			<Button
@@ -52,7 +51,7 @@
 	    		android:layout_width="wrap_content"
 	    		android:layout_height="32dp"
 	    		android:layout_margin="8dp"			    
-			    android:layout_gravity="center_vertical|right"
+			    android:layout_gravity="right"
 	    		android:textSize="16sp"
 	    		android:textStyle="bold"
 	    		android:text="@string/start_connect"
@@ -60,5 +59,43 @@
     			android:background="@drawable/button"	    		 	    	
 	    	/>		    
 		</LinearLayout>
-   	</LinearLayout>      
-</ScrollView>
+        
+		<TextView
+		   android:layout_width="fill_parent"
+		   android:layout_height="wrap_content"
+		   android:textSize="16sp"
+		   android:text="@string/start_competition_status"
+		   android:textStyle="bold"
+		   android:padding="4dp"
+		   android:textColor="@color/white"		
+		   android:background="@color/black"   	        
+		   />          
+
+	     <TextView
+	        android:id="@+id/CompetitionName"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="16sp"
+	        android:text="No Name"       
+	        android:padding="4dp" 
+	        />  		
+		
+	     <TextView
+	        android:id="@+id/TrackStatus"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="16sp"
+	        android:text="No track loaded."       
+	        android:padding="4dp" 
+	        />  
+	        
+		<TextView
+	        android:id="@+id/CompetitorStatus"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="16sp"
+	        android:text="No competitors added."       
+	        android:padding="4dp" 
+	        /> 
+   	</LinearLayout>       
+</LinearLayout>

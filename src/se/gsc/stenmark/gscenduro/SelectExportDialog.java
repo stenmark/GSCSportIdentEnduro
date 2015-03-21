@@ -1,12 +1,6 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.List;
-
-import se.gsc.stenmark.gscenduro.MainActivity.CompetitionOnClickListener;
 import se.gsc.stenmark.gscenduro.MainActivity.ExportOnClickListener;
-import se.gsc.stenmark.gscenduro.compmanagement.Competition;
-import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
@@ -14,7 +8,7 @@ import android.util.Log;
 public class SelectExportDialog {
 	private ExportOnClickListener mExportOnClickListener;
 	private MainActivity mMainActivity;
-	private CharSequence[] items = {"Competitors", "Results", "Punches", "All"};
+	private CharSequence[] items = {"Competitors", "Results", "Punches", "Competition", "All"};
 	ExportOnClickListener mRadioButtonListener;
 	
 	public SelectExportDialog(ExportOnClickListener exportOnClickListener,
@@ -58,8 +52,16 @@ public class SelectExportDialog {
 						Log.d("action_export_punches", "Error = " + Log.getStackTraceString(e));
 					}
 					break;						
-					
+			
 				case 3:
+					try {
+						mMainActivity.competition.exportCompetitionAsCsv(mMainActivity);
+					} catch (Exception e) {
+						Log.d("action_export_competition", "Error = " + Log.getStackTraceString(e));
+					}					
+					break;					
+					
+				case 4:
 					try {
 						mMainActivity.competition.exportAllAsCsv(mMainActivity);
 					} catch (Exception e) {

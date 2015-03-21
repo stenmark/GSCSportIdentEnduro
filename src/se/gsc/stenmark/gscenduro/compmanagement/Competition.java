@@ -1,16 +1,13 @@
 package se.gsc.stenmark.gscenduro.compmanagement;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,8 +22,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
@@ -80,31 +75,7 @@ public class Competition implements Serializable{
 	
 	public List<ResultLandscape> getResultLandscape() {
 		return mResultLandscape;
-	}	
-		
-	public Boolean checkNameExists(String Name){
-		
-		for (int i = 0; i < competitors.size(); i++)
-		{
-			if (Name.equalsIgnoreCase(competitors.get(i).name))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public Boolean checkCardNumberExists(int cardNumber){
-		
-		for (int i = 0; i < competitors.size(); i++)
-		{
-			if (cardNumber == competitors.get(i).cardNumber)
-			{
-				return true;
-			}
-		}
-		return false;
-	}	
+	}		
 	
 	public void sortCompetitors(){
 		Collections.sort(competitors, new Comparator<Competitor>() {
@@ -144,75 +115,6 @@ public class Competition implements Serializable{
 			competitors.get(i).card = null;
 			competitors.get(i).trackTimes = null;
 		}												
-	}	
-	
-	public String addMultiCompetitors(String multiCompetitors) throws IOException{
-		String name = "";
-		String cardNumber = "";
-		String status = "";
-		int pos = 0;
-		
-		//multiCompetitors = "a;1\nb;2\nc;3";
-												
-		BufferedReader bufReader = new BufferedReader(new StringReader(multiCompetitors));
-		String line = null;
-		int lineNumber = 0;
-		while((line = bufReader.readLine()) != null)
-		{
-			lineNumber++;
-			
-			status += Integer.toString(lineNumber) + ". "; 
-					
-			//count so only one ; each line
-			int number = 0;
-			for (int i = 0, len = line.length(); i < len; ++i) {
-                Character c = line.charAt(i);
-                if (c == ';')
-                {
-                	number++;
-                }
-            }
-			
-			if (number != 1) 
-			{
-				if (line.length() == 0)
-				{
-					status += "Error adding, because of empty line\n";
-				}
-				else
-				{
-					status += "Error adding, because of ; = " + line +"\n";
-				}
-			}
-			else
-			{
-				pos = line.indexOf(";", 0);							
-				name = line.substring(0, pos);	
-				cardNumber = multiCompetitors.substring(pos + 1, line.length());
-
-			
-				if (!cardNumber.matches("\\d+"))
-				{
-					status += "Error, cardnumber not a number\n";
-				}
-				else if (checkNameExists(name))
-				{
-					status += "Error adding " + name + ", it already exists a competitor with that name\n";
-				}
-				else if (checkCardNumberExists(Integer.parseInt(cardNumber)))
-				{
-					status += "Error adding " + name + ", it already exists a competitor with that cardnumber\n";
-				} 
-				else 
-				{	
-					addCompetitor(name, Integer.parseInt(cardNumber));
-					status += name + ", " + cardNumber + " added\n";
-				}									
-			}
-			
-		}	
-		calculateResults();
-		return status;
 	}	
 	
 	/**
@@ -267,7 +169,7 @@ public class Competition implements Serializable{
 	 * where each Integer represents the number programmed in to theSI control unit 
 	 * @param newTrack comma separated list of Integers i.e. "71,72,71,72"
 	 */
-	public void addNewTrack( String newTrack){
+	public void addNewTrack(String newTrack){
 		String[] trackMarkers = newTrack.split(",");
 		track.clear();
 		for (int i = 0; i < trackMarkers.length; i += 2) {
@@ -303,6 +205,11 @@ public class Competition implements Serializable{
 		}
 		return trackAsString;
 	}
+	
+	public Integer getNumbeofCompetitors(){
+		return competitors.size();
+	}
+		
 	
 	/**
 	 * Takes the whole current competition object and serializes it to the Android file system. 
@@ -461,62 +368,24 @@ public class Competition implements Serializable{
 	    alert.show();	
 	}	
 	
-	public void exportString(Activity activity, String StringToSend) throws IOException{
-		String errorMsg = "";
-
-		if(CompetitionHelper.isExternalStorageWritable()) {
-			File sdCard = Environment.getExternalStorageDirectory();
-			String compName = competitionName;
-			compName = compName.replace(" ", "_");
-
-			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-			if (!dir.exists()) {
-				errorMsg += "Dir does not exist " + dir.getAbsolutePath();
-				if (!dir.mkdirs()) {
-					errorMsg += "Could not create directory: " + dir.getAbsolutePath();
-					
-					messageAlert(activity, "Error", errorMsg);
-					return;
-				}
-			}
-
-			File file = new File(dir, compName + "_competitors.csv");		
-				
-			FileWriter fw = new FileWriter(file);
-			fw.write(StringToSend);
-
-			if(activity != null){
-				Intent mailIntent = new Intent(Intent.ACTION_SEND);
-				mailIntent.setType("text/plain");
-				mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
-				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro competitors for " + compName);
-				mailIntent.putExtra(Intent.EXTRA_TEXT   , "Competitors in attached file");
-				Uri uri = Uri.fromFile(file);
-				mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-				activity.startActivity(Intent.createChooser(mailIntent, "Send mail"));
-			}
-
-			fw.close();
-		} else {
-			errorMsg = "External file storage not available, could not export competitors";
-			messageAlert(activity, "Error", errorMsg);
-			return;
-		}			
-	}
-	
 	public void exportCompetitorsAsCsv(Activity activity) throws IOException{		
 		String competitorList = CompetitionHelper.getCompetitorsAsCsvString(competitors);
-		exportString(activity, competitorList);
+		CompetitionHelper.exportString(activity, competitorList, "competitors", competitionName);
 	}
 	
 	public void exportResultsAsCsv(Activity activity) throws IOException{		
 		String resultList = CompetitionHelper.getResultsAsCsvString(track, mResultLandscape);
-		exportString(activity, resultList);
+		CompetitionHelper.exportString(activity, resultList, "results", competitionName);
 	}
 	
 	public void exportPunchesAsCsv(Activity activity) throws IOException{		
 		String punchList = CompetitionHelper.getPunchesAsCsvString(competitors);
-		exportString(activity, punchList);
+		CompetitionHelper.exportString(activity, punchList, "punches", competitionName);
+	}	
+	
+	public void exportCompetitionAsCsv(Activity activity) throws IOException{		
+		String competitionList = CompetitionHelper.getCompetitionAsCsvString(competitionName, track, competitors);
+		CompetitionHelper.exportString(activity, competitionList, "competition", competitionName);
 	}	
 	
 	public void exportAllAsCsv(Activity activity) throws IOException{
@@ -530,7 +399,7 @@ public class Competition implements Serializable{
 		AllList += "Punches\n";
 		AllList += CompetitionHelper.getPunchesAsCsvString(competitors);
 
-		exportString(activity, AllList);
+		CompetitionHelper.exportString(activity, AllList, "all", competitionName);
 	}	
 	
 	public void calculateResults()

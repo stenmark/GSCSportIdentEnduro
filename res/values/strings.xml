@@ -14,6 +14,8 @@
     <string name="start_connection_status">CONNECTION STATUS</string>
     <string name="start_connect">CONNECT</string>
     
+    <string name="start_competition_status">COMPETITION STATUS</string>
+    
     <string name="start_name">Name:</string>
     <string name="start_card_number">Card Number:</string>
     <string name="start_add">ADD</string>
@@ -30,6 +32,7 @@
     <string name="action_new">New</string>
     <string name="action_load">Load</string>
     <string name="action_save">Save</string>
+    <string name="action_import">Import</string>
     <string name="action_export">Export as csv</string>                
     
     

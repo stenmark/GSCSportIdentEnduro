@@ -41,5 +41,14 @@ public class ResultListFragment extends ListFragment {
 	
 	public ListResultLandscapeAdapter getResultLandscapeAdapter() {
 		return mResultLandscapeAdapter;
-	}			
+	}		
+	
+	@Override
+	public void onDestroyView()
+	{
+	    super.onDestroyView();
+
+	    // free adapter
+	    setListAdapter(null);
+	}	
 }
