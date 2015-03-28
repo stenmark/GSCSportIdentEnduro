@@ -2,6 +2,7 @@ package se.gsc.stenmark.gscenduro;
 
 import se.gsc.stenmark.gscenduro.R;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -117,6 +118,7 @@ public class ResultLandscapeRowView extends LinearLayout {
 		if (getStageTimeView(Stage) != null) {		
 			getStageTimeView(Stage).setText(Time);
 			getStageTimeView(Stage).setVisibility(VISIBLE);
+			getStageTimeView(Stage).setTextColor(Color.BLACK);
 			getStageTimeView(Stage).setBackgroundColor(BackgroundColor);
 		}		
 	}		

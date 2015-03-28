@@ -108,19 +108,28 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 			}
 			else
 			{
-				StageRank = mResultLandscape.get(position).getRank().get(i).toString();									
-						
-				int diff = (((0xFF00 - 0x00FF) / ((MainActivity)mContext).competition.getCompetitors().size()));
-				
-				color = 0xFF000000 + diff * mResultLandscape.get(position).getRank().get(i) * 0x100;								
+				StageRank = mResultLandscape.get(position).getRank().get(i).toString();											
+				float rank = mResultLandscape.get(position).getRank().get(i);
+				float nrOfCompetitors =  ((MainActivity)mContext).competition.getCompetitors().size();
+				color = generateRedToGreenColorTransition( 1f - (rank / nrOfCompetitors));	  //1.0 => red, 0.0 => green					
 			}			
 			
-			ResultLandscapeRowV.setResultLandscapeStageTime(i + 1, StageTime + " (" + StageRank + ")", color);
+			ResultLandscapeRowV.setResultLandscapeStageTime(i + 1, StageTime + " (" + StageRank + ")" , color);
 		}
 		
 		
 		ResultLandscapeRowV.setPosition(position);
 		
 		return ResultLandscapeRowV;
+	}
+	
+	/**
+	 * Generate an RGB value for a transition from Red to Green.
+	 * @param value 0.0 equals 100% red. 1.0 equals 100% green
+	 * @return RGB coded color
+	 */
+	private int generateRedToGreenColorTransition(float value){
+		float hue = 20f + (value*70f);  //the full red and full green are very close to each other for the eye. So dont use full red and full green
+	    return android.graphics.Color.HSVToColor(new float[]{hue,1f,1f});
 	}
 }
