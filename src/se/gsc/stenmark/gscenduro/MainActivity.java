@@ -200,9 +200,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			try {
 				competition = Competition.loadSessionData(null);
 				
-			} catch (FileNotFoundException e) {
+			}  catch (Exception e) {
 				competition = new Competition();
-			} catch (Exception e) {
 				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 				dialog.show(getSupportFragmentManager(), "popUp");
 				return;

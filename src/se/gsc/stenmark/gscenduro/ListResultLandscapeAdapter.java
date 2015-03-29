@@ -47,89 +47,105 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int competitionRank, View convertView, ViewGroup parent) {
-		ResultLandscapeRowView ResultLandscapeRowV = null;	
-		
-		if (convertView == null) {
-			ResultLandscapeRowV = new ResultLandscapeRowView(mContext);
-		} else {
-			ResultLandscapeRowV = (ResultLandscapeRowView) convertView;
-		}
-
-		if (competitionRank == 0)
-		{
-			ResultLandscapeRowV.setTitle();
-		}
+		try{
+			ResultLandscapeRowView ResultLandscapeRowV = null;	
 			
-		ResultLandscapeRowV.setComp();
-		
-		ResultLandscapeRowV.setResultLandscapeName(String.valueOf(competitionRank + 1) + ". " + mResultLandscape.get(competitionRank).getName());
-		
-		if (mResultLandscape.get(competitionRank).getTotalTime() == Integer.MAX_VALUE)
-		{
-			ResultLandscapeRowV.setResultLandscapeTotalTime("--:--");
-		}
-		else
-		{
-			String TotalTime = "";
-			if (mResultLandscape.get(competitionRank).getTotalTime() == 0)
+			if (convertView == null) {
+				ResultLandscapeRowV = new ResultLandscapeRowView(mContext);
+			} else {
+				ResultLandscapeRowV = (ResultLandscapeRowView) convertView;
+			}
+	
+			if (competitionRank == 0)
 			{
-				TotalTime = "--:--";
+				ResultLandscapeRowV.setTitle();
 			}
-			else
-			{				
-				TotalTime = CompetitionHelper.secToMinSec(mResultLandscape.get(competitionRank).getTotalTime());				
-			}	
-			ResultLandscapeRowV.setResultLandscapeTotalTime(TotalTime);
-		}
-		
-
-		
-		for(int stageNumber = 0; stageNumber < mResultLandscape.get(competitionRank).getRank().size(); stageNumber++) 
-		{
-			Long fastestTimeOnStage = Long.MAX_VALUE;
-			for( ResultLandscape result : mResultLandscape){
-				fastestTimeOnStage = Math.min(fastestTimeOnStage, result.getTime().get(stageNumber) );
-			}
-			
-			Long slowestTimeOnStage = Long.MIN_VALUE;
-			for( ResultLandscape result : mResultLandscape){
-				slowestTimeOnStage = Math.max(slowestTimeOnStage, result.getTime().get(stageNumber) );
-			}
-			
 				
-			String StageTime = "";
-			if (mResultLandscape.get(competitionRank).getTime().get(stageNumber) == Integer.MAX_VALUE)
+			ResultLandscapeRowV.setComp();
+			
+			ResultLandscapeRowV.setResultLandscapeName(String.valueOf(competitionRank + 1) + ". " + mResultLandscape.get(competitionRank).getName());
+			
+			if (mResultLandscape.get(competitionRank).getTotalTime() == Integer.MAX_VALUE)
 			{
-				StageTime = "--:--";
+				ResultLandscapeRowV.setResultLandscapeTotalTime("--:--");
 			}
 			else
 			{
-				StageTime = CompetitionHelper.secToMinSec(mResultLandscape.get(competitionRank).getTime().get(stageNumber));
-			}			
-			
-			int color;
-			String StageRank = "";
-			if (mResultLandscape.get(competitionRank).getRank().get(stageNumber) == (long) Integer.MAX_VALUE)
-			{
-				StageRank = "-";
-				color = Color.RED;
+				String TotalTime = "";
+				if (mResultLandscape.get(competitionRank).getTotalTime() == 0)
+				{
+					TotalTime = "--:--";
+				}
+				else
+				{				
+					TotalTime = CompetitionHelper.secToMinSec(mResultLandscape.get(competitionRank).getTotalTime());				
+				}	
+				ResultLandscapeRowV.setResultLandscapeTotalTime(TotalTime);
 			}
-			else
-			{
-				StageRank = mResultLandscape.get(competitionRank).getRank().get(stageNumber).toString();											
-				Long competitorStageTime = mResultLandscape.get(competitionRank).getTime().get(stageNumber);		
-				float myTimeDiff = competitorStageTime - fastestTimeOnStage;
-				float stageTimeDiff = slowestTimeOnStage - fastestTimeOnStage;
-				color = generateRedToGreenColorTransition( 1f -(myTimeDiff / stageTimeDiff) );	  //1.0 => red, 0.0 => green	
-			}			
 			
-			ResultLandscapeRowV.setResultLandscapeStageTime(stageNumber + 1, StageTime + " (" + StageRank + ")" , color);
+	
+			
+			for(int stageNumber = 0; stageNumber < mResultLandscape.get(competitionRank).getRank().size(); stageNumber++) 
+			{
+				Long fastestTimeOnStage = Long.MAX_VALUE;
+				for( ResultLandscape result : mResultLandscape){
+					try{
+						fastestTimeOnStage = Math.min(fastestTimeOnStage, result.getTime().get(stageNumber) );
+					}
+					catch( IndexOutOfBoundsException e){	
+					}
+							
+				}
+				
+				Long slowestTimeOnStage = Long.MIN_VALUE;
+				for( ResultLandscape result : mResultLandscape){
+					try{
+						slowestTimeOnStage = Math.max(slowestTimeOnStage, result.getTime().get(stageNumber) );
+					}
+					catch( IndexOutOfBoundsException e){	
+					}
+				}
+				
+					
+				String StageTime = "";
+				if (mResultLandscape.get(competitionRank).getTime().get(stageNumber) == Integer.MAX_VALUE)
+				{
+					StageTime = "--:--";
+				}
+				else
+				{
+					StageTime = CompetitionHelper.secToMinSec(mResultLandscape.get(competitionRank).getTime().get(stageNumber));
+				}			
+				
+				int color;
+				String StageRank = "";
+				if (mResultLandscape.get(competitionRank).getRank().get(stageNumber) == (long) Integer.MAX_VALUE)
+				{
+					StageRank = "-";
+					color = Color.RED;
+				}
+				else
+				{
+					StageRank = mResultLandscape.get(competitionRank).getRank().get(stageNumber).toString();											
+					Long competitorStageTime = mResultLandscape.get(competitionRank).getTime().get(stageNumber);		
+					float myTimeDiff = competitorStageTime - fastestTimeOnStage;
+					float stageTimeDiff = slowestTimeOnStage - fastestTimeOnStage;
+					color = generateRedToGreenColorTransition( 1f -(myTimeDiff / stageTimeDiff) );	  //1.0 => red, 0.0 => green	
+				}			
+				
+				ResultLandscapeRowV.setResultLandscapeStageTime(stageNumber + 1, StageTime + " (" + StageRank + ")" , color);
+			}
+			
+			
+			ResultLandscapeRowV.setPosition(competitionRank);
+			
+			return ResultLandscapeRowV;
 		}
-		
-		
-		ResultLandscapeRowV.setPosition(competitionRank);
-		
-		return ResultLandscapeRowV;
+		catch(Exception e){
+			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
+			return new ResultLandscapeRowView(mContext);
+		}
 	}
 	
 	/**
