@@ -90,7 +90,14 @@ public class Competition implements Serializable{
 		Collections.sort(trackResult, new Comparator<TrackResult>() {
 			@Override
 			public int compare(TrackResult lhs, TrackResult rhs) {
-				return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
+				if (lhs.getDNF())
+				{
+					return 1;
+				}
+				else
+				{
+					return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
+				}
 			}
 		});		
 	}
@@ -430,11 +437,10 @@ public class Competition implements Serializable{
 		TrackResult trackResult;
 		
 		for (i = 0; i < tempCompetitors.size(); i++) {
-			trackResult = new TrackResult(tempCompetitors.get(i).getName(), tempCompetitors.get(i).getCardNumber(), tempCompetitors.get(i).getTotalTime(true)); 
+			trackResult = new TrackResult(tempCompetitors.get(i).getName(), tempCompetitors.get(i).getCardNumber(), tempCompetitors.get(i).getTotalTime(true), false); 
 			mResults.get(0).mTrackResult.add(trackResult);
 		}
-		
-		sortTrackResult(mResults.get(0).mTrackResult);
+				
 		// Add track times
 		for (j = 1; j < mResults.size(); j++) {
 			for (i = 0; i < tempCompetitors.size(); i++) {
@@ -449,12 +455,28 @@ public class Competition implements Serializable{
 					trackTime = (long) Integer.MAX_VALUE;
 				}	
 					
-				trackResult = new TrackResult(name, cardNumber, trackTime); 
+				trackResult = new TrackResult(name, cardNumber, trackTime, trackTime == (long) Integer.MAX_VALUE); 
 				mResults.get(j).mTrackResult.add(trackResult);
+			
+				if (trackResult.getDNF())
+				{
+					//Update the total and set competitor to DNF if one stage is DNF
+					for (int k = 0; k < mResults.get(0).mTrackResult.size(); k++)
+					{
+						if (mResults.get(0).mTrackResult.get(k).getCardNumber() == trackResult.getCardNumber())
+						{
+							mResults.get(0).mTrackResult.get(k).setDNF(true);
+							break;
+						}
+					}
+				}
 			}
 			
 			sortTrackResult(mResults.get(j).mTrackResult);
 		}
+
+		sortTrackResult(mResults.get(0).mTrackResult);
+		
 		for (j = 0; j < mResults.size(); j++) {
 			for (i = 0; i < mResults.get(j).mTrackResult.size(); i++) {			
 				if (mResults.get(j).mTrackResult.get(i).getTrackTimes() == (long) Integer.MAX_VALUE)				

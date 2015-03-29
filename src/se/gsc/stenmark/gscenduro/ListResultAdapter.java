@@ -68,8 +68,16 @@ public class ListResultAdapter extends BaseAdapter {
 		for(int i = 0; i < mResult.get(position).getTrackResult().size(); i++)
 		{
 			Name += Integer.toString((i + 1)) + ". " + mResult.get(position).getTrackResult().get(i).getName() + "\n";	
-			Time += CompetitionHelper.secToMinSec(mResult.get(position).getTrackResult().get(i).getTrackTimes()) + "\n";
-			TimeBack += CompetitionHelper.secToMinSec(mResult.get(position).getTrackResult().get(i).getTrackTimesBack()) + "\n";
+			if (mResult.get(position).getTrackResult().get(i).getDNF())
+			{
+				Time += "DNF\n";
+				TimeBack += "DNF\n";
+			}
+			else
+			{
+				Time += CompetitionHelper.secToMinSec(mResult.get(position).getTrackResult().get(i).getTrackTimes()) + "\n";
+				TimeBack += CompetitionHelper.secToMinSec(mResult.get(position).getTrackResult().get(i).getTrackTimesBack()) + "\n";
+			}
 			
 		}
 				
