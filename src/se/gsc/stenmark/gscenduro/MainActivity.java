@@ -409,14 +409,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 										competition.getTrack().clear();
 										competition.getResults().clear();
 										competition.getResultLandscape().clear();
-										competition.clearCompetitors();
-										competition.competitionName = NewCompetitionInput.getText().toString();										
+										competition.clearCompetitors();									
 									}
 									else
 									{
 										competition.getCompetitors().clear();
 										competition = new Competition();
 									}
+									competition.competitionName = NewCompetitionInput.getText().toString();	
 									
 									SharedPreferences settings = getSharedPreferences(MainActivity.PREF_NAME, 0);
 									int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
