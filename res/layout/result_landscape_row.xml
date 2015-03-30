@@ -157,8 +157,6 @@
 		    android:paddingLeft="2dp"
 		    android:paddingRight="2dp"		      
 	   	/> 	
-	
-       	
     </LinearLayout>
     	   					    
     <LinearLayout 
@@ -177,7 +175,7 @@
     	<TextView		 	
 		    android:id="@+id/result_landscape_name"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="name"
 		    android:layout_weight="1.5"
@@ -188,7 +186,7 @@
     	<TextView		 	
 		    android:id="@+id/result_landscape_total_time"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="--:--"
 		    android:layout_weight="1"
@@ -197,7 +195,7 @@
     	<TextView		 	
 		    android:id="@+id/result_landscape_ss1_time"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="--:-- (-)"
 		    android:layout_weight="1"
@@ -213,7 +211,7 @@
    		<TextView		 	
 		    android:id="@+id/result_landscape_ss2_time"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="--:-- (-)"
 		    android:layout_weight="1"
@@ -229,7 +227,7 @@
 		<TextView		 	
 		    android:id="@+id/result_landscape_ss3_time"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="--:-- (-)"
 		    android:layout_weight="1"
@@ -245,7 +243,7 @@
 		<TextView		 	
 		    android:id="@+id/result_landscape_ss4_time"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="--:-- (-)"
 		    android:layout_weight="1"
@@ -261,7 +259,7 @@
     	<TextView		 	
 		    android:id="@+id/result_landscape_ss5_time"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="--:-- (-)"
 		    android:layout_weight="1"
@@ -277,7 +275,7 @@
    		<TextView		 	
 		    android:id="@+id/result_landscape_ss6_time"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="--:-- (-)"
 		    android:layout_weight="1"
@@ -293,7 +291,7 @@
     	<TextView		 	
 		    android:id="@+id/result_landscape_ss7_time"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="--:-- (-)"
 		    android:layout_weight="1"		  
@@ -309,7 +307,7 @@
 		<TextView		 	
 		    android:id="@+id/result_landscape_ss8_time"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="--:-- (-)"
 		    android:layout_weight="1"		  
@@ -325,7 +323,7 @@
     	<TextView		 	
 		    android:id="@+id/result_landscape_ss9_time"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="--:-- (-)"
 		    android:layout_weight="1"		  
@@ -341,7 +339,7 @@
     	<TextView		 	
 		    android:id="@+id/result_landscape_ss10_time"
 		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:textSize="10dp"		    
 		    android:text="--:-- (-)"
 		    android:layout_weight="1"		  

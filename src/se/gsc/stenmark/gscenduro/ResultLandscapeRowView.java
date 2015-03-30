@@ -78,6 +78,12 @@ public class ResultLandscapeRowView extends LinearLayout {
 			mResultLandscapeTitle.setVisibility(VISIBLE);
 		}
 	}
+	
+	public void clearTitle() {
+		if (mResultLandscapeTitle != null) {
+			mResultLandscapeTitle.setVisibility(GONE);
+		}
+	}	
 
 	public void setComp() {
 		if (mResultLandscapeComp != null) {

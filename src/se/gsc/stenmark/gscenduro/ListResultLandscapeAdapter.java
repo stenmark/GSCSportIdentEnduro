@@ -7,6 +7,7 @@ import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -47,7 +48,7 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int competitionRank, View convertView, ViewGroup parent) {
-		try{
+		try{			
 			ResultLandscapeRowView ResultLandscapeRowV = null;	
 			
 			if (convertView == null) {
@@ -60,14 +61,18 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 			{
 				ResultLandscapeRowV.setTitle();
 			}
+			else
+			{
+				ResultLandscapeRowV.clearTitle();
+			}
 				
 			ResultLandscapeRowV.setComp();
 			
 			ResultLandscapeRowV.setResultLandscapeName(String.valueOf(competitionRank + 1) + ". " + mResultLandscape.get(competitionRank).getName());
 			
-			if (mResultLandscape.get(competitionRank).getTotalTime() == Integer.MAX_VALUE)
+			if ((mResultLandscape.get(competitionRank).getTotalTime() == Integer.MAX_VALUE) || (mResultLandscape.get(competitionRank).getRank().size() < ((MainActivity) mContext).competition.getTrack().size()))
 			{
-				ResultLandscapeRowV.setResultLandscapeTotalTime("--:--");
+				ResultLandscapeRowV.setResultLandscapeTotalTime("DNF");
 			}
 			else
 			{
@@ -83,7 +88,11 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 				ResultLandscapeRowV.setResultLandscapeTotalTime(TotalTime);
 			}
 			
-	
+			//First clear all stages
+			for(int stageNumber = 0; stageNumber < 10; stageNumber++) 
+			{
+				ResultLandscapeRowV.setResultLandscapeStageTime(stageNumber + 1, "", Color.WHITE);
+			}
 			
 			for(int stageNumber = 0; stageNumber < mResultLandscape.get(competitionRank).getRank().size(); stageNumber++) 
 			{
@@ -105,8 +114,7 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 					catch( IndexOutOfBoundsException e){	
 					}
 				}
-				
-					
+									
 				String StageTime = "";
 				if (mResultLandscape.get(competitionRank).getTime().get(stageNumber) == Integer.MAX_VALUE)
 				{
@@ -133,9 +141,8 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 					color = generateRedToGreenColorTransition( 1f -(myTimeDiff / stageTimeDiff) );	  //1.0 => red, 0.0 => green	
 				}			
 				
-				ResultLandscapeRowV.setResultLandscapeStageTime(stageNumber + 1, StageTime + " (" + StageRank + ")" , color);
-			}
-			
+				ResultLandscapeRowV.setResultLandscapeStageTime(stageNumber + 1, StageTime + "\n(" + StageRank + ")" , color);
+			}			
 			
 			ResultLandscapeRowV.setPosition(competitionRank);
 			

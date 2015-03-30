@@ -496,45 +496,47 @@ public class Competition implements Serializable{
 		mResultLandscape.clear();
 		if(mResults != null && !mResults.isEmpty()) {		
 			ResultLandscape resultLandscapeObject = null;
-
-			if(tempCompetitors != null && !tempCompetitors.isEmpty()) {
-				Collections.sort(tempCompetitors);
-
-				for (Competitor competitor : tempCompetitors) {
-					resultLandscapeObject = new ResultLandscape();
-					resultLandscapeObject.setName(competitor.name);
-					resultLandscapeObject.setCardNumber(competitor.cardNumber);
-					resultLandscapeObject.setTotalTime(competitor.getTotalTime(false));			
+			
+			for (TrackResult trackResultObject : mResults.get(0).mTrackResult) {								
+				if(tempCompetitors != null && !tempCompetitors.isEmpty()) {
+					for (Competitor competitor : tempCompetitors) {						
+						if (competitor.cardNumber == trackResultObject.getCardNumber())	{					
+							resultLandscapeObject = new ResultLandscape();
+							resultLandscapeObject.setName(competitor.name);
+							resultLandscapeObject.setCardNumber(competitor.cardNumber);
+							resultLandscapeObject.setTotalTime(competitor.getTotalTime(false));			
+																	
+							if (competitor.trackTimes != null) {						
+								int stage = 1;
+								for (long time : competitor.trackTimes) {					
+									resultLandscapeObject.getTime().add(time);
 															
-					if (competitor.trackTimes != null) {						
-						int stage = 1;
-						for (long time : competitor.trackTimes) {					
-							resultLandscapeObject.getTime().add(time);
-													
-							if (stage < mResults.size())
-							{
-								int pos = CompetitionHelper.getPosition(competitor.cardNumber, mResults.get(stage).getTrackResult());
-								if (pos == -1)
-								{
+									if (stage < mResults.size())
+									{
+										int pos = CompetitionHelper.getPosition(competitor.cardNumber, mResults.get(stage).getTrackResult());
+										if (pos == -1)
+										{
+											resultLandscapeObject.getRank().add(Integer.MAX_VALUE);
+										}
+										else
+										{
+											resultLandscapeObject.getRank().add(pos);
+										}
+									}
+									stage++;
+								}													
+							} else {
+								for (i = 0; i < track.size(); i++) {
+									resultLandscapeObject.getTime().add((long) Integer.MAX_VALUE);
 									resultLandscapeObject.getRank().add(Integer.MAX_VALUE);
-								}
-								else
-								{
-									resultLandscapeObject.getRank().add(pos);
-								}
-							}
-							stage++;
-						}													
-					} else {
-						for (i = 0; i < track.size(); i++) {
-							resultLandscapeObject.getTime().add((long) Integer.MAX_VALUE);
-							resultLandscapeObject.getRank().add(Integer.MAX_VALUE);
-						}					
-					}							
-
-					mResultLandscape.add(resultLandscapeObject);
-				}				
-			}							
+								}					
+							}							
+		
+							mResultLandscape.add(resultLandscapeObject);
+						}
+					}
+				}
+			}
 		}		
 		
 		try {
