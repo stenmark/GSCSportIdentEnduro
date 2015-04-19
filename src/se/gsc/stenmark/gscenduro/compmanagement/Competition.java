@@ -2,6 +2,7 @@ package se.gsc.stenmark.gscenduro.compmanagement;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -280,7 +281,13 @@ public class Competition implements Serializable{
 		FileInputStream fileInputComp = null;
 
 		if (competionName == null || competionName.isEmpty()) {
+			try{
 			fileInputComp = MainApplication.getAppContext().openFileInput(CURRENT_COMPETITION);
+			}
+			catch( FileNotFoundException e){
+				//If this is the first time the app is started the file does not exist, handle it by returning an empty competition
+				return new Competition();
+			}
 		} 
 		else {
 			File sdCard = Environment.getExternalStorageDirectory();
