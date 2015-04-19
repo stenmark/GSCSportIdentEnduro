@@ -36,11 +36,7 @@ public class CompetitorParser implements Serializable{
 		String line = null;
 		int lineNumber = 0;
 		while((line = bufReader.readLine()) != null)
-		{
-			lineNumber++;
-			
-			mStatus += Integer.toString(lineNumber) + ". "; 
-					
+		{					
 			//count so only one , each line
 			int number = 0;
 			for (int i = 0, len = line.length(); i < len; ++i) {
@@ -53,20 +49,21 @@ public class CompetitorParser implements Serializable{
 			
 			if (number != 1) 
 			{
-				if (line.length() == 0)
+				//Do not count empty lines
+				if (line.length() != 0)
 				{
-					mStatus += "Error adding, because of empty line\n";
-				}
-				else
-				{
-					mStatus += "Error adding, because of , = " + line +"\n";
+					lineNumber++;
+					mStatus +=  Integer.toString(lineNumber) + ". " + "Error adding, because of , = " + line +"\n";
 				}
 			}
 			else
 			{
+				lineNumber++;
+				mStatus += Integer.toString(lineNumber) + ". "; 
 				pos = line.indexOf(",", 0);							
 				name = line.substring(0, pos);	
 				cardNumber = line.substring(pos + 1, line.length());
+				cardNumber = cardNumber.replaceAll("[^\\d]", "");  //remove all non numerical digits
 
 				if (!cardNumber.matches("\\d+"))
 				{
