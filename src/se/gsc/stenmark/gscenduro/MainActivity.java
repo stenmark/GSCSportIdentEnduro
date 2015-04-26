@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -535,7 +536,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		case R.id.action_export:
 			ExportOnClickListener exportOnClickListener = new ExportOnClickListener();
 			SelectExportDialog selectExportDialog = new SelectExportDialog(exportOnClickListener, this, exportOnClickListener);
-			selectExportDialog.createExportDialog();			
+			selectExportDialog.createExportDialog();	
+			
+			try{
+				LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+				LinearLayout startScreenRoot = (LinearLayout) inflater.inflate(R.layout.fragment_main, null);  
+				startScreenRoot.setDrawingCacheEnabled(true);
+				Bitmap startScreenBitmap = CompetitionHelper.getBitmapFromView(this.getWindow().findViewById(R.id.start_screen_fragment));			
+				CompetitionHelper.writeImgaeToFile("startScreen.png", startScreenBitmap);
+				startScreenRoot.setDrawingCacheEnabled(false);
+			}
+			catch( Exception e){
+				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+				dialog.show(getSupportFragmentManager(), "popUp");
+			}
+			
 			return true;				
 			
 		default:

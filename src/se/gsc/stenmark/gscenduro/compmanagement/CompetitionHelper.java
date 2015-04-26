@@ -1,6 +1,7 @@
 package se.gsc.stenmark.gscenduro.compmanagement;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,8 +11,13 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.view.View;
 import android.widget.Toast;
 import se.gsc.stenmark.gscenduro.ResultLandscape;
 import se.gsc.stenmark.gscenduro.TrackResult;
@@ -413,5 +419,44 @@ public class CompetitionHelper {
 			Toast.makeText(activity, "Error = " + errorMsg, Toast.LENGTH_LONG).show();
 			return;
 		}			
-	}	
+	}
+	
+	public static Bitmap getBitmapFromView(View view) {
+        //Define a bitmap with the same size as the view
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+        //Bind a canvas to it
+        Canvas canvas = new Canvas(returnedBitmap);
+        //Get the view's background
+        Drawable bgDrawable =view.getBackground();
+        if (bgDrawable!=null) 
+            //has background drawable, then draw it on the canvas
+            bgDrawable.draw(canvas);
+        else 
+            //does not have background drawable, then draw white background on the canvas
+            canvas.drawColor(Color.WHITE);
+        // draw the view on the canvas
+        view.draw(canvas);
+        //return the bitmap
+        return returnedBitmap;
+    }
+	
+	public static void writeImgaeToFile( String fileName, Bitmap image){
+		FileOutputStream out = null;
+		File sdCard = Environment.getExternalStorageDirectory();
+		File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+		File file = new File(dir, fileName);
+		try {
+		    out = new FileOutputStream(file);
+		    image.compress(Bitmap.CompressFormat.PNG, 100, out); 
+		} catch (Exception e) {
+		    e.printStackTrace();
+		} finally {
+		    try {
+		        if (out != null) {
+		            out.close();
+		        }
+		    } catch (IOException e) {
+		    }
+		}
+	}
 }
