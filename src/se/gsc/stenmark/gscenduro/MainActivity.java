@@ -529,29 +529,41 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			
 		case R.id.action_import:
 			ImportOnClickListener importOnClickListener = new ImportOnClickListener();
-			SelectImportDialog selectIportDialog = new SelectImportDialog(importOnClickListener, this, importOnClickListener);
-			selectIportDialog.createImportDialog();	
+			SelectImportDialog selectImportDialog = new SelectImportDialog(importOnClickListener, this, importOnClickListener);
+			selectImportDialog.createImportDialog();	
 			return true;	
 			
-		case R.id.action_export:
+		case R.id.action_export_as_cvs:
 			ExportOnClickListener exportOnClickListener = new ExportOnClickListener();
 			SelectExportDialog selectExportDialog = new SelectExportDialog(exportOnClickListener, this, exportOnClickListener);
-			selectExportDialog.createExportDialog();	
+			selectExportDialog.createExportDialog();							
+			return true;			
 			
-			try{
+		case R.id.action_export_as_image:			
+			try{				
+		     	SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());
+		     	
+				ResultListFragment resultListFragment = (ResultListFragment)mAdapter.getRegisteredFragment(1);
+				if (resultListFragment != null){
+					Bitmap resultBitmap = CompetitionHelper.getWholeListViewItemsToBitmap(resultListFragment.mListView);
+					CompetitionHelper.writeImgaeToFile("results.png", resultBitmap);
+				}				
+				
+				/*
 				LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 				LinearLayout startScreenRoot = (LinearLayout) inflater.inflate(R.layout.fragment_main, null);  
 				startScreenRoot.setDrawingCacheEnabled(true);
 				Bitmap startScreenBitmap = CompetitionHelper.getBitmapFromView(this.getWindow().findViewById(R.id.start_screen_fragment));			
 				CompetitionHelper.writeImgaeToFile("startScreen.png", startScreenBitmap);
 				startScreenRoot.setDrawingCacheEnabled(false);
+				*/
 			}
 			catch( Exception e){
 				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 				dialog.show(getSupportFragmentManager(), "popUp");
 			}
 			
-			return true;				
+			return true;						
 			
 		default:
 			return super.onOptionsItemSelected(item);

@@ -3,12 +3,14 @@ package se.gsc.stenmark.gscenduro;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.widget.ListView;
 
 public class ResultListFragment extends ListFragment {
 	MainActivity mMainActivity = null;
 	protected ListResultAdapter mResultsAdapter;
 	protected ListResultLandscapeAdapter mResultLandscapeAdapter;
-
+	ListView mListView = null;
+	
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		setListShownNoAnimation(true);
@@ -33,8 +35,10 @@ public class ResultListFragment extends ListFragment {
 			mResultLandscapeAdapter = new ListResultLandscapeAdapter(mMainActivity, mMainActivity.competition.getResultLandscape());			
 			setListAdapter(mResultLandscapeAdapter);
 		}		
+		
+		mListView = getListView();
 	}	
-	
+		
 	public ListResultAdapter getResultAdapter() {
 		return mResultsAdapter;
 	}	

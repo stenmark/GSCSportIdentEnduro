@@ -33,7 +33,8 @@
     <string name="action_load">Load</string>
     <string name="action_save">Save</string>
     <string name="action_import">Import</string>
-    <string name="action_export">Export as csv</string>                
+    <string name="action_export_as_cvs">Export as csv</string>
+    <string name="action_export_as_image">Export as image</string>                   
     
     
     

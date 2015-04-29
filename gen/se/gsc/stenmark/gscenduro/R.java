@@ -37,12 +37,13 @@ public final class R {
         public static final int CompetitionName=0x7f0a0012;
         public static final int CompetitorStatus=0x7f0a0014;
         public static final int TrackStatus=0x7f0a0013;
-        public static final int action_export=0x7f0a0042;
+        public static final int action_export_as_cvs=0x7f0a0042;
+        public static final int action_export_as_image=0x7f0a0043;
         public static final int action_import=0x7f0a0041;
         public static final int action_load=0x7f0a003f;
         public static final int action_new=0x7f0a003e;
         public static final int action_save=0x7f0a0040;
-        public static final int action_settings=0x7f0a0043;
+        public static final int action_settings=0x7f0a0044;
         public static final int addCompetitorButton=0x7f0a000e;
         public static final int addTrackInfo=0x7f0a001b;
         public static final int checkbox_add_track_manually=0x7f0a0021;
@@ -128,7 +129,8 @@ public final class R {
         public static final int main=0x7f090000;
     }
     public static final class string {
-        public static final int action_export=0x7f07001a;
+        public static final int action_export_as_cvs=0x7f07001a;
+        public static final int action_export_as_image=0x7f07001b;
         public static final int action_import=0x7f070019;
         public static final int action_load=0x7f070017;
         public static final int action_new=0x7f070016;

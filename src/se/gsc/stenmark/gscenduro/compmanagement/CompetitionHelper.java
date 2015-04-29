@@ -14,10 +14,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.view.View;
+import android.view.View.MeasureSpec;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 import se.gsc.stenmark.gscenduro.ResultLandscape;
 import se.gsc.stenmark.gscenduro.TrackResult;
@@ -459,4 +463,41 @@ public class CompetitionHelper {
 		    }
 		}
 	}
+	
+	public static Bitmap getWholeListViewItemsToBitmap(ListView listview) {
+	    ListAdapter adapter = listview.getAdapter(); 
+	    int itemscount = adapter.getCount();
+	    int allitemsheight = 0;
+	    List<Bitmap> bmps = new ArrayList<Bitmap>();
+
+	    for (int i = 0; i < itemscount; i++) {
+
+	        View childView = adapter.getView(i, null, listview);
+	        childView.measure(MeasureSpec.makeMeasureSpec(listview.getWidth(), MeasureSpec.EXACTLY), 
+	                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+
+	        childView.layout(0, 0, childView.getMeasuredWidth(), childView.getMeasuredHeight());
+	        childView.setDrawingCacheEnabled(true);
+	        childView.buildDrawingCache();
+	        bmps.add(childView.getDrawingCache());
+	        allitemsheight+=childView.getMeasuredHeight();
+	    }
+
+	    Bitmap bigbitmap = Bitmap.createBitmap(listview.getMeasuredWidth(), allitemsheight, Bitmap.Config.ARGB_8888);
+	    Canvas bigcanvas = new Canvas(bigbitmap);
+
+	    Paint paint = new Paint();
+	    int iHeight = 0;
+
+	    for (int i = 0; i < bmps.size(); i++) {
+	        Bitmap bmp = bmps.get(i);
+	        bigcanvas.drawBitmap(bmp, 0, iHeight, paint);
+	        iHeight+=bmp.getHeight();
+
+	        bmp.recycle();
+	        bmp=null;
+	    }
+
+	    return bigbitmap;
+	}	
 }
