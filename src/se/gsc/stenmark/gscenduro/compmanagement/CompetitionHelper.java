@@ -444,7 +444,7 @@ public class CompetitionHelper {
         return returnedBitmap;
     }
 	
-	public static void writeImgaeToFile( String fileName, Bitmap image){
+	public static File writeImgaeToFile( String fileName, Bitmap image){
 		FileOutputStream out = null;
 		File sdCard = Environment.getExternalStorageDirectory();
 		File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
@@ -462,6 +462,7 @@ public class CompetitionHelper {
 		    } catch (IOException e) {
 		    }
 		}
+		return file;
 	}
 	
 	public static Bitmap getWholeListViewItemsToBitmap(ListView listview) {

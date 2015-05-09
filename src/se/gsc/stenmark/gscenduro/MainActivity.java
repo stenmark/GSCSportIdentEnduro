@@ -1,5 +1,6 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +20,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.hardware.usb.UsbManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -546,20 +548,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				ResultListFragment resultListFragment = (ResultListFragment)mAdapter.getRegisteredFragment(1);
 				if (resultListFragment != null){
 					Bitmap resultBitmap = CompetitionHelper.getWholeListViewItemsToBitmap(resultListFragment.mListView);
-					CompetitionHelper.writeImgaeToFile("results.png", resultBitmap);
+					File imageFile = CompetitionHelper.writeImgaeToFile(competition.competitionName + "_results.png", resultBitmap);
+					
+					Intent mailIntent = new Intent(Intent.ACTION_SEND);
+					mailIntent.setType("text/plain");
+					mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
+					mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro result image for " + competition.competitionName);
+					mailIntent.putExtra(Intent.EXTRA_TEXT   , imageFile.getName() + " result in attached file");
+					Uri uri = Uri.fromFile( imageFile );
+					mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+					startActivity(Intent.createChooser(mailIntent, "Send mail"));
+
 				}				
-				
-				/*
-				LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-				LinearLayout startScreenRoot = (LinearLayout) inflater.inflate(R.layout.fragment_main, null);  
-				startScreenRoot.setDrawingCacheEnabled(true);
-				Bitmap startScreenBitmap = CompetitionHelper.getBitmapFromView(this.getWindow().findViewById(R.id.start_screen_fragment));			
-				CompetitionHelper.writeImgaeToFile("startScreen.png", startScreenBitmap);
-				startScreenRoot.setDrawingCacheEnabled(false);
-				*/
 			}
 			catch( Exception e){
-				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+				PopupMessage dialog = new PopupMessage(	"You must put the Android unit in the \"RESULTS\" view and in Landscape orientation before you can you image export");
 				dialog.show(getSupportFragmentManager(), "popUp");
 			}
 			
