@@ -35,7 +35,6 @@
     		android:layout_height="fill_parent" >        
         
 			<TableRow
-        		android:id="@+id/tableRow1"
         		android:layout_width="fill_parent"
         		android:layout_height="wrap_content"
         		android:background="@color/black"
@@ -82,7 +81,6 @@
     		</TableRow>
     			        
 	        <TableRow
-        		android:id="@+id/tableRow2"
         		android:layout_width="fill_parent"
         		android:layout_height="wrap_content"
         		android:layout_gravity="center_vertical"
@@ -121,11 +119,8 @@
 				    android:layout_weight="1"
 				    android:layout_column="3"			
 				    android:gravity="center_horizontal" 	    
-			   	/>			            
-	            
+			   	/>			            	            
     		</TableRow>
 		</TableLayout>
-
-	</LinearLayout>    
-    
+	</LinearLayout>       
 </LinearLayout>	

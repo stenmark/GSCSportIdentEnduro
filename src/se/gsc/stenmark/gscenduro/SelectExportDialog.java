@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.util.Log;
 
 public class SelectExportDialog {
+	
 	private ExportOnClickListener mExportOnClickListener;
 	private MainActivity mMainActivity;
 	private CharSequence[] items = {"Competitors", "Results", "Punches", "Competition", "All"};

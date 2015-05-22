@@ -38,7 +38,7 @@
 			>    
 			
 		     <TextView
-		        android:id="@+id/statusText"
+		        android:id="@+id/status_text"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:textSize="16sp"
@@ -47,7 +47,7 @@
 		        />  
 		        
 			<Button
-			    android:id="@+id/connectButton"
+			    android:id="@+id/connect_button"
 	    		android:layout_width="wrap_content"
 	    		android:layout_height="32dp"
 	    		android:layout_margin="8dp"			    
@@ -72,7 +72,7 @@
 		   />          
 
 	     <TextView
-	        android:id="@+id/CompetitionName"
+	        android:id="@+id/competition_name"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:textSize="16sp"
@@ -81,7 +81,7 @@
 	        />  		
 		
 	     <TextView
-	        android:id="@+id/TrackStatus"
+	        android:id="@+id/track_status"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:textSize="16sp"
@@ -90,7 +90,7 @@
 	        />  
 	        
 		<TextView
-	        android:id="@+id/CompetitorStatus"
+	        android:id="@+id/competitor_status"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:textSize="16sp"

@@ -4,25 +4,29 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Result implements Serializable {
-	private static final long serialVersionUID = 201111020001L; 
 	
+	private static final long serialVersionUID = 201111020001L; 	
 	private String mTitle;
-	public ArrayList<TrackResult> mTrackResult;
+	private ArrayList<TrackResult> mTrackResult;
 	
-	public Result(String Title) {
-		mTitle = Title;
-		mTrackResult = new ArrayList<TrackResult>();
+	public Result(String title) {
+		setTitle(title);
+		setTrackResult(new ArrayList<TrackResult>());
 	}
 	
 	public String getTitle() {
 		return mTitle;
 	}
 
-	public void setTitle(String Title) {
-		mTitle = Title;
+	public void setTitle(String title) {
+		mTitle = title;
 	}
 	
 	public ArrayList<TrackResult> getTrackResult() {
 		return mTrackResult;
+	}		
+	
+	public void setTrackResult(ArrayList<TrackResult> trackResult) {
+		mTrackResult = trackResult;
 	}			
 }

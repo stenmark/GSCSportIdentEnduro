@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.util.Log;
 
 public class SelectCompetitionDialog {
+	
 	private List<String> competitions;
 	private CompetitionOnClickListener competitionOnClickListener;
 	private MainActivity mMainActivity;

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:background="@color/white">
+	   					    
+    <LinearLayout 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginLeft="4dp"
+		android:layout_weight="1"		
+		>
+		
+    	<LinearLayout 
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_marginLeft="8dp"			    
+			android:layout_marginRight="8dp"			
+			>        
+        
+			<TextView		 	
+			    android:id="@+id/competitor_startnumber"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="16sp"	
+			    android:textStyle="bold"	    
+			    android:text="1"       	    	    		    	    	   
+		   	/>			
+		
+			<TextView		 	
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="16sp"	
+			    android:textStyle="bold"	    
+			    android:text=". "       	    	    		    	    	   
+		   	/>				
+			
+	        <TextView		 	
+			    android:id="@+id/competitor_name"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"			    
+			    android:textSize="16sp"
+			    android:text="Namn Namnsson"	
+			    android:textStyle="bold"			      		   
+		   	/>
+		</LinearLayout>
+  		
+     	<LinearLayout 
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_marginLeft="8dp"			    
+			android:layout_marginRight="8dp"			
+			>     	
+			<TextView		 	
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="12sp"		    
+			    android:text="Card number: "   
+			    android:textStyle="bold"
+		   	/>     	    
+     	    
+			<TextView		 	
+			    android:id="@+id/competitor_cardnumber"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="12sp"		    
+			    android:text="123456789"   
+		   	/>				   	
+		</LinearLayout>
+				   	
+     	<LinearLayout 
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_marginLeft="8dp"			    
+			android:layout_marginRight="8dp"			
+			>     	
+			<TextView		 	
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="12sp"		    
+			    android:text="Team: "   
+			    android:textStyle="bold"
+		   	/>  
+		   	     	
+			<TextView		 	
+			    android:id="@+id/competitor_team"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="12sp"		    
+			    android:text="team"   
+		   	/>
+		</LinearLayout>
+				
+     	<LinearLayout 
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_marginLeft="8dp"			    
+			android:layout_marginRight="8dp"			
+			>     	
+			<TextView		 	
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="12sp"		    
+			    android:text="Class: "   
+			    android:textStyle="bold"
+		   	/>  
+		   	     	
+			<TextView		 	
+			    android:id="@+id/competitor_class"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="12sp"		    
+			    android:text="class"   
+		   	/>	
+		</LinearLayout>   	
+	
+     	<LinearLayout 
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_marginLeft="8dp"			    
+			android:layout_marginRight="8dp"			
+			>     	
+			<TextView		 	
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="12sp"		    
+			    android:text="Start group: "   
+			    android:textStyle="bold"
+		   	/>  		
+     	
+			<TextView		 	
+			    android:id="@+id/competitor_startgroup"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="12sp"		    
+			    android:text="1"   
+		   	/>			
+		</LinearLayout>		
+	</LinearLayout>
+	
+    <LinearLayout 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"	
+		android:layout_gravity="center_vertical|right"			
+	>
+    
+		<Button
+		    android:id="@+id/competitor_delete"
+		    android:layout_width="wrap_content"
+		    android:layout_height="32dp"
+		    android:layout_margin="8dp"		    
+		    android:textSize="16sp"
+		   	android:textStyle="bold"
+		    android:text="DELETE"		    
+		    android:textColor="@color/button_text"
+		    android:background="@drawable/button" 
+		    android:layout_gravity="center_vertical|right"	
+		    />
+
+		<Button
+		    android:id="@+id/competitor_modify"
+    		android:layout_width="wrap_content"
+    		android:layout_height="32dp"
+    		android:layout_margin="8dp"
+    		android:textSize="16sp"
+    		android:textStyle="bold"
+    		android:text="MODIFY"
+    		android:textColor="@color/button_text"   
+    		android:background="@drawable/button"	
+    		android:layout_gravity="center_vertical|right"		
+    	/>
+		
+		<Button
+		    android:id="@+id/competitor_punch"
+    		android:layout_width="wrap_content"
+    		android:layout_height="32dp"
+    		android:layout_margin="8dp"
+    		android:textSize="16sp"
+    		android:textStyle="bold"
+    		android:text="PUNCHES"
+    		android:textColor="@color/button_text"   
+    		android:background="@drawable/button"	
+    		android:layout_gravity="center_vertical|right"		
+    	/>		
+	</LinearLayout>
+
+</LinearLayout>	

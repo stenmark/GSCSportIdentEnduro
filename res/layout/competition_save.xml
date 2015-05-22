@@ -44,7 +44,7 @@
 		        />  
 		        
 		    <EditText
-		        android:id="@+id/editTextSaveCompetitionInput"
+		        android:id="@+id/save_competition_input"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content" >
 		    </EditText>	    

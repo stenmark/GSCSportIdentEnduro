@@ -14,27 +14,41 @@ import se.gsc.stenmark.gscenduro.SporIdent.Card;
  * 
  */
 public class Competitor implements Comparable<Competitor>, Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
-	public String name;
-	public int cardNumber;
-	public Card card;
-	public ArrayList<Long> trackTimes;
+	private String mName;
+	private int mCardNumber;
+	private Card mCard;
+	private ArrayList<Long> mTrackTimes;
+	private String mTeam;
+	private String mCompetitorClass;
+	private int mStartNumber;
+	private int mStartGroup;
 
 	public Competitor(String name) {
-		this.name = name;
-		this.cardNumber = -1;
-		this.card = null;
-		trackTimes = null;
+		setName(name);
+		setCardNumber(-1);
+		setCard(null);
+		setTrackTimes(null);
 	}
 
 	Competitor(String name, int cardNumber) {
-		this.name = name;
-		this.cardNumber = cardNumber;
-		this.card = null;
-		trackTimes = null;
+		setName(name);
+		setCardNumber(cardNumber);
+		setCard(null);
+		setTrackTimes(null);
+	}
+
+	Competitor(String name, int cardNumber, String team,
+			String competitorClass, int startNumber, int startGroup) {
+		setName(name);
+		setCardNumber(cardNumber);
+		setCard(null);
+		setTrackTimes(null);
+		setTeam(team);
+		setCompetitorClass(competitorClass);
+		setStartNumber(startNumber);
+		setStartGroup(startGroup);
 	}
 
 	/**
@@ -46,45 +60,90 @@ public class Competitor implements Comparable<Competitor>, Serializable {
 	 */
 	public long getTotalTime(boolean useMaxValueOnEmptyResult) {
 		long totalTime = 0;
-		if (trackTimes == null) {
+		if (mTrackTimes == null) {
 			if (useMaxValueOnEmptyResult) {
 				return Integer.MAX_VALUE;
 			} else {
 				return 0;
 			}
-
 		}
 
-		for (long trackTime : trackTimes) {
+		for (long trackTime : mTrackTimes) {
 			totalTime += trackTime;
 		}
 		return totalTime;
-
 	}
 
 	public String getName() {
-		return name;
+		return mName;
+	}
+
+	public void setName(String name) {
+		mName = name;
 	}
 
 	public int getCardNumber() {
-		return cardNumber;
+		return mCardNumber;
+	}
+
+	public void setCardNumber(int cardNumber) {
+		mCardNumber = cardNumber;
 	}
 
 	public Card getCard() {
-		return card;
+		return mCard;
 	}
 
-	public ArrayList<Long> getTrackTimes() {
-		return trackTimes;
+	public void setCard(Card card) {
+		mCard = card;
 	}
 
 	public boolean hasResult() {
-		return card != null;
+		return mCard != null;
+	}
+
+	public ArrayList<Long> getTrackTimes() {
+		return mTrackTimes;
+	}
+
+	public void setTrackTimes(ArrayList<Long> trackTimes) {
+		mTrackTimes = trackTimes;
+	}
+
+	public String getTeam() {
+		return mTeam;
+	}
+
+	public void setTeam(String team) {
+		mTeam = team;
+	}
+
+	public String getCompetitorClass() {
+		return mCompetitorClass;
+	}
+
+	public void setCompetitorClass(String competitorClass) {
+		mCompetitorClass = competitorClass;
+	}
+
+	public int getStartNumber() {
+		return mStartNumber;
+	}
+
+	public void setStartNumber(int startNumber) {
+		mStartNumber = startNumber;
+	}
+
+	public int getStartGroup() {
+		return mStartGroup;
+	}
+
+	public void setStartGroup(int startGroup) {
+		mStartGroup = startGroup;
 	}
 
 	@Override
 	public int compareTo(Competitor another) {
 		return (int) (this.getTotalTime(true) - another.getTotalTime(true));
 	}
-
 }

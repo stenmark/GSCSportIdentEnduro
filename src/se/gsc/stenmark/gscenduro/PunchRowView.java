@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class PunchRowView extends LinearLayout {
+	
 	Context mContext;
 	TextView mControl;
 	TextView mTime;
@@ -20,7 +21,7 @@ public class PunchRowView extends LinearLayout {
 	int mPosition;
 	LinearLayout mCompoundView;
 
-	protected void Init(Context context) {
+	protected void init(Context context) {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -39,7 +40,7 @@ public class PunchRowView extends LinearLayout {
 
 	public PunchRowView(Context context) {
 		super(context);
-		Init(context);
+		init(context);
 	}
 
 	public void setControl(String Control) {
@@ -62,7 +63,7 @@ public class PunchRowView extends LinearLayout {
 		@Override
 		public void onClick(View v) {
 			LayoutInflater li = LayoutInflater.from(mContext);
-			View promptsView = li.inflate(R.layout.delete_punch, null);
+			View promptsView = li.inflate(R.layout.punch_delete, null);
 
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
 
@@ -90,24 +91,24 @@ public class PunchRowView extends LinearLayout {
 		@Override
 		public void onClick(View v) {
 			LayoutInflater li = LayoutInflater.from(mContext);
-			View promptsView = li.inflate(R.layout.modify_punch, null);
+			View promptsView = li.inflate(R.layout.punch_modify, null);
 
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
 			alertDialogBuilder.setView(promptsView);
 
-			final EditText ControlInput = (EditText) promptsView.findViewById(R.id.editTextControlInput);
-			ControlInput.setText(mControl.getText());
+			final EditText controlInput = (EditText) promptsView.findViewById(R.id.control_input);
+			controlInput.setText(mControl.getText());
 
-			final EditText TimeInput = (EditText) promptsView.findViewById(R.id.editTextTimeInput);
-			TimeInput.setText(mTime.getText());
+			final EditText timeInput = (EditText) promptsView.findViewById(R.id.time_input);
+			timeInput.setText(mTime.getText());
 
 			alertDialogBuilder
 					.setCancelable(false)
 					.setPositiveButton("Modify",
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int id) {
-									mControl.setText(ControlInput.getText());
-									mTime.setText(TimeInput.getText());
+									mControl.setText(controlInput.getText());
+									mTime.setText(timeInput.getText());
 									((PunchListActivity) mContext).updatePunch(mPosition, Long.valueOf(mControl.getText().toString()), Long.valueOf(mTime.getText().toString()));
 								}
 							})

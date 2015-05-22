@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class ResultRowView extends LinearLayout {
+	
 	Context mContext;
 	TextView mTitle;
 	TextView mResultName;

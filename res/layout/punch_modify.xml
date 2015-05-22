@@ -7,13 +7,12 @@
     android:padding="10dp" >
  
     <TextView
-        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Name : "/>
+        android:text="Control : "/>
  
     <EditText
-        android:id="@+id/editTextNameInput"
+        android:id="@+id/control_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
  
@@ -22,13 +21,12 @@
     </EditText>
     
     <TextView
-        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CardNumber : "/>
+        android:text="Time : "/>
  
     <EditText
-        android:id="@+id/editTextCardNumberInput"
+        android:id="@+id/time_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" > 
     </EditText>    

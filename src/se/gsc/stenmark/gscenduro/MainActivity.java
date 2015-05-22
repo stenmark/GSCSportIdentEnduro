@@ -50,6 +50,7 @@ import android.widget.Toast;
  *
  */
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
+	
 	public static final String PREF_NAME = "GSC_ENDURO_PREFERENCES";
 	
 	public Competition competition = null;
@@ -82,14 +83,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Intent punchListIntent = new Intent();		
 			punchListIntent.setClass(this, PunchListActivity.class);		
 			
-			if (this.competition.getCompetitors().get(position).card == null)
+			if (this.competition.getCompetitors().get(position).getCard() == null)
 			{
-				this.competition.getCompetitors().get(position).card = new Card();				
-				this.competition.getCompetitors().get(position).card.cardNumber = this.competition.getCompetitors().get(position).cardNumber;
+				this.competition.getCompetitors().get(position).setCard(new Card());				
+				this.competition.getCompetitors().get(position).getCard().setCardNumber(this.competition.getCompetitors().get(position).getCardNumber());
 			}			
 
 			Bundle bundle = new Bundle();
-			bundle.putSerializable("Card", this.competition.getCompetitors().get(position).card);
+			bundle.putSerializable("Card", this.competition.getCompetitors().get(position).getCard());
 			punchListIntent.putExtras(bundle);
 			
 			startActivityForResult(punchListIntent, 2);		
@@ -110,9 +111,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Card updatedCard = new Card();
 	    	updatedCard = (Card) data.getExtras().getSerializable("updateCard");
 	    	
-	    	if (updatedCard.punches.size() > 0)
+	    	if (updatedCard.getPunches().size() > 0)
 	    	{
-				if (updatedCard.cardNumber != 0) {
+				if (updatedCard.getCardNumber() != 0) {
 					displayNewCard(updatedCard);
 				}
 	    	}	    		    
@@ -197,7 +198,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			disconected = true;
 			connectionStatus = "Disconnected";
 			
-			setContentView(R.layout.activity_main);
+			setContentView(R.layout.main_activity);
 
 			try {
 				competition = Competition.loadSessionData(null);
@@ -299,7 +300,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	public void writeCard(Card card) {
 		try {
-			if (card.cardNumber != 0) {
+			if (card.getCardNumber() != 0) {
 				displayNewCard(card);
 			} 
 			//The Listener dies once it has received once message, so kick it again to restart it
@@ -358,21 +359,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        }
 	        						
 			li = LayoutInflater.from(this);
-			promptsView = li.inflate(R.layout.new_competition, null);					
+			promptsView = li.inflate(R.layout.competition_new, null);					
 
-			final LinearLayout layoutAddTrackSpinner = (LinearLayout) promptsView.findViewById(R.id.layoutAddTrackSpinner);
-			final LinearLayout layoutAddTrackManually = (LinearLayout) promptsView.findViewById(R.id.layoutAddTrackManually);
+			final LinearLayout layoutAddTrackSpinner = (LinearLayout) promptsView.findViewById(R.id.add_track_spinner_layout);
+			final LinearLayout layoutAddTrackManually = (LinearLayout) promptsView.findViewById(R.id.add_track_manually_layout);
 			
-			final EditText AddTrackManuallyInput = (EditText) promptsView.findViewById(R.id.editTextAddTrackManually);
-			AddTrackManuallyInput.setText("");
+			final EditText addTrackManuallyInput = (EditText) promptsView.findViewById(R.id.add_track_manually_input);
+			addTrackManuallyInput.setText("");
 			
-			final EditText NewCompetitionInput = (EditText) promptsView.findViewById(R.id.editTextNewCompetitionInput);
-			NewCompetitionInput.setText("New");
+			final EditText newCompetitionInput = (EditText) promptsView.findViewById(R.id.new_competition_input);
+			newCompetitionInput.setText("New");
 
-			final CheckBox checkboxAddTrackManually = (CheckBox) promptsView.findViewById(R.id.checkbox_add_track_manually);
-			checkboxAddTrackManually.setOnClickListener(new View.OnClickListener() {
+			final CheckBox addTrackManuallyCheckbox = (CheckBox) promptsView.findViewById(R.id.add_track_manually_checkbox);
+			addTrackManuallyCheckbox.setOnClickListener(new View.OnClickListener() {
 			      public void onClick(View v) {
-			    	  if (checkboxAddTrackManually.isChecked())
+			    	  if (addTrackManuallyCheckbox.isChecked())
 			    	  {
 			    		  layoutAddTrackSpinner.setVisibility(View.GONE);
 			    		  layoutAddTrackManually.setVisibility(View.VISIBLE);
@@ -385,13 +386,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			      }
 			});			
 			
-			final CheckBox checkBoxKeepCompetitors = (CheckBox) promptsView.findViewById(R.id.checkbox_keep_competitors);
-			checkBoxKeepCompetitors.setOnClickListener(new View.OnClickListener() {
+			final CheckBox keepCompetitorsCheckBox = (CheckBox) promptsView.findViewById(R.id.keep_competitors_checkbox);
+			keepCompetitorsCheckBox.setOnClickListener(new View.OnClickListener() {
 			      public void onClick(View v) {
 			      }
 			});
 			
-			final Spinner spinner = (Spinner) promptsView.findViewById(R.id.spinnerTrackDefinition);	
+			final Spinner spinner = (Spinner) promptsView.findViewById(R.id.add_track_spinner);	
 	        ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, numerOfStages);
 	        LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
 	        spinner.setAdapter(LTRadapter);			
@@ -406,7 +407,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 								public void onClick(DialogInterface dialog,
 										int id) {															
 									
-									if (checkBoxKeepCompetitors.isChecked())
+									if (keepCompetitorsCheckBox.isChecked())
 									{
 										competition.getTrack().clear();
 										competition.getResults().clear();
@@ -418,15 +419,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 										competition.getCompetitors().clear();
 										competition = new Competition();
 									}
-									competition.competitionName = NewCompetitionInput.getText().toString();	
+									competition.setCompetitionName(newCompetitionInput.getText().toString());	
 									
 									SharedPreferences settings = getSharedPreferences(MainActivity.PREF_NAME, 0);
 									int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
 									int finishStationNumner = Integer.parseInt(settings.getString("FINISH_STATION_NUMBER", "72"));
 										
-									if (checkboxAddTrackManually.isChecked())
+									if (addTrackManuallyCheckbox.isChecked())
 									{
-										competition.addNewTrack(AddTrackManuallyInput.getText().toString());
+										competition.addNewTrack(addTrackManuallyInput.getText().toString());
 									}
 									else
 									{
@@ -482,10 +483,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			
 		case R.id.action_save:			
 			li = LayoutInflater.from(this);
-			promptsView = li.inflate(R.layout.save_competition, null);					
+			promptsView = li.inflate(R.layout.competition_save, null);					
 
-			final EditText SaveCompetitionInput = (EditText) promptsView.findViewById(R.id.editTextSaveCompetitionInput);
-			SaveCompetitionInput.setText(competition.competitionName);
+			final EditText saveCompetitionInput = (EditText) promptsView.findViewById(R.id.save_competition_input);
+			saveCompetitionInput.setText(competition.getCompetitionName());
 			
 			AlertDialog.Builder saveAlertDialogBuilder = new AlertDialog.Builder(this);
 			saveAlertDialogBuilder.setView(promptsView);
@@ -496,14 +497,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 								public void onClick(DialogInterface dialog,
 										int id) {
 
-									String compName = SaveCompetitionInput.getText().toString();
+									String compName = saveCompetitionInput.getText().toString();
 									if (compName.isEmpty()) {
 										Toast.makeText(MainActivity.this, "Competition not saved! No competition name was supplied", Toast.LENGTH_LONG).show();
 									}
 									else
 									{
 										try {
-											competition.competitionName = compName;
+											competition.setCompetitionName(compName);
 											competition.saveSessionData(compName);
 										} catch (Exception e) {
 											Log.d("action_save", "Error = " + Log.getStackTraceString(e));
@@ -547,13 +548,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		     	
 				ResultListFragment resultListFragment = (ResultListFragment)mAdapter.getRegisteredFragment(1);
 				if (resultListFragment != null){
-					Bitmap resultBitmap = CompetitionHelper.getWholeListViewItemsToBitmap(resultListFragment.mListView);
-					File imageFile = CompetitionHelper.writeImgaeToFile(competition.competitionName + "_results.png", resultBitmap);
+					Bitmap resultBitmap = CompetitionHelper.getWholeListViewItemsToBitmap(resultListFragment.getListView());
+					File imageFile = CompetitionHelper.writeImageToFile(competition.getCompetitionName() + "_results.png", resultBitmap);
 					
 					Intent mailIntent = new Intent(Intent.ACTION_SEND);
 					mailIntent.setType("text/plain");
 					mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{""});
-					mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro result image for " + competition.competitionName);
+					mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro result image for " + competition.getCompetitionName());
 					mailIntent.putExtra(Intent.EXTRA_TEXT   , imageFile.getName() + " result in attached file");
 					Uri uri = Uri.fromFile( imageFile );
 					mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
@@ -739,7 +740,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					byte[] readSiMessage = siDriver[0].readSiMessage(100, 2000, false);
 
 					if(disconected){
-						cardData.errorMsg += "Was disconnected";
+						//Log.d("SiCardListener", "Was disconnected");
 						siDriver[0].closeDriver();
 						return cardData;
 					}
@@ -759,7 +760,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							
 							//If the next bytes are 0xFF and =x4F it seems like this is magic bytes for card pulled out event, return an Empty Card
 							if (readSiMessage.length >= 3 && (readSiMessage[2] & 0xFF) == 0x4f) {
-								cardData.errorMsg += "Card pulled out";
+								//Log.d("SiCardListener", "Card pulled out");
 								return cardData;
 							}
 
@@ -773,7 +774,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							siDriver[0].sendSiMessage(SiMessage.ack_sequence.sequence());
 							return cardData;
 						} else {
-							cardData.errorMsg += "not card6";
+							//Log.d("SiCardListener", "not card6");
 							return cardData;
 						}
 
@@ -791,7 +792,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							siDriver[0].closeDriver();
 						}
 						MainActivity.lastCalltime = System.currentTimeMillis();
-						cardData.errorMsg += "not STX or timeout";
+						//Log.d("SiCardListener", "not STX or timeout");
 						return cardData;
 					}
 				}

@@ -2,9 +2,8 @@ package se.gsc.stenmark.gscenduro;
 
 import java.io.Serializable;
 
-import android.util.Log;
-
 public class TrackResult implements Serializable {
+	
 	private static final long serialVersionUID = 201111020011L; 
 	
 	private String mNames;
@@ -14,31 +13,35 @@ public class TrackResult implements Serializable {
 	private Boolean mDNF;
 	
 	public TrackResult(String names, int cardNumber, Long trackTimes, Boolean DNF) {
-		mNames = names;
-		mCardNumber = cardNumber;
-		mTrackTimes = trackTimes;
-		mTrackTimesBack = (long) 0;
-		mDNF = DNF;
+		setName(names);
+		setCardNumber(cardNumber);
+		setTrackTimes(trackTimes);
+		setTrackTimesBack((long) 0);
+		setDNF(DNF);
 	}
 	
 	public String getName() {
 	    return mNames;
 	}
 
+	public void setName(String name) {
+	    mNames = name;
+	}	
+	
 	public int getCardNumber() {
 	    return mCardNumber;
 	}
 	
-	public void setName(String name) {
-	    this.mNames = name;
-	}
+	public void setCardNumber(int cardNumber) {
+	    mCardNumber = cardNumber;
+	}	
 	
 	public Long getTrackTimes() {
 	    return mTrackTimes;
 	}
 	
 	public void setTrackTimes(Long TrackTimes) {
-	    this.mTrackTimes = TrackTimes;
+	    mTrackTimes = TrackTimes;
 	}
 	
 	public Long getTrackTimesBack() {
@@ -46,7 +49,7 @@ public class TrackResult implements Serializable {
 	}
 	
 	public void setTrackTimesBack(Long TrackTimesBack) {
-	    this.mTrackTimesBack = TrackTimesBack;
+	    mTrackTimesBack = TrackTimesBack;
 	}
 
 	public Boolean getDNF() {

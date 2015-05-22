@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ResultLandscape implements Serializable {
-	private static final long serialVersionUID = 201121020001L; 
 	
+	private static final long serialVersionUID = 201121020001L; 	
 	private String mName;
+	private String mTeam;
 	private int mCardNumber;
 	private Long mTotalTime;
 	private ArrayList<Long> mTime = new ArrayList<Long>();
@@ -29,7 +30,15 @@ public class ResultLandscape implements Serializable {
 
 	public void setName(String mName) {
 		this.mName = mName;
-	}
+	}	
+	
+	public String getTeam() {
+		return mTeam;
+	}	
+
+	public void setTeam(String mTeam) {
+		this.mTeam = mTeam;
+	}	
 
 	public Long getTotalTime() {
 		return mTotalTime;

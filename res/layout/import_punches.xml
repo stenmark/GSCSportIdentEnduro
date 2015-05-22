@@ -29,7 +29,6 @@
 		   />          
 		       
 	   	<LinearLayout 
-	   	    android:id="@+id/layoutAddTrackSpinner"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical"	
@@ -38,7 +37,6 @@
 			> 
 			    
 		    <TextView
-		        android:id="@+id/textView1"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:textSize="12sp"
@@ -46,7 +44,7 @@
 		        \nCardNumber2,Con1,Time1,Con2,Time2..\nCardNumber3,Con1,Time1,Con2,Time2.."/>
 		 
 		    <EditText
-		        android:id="@+id/editTextImportPunchesInput"
+		        android:id="@+id/import_punches_input"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content" 
 		        android:lines="8" 

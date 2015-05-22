@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 
 public class SelectImportDialog {
+	
 	private ImportOnClickListener mImportOnClickListener;
 	private MainActivity mMainActivity;
 	private CharSequence[] items = {"Competitors", "Punches", "Competition"};
@@ -47,7 +48,7 @@ public class SelectImportDialog {
 
 						alertDialogBuilder.setView(promptsView);
 
-						final EditText ImportCompetitorsInput = (EditText) promptsView.findViewById(R.id.editTextImportCompetitorsInput);
+						final EditText importCompetitorsInput = (EditText) promptsView.findViewById(R.id.import_competitors_input);
 
 						alertDialogBuilder
 								.setCancelable(false)
@@ -56,12 +57,23 @@ public class SelectImportDialog {
 											public void onClick(DialogInterface dialog,	int id) {		
 												try {													
 													CompetitorParser competitorParser = new CompetitorParser();
-													competitorParser.parseCompetitors(ImportCompetitorsInput.getText().toString());
-																																																		
-													for (Competitor competitorObject : competitorParser.getCompetitors()) {		
-														((MainActivity)mMainActivity).competition.addCompetitor(competitorObject.name, competitorObject.cardNumber);
-													}
 													
+													if (((MainActivity)mMainActivity).competition.getCompetitionType() == ((MainActivity)mMainActivity).competition.ESS_TYPE)
+													{
+														competitorParser.parseEssCompetitors(importCompetitorsInput.getText().toString());
+														for (Competitor competitorObject : competitorParser.getCompetitors()) {		
+															((MainActivity)mMainActivity).competition.addCompetitor(competitorObject.getName(), competitorObject.getCardNumber(), competitorObject.getTeam(), 
+																	competitorObject.getCompetitorClass(), competitorObject.getStartNumber(), competitorObject.getStartGroup());
+														}
+													}
+													else
+													{													
+														competitorParser.parseCompetitors(importCompetitorsInput.getText().toString());
+														for (Competitor competitorObject : competitorParser.getCompetitors()) {		
+															((MainActivity)mMainActivity).competition.addCompetitor(competitorObject.getName(), competitorObject.getCardNumber(), "", "", 0, 0);
+														}
+													}
+																																																		
 													String statusMsg = competitorParser.getStatus();
 													((MainActivity)mMainActivity).updateFragments();													
 													
@@ -112,7 +124,7 @@ public class SelectImportDialog {
 
 						alertDialogBuilder.setView(promptsView);
 
-						final EditText ImportPunchesInput = (EditText) promptsView.findViewById(R.id.editTextImportPunchesInput);
+						final EditText importPunchesInput = (EditText) promptsView.findViewById(R.id.import_punches_input);
 
 						alertDialogBuilder
 								.setCancelable(false)
@@ -121,12 +133,12 @@ public class SelectImportDialog {
 											public void onClick(DialogInterface dialog,	int id) {		
 												try {
 													PunchParser punchParser = new PunchParser();
-													punchParser.parsePunches(ImportPunchesInput.getText().toString(), ((MainActivity)mMainActivity).competition.getCompetitors());
+													punchParser.parsePunches(importPunchesInput.getText().toString(), ((MainActivity)mMainActivity).competition.getCompetitors());
 																										
 													for (Card cardObject : punchParser.getCards()) {		
-														if (cardObject.punches.size() > 0)
+														if (cardObject.getPunches().size() > 0)
 														{
-															if (cardObject.cardNumber != 0) {
+															if (cardObject.getCardNumber() != 0) {
 																((MainActivity)mMainActivity).competition.processNewCard(cardObject);
 															}
 														}
@@ -182,7 +194,7 @@ public class SelectImportDialog {
 
 						alertDialogBuilder.setView(promptsView);
 
-						final EditText ImportCompetitorsInput = (EditText) promptsView.findViewById(R.id.editTextImportCompetitionInput);
+						final EditText importCompetitorsInput = (EditText) promptsView.findViewById(R.id.import_competition_input);
 
 						alertDialogBuilder
 								.setCancelable(false)
@@ -191,22 +203,22 @@ public class SelectImportDialog {
 											public void onClick(DialogInterface dialog,	int id) {		
 												try {
 													CompetitionParser competitionParser = new CompetitionParser();
-													competitionParser.parseCompetition(ImportCompetitorsInput.getText().toString());												
+													competitionParser.parseCompetition(importCompetitorsInput.getText().toString());												
 													
 													((MainActivity)mMainActivity).competition.getCompetitors().clear();
 													((MainActivity)mMainActivity).competition = new Competition();
 													
-													((MainActivity)mMainActivity).competition.competitionName = competitionParser.getCompetitionName();
+													((MainActivity)mMainActivity).competition.setCompetitionName(competitionParser.getCompetitionName());
 													((MainActivity)mMainActivity).competition.addNewTrack(competitionParser.getTrack());
 													
 													for (Competitor competitorObject : competitionParser.getCompetitors()) {													
-														((MainActivity)mMainActivity).competition.addCompetitor(competitorObject.name, competitorObject.cardNumber);
+														((MainActivity)mMainActivity).competition.addCompetitor(competitorObject.getName(), competitorObject.getCardNumber(), "", "", 0, 0);
 													}
 													
 													for (Card cardObject : competitionParser.getCards()) {		
-														if (cardObject.punches.size() > 0)
+														if (cardObject.getPunches().size() > 0)
 														{
-															if (cardObject.cardNumber != 0) {
+															if (cardObject.getCardNumber() != 0) {
 																((MainActivity)mMainActivity).competition.processNewCard(cardObject);
 															}
 														}

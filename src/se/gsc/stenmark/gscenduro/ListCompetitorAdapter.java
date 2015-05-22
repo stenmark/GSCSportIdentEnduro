@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 public class ListCompetitorAdapter extends BaseAdapter {
+	
 	private Context mContext;
 	private List<Competitor> mCompetitor = new ArrayList<Competitor>();
 
@@ -47,18 +48,22 @@ public class ListCompetitorAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		CompetitorRowView CompetitorRowV = null;
+		CompetitorRowView competitorRowV = null;
 
 		if (convertView == null) {
-			CompetitorRowV = new CompetitorRowView(mContext, this);
+			competitorRowV = new CompetitorRowView(mContext, this);
 		} else {
-			CompetitorRowV = (CompetitorRowView) convertView;
+			competitorRowV = (CompetitorRowView) convertView;
 		}
+		
+		competitorRowV.setPosition(position);
+		competitorRowV.setStartNumber(String.valueOf(mCompetitor.get(position).getStartNumber()));
+		competitorRowV.setName(mCompetitor.get(position).getName());
+		competitorRowV.setCardNumber(String.valueOf(mCompetitor.get(position).getCardNumber()));
+		competitorRowV.setTeam(mCompetitor.get(position).getTeam());
+		competitorRowV.setClass(mCompetitor.get(position).getCompetitorClass());				
+		competitorRowV.setStartGroup(String.valueOf(mCompetitor.get(position).getStartGroup()));
 
-		CompetitorRowV.setName(mCompetitor.get(position).getName());
-		CompetitorRowV.setCardNumber(String.valueOf(mCompetitor.get(position).getCardNumber()));
-		CompetitorRowV.setPosition(position);
-
-		return CompetitorRowV;
+		return competitorRowV;
 	}
 }

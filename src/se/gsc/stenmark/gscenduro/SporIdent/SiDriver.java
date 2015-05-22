@@ -100,22 +100,22 @@ public class SiDriver {
     	cardNumber = makeIntFromBytes( dleData[5], dleData[4] );
     	
     	if(dleData[6]==1)
-    		card.cardNumber=cardNumber;
+    		card.setCardNumber(cardNumber);
     	else
-    		card.cardNumber=100000*dleData[6]+cardNumber;
-    	card.errorMsg += "Card Number: " + cardNumber + "\n"; 
+    		card.setCardNumber(100000*dleData[6]+cardNumber);
+    	//Log.d("parseCard5Alt", "Card Number: " + cardNumber + "\n"); 
     	
     	dataPos += 16;
     	
-    	card.startPunch = analyseSi5Time(dleData, dataPos+3);
-    	card.finishPunch = analyseSi5Time(dleData, dataPos+5);
-    	card.checkPunch = analyseSi5Time(dleData, dataPos+9);
+    	card.setStartPunch(analyseSi5Time(dleData, dataPos+3));
+    	card.setFinishPunch(analyseSi5Time(dleData, dataPos+5));
+    	card.setCheckPunch(analyseSi5Time(dleData, dataPos+9));
     	
     	int numberOfPunches = dleData[dataPos+7]-1;
-    	card.numberOfPunches = numberOfPunches;
-    	card.errorMsg += "Number of punches: " + numberOfPunches + "\n"; 
+    	card.setNumberOfPunches(numberOfPunches);
+    	//Log.d("parseCard5Alt", "Number of punches: " + numberOfPunches + "\n"); 
     	
-    	byte firstStartMaker = (byte) comp.getTrack().get(0).start;
+    	byte firstStartMaker = (byte) comp.getTrack().get(0).getStart();
     	int firstMarkerPos = 0;
     	int i = 0;
     	for( byte data : allData ){
@@ -125,10 +125,10 @@ public class SiDriver {
     		}
     		i++;
     	}
-    	card.errorMsg += "firstMarkerPos " + firstMarkerPos + "\n"; 
+    	//Log.d("parseCard5Alt", "firstMarkerPos " + firstMarkerPos + "\n"); 
     	
     	int currentPos = 0;
-    	for(int k = 0; k < card.numberOfPunches; k++)
+    	for(int k = 0; k < card.getNumberOfPunches(); k++)
     	{
     		byte stationId = allData[firstMarkerPos + currentPos];
     		currentPos++;
@@ -168,9 +168,9 @@ public class SiDriver {
     		
     		Punch punch = new Punch(time, stationId);
     		
-    		card.errorMsg += "loop nr " + k + " byte1: " + byte1Pos + " : " + byte1 + "  byte2: "+ byte2Pos + " : " + byte2 + "\n";
+    		//Log.d("parseCard5Alt", "loop nr " + k + " byte1: " + byte1Pos + " : " + byte1 + "  byte2: "+ byte2Pos + " : " + byte2 + "\n");
     		
-    		card.punches.add(punch);
+    		card.getPunches().add(punch);
     	}
     	
 //    	card.errorMsg += "First marker pos = " +firstMarkerPos + "\n";
@@ -189,28 +189,28 @@ public class SiDriver {
     	cardNumber = makeIntFromBytes( card5Data[5], card5Data[4] );
     	
     	if(card5Data[6]==1)
-    		card.cardNumber=cardNumber;
+    		card.setCardNumber(cardNumber);
     	else
-    		card.cardNumber=100000*card5Data[6]+cardNumber;
+    		card.setCardNumber(100000*card5Data[6]+cardNumber);
     	
     	dataPos += 16;
     	
-    	card.startPunch = analyseSi5Time(card5Data, dataPos+3);
-    	card.finishPunch = analyseSi5Time(card5Data, dataPos+5);
-    	card.checkPunch = analyseSi5Time(card5Data, dataPos+9);
+    	card.setStartPunch(analyseSi5Time(card5Data, dataPos+3));
+    	card.setFinishPunch(analyseSi5Time(card5Data, dataPos+5));
+    	card.setCheckPunch(analyseSi5Time(card5Data, dataPos+9));
     	
     	int numberOfPunches = card5Data[dataPos+7]-1;
-    	card.numberOfPunches = numberOfPunches;
+    	card.setNumberOfPunches(numberOfPunches);
     	dataPos += 16;
     	
-    	for(int i = 0; i < card.numberOfPunches; i++)
+    	for(int i = 0; i < card.getNumberOfPunches(); i++)
     	{
     		if(i<30){
     			int basepointer=3*(i%5)+1+(i/5)*16;
     			int code=card5Data[dataPos+basepointer];
     			Punch punch = analyseSi5Time(card5Data, dataPos+basepointer+1);
-    			punch.control = code;
-    			card.punches.add(punch);
+    			punch.setControl(code);
+    			card.getPunches().add(punch);
     		}
     		else{
     			return null;    			
@@ -231,26 +231,26 @@ public class SiDriver {
     	int cardHi = makeIntFromBytes( card6Data[11], card6Data[10] );
     	int cardLow = makeIntFromBytes( card6Data[13], card6Data[12] );
     	cardNumber = (cardHi*65536) + cardLow;
-    	card.cardNumber = cardNumber;
+    	card.setCardNumber(cardNumber);
     	
 //    	androidActivity.msg += "CardNumber= " + cardNumber + "\n";
     	
     	dataPos += 16;
     	
-    	card.startPunch = analysePunch(card6Data, dataPos+8);	
-    	card.finishPunch = analysePunch(card6Data, dataPos+4); 	
-    	card.checkPunch = analysePunch(card6Data, dataPos+12); 
+    	card.setStartPunch(analysePunch(card6Data, dataPos+8));	
+    	card.setFinishPunch(analysePunch(card6Data, dataPos+4)); 	
+    	card.setCheckPunch(analysePunch(card6Data, dataPos+12)); 
     	int numberOfPunches = card6Data[dataPos+2];
 //    	androidActivity.msg += "Number of punches = " + numberOfPunches + "\n";
-    	card.numberOfPunches = numberOfPunches;
+    	card.setNumberOfPunches(numberOfPunches);
 
     	
     	dataPos+=128-16;
     	
-    	for(int i = 0; i < card.numberOfPunches; i++)
+    	for(int i = 0; i < card.getNumberOfPunches(); i++)
     	{
     		Punch punch = analysePunch(card6Data, dataPos+(4*i) );
-    		card.punches.add(punch);
+    		card.getPunches().add(punch);
     	}
     	
 //    	androidActivity.msg += card.toString() + "\n";
@@ -291,7 +291,7 @@ public class SiDriver {
 //        		i++;
 //        	}
     		Card card = parseCard5Alt( allData, rawData, comp );
-    		card.errorMsg += "\n" + msg;
+    		//Log.d("getCard5Data", "\n" + msg);
     		return card;
     		
     	}

@@ -2,11 +2,11 @@ package se.gsc.stenmark.gscenduro.SporIdent;
 
 public class CRCCalculator {
 
-	private CRCCalculator() {
-	}
-
 	private static final int POLY = 0x8005;
 	private static final int BITF = 0x8000;
+
+	private CRCCalculator() {
+	}
 
 	static public int crc(byte[] buffer) {
 		int count = buffer.length;
@@ -68,4 +68,3 @@ public class CRCCalculator {
 		System.out.println(Integer.toString(CRCCalculator.crc(test_data), 16));
 	}
 }
-

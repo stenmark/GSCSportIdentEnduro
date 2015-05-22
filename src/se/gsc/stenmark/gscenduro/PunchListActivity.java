@@ -19,8 +19,8 @@ import android.widget.EditText;
 
 public class PunchListActivity extends ListActivity {
 
-	protected ListPunchAdapter mPunchAdapter;
-	protected Card mUpdatedCard = null;
+	private ListPunchAdapter mPunchAdapter;
+	private Card mUpdatedCard = null;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);			
@@ -42,11 +42,11 @@ public class PunchListActivity extends ListActivity {
 			
 			if (mUpdatedCard != null)
 			{
-				mUpdatedCard.numberOfPunches = mUpdatedCard.punches.size();							
+				mUpdatedCard.setNumberOfPunches(mUpdatedCard.getPunches().size());							
 			}			
 			
-			SortData();
-			mPunchAdapter = new ListPunchAdapter(this, mUpdatedCard.punches);
+			sortData();
+			mPunchAdapter = new ListPunchAdapter(this, mUpdatedCard.getPunches());
 			setListAdapter(mPunchAdapter);			
 		}
 		catch( Exception e){
@@ -56,13 +56,10 @@ public class PunchListActivity extends ListActivity {
 	
 	public void addPunchAlert(){
 		LayoutInflater li = LayoutInflater.from(this);
-		View promptsView = li.inflate(R.layout.add_punch, null);
+		View promptsView = li.inflate(R.layout.punch_add, null);
 	
-		final EditText ControlInput = (EditText) promptsView
-				.findViewById(R.id.editTextControlInput);
-		
-		final EditText TimeInput = (EditText) promptsView
-				.findViewById(R.id.editTextTimeInput);
+		final EditText controlInput = (EditText) promptsView.findViewById(R.id.control_input);		
+		final EditText timeInput = (EditText) promptsView.findViewById(R.id.time_input);
 		
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		alertDialogBuilder.setView(promptsView);
@@ -71,8 +68,8 @@ public class PunchListActivity extends ListActivity {
 				.setPositiveButton("Add",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								Long time = Long.valueOf(TimeInput.getText().toString());
-								Long control = Long.valueOf(ControlInput.getText().toString());
+								Long time = Long.valueOf(timeInput.getText().toString());
+								Long control = Long.valueOf(controlInput.getText().toString());
 								
 								addPunch(time, control);
 							}
@@ -96,8 +93,8 @@ public class PunchListActivity extends ListActivity {
 	
 	public void sendCard(){
 		//Need to reset the doublePunch marker and let the main program re-evaluate after someone manually edited the card
-		for( Punch punch : mUpdatedCard.punches){
-			punch.markAsDoublePunch = false;
+		for(Punch punch : mUpdatedCard.getPunches()){
+			punch.setMarkAsDoublePunch(false);
 		}
 		Intent intent = new Intent(this, MainActivity.class);		
 		
@@ -121,7 +118,7 @@ public class PunchListActivity extends ListActivity {
 	
     public void backButtonHandler() {              
 		LayoutInflater li = LayoutInflater.from(this);
-		View promptsView = li.inflate(R.layout.leave_punch, null);
+		View promptsView = li.inflate(R.layout.punch_leave, null);
 
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		alertDialogBuilder.setView(promptsView);
@@ -147,35 +144,35 @@ public class PunchListActivity extends ListActivity {
     }
 	
 	public void removePunch(int Position) {
-		mUpdatedCard.punches.remove(Position);		
-		SortData();	
-		ReloadData();
+		mUpdatedCard.getPunches().remove(Position);		
+		sortData();	
+		reloadData();
 	}
 	
 	public void addPunch(long Time, long Control) {
 		Punch newPunch = new Punch(Time, Control);
-		mUpdatedCard.punches.add(newPunch);		
-		SortData();
-		ReloadData();
+		mUpdatedCard.getPunches().add(newPunch);		
+		sortData();
+		reloadData();
 	}
 	
 	public void updatePunch(int Position, long Control, long Time) {
-		mUpdatedCard.punches.get(Position).control = Control;
-		mUpdatedCard.punches.get(Position).time = Time;		
-		SortData();
-		ReloadData();
+		mUpdatedCard.getPunches().get(Position).setControl(Control);
+		mUpdatedCard.getPunches().get(Position).setTime(Time);		
+		sortData();
+		reloadData();
 	}
 	
-	public void SortData() {
-	    Collections.sort(mUpdatedCard.punches, new Comparator<Punch>() {
+	public void sortData() {
+	    Collections.sort(mUpdatedCard.getPunches(), new Comparator<Punch>() {
 	        @Override
 	        public int compare(Punch s1, Punch s2) {
-	            return s1.getTime().compareTo(s2.getTime());
+	            return new Long(s1.getTime()).compareTo(s2.getTime());
 	        }
 	    });	
 	}
 	
-	public void ReloadData() {
+	public void reloadData() {
 		mPunchAdapter.notifyDataSetChanged();
 	}
 }

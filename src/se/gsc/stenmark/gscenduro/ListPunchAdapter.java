@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 public class ListPunchAdapter extends BaseAdapter {
+	
 	private Context mContext;
 	private List<Punch> mPunches = new ArrayList<Punch>();
 
@@ -36,18 +37,18 @@ public class ListPunchAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		PunchRowView PunchRowV = null;
+		PunchRowView punchRowV = null;
 
 		if (convertView == null) {
-			PunchRowV = new PunchRowView(mContext);
+			punchRowV = new PunchRowView(mContext);
 		} else {
-			PunchRowV = (PunchRowView) convertView;
+			punchRowV = (PunchRowView) convertView;
 		}
 		
-		PunchRowV.setControl(Long.toString(mPunches.get(position).control));		
-		PunchRowV.setTime(Long.toString(mPunches.get(position).time));
-		PunchRowV.setPosition(position);
+		punchRowV.setControl(Long.toString(mPunches.get(position).getControl()));		
+		punchRowV.setTime(Long.toString(mPunches.get(position).getTime()));
+		punchRowV.setPosition(position);
 	
-		return PunchRowV;
+		return punchRowV;
 	}
 }

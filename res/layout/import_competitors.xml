@@ -37,14 +37,13 @@
 			> 
 			    
 		    <TextView
-		        android:id="@+id/textView1"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:textSize="12sp"
 		        android:text="Enter competitors in the following way.\n\nName1,CardNumber1\nName2,CardNumber2\nName3,CardNumber3"/>
 		 
 		    <EditText
-		        android:id="@+id/editTextImportCompetitorsInput"
+		        android:id="@+id/import_competitors_input"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content" 
 		        android:lines="8" 

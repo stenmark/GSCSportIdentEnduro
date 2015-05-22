@@ -8,12 +8,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class ResultLandscapeRowView extends LinearLayout {
+	
 	Context mContext;	
 	
 	LinearLayout mResultLandscapeTitle;
 	LinearLayout mResultLandscapeComp;
 	
 	TextView mResultLandscapeName;
+	TextView mResultLandscapeTeam;
 	TextView mResultLandscapeTotalTime;
 	
 	TextView mResultLandscapeStageTime1;
@@ -30,18 +32,25 @@ public class ResultLandscapeRowView extends LinearLayout {
 	int mPosition;
 	LinearLayout mCompoundView;
 
-	protected void Init(Context context) {
+	protected void init(Context context) {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		mContext = context;
-
-		mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_landscape_row, this);
 		
+		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE)
+		{		
+			mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_landscape_row, this);
+		}
+		else
+		{
+			mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_landscape_ess_row, this);
+			mResultLandscapeTeam = (TextView) mCompoundView.findViewById(R.id.result_landscape_team);
+		}
 		mResultLandscapeTitle = (LinearLayout) mCompoundView.findViewById(R.id.result_landscape_title);
 		mResultLandscapeComp = (LinearLayout) mCompoundView.findViewById(R.id.result_landscape_comp);
 		
-		mResultLandscapeName = (TextView) mCompoundView.findViewById(R.id.result_landscape_name);
+		mResultLandscapeName = (TextView) mCompoundView.findViewById(R.id.result_landscape_name);		
 		mResultLandscapeTotalTime = (TextView) mCompoundView.findViewById(R.id.result_landscape_total_time);
 		
 		mResultLandscapeStageTime1 = (TextView) mCompoundView.findViewById(R.id.result_landscape_ss1_time);
@@ -58,7 +67,7 @@ public class ResultLandscapeRowView extends LinearLayout {
 
 	public ResultLandscapeRowView(Context context) {
 		super(context);
-		Init(context);
+		init(context);
 	}
 	
 	public void setResultLandscapeName(String Name) {
@@ -66,6 +75,12 @@ public class ResultLandscapeRowView extends LinearLayout {
 			mResultLandscapeName.setText(Name);
 		}
 	}	
+	
+	public void setResultLandscapeTeam(String Team) {
+		if (mResultLandscapeTeam != null) {
+			mResultLandscapeTeam.setText(Team);
+		}
+	}		
 	
 	public void setResultLandscapeTotalTime(String TotalTime) {
 		if (mResultLandscapeTotalTime != null) {
@@ -91,8 +106,7 @@ public class ResultLandscapeRowView extends LinearLayout {
 		}
 	}
 	
-	public TextView getStageTimeView(int Time)
-	{
+	public TextView getStageTimeView(int Time) {
 		switch(Time)
 		{
 		case 1:
@@ -119,8 +133,7 @@ public class ResultLandscapeRowView extends LinearLayout {
 		return null;				
 	}
 
-	public void setResultLandscapeStageTime(int Stage, String Time, int BackgroundColor) 
-	{		
+	public void setResultLandscapeStageTime(int Stage, String Time, int BackgroundColor) {		
 		if (getStageTimeView(Stage) != null) {		
 			getStageTimeView(Stage).setText(Time);
 			getStageTimeView(Stage).setVisibility(VISIBLE);

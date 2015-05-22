@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 public class ListResultAdapter extends BaseAdapter {
+	
 	private Context mContext;
 	private List<Result> mResult = new ArrayList<Result>();
 
@@ -45,21 +46,21 @@ public class ListResultAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		ResultRowView ResultRowV = null;
+		ResultRowView resultRowV = null;
 
 		if (convertView == null) {
-			ResultRowV = new ResultRowView(mContext);
+			resultRowV = new ResultRowView(mContext);
 		} else {
-			ResultRowV = (ResultRowView) convertView;
+			resultRowV = (ResultRowView) convertView;
 		}
 		
 		String track = "";
 		if (position != 0)
 		{
-			track = " (" + ((MainActivity) mContext).competition.getTrack().get(position - 1).start + " -> " + ((MainActivity) mContext).competition.getTrack().get(position - 1).finish + ")";
+			track = " (" + ((MainActivity) mContext).competition.getTrack().get(position - 1).getStart() + " -> " + ((MainActivity) mContext).competition.getTrack().get(position - 1).getFinish() + ")";
 		}
 		
-		ResultRowV.setTitle(mResult.get(position).getTitle() + track);
+		resultRowV.setTitle(mResult.get(position).getTitle() + track);
 		
 		String Name = "";
 		String Time = "";
@@ -81,12 +82,12 @@ public class ListResultAdapter extends BaseAdapter {
 			
 		}
 				
-		ResultRowV.setResultName(Name);
-		ResultRowV.setResultTime(Time);
-		ResultRowV.setResultTimeBack(TimeBack);	
+		resultRowV.setResultName(Name);
+		resultRowV.setResultTime(Time);
+		resultRowV.setResultTimeBack(TimeBack);	
 		
-		ResultRowV.setPosition(position);
+		resultRowV.setPosition(position);
 
-		return ResultRowV;
+		return resultRowV;
 	}
 }

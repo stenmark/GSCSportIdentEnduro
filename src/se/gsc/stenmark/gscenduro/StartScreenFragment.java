@@ -11,7 +11,8 @@ import android.widget.TextView;
  * A placeholder fragment containing a simple view.
  */
 public class StartScreenFragment extends Fragment {
-	MainActivity mMainActivity;
+	
+	private MainActivity mMainActivity;
 	private boolean inView = false;
 	
     @Override
@@ -37,9 +38,9 @@ public class StartScreenFragment extends Fragment {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_main, container,	false);
+		View rootView = inflater.inflate(R.layout.main_fragment, container,	false);
         
-		TextView connectButton = (TextView) rootView.findViewById(R.id.connectButton);
+		TextView connectButton = (TextView) rootView.findViewById(R.id.connect_button);
 		connectButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -58,7 +59,7 @@ public class StartScreenFragment extends Fragment {
 	public void updateConnectText(){
 		if(inView){
 			try {
-				TextView statusTextView = (TextView) getView().findViewById(R.id.statusText);	
+				TextView statusTextView = (TextView) getView().findViewById(R.id.status_text);	
 				statusTextView.setText(mMainActivity.getConnectionStatus());
 			} catch (Exception e) {
 				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
@@ -70,13 +71,13 @@ public class StartScreenFragment extends Fragment {
 	public void updateCompetitionStatus(){
 		if(inView){
 			try {
-				TextView statusTextView = (TextView) getView().findViewById(R.id.CompetitionName);	
-				statusTextView.setText("Name: " + mMainActivity.competition.competitionName);
+				TextView statusTextView = (TextView) getView().findViewById(R.id.competition_name);	
+				statusTextView.setText("Name: " + mMainActivity.competition.getCompetitionName());
 				
-				statusTextView = (TextView) getView().findViewById(R.id.TrackStatus);	
+				statusTextView = (TextView) getView().findViewById(R.id.track_status);	
 				statusTextView.setText("Track: " + mMainActivity.competition.getTrackAsString());
 				
-				statusTextView = (TextView) getView().findViewById(R.id.CompetitorStatus);	
+				statusTextView = (TextView) getView().findViewById(R.id.competitor_status);	
 				statusTextView.setText("Number of competitors: " + mMainActivity.competition.getNumbeofCompetitors());
 			} catch (Exception e) {
 				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));

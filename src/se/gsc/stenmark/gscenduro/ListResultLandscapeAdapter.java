@@ -7,11 +7,13 @@ import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 public class ListResultLandscapeAdapter extends BaseAdapter {
+	
 	private Context mContext;
 	private List<ResultLandscape> mResultLandscape = new ArrayList<ResultLandscape>();
 
@@ -48,30 +50,31 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 	@Override
 	public View getView(int competitionRank, View convertView, ViewGroup parent) {
 		try{			
-			ResultLandscapeRowView ResultLandscapeRowV = null;	
+			ResultLandscapeRowView resultLandscapeRowV = null;	
 			
 			if (convertView == null) {
-				ResultLandscapeRowV = new ResultLandscapeRowView(mContext);
+				resultLandscapeRowV = new ResultLandscapeRowView(mContext);
 			} else {
-				ResultLandscapeRowV = (ResultLandscapeRowView) convertView;
+				resultLandscapeRowV = (ResultLandscapeRowView) convertView;
 			}
 	
 			if (competitionRank == 0)
 			{
-				ResultLandscapeRowV.setTitle();
+				resultLandscapeRowV.setTitle();
 			}
 			else
 			{
-				ResultLandscapeRowV.clearTitle();
+				resultLandscapeRowV.clearTitle();
 			}
 				
-			ResultLandscapeRowV.setComp();
+			resultLandscapeRowV.setComp();
 			
-			ResultLandscapeRowV.setResultLandscapeName(String.valueOf(competitionRank + 1) + ". " + mResultLandscape.get(competitionRank).getName());
+			resultLandscapeRowV.setResultLandscapeName(String.valueOf(competitionRank + 1) + ". " + mResultLandscape.get(competitionRank).getName());		
+			resultLandscapeRowV.setResultLandscapeTeam(mResultLandscape.get(competitionRank).getTeam());
 			
 			if ((mResultLandscape.get(competitionRank).getTotalTime() == Integer.MAX_VALUE) || (mResultLandscape.get(competitionRank).getRank().size() < ((MainActivity) mContext).competition.getTrack().size()))
 			{
-				ResultLandscapeRowV.setResultLandscapeTotalTime("DNF");
+				resultLandscapeRowV.setResultLandscapeTotalTime("DNF");
 			}
 			else
 			{
@@ -84,13 +87,13 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 				{				
 					TotalTime = CompetitionHelper.secToMinSec(mResultLandscape.get(competitionRank).getTotalTime());				
 				}	
-				ResultLandscapeRowV.setResultLandscapeTotalTime(TotalTime);
+				resultLandscapeRowV.setResultLandscapeTotalTime(TotalTime);
 			}
 			
 			//First clear all stages
 			for(int stageNumber = 0; stageNumber < 10; stageNumber++) 
 			{
-				ResultLandscapeRowV.setResultLandscapeStageTime(stageNumber + 1, "", Color.WHITE);
+				resultLandscapeRowV.setResultLandscapeStageTime(stageNumber + 1, "", Color.WHITE);
 			}
 			
 			for(int stageNumber = 0; stageNumber < mResultLandscape.get(competitionRank).getRank().size(); stageNumber++) 
@@ -140,12 +143,12 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 					color = generateRedToGreenColorTransition( 1f -(myTimeDiff / stageTimeDiff) );	  //1.0 => red, 0.0 => green	
 				}			
 				
-				ResultLandscapeRowV.setResultLandscapeStageTime(stageNumber + 1, StageTime + "\n(" + StageRank + ")" , color);
+				resultLandscapeRowV.setResultLandscapeStageTime(stageNumber + 1, StageTime + "\n(" + StageRank + ")" , color);
 			}			
 			
-			ResultLandscapeRowV.setPosition(competitionRank);
+			resultLandscapeRowV.setPosition(competitionRank);
 			
-			return ResultLandscapeRowV;
+			return resultLandscapeRowV;
 		}
 		catch(Exception e){
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
