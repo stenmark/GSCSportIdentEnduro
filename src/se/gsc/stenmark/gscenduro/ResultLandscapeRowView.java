@@ -14,7 +14,10 @@ public class ResultLandscapeRowView extends LinearLayout {
 	LinearLayout mResultLandscapeTitle;
 	LinearLayout mResultLandscapeComp;
 	
+	TextView mResultLandscapeCompetitorClass;
+	
 	TextView mResultLandscapeName;
+	TextView mResultLandscapeStartNumber;
 	TextView mResultLandscapeTeam;
 	TextView mResultLandscapeTotalTime;
 	
@@ -45,6 +48,8 @@ public class ResultLandscapeRowView extends LinearLayout {
 		else
 		{
 			mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_landscape_ess_row, this);
+			mResultLandscapeCompetitorClass = (TextView) mCompoundView.findViewById(R.id.result_landscape_competitor_class);
+			mResultLandscapeStartNumber = (TextView) mCompoundView.findViewById(R.id.result_landscape_start_number);
 			mResultLandscapeTeam = (TextView) mCompoundView.findViewById(R.id.result_landscape_team);
 		}
 		mResultLandscapeTitle = (LinearLayout) mCompoundView.findViewById(R.id.result_landscape_title);
@@ -69,12 +74,24 @@ public class ResultLandscapeRowView extends LinearLayout {
 		super(context);
 		init(context);
 	}
+
+	public void setResultLandscapeCompetitorClass(String CompetitorClass) {
+		if (mResultLandscapeCompetitorClass != null) {
+			mResultLandscapeCompetitorClass.setText(CompetitorClass);
+		}
+	}		
 	
 	public void setResultLandscapeName(String Name) {
 		if (mResultLandscapeName != null) {
 			mResultLandscapeName.setText(Name);
 		}
 	}	
+
+	public void setResultLandscapeStartNumber(String StartNumber) {
+		if (mResultLandscapeStartNumber != null) {
+			mResultLandscapeStartNumber.setText(StartNumber);
+		}
+	}		
 	
 	public void setResultLandscapeTeam(String Team) {
 		if (mResultLandscapeTeam != null) {

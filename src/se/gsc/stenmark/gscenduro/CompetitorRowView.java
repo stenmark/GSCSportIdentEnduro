@@ -62,6 +62,11 @@ public class CompetitorRowView extends LinearLayout {
 		mCardButton.setOnClickListener(mOnPunchClickListener);
 	}
 
+	public CompetitorRowView(Context context) {
+		super(context);
+		init(context);
+	}	
+	
 	public CompetitorRowView(Context context, ListCompetitorAdapter Adapter) {
 		super(context);
 		try{		
@@ -250,14 +255,14 @@ public class CompetitorRowView extends LinearLayout {
 											
 											//todo
 											//om man ändrar namn, kortnumret eller startnumret så kollas inte det om det redan existerar
-											((MainActivity) mContext).competition.updateCompetitor(mPosition, mName.getText().toString(), mCardNumber.getText().toString(), 
+											((MainActivity) mContext).competition.updateCompetitorEss(mPosition, mName.getText().toString(), mCardNumber.getText().toString(), 
 														mTeam.getText().toString(), mClass.getText().toString(), mStartNumber.getText().toString(), mStartGroup.getText().toString());
 										}
 										else
 										{
 											//todo											
 											//om man ändrar kortnumret så kollas inte det om det redan existerar
-											((MainActivity) mContext).competition.updateCompetitorCardNumber(mPosition, mName.getText().toString(),mCardNumber.getText().toString());	
+											((MainActivity) mContext).competition.updateCompetitor(mPosition, mName.getText().toString(),mCardNumber.getText().toString());	
 										}																		
 										((MainActivity) mContext).updateFragments();
 									}

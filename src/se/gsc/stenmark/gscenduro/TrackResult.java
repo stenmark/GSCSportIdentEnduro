@@ -5,29 +5,19 @@ import java.io.Serializable;
 public class TrackResult implements Serializable {
 	
 	private static final long serialVersionUID = 201111020011L; 
-	
-	private String mNames;
 	private int mCardNumber;
+	private int mRank;
 	private Long mTrackTimes;
 	private Long mTrackTimesBack;
 	private Boolean mDNF;
 	
-	public TrackResult(String names, int cardNumber, Long trackTimes, Boolean DNF) {
-		setName(names);
+	public TrackResult(int cardNumber, Long trackTimes, Boolean DNF) {
 		setCardNumber(cardNumber);
 		setTrackTimes(trackTimes);
 		setTrackTimesBack((long) 0);
 		setDNF(DNF);
 	}
-	
-	public String getName() {
-	    return mNames;
-	}
 
-	public void setName(String name) {
-	    mNames = name;
-	}	
-	
 	public int getCardNumber() {
 	    return mCardNumber;
 	}
@@ -58,5 +48,13 @@ public class TrackResult implements Serializable {
 	
 	public void setDNF(Boolean DNF) {
 		mDNF = DNF;
+	}	
+	
+	public int getRank() {
+		return mRank;
+	}
+
+	public void setRank(int rank) {
+		mRank = rank;
 	}	
 }

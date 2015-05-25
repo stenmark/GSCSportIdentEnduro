@@ -10,163 +10,188 @@
         android:id="@+id/result_landscape_title"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal"
+		android:orientation="vertical"
 		android:layout_marginTop="4dp"
 		android:layout_marginLeft="12dp"
-		android:layout_marginRight="12dp"
-		android:layout_weight="1"
-		android:background="@color/black"
+		android:layout_marginRight="12dp"			
 		android:visibility="gone"
 		>
 
-    	<TextView		 	
-		    android:layout_width="0dp"
+	    <TextView		 	
+	        android:id="@+id/result_landscape_competitor_class"
+		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="NAME"
-		    android:layout_weight="1.5"		
-		    android:textColor="@color/white"    
-		    android:layout_marginLeft="4dp"
-	   	/>	
-	   	
-    	<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="TEAM"
-		    android:layout_weight="1.5"		
-		    android:textColor="@color/white"    
-		    android:layout_marginLeft="4dp"
-	   	/>	    	
-	   	
-       	<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="TIME"
-		    android:layout_weight="1"		
-		    android:textColor="@color/white"
-	   	/>	
-       	  	
-       	<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="S1"
-		    android:layout_weight="1"		
-		    android:textColor="@color/white"    
-		    android:gravity="center_horizontal"
-		    android:paddingLeft="2dp"
-		    android:paddingRight="2dp"
-	   	/>	  	
-	   	
-       	<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="S2"
-		    android:layout_weight="1"		
-		    android:textColor="@color/white"    
-		    android:gravity="center_horizontal"
-		    android:paddingLeft="2dp"
-		    android:paddingRight="2dp"		    
-	   	/>       		   	
-       	 
-	   	<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="S3"
-		    android:layout_weight="1"		
-		    android:textColor="@color/white"    
-		    android:gravity="center_horizontal"
-		    android:paddingLeft="2dp"
-		    android:paddingRight="2dp"		    
-	   	/>	       	
-	   	
-       	<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="S4"
-		    android:layout_weight="1"		
-		    android:textColor="@color/white"    
-		    android:gravity="center_horizontal"
-		    android:paddingLeft="2dp"
-		    android:paddingRight="2dp"		    
-	   	/>       	
-	   	       	
-	   	<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="S5"
-		    android:layout_weight="1"		
-		    android:textColor="@color/white"   
-		    android:gravity="center_horizontal"
-		    android:paddingLeft="2dp"
-		    android:paddingRight="2dp"		     
-	   	/>       	
-	   	       	
-	   	<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="S6"
-		    android:layout_weight="1"		
-		    android:textColor="@color/white"  
-		    android:gravity="center_horizontal"
-		    android:paddingLeft="2dp"
-		    android:paddingRight="2dp"		     
-	   	/>	       		   	       	
-	   	
-       	<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="S7"
-		    android:layout_weight="1"		
-		    android:textColor="@color/white"  
-		    android:gravity="center_horizontal"
-		    android:paddingLeft="2dp"
-		    android:paddingRight="2dp"  
-	   	/>     
-	   	
-		<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="S8"
-		    android:layout_weight="1"		
-		    android:textColor="@color/white"  
-		    android:gravity="center_horizontal"  
-		    android:paddingLeft="2dp"
-		    android:paddingRight="2dp"    
-	   	/>   
-	   	
-		<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="S9"
-		    android:layout_weight="1"		
-		    android:textColor="@color/white"  
-		    android:gravity="center_horizontal"  
-		    android:paddingLeft="2dp"
-		    android:paddingRight="2dp"		    
+		    android:textSize="24dp"		    
+		    android:text="Class"
+		    android:textColor="@color/blue"	 
 	   	/>
-		
-		<TextView		 	
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:textSize="10dp"		    
-		    android:text="S10"
-		    android:layout_weight="1"		
-		    android:textColor="@color/white"  
-		    android:gravity="center_horizontal"
-		    android:paddingLeft="2dp"
-		    android:paddingRight="2dp"		      
-	   	/> 	
+  	    		
+	    <LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_weight="1"	
+			android:background="@color/black"
+			>                
+	    	<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="NAME"
+			    android:layout_weight="1.5"		
+			    android:textColor="@color/white"    
+			    android:layout_marginLeft="4dp"
+		   	/>	
+		   
+	    	<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="#"
+			    android:layout_weight="0.8"		
+			    android:textColor="@color/white"    
+			    android:layout_marginLeft="4dp"
+		   	/>	    	
+	    		
+	    	<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="TEAM"
+			    android:layout_weight="1.5"		
+			    android:textColor="@color/white"    
+			    android:layout_marginLeft="4dp"
+		   	/>	    	
+		   	
+	       	<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="TIME"
+			    android:layout_weight="1"		
+			    android:textColor="@color/white"
+		   	/>	
+	       	  	
+	       	<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="S1"
+			    android:layout_weight="1"		
+			    android:textColor="@color/white"    
+			    android:gravity="center_horizontal"
+			    android:paddingLeft="2dp"
+			    android:paddingRight="2dp"
+		   	/>	  	
+		   	
+	       	<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="S2"
+			    android:layout_weight="1"		
+			    android:textColor="@color/white"    
+			    android:gravity="center_horizontal"
+			    android:paddingLeft="2dp"
+			    android:paddingRight="2dp"		    
+		   	/>       		   	
+	       	 
+		   	<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="S3"
+			    android:layout_weight="1"		
+			    android:textColor="@color/white"    
+			    android:gravity="center_horizontal"
+			    android:paddingLeft="2dp"
+			    android:paddingRight="2dp"		    
+		   	/>	       	
+		   	
+	       	<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="S4"
+			    android:layout_weight="1"		
+			    android:textColor="@color/white"    
+			    android:gravity="center_horizontal"
+			    android:paddingLeft="2dp"
+			    android:paddingRight="2dp"		    
+		   	/>       	
+		   	       	
+		   	<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="S5"
+			    android:layout_weight="1"		
+			    android:textColor="@color/white"   
+			    android:gravity="center_horizontal"
+			    android:paddingLeft="2dp"
+			    android:paddingRight="2dp"		     
+		   	/>       	
+		   	       	
+		   	<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="S6"
+			    android:layout_weight="1"		
+			    android:textColor="@color/white"  
+			    android:gravity="center_horizontal"
+			    android:paddingLeft="2dp"
+			    android:paddingRight="2dp"		     
+		   	/>	       		   	       	
+		   	
+	       	<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="S7"
+			    android:layout_weight="1"		
+			    android:textColor="@color/white"  
+			    android:gravity="center_horizontal"
+			    android:paddingLeft="2dp"
+			    android:paddingRight="2dp"  
+		   	/>     
+		   	
+			<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="S8"
+			    android:layout_weight="1"		
+			    android:textColor="@color/white"  
+			    android:gravity="center_horizontal"  
+			    android:paddingLeft="2dp"
+			    android:paddingRight="2dp"    
+		   	/>   
+		   	
+			<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="S9"
+			    android:layout_weight="1"		
+			    android:textColor="@color/white"  
+			    android:gravity="center_horizontal"  
+			    android:paddingLeft="2dp"
+			    android:paddingRight="2dp"		    
+		   	/>
+			
+			<TextView		 	
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:textSize="10dp"		    
+			    android:text="S10"
+			    android:layout_weight="1"		
+			    android:textColor="@color/white"  
+			    android:gravity="center_horizontal"
+			    android:paddingLeft="2dp"
+			    android:paddingRight="2dp"		      
+		   	/> 	
+		</LinearLayout>
     </LinearLayout>
     	   					    
     <LinearLayout 
@@ -193,6 +218,17 @@
 		    android:gravity="center_vertical"
 	   	/>	    	
 	   	
+    	<TextView		 	
+		    android:id="@+id/result_landscape_start_number"
+		    android:layout_width="0dp"
+		    android:layout_height="fill_parent"
+		    android:textSize="10dp"		    
+		    android:text="1"
+		    android:layout_weight="0.8"
+		    android:layout_marginLeft="4dp"
+		    android:gravity="center_vertical"
+	   	/>	    	
+    	
     	<TextView		 	
 		    android:id="@+id/result_landscape_team"
 		    android:layout_width="0dp"

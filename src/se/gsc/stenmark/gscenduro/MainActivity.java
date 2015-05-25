@@ -147,7 +147,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}	
 	
 	public void displayNewCard(Card newCard) {
-		String processNewCardStatus = competition.processNewCard(newCard);
+		String processNewCardStatus = competition.processNewCard(newCard, true);
 		if(processNewCardStatus.contains("Could not find any competitor")){
 			PopupMessage dialog = new PopupMessage( processNewCardStatus );
 			dialog.show( getSupportFragmentManager(), "popUp");

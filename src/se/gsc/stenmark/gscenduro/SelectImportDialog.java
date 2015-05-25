@@ -139,10 +139,12 @@ public class SelectImportDialog {
 														if (cardObject.getPunches().size() > 0)
 														{
 															if (cardObject.getCardNumber() != 0) {
-																((MainActivity)mMainActivity).competition.processNewCard(cardObject);
+																((MainActivity)mMainActivity).competition.processNewCard(cardObject, false);
 															}
 														}
 													}												
+													
+													((MainActivity)mMainActivity).competition.calculateResults();
 													
 													String statusMsg = punchParser.getStatus();
 													((MainActivity)mMainActivity).updateFragments();
@@ -219,10 +221,12 @@ public class SelectImportDialog {
 														if (cardObject.getPunches().size() > 0)
 														{
 															if (cardObject.getCardNumber() != 0) {
-																((MainActivity)mMainActivity).competition.processNewCard(cardObject);
+																((MainActivity)mMainActivity).competition.processNewCard(cardObject, false);
 															}
 														}
 													}
+													
+													((MainActivity)mMainActivity).competition.calculateResults();
 													
 													String statusMsg = competitionParser.getStatus();
 													((MainActivity)mMainActivity).updateFragments();

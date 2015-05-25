@@ -39,8 +39,7 @@ public class Competitor implements Comparable<Competitor>, Serializable {
 		setTrackTimes(null);
 	}
 
-	Competitor(String name, int cardNumber, String team,
-			String competitorClass, int startNumber, int startGroup) {
+	Competitor(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup) {
 		setName(name);
 		setCardNumber(cardNumber);
 		setCard(null);

@@ -2,16 +2,21 @@ package se.gsc.stenmark.gscenduro;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Result implements Serializable {
 	
 	private static final long serialVersionUID = 201111020001L; 	
-	private String mTitle;
-	private ArrayList<TrackResult> mTrackResult;
+	private String mTitle;	
+	private ArrayList<TrackResult> mTrackResult = new ArrayList<TrackResult>();
+	
+	public Result() {
+		setTitle("");
+	}
 	
 	public Result(String title) {
 		setTitle(title);
-		setTrackResult(new ArrayList<TrackResult>());
 	}
 	
 	public String getTitle() {
@@ -27,6 +32,50 @@ public class Result implements Serializable {
 	}		
 	
 	public void setTrackResult(ArrayList<TrackResult> trackResult) {
-		mTrackResult = trackResult;
-	}			
+		mTrackResult = trackResult;	
+	}		
+	
+	public void sortTrackResult() {
+		
+		if (mTrackResult.size() > 0) {		
+			Collections.sort(mTrackResult, new Comparator<TrackResult>() {
+				@Override
+				public int compare(TrackResult lhs, TrackResult rhs) {
+					if (lhs.getDNF()) {
+						return 1;
+					} else {
+						return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
+					}
+				}
+			});
+		
+			//Calculate rank		
+			int rank = 1;		
+			if (mTrackResult.get(0).getTrackTimes() == Integer.MAX_VALUE)
+			{
+				//No results, set all to dnf
+				for (int i = 0; i < mTrackResult.size(); i++) {	
+					mTrackResult.get(i).setRank(Integer.MAX_VALUE);
+				}
+			}
+			else
+			{
+				mTrackResult.get(0).setRank(rank);			
+				for (int i = 1; i < mTrackResult.size(); i++) {				
+					if (mTrackResult.get(i).getTrackTimes() > mTrackResult.get(i - 1).getTrackTimes()) {
+						rank = i + 1;
+					}
+					
+					if (mTrackResult.get(i).getTrackTimes() == Integer.MAX_VALUE)
+					{
+						mTrackResult.get(i).setRank(Integer.MAX_VALUE);
+					}
+					else
+					{			
+						mTrackResult.get(i).setRank(rank);
+					}
+				}
+			}
+		}
+	}	
 }

@@ -23,7 +23,7 @@ import android.view.View.MeasureSpec;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import se.gsc.stenmark.gscenduro.ResultLandscape;
+import se.gsc.stenmark.gscenduro.Result;
 import se.gsc.stenmark.gscenduro.TrackResult;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
@@ -62,8 +62,7 @@ public class CompetitionHelper {
 		}
 	}
 
-	public static String getCompetitionAsCsvString(String CompetitionName,
-			List<TrackMarker> Track, ArrayList<Competitor> Competitors) {
+	public static String getCompetitionAsCsvString(String CompetitionName, List<TrackMarker> Track, ArrayList<Competitor> Competitors) {
 		String competitionData = "";
 
 		// Competition Name
@@ -93,9 +92,9 @@ public class CompetitionHelper {
 		return competitionData;
 	}
 
-	public static String getResultsAsCsvString(List<TrackMarker> Track,
-			List<ResultLandscape> ResultLandscape) {
+	public static String getResultsAsCsvString(List<TrackMarker> Track, List<Result> ResultLandscape) {
 		String resultData = "";
+		/*		
 
 		resultData = "Rank,Name,Card Number,Total Time,";
 		for (int i = 0; i < Track.size(); i++) {
@@ -105,8 +104,10 @@ public class CompetitionHelper {
 
 		int rank = 1;
 		for (ResultLandscape res : ResultLandscape) {
-			resultData += String.valueOf(rank) + "," + res.getName() + ","
-					+ res.getCardNumber() + ",";
+			
+			String name = ((MainActivity) mContext).competition.getCompetitor(cardNumber).getName();
+			
+			resultData += String.valueOf(rank) + "," + res.getName() + "," + res.getCardNumber() + ",";
 
 			if (res.getTotalTime() == Integer.MAX_VALUE) {
 				resultData += "--:--" + ",";
@@ -115,8 +116,7 @@ public class CompetitionHelper {
 					resultData += "--:--" + ",";
 				} else {
 
-					resultData += CompetitionHelper.secToMinSec(res
-							.getTotalTime()) + ",";
+					resultData += CompetitionHelper.secToMinSec(res.getTotalTime()) + ",";
 				}
 			}
 
@@ -141,7 +141,7 @@ public class CompetitionHelper {
 		}
 
 		resultData += "\n\n";
-
+*/
 		return resultData;
 	}
 

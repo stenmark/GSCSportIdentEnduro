@@ -10,6 +10,9 @@ public class PopupMessage2 extends DialogFragment {
 
 	private String message;
 
+	public PopupMessage2() {		
+	}
+	
 	public PopupMessage2(String message) {
 		this.message = message;
 	}

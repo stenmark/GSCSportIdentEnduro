@@ -38,7 +38,6 @@ public class PunchParser implements Serializable {
 		int lineNumber = 0;
 		while ((line = bufReader.readLine()) != null) {
 			lineNumber++;
-
 			mStatus += Integer.toString(lineNumber) + ". ";
 
 			// count so at least 3, each line
@@ -49,7 +48,7 @@ public class PunchParser implements Serializable {
 					number++;
 				}
 			}
-
+		
 			if (number < 3) {
 				if (line.length() == 0) {
 					mStatus += "Error adding, because of empty line\n";
@@ -71,21 +70,23 @@ public class PunchParser implements Serializable {
 				}
 
 				for (int i = 0; i < competitors.size(); i++) {
-					if (competitors.get(i).getCardNumber() == Integer
-							.parseInt(cardNumber)) {
-						cardObject.setCardNumber(competitors.get(i)
-								.getCardNumber());
+					if (competitors.get(i).getCardNumber() == Integer.parseInt(cardNumber)) {
+						cardObject.setCardNumber(competitors.get(i).getCardNumber());
 						while (start < line.length()) {
 							end = line.indexOf(",", start);
 							String control = line.substring(start, end);
 							start = end + 1;
-
+														
 							end = line.indexOf(",", start);
-							String time = line.substring(start, end);
-							start = end + 1;
-
-							Punch punchObject = new Punch(Long.valueOf(time),
-									Long.valueOf(control));
+							String time;
+							if (end == -1) {
+								time = line.substring(start, line.length());
+								start = line.length() + 1;
+							} else {											
+								time = line.substring(start, end);
+								start = end + 1;
+							}							
+							Punch punchObject = new Punch(Long.valueOf(time), Long.valueOf(control));
 							cardObject.getPunches().add(punchObject);
 						}
 					}
