@@ -4,11 +4,11 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 
-public class ResultListFragment extends ListFragment {
+public class ResultsFragment extends ListFragment {
 	
 	private MainActivity mMainActivity = null;
-	private ListResultAdapter mResultsAdapter;
-	private ListResultLandscapeAdapter mResultLandscapeAdapter;
+	private ResultsListAdapter mResultsAdapter;
+	private ResultsListLandscapeAdapter mResultLandscapeAdapter;
 	
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -20,33 +20,32 @@ public class ResultListFragment extends ListFragment {
 		
 		mMainActivity = ((MainActivity) getActivity());		 
 		
-		mResultsAdapter = new ListResultAdapter(mMainActivity, mMainActivity.competition.getResults());	
+		mResultsAdapter = new ResultsListAdapter(mMainActivity, mMainActivity.competition.getResults());	
 		setListAdapter(mResultsAdapter);
 		
 		Configuration configuration = getResources().getConfiguration(); 						
 		if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
 		{
-			mResultsAdapter = new ListResultAdapter(mMainActivity, mMainActivity.competition.getResults());	
+			mResultsAdapter = new ResultsListAdapter(mMainActivity, mMainActivity.competition.getResults());	
 			setListAdapter(mResultsAdapter);
 		} 
 		else if(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE )
 		{
-			mResultLandscapeAdapter = new ListResultLandscapeAdapter(mMainActivity, mMainActivity.competition.getResultLandscape());			
+			mResultLandscapeAdapter = new ResultsListLandscapeAdapter(mMainActivity, mMainActivity.competition.getResultLandscape());			
 			setListAdapter(mResultLandscapeAdapter);
 		}		
 	}	
 
-	public ListResultAdapter getResultAdapter() {
+	public ResultsListAdapter getResultAdapter() {
 		return mResultsAdapter;
 	}	
 	
-	public ListResultLandscapeAdapter getResultLandscapeAdapter() {
+	public ResultsListLandscapeAdapter getResultLandscapeAdapter() {
 		return mResultLandscapeAdapter;
 	}		
 	
 	@Override
-	public void onDestroyView()
-	{
+	public void onDestroyView() {
 	    super.onDestroyView();
 
 	    // free adapter

@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class ResultLandscapeRowView extends LinearLayout {
+public class ResultsLandscapeRowView extends LinearLayout {
 	
 	Context mContext;	
 	
@@ -41,12 +41,9 @@ public class ResultLandscapeRowView extends LinearLayout {
 
 		mContext = context;
 		
-		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE)
-		{		
+		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE) {		
 			mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_landscape_row, this);
-		}
-		else
-		{
+		} else {
 			mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_landscape_ess_row, this);
 			mResultLandscapeCompetitorClass = (TextView) mCompoundView.findViewById(R.id.result_landscape_competitor_class);
 			mResultLandscapeStartNumber = (TextView) mCompoundView.findViewById(R.id.result_landscape_start_number);
@@ -70,7 +67,7 @@ public class ResultLandscapeRowView extends LinearLayout {
 		mResultLandscapeStageTime10 = (TextView) mCompoundView.findViewById(R.id.result_landscape_ss10_time);
 	}
 
-	public ResultLandscapeRowView(Context context) {
+	public ResultsLandscapeRowView(Context context) {
 		super(context);
 		init(context);
 	}
@@ -124,8 +121,7 @@ public class ResultLandscapeRowView extends LinearLayout {
 	}
 	
 	public TextView getStageTimeView(int Time) {
-		switch(Time)
-		{
+		switch(Time) {
 		case 1:
 			return mResultLandscapeStageTime1;
 		case 2:

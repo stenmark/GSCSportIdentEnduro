@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class ResultRowView extends LinearLayout {
+public class ResultsRowView extends LinearLayout {
 	
 	Context mContext;
 	TextView mTitle;
@@ -23,8 +23,7 @@ public class ResultRowView extends LinearLayout {
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		mContext = context;
-		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE)
-		{
+		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE) {
 			mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_row, this);
 		} else {
 			mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_ess_row, this);
@@ -38,7 +37,7 @@ public class ResultRowView extends LinearLayout {
 		mResultTimeBack = (TextView) mCompoundView.findViewById(R.id.result_time_back);
 	}
 
-	public ResultRowView(Context context) {
+	public ResultsRowView(Context context) {
 		super(context);
 		Init(context);
 	}

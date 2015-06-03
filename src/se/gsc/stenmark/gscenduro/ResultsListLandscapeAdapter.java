@@ -11,12 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-public class ListResultLandscapeAdapter extends BaseAdapter {
+public class ResultsListLandscapeAdapter extends BaseAdapter {
 	
 	private Context mContext;
-	private List<Result> mResultLandscape = new ArrayList<Result>();
+	private List<Results> mResultLandscape = new ArrayList<Results>();
 
-	public ListResultLandscapeAdapter(Context context, List<Result> Items) {
+	public ResultsListLandscapeAdapter(Context context, List<Results> Items) {
 		mContext = context;
 		mResultLandscape = Items;		
 	}		
@@ -27,11 +27,11 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 	}
 	
 	@Override
-	public Result getItem(int position) {
+	public Results getItem(int position) {
 		return mResultLandscape.get(position);
 	}
 
-	public List<Result> getData() {
+	public List<Results> getData() {
 	    return mResultLandscape;
 	}	
 	
@@ -49,21 +49,18 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		try{			
-			ResultLandscapeRowView resultLandscapeRowV = null;	
+			ResultsLandscapeRowView resultLandscapeRowV = null;	
 			
 			if (convertView == null) {
-				resultLandscapeRowV = new ResultLandscapeRowView(mContext);
+				resultLandscapeRowV = new ResultsLandscapeRowView(mContext);
 			} else {
-				resultLandscapeRowV = (ResultLandscapeRowView) convertView;
+				resultLandscapeRowV = (ResultsLandscapeRowView) convertView;
 			}
 	
-			if (position == 0)
-			{
+			if (position == 0) {
 				resultLandscapeRowV.setTitle();
 				resultLandscapeRowV.setResultLandscapeCompetitorClass(mResultLandscape.get(position).getTitle());
-			}
-			else
-			{
+			} else {
 				if (mResultLandscape.get(position).getTitle() == mResultLandscape.get(position - 1).getTitle()) {
 					resultLandscapeRowV.clearTitle();
 				} else {
@@ -77,8 +74,7 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 			
 			int rank = mResultLandscape.get(position).getTrackResult().get(0).getRank();
 			String name = "";
-			if (rank == Integer.MAX_VALUE)
-			{			
+			if (rank == Integer.MAX_VALUE) {			
 				name += "-. ";
 			} else {
 				name += rank + ". ";
@@ -97,15 +93,13 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 			resultLandscapeRowV.setResultLandscapeTotalTime(CompetitionHelper.secToMinSec(totalTime));				
 			
 			//First clear all stages
-			for(int stageNumber = 1; stageNumber < 11; stageNumber++) 
-			{
+			for(int stageNumber = 1; stageNumber < 11; stageNumber++) {
 				resultLandscapeRowV.setResultLandscapeStageTime(stageNumber, "", Color.WHITE);
 			}
 			
-			for(int stageNumber = 1; stageNumber < mResultLandscape.get(position).getTrackResult().size(); stageNumber++) 
-			{
+			for(int stageNumber = 1; stageNumber < mResultLandscape.get(position).getTrackResult().size(); stageNumber++) {
 				Long fastestTimeOnStage = Long.MAX_VALUE;
-				for(Result resultFastest : mResultLandscape){
+				for(Results resultFastest : mResultLandscape){
 					
 					if (mResultLandscape.get(position).getTitle() == resultFastest.getTitle()) {						
 						try{
@@ -117,7 +111,7 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 				}
 				
 				Long slowestTimeOnStage = Long.MIN_VALUE;
-				for(Result resultSlowest : mResultLandscape){
+				for(Results resultSlowest : mResultLandscape){
 					if (mResultLandscape.get(position).getTitle() == resultSlowest.getTitle()) {
 						try{
 							slowestTimeOnStage = Math.max(slowestTimeOnStage, resultSlowest.getTrackResult().get(stageNumber).getTrackTimes());
@@ -131,13 +125,10 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 				
 				rank = mResultLandscape.get(position).getTrackResult().get(stageNumber).getRank();
 				int color;
-				if (rank == Integer.MAX_VALUE)
-				{
+				if (rank == Integer.MAX_VALUE) {
 					StageTime = "";
 					color = Color.WHITE;
-				}
-				else
-				{
+				} else {
 					StageTime += "\n(" + String.valueOf(rank) + ")";											
 					Long competitorStageTime = mResultLandscape.get(position).getTrackResult().get(stageNumber).getTrackTimes();		
 					float myTimeDiff = competitorStageTime - fastestTimeOnStage;
@@ -151,11 +142,10 @@ public class ListResultLandscapeAdapter extends BaseAdapter {
 			resultLandscapeRowV.setPosition(position);
 			
 			return resultLandscapeRowV;
-		}
-		catch(Exception e){
+		} catch(Exception e) {
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
-			return new ResultLandscapeRowView(mContext);
+			return new ResultsLandscapeRowView(mContext);
 		}
 	}
 	

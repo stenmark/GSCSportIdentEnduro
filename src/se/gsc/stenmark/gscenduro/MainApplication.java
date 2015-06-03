@@ -7,9 +7,9 @@ public class MainApplication extends Application {
 
 	private static Context context;
 
-	public static StartScreenFragment startScreenFragment = null;
-	public static ResultListFragment resultListFragment = null;
-	public static CompMangementFragment compMangementFragment = null;	
+	public static StartFragment startScreenFragment = null;
+	public static ResultsFragment resultListFragment = null;
+	public static CompetitorsFragment compMangementFragment = null;	
 	
 	public void onCreate() {
 		super.onCreate();

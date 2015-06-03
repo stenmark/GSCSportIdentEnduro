@@ -10,7 +10,7 @@ import android.widget.TextView;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class StartScreenFragment extends Fragment {
+public class StartFragment extends Fragment {
 	
 	private MainActivity mMainActivity;
 	private boolean inView = false;
@@ -38,7 +38,7 @@ public class StartScreenFragment extends Fragment {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.main_fragment, container,	false);
+		View rootView = inflater.inflate(R.layout.start_fragment, container,	false);
         
 		TextView connectButton = (TextView) rootView.findViewById(R.id.connect_button);
 		connectButton.setOnClickListener(new OnClickListener() {
@@ -70,15 +70,41 @@ public class StartScreenFragment extends Fragment {
 	
 	public void updateCompetitionStatus(){
 		if(inView){
-			try {
-				TextView statusTextView = (TextView) getView().findViewById(R.id.competition_name);	
-				statusTextView.setText("Name: " + mMainActivity.competition.getCompetitionName());
+			try {						
+				TextView statusTextView;				
+				
+				statusTextView = (TextView) getView().findViewById(R.id.competition_competition_date);	
+				statusTextView.setText(mMainActivity.competition.getCompetitionDate());
+				
+				statusTextView = (TextView) getView().findViewById(R.id.competition_type);				
+				if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE) {
+					statusTextView.setText("SvartVitt");	
+				} else {
+					statusTextView.setText("Enduro Sweden Series");
+				}
+				
+				statusTextView = (TextView) getView().findViewById(R.id.competition_name);	
+				statusTextView.setText(mMainActivity.competition.getCompetitionName());
 				
 				statusTextView = (TextView) getView().findViewById(R.id.track_status);	
-				statusTextView.setText("Track: " + mMainActivity.competition.getTrackAsString());
+				statusTextView.setText(mMainActivity.competition.getTrackAsString());
 				
 				statusTextView = (TextView) getView().findViewById(R.id.competitor_status);	
-				statusTextView.setText("Number of competitors: " + mMainActivity.competition.getNumbeofCompetitors());
+				if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE) {
+					statusTextView.setText("Total: " + mMainActivity.competition.getNumbeofCompetitors());
+				} else {					
+					String numberOfCompetitors = "";
+					for (String competitorClass : mMainActivity.competition.getCompetitorClasses()) {
+						
+						if (numberOfCompetitors.length() != 0) {
+							numberOfCompetitors += "\n";
+						}
+						
+						numberOfCompetitors += competitorClass + ": " + mMainActivity.competition.getNumberOfCompetitors(competitorClass);
+					}
+					
+					statusTextView.setText("Total: " + mMainActivity.competition.getNumbeofCompetitors() + "\n" + numberOfCompetitors);					
+				}
 			} catch (Exception e) {
 				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 				dialog.show(getFragmentManager(), "popUp");

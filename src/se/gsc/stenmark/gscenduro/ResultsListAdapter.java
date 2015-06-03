@@ -5,17 +5,16 @@ import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-public class ListResultAdapter extends BaseAdapter {
+public class ResultsListAdapter extends BaseAdapter {
 	
 	private Context mContext;
-	private List<Result> mResult = new ArrayList<Result>();
+	private List<Results> mResult = new ArrayList<Results>();
 
-	public ListResultAdapter(Context context, List<Result> Items) {
+	public ResultsListAdapter(Context context, List<Results> Items) {
 		mContext = context;
 		mResult = Items;		
 	}		
@@ -26,11 +25,11 @@ public class ListResultAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public Result getItem(int position) {
+	public Results getItem(int position) {
 		return mResult.get(position);
 	}
 
-	public List<Result> getData() {
+	public List<Results> getData() {
 	    return mResult;
 	}
 	
@@ -47,12 +46,12 @@ public class ListResultAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		ResultRowView resultRowV = null;
+		ResultsRowView resultRowV = null;
 
 		if (convertView == null) {
-			resultRowV = new ResultRowView(mContext);
+			resultRowV = new ResultsRowView(mContext);
 		} else {
-			resultRowV = (ResultRowView) convertView;
+			resultRowV = (ResultsRowView) convertView;
 		}
 		
 		resultRowV.setTitle(mResult.get(position).getTitle());
@@ -63,11 +62,9 @@ public class ListResultAdapter extends BaseAdapter {
 		String Time = "";
 		String TimeBack = "";
 		
-		for(int i = 0; i < mResult.get(position).getTrackResult().size(); i++)
-		{
+		for(int i = 0; i < mResult.get(position).getTrackResult().size(); i++) {
 			int rank = mResult.get(position).getTrackResult().get(i).getRank();			
-			if (rank == Integer.MAX_VALUE)
-			{			
+			if (rank == Integer.MAX_VALUE) {			
 				Name += "-. ";
 			} else {
 				Name += rank + ". ";

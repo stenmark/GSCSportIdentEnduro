@@ -14,16 +14,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-public class SelectImportDialog {
+public class DialogSelectImport {
 	
 	private ImportOnClickListener mImportOnClickListener;
 	private MainActivity mMainActivity;
 	private CharSequence[] items = {"Competitors", "Punches", "Competition"};
 	ImportOnClickListener mRadioButtonListener;
 	
-	public SelectImportDialog(ImportOnClickListener importOnClickListener,
-							  MainActivity MainActivity,
-							  ImportOnClickListener radioButtonListener) {
+	public DialogSelectImport(ImportOnClickListener importOnClickListener, MainActivity MainActivity, ImportOnClickListener radioButtonListener) {
 		mImportOnClickListener = importOnClickListener;
 		mMainActivity = MainActivity;
 		mRadioButtonListener = radioButtonListener;
@@ -35,21 +33,17 @@ public class SelectImportDialog {
         builder.setTitle("What do you want to import?");	            
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 		    @Override
-		    public void onClick(DialogInterface dialog, int item)
-		    {
-				switch(mRadioButtonListener.which)
-				{				
+		    public void onClick(DialogInterface dialog, int item) {
+				switch(mRadioButtonListener.which) {				
 				case 0:
 					try {
 						LayoutInflater li = LayoutInflater.from(mMainActivity);
 						View promptsView = li.inflate(R.layout.import_competitors, null);
 
-						AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);
-
-						alertDialogBuilder.setView(promptsView);
-
 						final EditText importCompetitorsInput = (EditText) promptsView.findViewById(R.id.import_competitors_input);
-
+						
+						AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);
+						alertDialogBuilder.setView(promptsView);
 						alertDialogBuilder
 								.setCancelable(false)
 								.setPositiveButton("Add",
@@ -58,16 +52,13 @@ public class SelectImportDialog {
 												try {													
 													CompetitorParser competitorParser = new CompetitorParser();
 													
-													if (((MainActivity)mMainActivity).competition.getCompetitionType() == ((MainActivity)mMainActivity).competition.ESS_TYPE)
-													{
+													if (((MainActivity)mMainActivity).competition.getCompetitionType() == ((MainActivity)mMainActivity).competition.ESS_TYPE) {
 														competitorParser.parseEssCompetitors(importCompetitorsInput.getText().toString());
 														for (Competitor competitorObject : competitorParser.getCompetitors()) {		
 															((MainActivity)mMainActivity).competition.addCompetitor(competitorObject.getName(), competitorObject.getCardNumber(), competitorObject.getTeam(), 
 																	competitorObject.getCompetitorClass(), competitorObject.getStartNumber(), competitorObject.getStartGroup());
 														}
-													}
-													else
-													{													
+													} else {													
 														competitorParser.parseCompetitors(importCompetitorsInput.getText().toString());
 														for (Competitor competitorObject : competitorParser.getCompetitors()) {		
 															((MainActivity)mMainActivity).competition.addCompetitor(competitorObject.getName(), competitorObject.getCardNumber(), "", "", 0, 0);
@@ -79,8 +70,7 @@ public class SelectImportDialog {
 													
 													AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 											        builder.setIcon(android.R.drawable.ic_dialog_alert);
-											        builder.setMessage(statusMsg).setTitle("Import competitor status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener()
-											        {
+											        builder.setMessage(statusMsg).setTitle("Import competitor status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 											            public void onClick(DialogInterface dialog, int which) {}
 											        });
 											 
@@ -120,12 +110,10 @@ public class SelectImportDialog {
 						LayoutInflater li = LayoutInflater.from(mMainActivity);
 						View promptsView = li.inflate(R.layout.import_punches, null);
 
-						AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);
-
-						alertDialogBuilder.setView(promptsView);
-
 						final EditText importPunchesInput = (EditText) promptsView.findViewById(R.id.import_punches_input);
-
+						
+						AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);
+						alertDialogBuilder.setView(promptsView);
 						alertDialogBuilder
 								.setCancelable(false)
 								.setPositiveButton("Add",
@@ -136,8 +124,7 @@ public class SelectImportDialog {
 													punchParser.parsePunches(importPunchesInput.getText().toString(), ((MainActivity)mMainActivity).competition.getCompetitors());
 																										
 													for (Card cardObject : punchParser.getCards()) {		
-														if (cardObject.getPunches().size() > 0)
-														{
+														if (cardObject.getPunches().size() > 0) {
 															if (cardObject.getCardNumber() != 0) {
 																((MainActivity)mMainActivity).competition.processNewCard(cardObject, false);
 															}
@@ -151,8 +138,7 @@ public class SelectImportDialog {
 													
 													AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 											        builder.setIcon(android.R.drawable.ic_dialog_alert);
-											        builder.setMessage(statusMsg).setTitle("Import punches status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener()
-											        {
+											        builder.setMessage(statusMsg).setTitle("Import punches status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 											            public void onClick(DialogInterface dialog, int which) {}
 											        });
 											 
@@ -163,8 +149,7 @@ public class SelectImportDialog {
 
 													AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 											        builder.setIcon(android.R.drawable.ic_dialog_alert);
-											        builder.setMessage(statusMsg).setTitle("Error importing punches").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener()
-											        {
+											        builder.setMessage(statusMsg).setTitle("Error importing punches").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 											            public void onClick(DialogInterface dialog, int which) {}
 											        });			
 											        AlertDialog alert = builder.create();
@@ -174,8 +159,7 @@ public class SelectImportDialog {
 										})
 								.setNegativeButton("Cancel",
 										new DialogInterface.OnClickListener() {
-											public void onClick(DialogInterface dialog,
-													int id) {
+											public void onClick(DialogInterface dialog, int id) {
 												dialog.cancel();
 											}
 										});
@@ -192,12 +176,10 @@ public class SelectImportDialog {
 						LayoutInflater li = LayoutInflater.from(mMainActivity);
 						View promptsView = li.inflate(R.layout.import_competition, null);
 
-						AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);
-
-						alertDialogBuilder.setView(promptsView);
-
 						final EditText importCompetitorsInput = (EditText) promptsView.findViewById(R.id.import_competition_input);
-
+						
+						AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);
+						alertDialogBuilder.setView(promptsView);
 						alertDialogBuilder
 								.setCancelable(false)
 								.setPositiveButton("Add",
@@ -218,8 +200,7 @@ public class SelectImportDialog {
 													}
 													
 													for (Card cardObject : competitionParser.getCards()) {		
-														if (cardObject.getPunches().size() > 0)
-														{
+														if (cardObject.getPunches().size() > 0) {
 															if (cardObject.getCardNumber() != 0) {
 																((MainActivity)mMainActivity).competition.processNewCard(cardObject, false);
 															}
@@ -233,8 +214,7 @@ public class SelectImportDialog {
 													
 													AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 											        builder.setIcon(android.R.drawable.ic_dialog_alert);
-											        builder.setMessage(statusMsg).setTitle("Import competition status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener()
-											        {
+											        builder.setMessage(statusMsg).setTitle("Import competition status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 											            public void onClick(DialogInterface dialog, int which) {}
 											        });
 											 
@@ -245,8 +225,7 @@ public class SelectImportDialog {
 
 													AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 											        builder.setIcon(android.R.drawable.ic_dialog_alert);
-											        builder.setMessage(statusMsg).setTitle("Error importing Competition").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener()
-											        {
+											        builder.setMessage(statusMsg).setTitle("Error importing Competition").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 											            public void onClick(DialogInterface dialog, int which) {}
 											        });		
 											        AlertDialog alert = builder.create();
@@ -272,8 +251,7 @@ public class SelectImportDialog {
 		    }});
 		builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
 		    @Override
-		    public void onClick(DialogInterface dialog, int item)
-		    {
+		    public void onClick(DialogInterface dialog, int item) {
 		    	dialog.dismiss();
 		    }});	            
     	builder.setSingleChoiceItems(items,0, mImportOnClickListener);    	

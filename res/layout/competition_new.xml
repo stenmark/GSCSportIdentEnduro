@@ -16,18 +16,55 @@
 		android:layout_marginRight="8dp"			
 		>  
 
-		<TextView
-		   android:layout_width="fill_parent"
-		   android:layout_height="wrap_content"
-		   android:textSize="16sp"
-		   android:text="New competition"
-		   android:textStyle="bold"
-		   android:layout_weight="1"		
-		   android:padding="4dp"
-		   android:textColor="@color/white"		
-		   android:background="@color/black"   	        
-		   />          
-    
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_weight="1"		
+			android:padding="4dp"		
+			>    
+			
+		     <TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="16sp"
+		        android:text="Name:"        
+		        />  
+		        
+		    <EditText
+		        android:id="@+id/new_competition_input"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		    </EditText>	    
+		</LinearLayout>			
+		
+	   	<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"	
+			android:layout_weight="1"	
+			android:padding="4dp"			
+			> 
+			
+		    <RadioGroup
+		        android:id="@+id/radio_type_of_competition"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content" >		 
+		        <RadioButton
+		            android:id="@+id/radio_type_svartvitt"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="SvartVitt" 
+					android:checked="true" />
+		        
+		        <RadioButton
+		            android:id="@+id/radio_type_ess"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="ESS" />
+		    </RadioGroup>		    		    
+		</LinearLayout>				
+		
 	   	<LinearLayout 
 	   	    android:id="@+id/add_track_spinner_layout"
 			android:layout_width="fill_parent"
@@ -85,29 +122,7 @@
 		        android:textSize="8sp"
 		        android:text="@string/start_track_info" />	
 		</LinearLayout>			   	
-	   	
-		<LinearLayout 
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-			android:layout_weight="1"		
-			android:padding="4dp"		
-			>    
-			
-		     <TextView
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:textSize="16sp"
-		        android:text="Name:"        
-		        />  
-		        
-		    <EditText
-		        android:id="@+id/new_competition_input"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content" >
-		    </EditText>	    
-		</LinearLayout>		
-		
+
 		<LinearLayout 
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"

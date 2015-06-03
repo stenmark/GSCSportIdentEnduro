@@ -5,14 +5,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
 
-public class SelectExportDialog {
+public class DialogSelectExport {
 	
 	private ExportOnClickListener mExportOnClickListener;
 	private MainActivity mMainActivity;
 	private CharSequence[] items = {"Competitors", "Results", "Punches", "Competition", "All"};
 	ExportOnClickListener mRadioButtonListener;
 	
-	public SelectExportDialog(ExportOnClickListener exportOnClickListener,
+	public DialogSelectExport(ExportOnClickListener exportOnClickListener,
 							  MainActivity MainActivity,
 							  ExportOnClickListener radioButtonListener) {
 		mExportOnClickListener = exportOnClickListener;
@@ -26,10 +26,8 @@ public class SelectExportDialog {
         builder.setTitle("What do you want to export?");	            
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 		    @Override
-		    public void onClick(DialogInterface dialog, int item)
-		    {
-				switch(mRadioButtonListener.which)
-				{				
+		    public void onClick(DialogInterface dialog, int item) {
+				switch(mRadioButtonListener.which) {				
 				case 0:
 					try {
 						mMainActivity.competition.exportCompetitorsAsCsv(mMainActivity);
@@ -73,11 +71,10 @@ public class SelectExportDialog {
 		    }});
 		builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
 		    @Override
-		    public void onClick(DialogInterface dialog, int item)
-		    {
+		    public void onClick(DialogInterface dialog, int item) {
 		    	dialog.dismiss();
 		    }});	            
-    	builder.setSingleChoiceItems(items,0, mExportOnClickListener);
+    	builder.setSingleChoiceItems(items, 0, mExportOnClickListener);
     	
 		AlertDialog loadDialog = builder.create();
         loadDialog.show();        

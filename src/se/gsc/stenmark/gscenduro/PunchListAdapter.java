@@ -10,12 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-public class ListPunchAdapter extends BaseAdapter {
+public class PunchListAdapter extends BaseAdapter {
 	
 	private Context mContext;
 	private List<Punch> mPunches = new ArrayList<Punch>();
 
-	public ListPunchAdapter(Context context, List<Punch> Items) {
+	public PunchListAdapter(Context context, List<Punch> Items) {
 		mContext = context;
 		mPunches = Items;
 	}		

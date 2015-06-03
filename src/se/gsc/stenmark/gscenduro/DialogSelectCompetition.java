@@ -10,14 +10,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
 
-public class SelectCompetitionDialog {
+public class DialogSelectCompetition {
 	
 	private List<String> competitions;
 	private CompetitionOnClickListener competitionOnClickListener;
 	private MainActivity mMainActivity;
 	CompetitionOnClickListener radioButtonListener;
 	
-	public SelectCompetitionDialog( List<String> competitions, 
+	public DialogSelectCompetition( List<String> competitions, 
 									CompetitionOnClickListener competitionOnClickListener,
 									MainActivity mMainActivity,
 									CompetitionOnClickListener radioButtonListener) {
@@ -30,7 +30,7 @@ public class SelectCompetitionDialog {
     public void createSelectCompetitionDialog() {
 		CharSequence[] items = new String[competitions.size()];
         int i = 0;
-        for(String competition : competitions) {
+        for (String competition : competitions) {
         	items[i] = competition;
         	i++;
         }
@@ -40,8 +40,7 @@ public class SelectCompetitionDialog {
         builder.setTitle("Select competition to load");	            
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 		    @Override
-		    public void onClick(DialogInterface dialog, int item)
-		    {
+		    public void onClick(DialogInterface dialog, int item) {
 		    	try {
 		    		List<String> savedCompetitions = CompetitionHelper.getSavedCompetitionsAsList();
 					String selectedItem = savedCompetitions.get(radioButtonListener.which);
@@ -54,8 +53,7 @@ public class SelectCompetitionDialog {
 		    }});
 		builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
 		    @Override
-		    public void onClick(DialogInterface dialog, int item)
-		    {
+		    public void onClick(DialogInterface dialog, int item) {
 		    	dialog.dismiss();
 		    }});	            
     	builder.setSingleChoiceItems(items,0, competitionOnClickListener );

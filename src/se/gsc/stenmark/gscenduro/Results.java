@@ -5,17 +5,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class Result implements Serializable {
+public class Results implements Serializable {
 	
 	private static final long serialVersionUID = 201111020001L; 	
 	private String mTitle;	
 	private ArrayList<TrackResult> mTrackResult = new ArrayList<TrackResult>();
 	
-	public Result() {
+	public Results() {
 		setTitle("");
 	}
 	
-	public Result(String title) {
+	public Results(String title) {
 		setTitle(title);
 	}
 	
@@ -41,7 +41,7 @@ public class Result implements Serializable {
 			Collections.sort(mTrackResult, new Comparator<TrackResult>() {
 				@Override
 				public int compare(TrackResult lhs, TrackResult rhs) {
-					if (lhs.getDNF()) {
+					if (lhs.getDnf()) {
 						return 1;
 					} else {
 						return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
@@ -66,12 +66,9 @@ public class Result implements Serializable {
 						rank = i + 1;
 					}
 					
-					if (mTrackResult.get(i).getTrackTimes() == Integer.MAX_VALUE)
-					{
+					if (mTrackResult.get(i).getTrackTimes() == Integer.MAX_VALUE) {
 						mTrackResult.get(i).setRank(Integer.MAX_VALUE);
-					}
-					else
-					{			
+					} else {			
 						mTrackResult.get(i).setRank(rank);
 					}
 				}

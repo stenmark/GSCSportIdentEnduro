@@ -9,13 +9,13 @@ public class TrackResult implements Serializable {
 	private int mRank;
 	private Long mTrackTimes;
 	private Long mTrackTimesBack;
-	private Boolean mDNF;
+	private Boolean mDnf;
 	
-	public TrackResult(int cardNumber, Long trackTimes, Boolean DNF) {
+	public TrackResult(int cardNumber, Long trackTimes, Boolean dnf) {
 		setCardNumber(cardNumber);
 		setTrackTimes(trackTimes);
 		setTrackTimesBack((long) 0);
-		setDNF(DNF);
+		setDnf(dnf);
 	}
 
 	public int getCardNumber() {
@@ -42,12 +42,12 @@ public class TrackResult implements Serializable {
 	    mTrackTimesBack = TrackTimesBack;
 	}
 
-	public Boolean getDNF() {
-		return mDNF;
+	public Boolean getDnf() {
+		return mDnf;
 	}
 	
-	public void setDNF(Boolean DNF) {
-		mDNF = DNF;
+	public void setDnf(Boolean dnf) {
+		mDnf = dnf;
 	}	
 	
 	public int getRank() {

@@ -19,7 +19,7 @@ import android.widget.EditText;
 
 public class PunchListActivity extends ListActivity {
 
-	private ListPunchAdapter mPunchAdapter;
+	private PunchListAdapter mPunchAdapter;
 	private Card mUpdatedCard = null;
 	
 	public void onCreate(Bundle savedInstanceState) {
@@ -37,19 +37,17 @@ public class PunchListActivity extends ListActivity {
 			}
 		});
         
-		try{				
+		try {				
 			mUpdatedCard = (Card) getIntent().getExtras().getSerializable("Card");
 			
-			if (mUpdatedCard != null)
-			{
+			if (mUpdatedCard != null) {
 				mUpdatedCard.setNumberOfPunches(mUpdatedCard.getPunches().size());							
 			}			
 			
 			sortData();
-			mPunchAdapter = new ListPunchAdapter(this, mUpdatedCard.getPunches());
+			mPunchAdapter = new PunchListAdapter(this, mUpdatedCard.getPunches());
 			setListAdapter(mPunchAdapter);			
-		}
-		catch( Exception e){
+		} catch( Exception e) {
 			Log.d("PunchListActivity", "Error = " + e);
 		}
 	}	
@@ -93,7 +91,7 @@ public class PunchListActivity extends ListActivity {
 	
 	public void sendCard(){
 		//Need to reset the doublePunch marker and let the main program re-evaluate after someone manually edited the card
-		for(Punch punch : mUpdatedCard.getPunches()){
+		for(Punch punch : mUpdatedCard.getPunches()) {
 			punch.setMarkAsDoublePunch(false);
 		}
 		Intent intent = new Intent(this, MainActivity.class);		
@@ -105,7 +103,7 @@ public class PunchListActivity extends ListActivity {
         setResult(2, intent);  		
 	}
 	
-	public void sendEmptyCard(){
+	public void sendEmptyCard() {
 		Intent intent = new Intent(this, MainActivity.class);		                    	
 		
 		Card noCard = new Card();		

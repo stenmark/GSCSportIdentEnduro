@@ -1,7 +1,6 @@
 package se.gsc.stenmark.gscenduro;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,13 +10,11 @@ import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
@@ -27,19 +24,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.util.SparseArray;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.Toast;
 
 /**
  * Android Main class. This class is the creator of the GUI fragments via the SectionPageer and also implements OnCompetitionChanged
@@ -83,8 +71,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Intent punchListIntent = new Intent();		
 			punchListIntent.setClass(this, PunchListActivity.class);		
 			
-			if (this.competition.getCompetitors().get(position).getCard() == null)
-			{
+			if (this.competition.getCompetitors().get(position).getCard() == null) {
 				this.competition.getCompetitors().get(position).setCard(new Card());				
 				this.competition.getCompetitors().get(position).getCard().setCardNumber(this.competition.getCompetitors().get(position).getCardNumber());
 			}			
@@ -95,7 +82,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			
 			startActivityForResult(punchListIntent, 2);		
 		}
-		catch( Exception e){
+		catch( Exception e) {
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 			dialog.show( getSupportFragmentManager(), "popUp");
 	
@@ -111,8 +98,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Card updatedCard = new Card();
 	    	updatedCard = (Card) data.getExtras().getSerializable("updateCard");
 	    	
-	    	if (updatedCard.getPunches().size() > 0)
-	    	{
+	    	if (updatedCard.getPunches().size() > 0) {
 				if (updatedCard.getCardNumber() != 0) {
 					displayNewCard(updatedCard);
 				}
@@ -123,8 +109,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void updateFragments() {
      	SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());
      	
-		ResultListFragment resultListFragment = (ResultListFragment)mAdapter.getRegisteredFragment(1);
-		if (resultListFragment != null){
+		ResultsFragment resultListFragment = (ResultsFragment)mAdapter.getRegisteredFragment(1);
+		if (resultListFragment != null) {
 			if (resultListFragment.getResultAdapter() != null) {
 				resultListFragment.getResultAdapter().updateResult();				
 			}
@@ -133,32 +119,32 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 		}
 
-		CompMangementFragment compMangementFragment = (CompMangementFragment)mAdapter.getRegisteredFragment(2);
+		CompetitorsFragment compMangementFragment = (CompetitorsFragment)mAdapter.getRegisteredFragment(2);
 		if (compMangementFragment != null){
 			if (compMangementFragment.getListCompetitorAdapter() != null) {
 				compMangementFragment.getListCompetitorAdapter().updateCompetitors();
 			}
 		}     	
 
-		StartScreenFragment startScreenFragment = (StartScreenFragment)mAdapter.getRegisteredFragment(0);
-		if (startScreenFragment != null){
+		StartFragment startScreenFragment = (StartFragment)mAdapter.getRegisteredFragment(0);
+		if (startScreenFragment != null) {
 			startScreenFragment.updateCompetitionStatus();
 		}
 	}	
 	
 	public void displayNewCard(Card newCard) {
 		String processNewCardStatus = competition.processNewCard(newCard, true);
-		if(processNewCardStatus.contains("Could not find any competitor")){
+		if(processNewCardStatus.contains("Could not find any competitor")) {
 			PopupMessage dialog = new PopupMessage( processNewCardStatus );
 			dialog.show( getSupportFragmentManager(), "popUp");
 		}
-		if(processNewCardStatus.contains("Not all station punched")){
+		if(processNewCardStatus.contains("Not all station punched")) {
 			PopupMessage dialog = new PopupMessage("Warning!\n" +
 					"Not all station on all tracks have been punched.\n" +
 					"You might have to edit this competitor manually");
 			dialog.show( getSupportFragmentManager(), "popUp");
 		}
-		if(processNewCardStatus.contains("double punch")){
+		if(processNewCardStatus.contains("double punch")) {
 			PopupMessage dialog = new PopupMessage("Warning!\n" +
 					"Double punche(s) was detected for at least one station\n" +
 					"You might have to edit this competitor manually");
@@ -201,9 +187,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			setContentView(R.layout.main_activity);
 
 			try {
-				competition = Competition.loadSessionData(null);
-				
-			}  catch (Exception e) {
+				competition = Competition.loadSessionData(null);				
+			} catch (Exception e) {
 				competition = new Competition();
 				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 				dialog.show(getSupportFragmentManager(), "popUp");
@@ -226,13 +211,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// When swiping between different sections, select the corresponding
 			// tab. We can also use ActionBar.Tab#select() to do this if we have
 			// a reference to the Tab.
-			mViewPager
-					.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-						@Override
-						public void onPageSelected(int position) {
-							actionBar.setSelectedNavigationItem(position);
-						}
-					});
+			mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+				@Override
+				public void onPageSelected(int position) {
+					actionBar.setSelectedNavigationItem(position);
+				}
+			});
 
 			// For each of the sections in the app, add a tab to the action bar.
 			for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
@@ -243,15 +227,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				// the TabListener interface, as the callback (listener) for
 				// when
 				// this tab is selected.
-				actionBar.addTab(actionBar.newTab()
-						.setText(mSectionsPagerAdapter.getPageTitle(i))
-						.setTabListener(this));
+				actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
 			}				
 			
 			updateFragments();
 		} catch (Exception e1) {
-			PopupMessage dialog = new PopupMessage(
-					MainActivity.generateErrorMessage(e1));
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e1));
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 	}
@@ -286,7 +267,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 		} catch (Exception e) {
 			connectionStatus = "Unknown connection problem";
-			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
 			dialog.show(getSupportFragmentManager(), "popUp");
 			disconected = true;
 		}
@@ -309,9 +290,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			} else {
 				connectionStatus = "Disconnected";				
 		     	SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());		     	
-		     	StartScreenFragment startScreenFragment = (StartScreenFragment)mAdapter.getRegisteredFragment(0);
-				if (startScreenFragment != null){
-					startScreenFragment.updateConnectText();
+		     	StartFragment startFragment = (StartFragment)mAdapter.getRegisteredFragment(0);
+				if (startFragment != null) {
+					startFragment.updateConnectText();
 				}								
 			}
 		} catch (Exception e) {
@@ -343,185 +324,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		
-		LayoutInflater li;
-		View promptsView;
-		
-		switch(id)
-		{
-		case R.id.action_new:				
-			SharedPreferences settings = getSharedPreferences(MainActivity.PREF_NAME, 0);
-			int maxNumberOfStages = Integer.parseInt(settings.getString("MAX_NUMBER_OF_STAGES", "15"));
-			
-	        List<String> numerOfStages = new ArrayList<String>();
-	        for (int i = 1; i < (maxNumberOfStages + 1); i++){
-	        	numerOfStages.add(Integer.toString(i));
-	        }
-	        						
-			li = LayoutInflater.from(this);
-			promptsView = li.inflate(R.layout.competition_new, null);					
-
-			final LinearLayout layoutAddTrackSpinner = (LinearLayout) promptsView.findViewById(R.id.add_track_spinner_layout);
-			final LinearLayout layoutAddTrackManually = (LinearLayout) promptsView.findViewById(R.id.add_track_manually_layout);
-			
-			final EditText addTrackManuallyInput = (EditText) promptsView.findViewById(R.id.add_track_manually_input);
-			addTrackManuallyInput.setText("");
-			
-			final EditText newCompetitionInput = (EditText) promptsView.findViewById(R.id.new_competition_input);
-			newCompetitionInput.setText("New");
-
-			final CheckBox addTrackManuallyCheckbox = (CheckBox) promptsView.findViewById(R.id.add_track_manually_checkbox);
-			addTrackManuallyCheckbox.setOnClickListener(new View.OnClickListener() {
-			      public void onClick(View v) {
-			    	  if (addTrackManuallyCheckbox.isChecked())
-			    	  {
-			    		  layoutAddTrackSpinner.setVisibility(View.GONE);
-			    		  layoutAddTrackManually.setVisibility(View.VISIBLE);
-			    	  }
-			    	  else
-			    	  {
-			    		  layoutAddTrackSpinner.setVisibility(View.VISIBLE);
-			    		  layoutAddTrackManually.setVisibility(View.GONE);
-			    	  }
-			      }
-			});			
-			
-			final CheckBox keepCompetitorsCheckBox = (CheckBox) promptsView.findViewById(R.id.keep_competitors_checkbox);
-			keepCompetitorsCheckBox.setOnClickListener(new View.OnClickListener() {
-			      public void onClick(View v) {
-			      }
-			});
-			
-			final Spinner spinner = (Spinner) promptsView.findViewById(R.id.add_track_spinner);	
-	        ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, numerOfStages);
-	        LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
-	        spinner.setAdapter(LTRadapter);			
-	        spinner.setSelection(competition.getNumberOfTracks() - 1);			
-		
-			AlertDialog.Builder newAlertDialogBuilder = new AlertDialog.Builder(this);
-			newAlertDialogBuilder.setView(promptsView);
-			newAlertDialogBuilder
-					.setCancelable(false)
-					.setPositiveButton("Create",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {															
-									
-									if (keepCompetitorsCheckBox.isChecked())
-									{
-										competition.getTrack().clear();
-										competition.getResults().clear();
-										competition.getResultLandscape().clear();
-										competition.clearCompetitors();									
-									}
-									else
-									{
-										competition.getCompetitors().clear();
-										competition = new Competition();
-									}
-									competition.setCompetitionName(newCompetitionInput.getText().toString());	
-									
-									SharedPreferences settings = getSharedPreferences(MainActivity.PREF_NAME, 0);
-									int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
-									int finishStationNumner = Integer.parseInt(settings.getString("FINISH_STATION_NUMBER", "72"));
-										
-									if (addTrackManuallyCheckbox.isChecked())
-									{
-										competition.addNewTrack(addTrackManuallyInput.getText().toString());
-									}
-									else
-									{
-										String newTrack = spinner.getSelectedItem().toString();	
-									
-										if(newTrack.length() == 0)
-										{
-									        Toast.makeText(MainActivity.this, "Track is empty", Toast.LENGTH_LONG).show();
-										}
-										else
-										{
-											int numberOfSs = 1;
-											try{
-												numberOfSs = Integer.parseInt(newTrack);
-											}
-											catch( NumberFormatException e){											
-												Toast.makeText(MainActivity.this, "Invalid track is entered", Toast.LENGTH_LONG).show();
-												return;
-											}
-											
-											String trackString = "";
-											for(int i = 0; i < numberOfSs;  i++){
-												trackString += startStationNumner + "," + finishStationNumner + ",";
-											}
-											trackString = trackString.substring(0, trackString.length() - 1);   //remove last ","
-											
-											competition.addNewTrack(trackString);										
-										}					
-									}
-									
-									Toast.makeText(MainActivity.this, "Current loaded Stages: " + competition.getTrackAsString(), Toast.LENGTH_LONG).show();									
-									updateFragments();
-								}
-							})
-					.setNegativeButton("Cancel",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
-
-			AlertDialog newAlertDialog = newAlertDialogBuilder.create();
-			newAlertDialog.show();					
+				
+		switch(id) {
+		case R.id.action_new:			
+			DialogNewCompetition newCompetitionDialog = new DialogNewCompetition(this);
+			newCompetitionDialog.createNewCompetitionDialog();			
 			return true;
 			
 		case R.id.action_load:			
 			List<String> savedCompetitions = CompetitionHelper.getSavedCompetitionsAsList();
 			CompetitionOnClickListener competitionOnClickListener = new CompetitionOnClickListener(savedCompetitions);
-			SelectCompetitionDialog selectCompetitionDialog = new SelectCompetitionDialog(savedCompetitions, competitionOnClickListener, this, competitionOnClickListener);
+			DialogSelectCompetition selectCompetitionDialog = new DialogSelectCompetition(savedCompetitions, competitionOnClickListener, this, competitionOnClickListener);
 			selectCompetitionDialog.createSelectCompetitionDialog();
 			return true;			    
 			
 		case R.id.action_save:			
-			li = LayoutInflater.from(this);
-			promptsView = li.inflate(R.layout.competition_save, null);					
-
-			final EditText saveCompetitionInput = (EditText) promptsView.findViewById(R.id.save_competition_input);
-			saveCompetitionInput.setText(competition.getCompetitionName());
-			
-			AlertDialog.Builder saveAlertDialogBuilder = new AlertDialog.Builder(this);
-			saveAlertDialogBuilder.setView(promptsView);
-			saveAlertDialogBuilder
-					.setCancelable(false)
-					.setPositiveButton("Save",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-
-									String compName = saveCompetitionInput.getText().toString();
-									if (compName.isEmpty()) {
-										Toast.makeText(MainActivity.this, "Competition not saved! No competition name was supplied", Toast.LENGTH_LONG).show();
-									}
-									else
-									{
-										try {
-											competition.setCompetitionName(compName);
-											competition.saveSessionData(compName);
-										} catch (Exception e) {
-											Log.d("action_save", "Error = " + Log.getStackTraceString(e));
-										}											
-									}									
-								}
-							})
-					.setNegativeButton("Cancel",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
-
-			AlertDialog saveAlertDialog = saveAlertDialogBuilder.create();
-			saveAlertDialog.show();							
+			DialogSaveCompetition saveCompetitionDialog = new DialogSaveCompetition(this);
+			saveCompetitionDialog.createSaveCompetitionDialog();				
 			return true;			
 			
 		case R.id.action_settings:
@@ -532,13 +351,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			
 		case R.id.action_import:
 			ImportOnClickListener importOnClickListener = new ImportOnClickListener();
-			SelectImportDialog selectImportDialog = new SelectImportDialog(importOnClickListener, this, importOnClickListener);
+			DialogSelectImport selectImportDialog = new DialogSelectImport(importOnClickListener, this, importOnClickListener);
 			selectImportDialog.createImportDialog();	
 			return true;	
 			
 		case R.id.action_export_as_cvs:
 			ExportOnClickListener exportOnClickListener = new ExportOnClickListener();
-			SelectExportDialog selectExportDialog = new SelectExportDialog(exportOnClickListener, this, exportOnClickListener);
+			DialogSelectExport selectExportDialog = new DialogSelectExport(exportOnClickListener, this, exportOnClickListener);
 			selectExportDialog.createExportDialog();							
 			return true;			
 			
@@ -546,7 +365,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			try{				
 		     	SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());
 		     	
-				ResultListFragment resultListFragment = (ResultListFragment)mAdapter.getRegisteredFragment(1);
+				ResultsFragment resultListFragment = (ResultsFragment)mAdapter.getRegisteredFragment(1);
 				if (resultListFragment != null){
 					Bitmap resultBitmap = CompetitionHelper.getWholeListViewItemsToBitmap(resultListFragment.getListView());
 					File imageFile = CompetitionHelper.writeImageToFile(competition.getCompetitionName() + "_results.png", resultBitmap);
@@ -559,10 +378,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					Uri uri = Uri.fromFile( imageFile );
 					mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
 					startActivity(Intent.createChooser(mailIntent, "Send mail"));
-
 				}				
-			}
-			catch( Exception e){
+			} catch( Exception e) {
 				PopupMessage dialog = new PopupMessage(	"You must put the Android unit in the \"RESULTS\" view and in Landscape orientation before you can you image export");
 				dialog.show(getSupportFragmentManager(), "popUp");
 			}
@@ -574,7 +391,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}		
 	}	
 	
-    public class CompetitionOnClickListener implements android.content.DialogInterface.OnClickListener{
+    public class CompetitionOnClickListener implements android.content.DialogInterface.OnClickListener {
     	public int which = 0;
     	
     	public CompetitionOnClickListener( List<String> savedCompetitions ) {
@@ -585,8 +402,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			this.which = which;
 		}
     }		
-	
-    public class ImportOnClickListener implements android.content.DialogInterface.OnClickListener{
+    
+    public class ImportOnClickListener implements android.content.DialogInterface.OnClickListener {
     	public int which = 0;
     	
     	public ImportOnClickListener() {
@@ -598,7 +415,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
     }	    
     
-    public class ExportOnClickListener implements android.content.DialogInterface.OnClickListener{
+    public class ExportOnClickListener implements android.content.DialogInterface.OnClickListener {
     	public int which = 0;
     	
     	public ExportOnClickListener() {
@@ -614,8 +431,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * Autocrated template code
 	 */
 	@Override
-	public void onTabSelected(ActionBar.Tab tab,
-			FragmentTransaction fragmentTransaction) {
+	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 		// When the given tab is selected, switch to the corresponding page in
 		// the ViewPager.
 		mViewPager.setCurrentItem(tab.getPosition());
@@ -625,16 +441,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * Autocrated template code
 	 */
 	@Override
-	public void onTabUnselected(ActionBar.Tab tab,
-			FragmentTransaction fragmentTransaction) {
+	public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 	}
 
 	/**
 	 * Autocrated template code
 	 */
 	@Override
-	public void onTabReselected(ActionBar.Tab tab,
-			FragmentTransaction fragmentTransaction) {
+	public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 	}
 
 	/**
@@ -658,13 +472,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Fragment fragment = null; 
 			switch (position) {
 			case 0:
-				fragment = new StartScreenFragment();
+				fragment = new StartFragment();
 				break;
 			case 1:
-				fragment = new ResultListFragment();
+				fragment = new ResultsFragment();
 				break;
 			case 2:
-				fragment = new CompMangementFragment();
+				fragment = new CompetitorsFragment();
 				break;				
 			}
 

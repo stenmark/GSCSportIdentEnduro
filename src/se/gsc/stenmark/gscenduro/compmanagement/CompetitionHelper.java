@@ -23,7 +23,7 @@ import android.view.View.MeasureSpec;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import se.gsc.stenmark.gscenduro.Result;
+import se.gsc.stenmark.gscenduro.Results;
 import se.gsc.stenmark.gscenduro.TrackResult;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
@@ -92,7 +92,7 @@ public class CompetitionHelper {
 		return competitionData;
 	}
 
-	public static String getResultsAsCsvString(List<TrackMarker> Track, List<Result> ResultLandscape) {
+	public static String getResultsAsCsvString(List<TrackMarker> Track, List<Results> ResultLandscape) {
 		String resultData = "";
 		/*		
 
@@ -145,8 +145,7 @@ public class CompetitionHelper {
 		return resultData;
 	}
 
-	public static Boolean checkNameExists(List<Competitor> competitors,
-			String Name) {
+	public static Boolean checkNameExists(List<Competitor> competitors, String Name) {
 
 		for (int i = 0; i < competitors.size(); i++) {
 			if (Name.equalsIgnoreCase(competitors.get(i).getName())) {
@@ -156,8 +155,7 @@ public class CompetitionHelper {
 		return false;
 	}
 
-	public static Boolean checkCardNumberExists(List<Competitor> competitors,
-			int cardNumber) {
+	public static Boolean checkCardNumberExists(List<Competitor> competitors, int cardNumber) {
 
 		for (int i = 0; i < competitors.size(); i++) {
 			if (cardNumber == competitors.get(i).getCardNumber()) {
@@ -167,8 +165,7 @@ public class CompetitionHelper {
 		return false;
 	}
 
-	public static Boolean checkStartNumberExists(List<Competitor> competitors,
-			int startNumber) {
+	public static Boolean checkStartNumberExists(List<Competitor> competitors, int startNumber) {
 
 		for (int i = 0; i < competitors.size(); i++) {
 			if (startNumber == competitors.get(i).getStartNumber()) {
