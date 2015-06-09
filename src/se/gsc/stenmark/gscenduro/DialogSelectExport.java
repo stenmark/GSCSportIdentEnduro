@@ -9,7 +9,7 @@ public class DialogSelectExport {
 	
 	private ExportOnClickListener mExportOnClickListener;
 	private MainActivity mMainActivity;
-	private CharSequence[] items = {"Competitors", "Results", "Punches", "Competition", "All"};
+	private CharSequence[] items = {"Competitors", "Results", "Punches", "Competition"};
 	ExportOnClickListener mRadioButtonListener;
 	
 	public DialogSelectExport(ExportOnClickListener exportOnClickListener,
@@ -23,7 +23,7 @@ public class DialogSelectExport {
     public void createExportDialog() {   
         // Creating and Building the Dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
-        builder.setTitle("What do you want to export?");	            
+        builder.setTitle("Select what you want to export");	            
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 		    @Override
 		    public void onClick(DialogInterface dialog, int item) {
@@ -58,15 +58,7 @@ public class DialogSelectExport {
 					} catch (Exception e) {
 						Log.d("action_export_competition", "Error = " + Log.getStackTraceString(e));
 					}					
-					break;					
-					
-				case 4:
-					try {
-						mMainActivity.competition.exportAllAsCsv(mMainActivity);
-					} catch (Exception e) {
-						Log.d("action_export_all", "Error = " + Log.getStackTraceString(e));
-					}					
-					break;
+					break;										
 				}		    					
 		    }});
 		builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {

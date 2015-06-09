@@ -31,7 +31,7 @@ public class Card implements Serializable {
 
 	@Override
 	public String toString() {
-		String result = "CardNumber " + mCardNumber + "  Number of punches "
+		String result = "CardNumber = " + mCardNumber + "  Number of punches = "
 				+ mNumberOfPunches;
 		// "\nstart punch " + startPunch.toString() +
 		// "\nfinsh punch " + finishPunch.toString() +
@@ -46,8 +46,7 @@ public class Card implements Serializable {
 
 	public void findDoublePunches() {
 		for (int i = 0; i < mPunches.size() - 1; i++) {
-			if (mPunches.get(i).getControl() == mPunches.get(i + 1)
-					.getControl()) {
+			if (mPunches.get(i).getControl() == mPunches.get(i + 1).getControl()) {
 				mPunches.get(i).setMarkAsDoublePunch(true);
 			}
 		}

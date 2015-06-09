@@ -49,7 +49,7 @@
 				        android:layout_width="wrap_content"
 				        android:layout_height="wrap_content"
 				        android:textSize="16sp"
-				        android:text="@string/start_name"/>         
+				        android:text="@string/name"/>         
 				        
 				    <EditText
 				        android:id="@+id/name_input"
@@ -68,7 +68,7 @@
 				        android:layout_width="wrap_content"
 				        android:layout_height="wrap_content"
 				        android:textSize="16sp"
-				        android:text="@string/start_card_number"/>     
+				        android:text="@string/card_number"/>     
 				    
 				     <EditText
 				         android:id="@+id/card_number_input"
@@ -164,7 +164,7 @@
 			    	android:layout_gravity="center_vertical|right"
 			  		android:textSize="16sp"
 			  		android:textStyle="bold"
-			  		android:text="@string/start_add"
+			  		android:text="@string/string_add"
 			 		android:textColor="@color/button_text"   
 			 		android:background="@drawable/button"		 	    	
 		  		/>   										

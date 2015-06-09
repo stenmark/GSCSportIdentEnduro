@@ -27,18 +27,16 @@ public class PunchParser implements Serializable {
 		return mCards;
 	}
 
-	public void parsePunches(String punches, List<Competitor> competitors)
-			throws IOException {
+	public void parsePunches(String punches, List<Competitor> competitors) throws IOException {
 		mCards = new ArrayList<Card>();
-		// punches =
-		// "CardNumber1,Con1,Time1,Con2,Time2..\nCardNumber2,Con1,Time1,Con2,Time2..\nCardNumber3,Con1,Time1,Con2,Time2..";
-
+		
+		//cardNumber,control,time,control,time..
+		//cardNumber,control,time,control,time..
+		//cardNumber,control,time,control,time..
+		
 		BufferedReader bufReader = new BufferedReader(new StringReader(punches));
 		String line = null;
-		int lineNumber = 0;
 		while ((line = bufReader.readLine()) != null) {
-			lineNumber++;
-			mStatus += Integer.toString(lineNumber) + ". ";
 
 			// count so at least 3, each line
 			int number = 0;
@@ -51,9 +49,9 @@ public class PunchParser implements Serializable {
 		
 			if (number < 3) {
 				if (line.length() == 0) {
-					mStatus += "Error adding, because of empty line\n";
+					mStatus += "Error, empty line\n";
 				} else {
-					mStatus += "Error adding, because of , = " + line + "\n";
+					mStatus += "Error = " + line + "\n";
 				}
 			} else {
 				Card cardObject = new Card();
@@ -67,38 +65,38 @@ public class PunchParser implements Serializable {
 
 				if (!cardNumber.matches("\\d+")) {
 					mStatus += "Error, cardnumber not a number\n";
-				}
-
-				for (int i = 0; i < competitors.size(); i++) {
-					if (competitors.get(i).getCardNumber() == Integer.parseInt(cardNumber)) {
-						cardObject.setCardNumber(competitors.get(i).getCardNumber());
-						while (start < line.length()) {
-							end = line.indexOf(",", start);
-							String control = line.substring(start, end);
-							start = end + 1;
-														
-							end = line.indexOf(",", start);
-							String time;
-							if (end == -1) {
-								time = line.substring(start, line.length());
-								start = line.length() + 1;
-							} else {											
-								time = line.substring(start, end);
+				} else {				
+					for (int i = 0; i < competitors.size(); i++) {
+						if (competitors.get(i).getCardNumber() == Integer.parseInt(cardNumber)) {
+							cardObject.setCardNumber(competitors.get(i).getCardNumber());
+							while (start < line.length()) {
+								end = line.indexOf(",", start);
+								String control = line.substring(start, end);
 								start = end + 1;
-							}							
-							Punch punchObject = new Punch(Long.valueOf(time), Long.valueOf(control));
-							cardObject.getPunches().add(punchObject);
+															
+								end = line.indexOf(",", start);
+								String time;
+								if (end == -1) {
+									time = line.substring(start, line.length());
+									start = line.length() + 1;
+								} else {											
+									time = line.substring(start, end);
+									start = end + 1;
+								}							
+								Punch punchObject = new Punch(Long.valueOf(time), Long.valueOf(control));
+								cardObject.getPunches().add(punchObject);
+							}
 						}
 					}
-				}
 
-				if (cardObject.getPunches().size() > 0) {
-					if (cardObject.getCardNumber() != 0) {
-						mCards.add(cardObject);
-						mStatus += "card added";
-					}
+					if (cardObject.getPunches().size() > 0) {
+						if (cardObject.getCardNumber() != 0) {
+							mCards.add(cardObject);
+							mStatus += "card added";
+						}
+					}				
+					mStatus += "\n";
 				}
-				mStatus += "\n";
 			}
 		}
 	}

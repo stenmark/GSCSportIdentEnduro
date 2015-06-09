@@ -2,19 +2,19 @@ package se.gsc.stenmark.gscenduro;
 
 import java.io.Serializable;
 
-public class TrackResult implements Serializable {
+public class StageResult implements Serializable {
 	
 	private static final long serialVersionUID = 201111020011L; 
 	private int mCardNumber;
 	private int mRank;
-	private Long mTrackTimes;
-	private Long mTrackTimesBack;
+	private Long mStageTimes;
+	private Long mStageTimesBack;
 	private Boolean mDnf;
 	
-	public TrackResult(int cardNumber, Long trackTimes, Boolean dnf) {
+	public StageResult(int cardNumber, Long stageTimes, Boolean dnf) {
 		setCardNumber(cardNumber);
-		setTrackTimes(trackTimes);
-		setTrackTimesBack((long) 0);
+		setStageTimes(stageTimes);
+		setStageTimesBack((long) 0);
 		setDnf(dnf);
 	}
 
@@ -26,20 +26,20 @@ public class TrackResult implements Serializable {
 	    mCardNumber = cardNumber;
 	}	
 	
-	public Long getTrackTimes() {
-	    return mTrackTimes;
+	public Long getStageTimes() {
+	    return mStageTimes;
 	}
 	
-	public void setTrackTimes(Long TrackTimes) {
-	    mTrackTimes = TrackTimes;
+	public void setStageTimes(Long stageTimes) {
+		mStageTimes = stageTimes;
 	}
 	
-	public Long getTrackTimesBack() {
-	    return mTrackTimesBack;
+	public Long getStageTimesBack() {
+	    return mStageTimesBack;
 	}
 	
-	public void setTrackTimesBack(Long TrackTimesBack) {
-	    mTrackTimesBack = TrackTimesBack;
+	public void setStageTimesBack(Long stageTimesBack) {
+	    mStageTimesBack = stageTimesBack;
 	}
 
 	public Boolean getDnf() {

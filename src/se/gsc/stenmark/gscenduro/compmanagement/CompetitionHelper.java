@@ -5,8 +5,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import android.app.Activity;
@@ -24,7 +22,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import se.gsc.stenmark.gscenduro.Results;
-import se.gsc.stenmark.gscenduro.TrackResult;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
@@ -38,18 +35,6 @@ import se.gsc.stenmark.gscenduro.SporIdent.Punch;
  */
 public class CompetitionHelper {
 
-	public static int getPosition(int cardNumber,
-			ArrayList<TrackResult> trackResults) {
-		int i = 1;
-		for (TrackResult trackResult : trackResults) {
-			if (trackResult.getCardNumber() == cardNumber) {
-				return i;
-			}
-			i++;
-		}
-		return -1;
-	}
-
 	public static String secToMinSec(Long sec) {
 		if (sec == Integer.MAX_VALUE) {
 			return "no result";
@@ -62,184 +47,84 @@ public class CompetitionHelper {
 		}
 	}
 
-	public static String getCompetitionAsCsvString(String CompetitionName, List<TrackMarker> Track, ArrayList<Competitor> Competitors) {
-		String competitionData = "";
-
-		// Competition Name
-		competitionData += "competitionName," + CompetitionName + "\n";
-
-		// Track
-		competitionData += "track";
-		for (TrackMarker trackMarker : Track) {
-			competitionData += "," + trackMarker.getStart() + ","
-					+ trackMarker.getFinish();
-		}
-		competitionData += "\n";
-
-		// Competitor
-		for (Competitor competitor : Competitors) {
-			competitionData += "competitor," + competitor.getName() + ","
-					+ competitor.getCardNumber();
-
-			for (Punch punch : competitor.getCard().getPunches()) {
-				competitionData += "," + punch.getTime() + ","
-						+ punch.getControl();
+	public static Long getFastestOnStage(List<Results> results, String competitorClass, int stageNumber) {
+		Long fastestTimeOnStage = Long.MAX_VALUE;
+		for(Results resultFastest : results){
+			
+			if (competitorClass == resultFastest.getTitle()) {						
+				try{
+					fastestTimeOnStage = Math.min(fastestTimeOnStage, resultFastest.getStageResult().get(stageNumber).getStageTimes());
+				}
+				catch(IndexOutOfBoundsException e){	
+				}
 			}
-			competitionData += "\n";
 		}
-		competitionData += "\n";
-
-		return competitionData;
+		return fastestTimeOnStage;
 	}
-
-	public static String getResultsAsCsvString(List<TrackMarker> Track, List<Results> ResultLandscape) {
+	
+	public static Long getSlowestOnStage(List<Results> results, String competitorClass, int stageNumber) {
+		Long slowestTimeOnStage = Long.MIN_VALUE;
+		for(Results resultSlowest : results){
+			if (competitorClass == resultSlowest.getTitle()) {
+				try{
+					slowestTimeOnStage = Math.max(slowestTimeOnStage, resultSlowest.getStageResult().get(stageNumber).getStageTimes());
+				}
+				catch(IndexOutOfBoundsException e){	
+				}
+			}
+		}
+		
+		return slowestTimeOnStage;
+	}	
+	
+	public static String getResultsAsCsvString(Stages stage, List<Results> results, Competitors competitors, int type) {
 		String resultData = "";
-		/*		
-
-		resultData = "Rank,Name,Card Number,Total Time,";
-		for (int i = 0; i < Track.size(); i++) {
-			resultData += "Stage " + (i + 1) + ",RK,";
+		
+		if (type == 1)  {
+			resultData = "Rank,Name,Card Number,Team,Start Number,Total Time,";
+		} else {
+			resultData = "Rank,Name,Card Number,Total Time,";
+		}
+			
+		for (int i = 0; i < stage.size(); i++) {
+			resultData += "Stage " + (i + 1) + ",Rank,Time Back,";
 		}
 		resultData += "\n";
 
-		int rank = 1;
-		for (ResultLandscape res : ResultLandscape) {
+		for (int index = 0; index < results.size(); index++) {
+			if (type == 1)  {
+				if (index == 0) {
+					resultData += results.get(index).getTitle() + "\n";
+				} else if (results.get(index).getTitle() != results.get(index - 1).getTitle()) {
+					resultData += results.get(index).getTitle() + "\n";
+				}
+			}				
 			
-			String name = ((MainActivity) mContext).competition.getCompetitor(cardNumber).getName();
-			
-			resultData += String.valueOf(rank) + "," + res.getName() + "," + res.getCardNumber() + ",";
-
-			if (res.getTotalTime() == Integer.MAX_VALUE) {
-				resultData += "--:--" + ",";
+			int cardNumber = results.get(index).getStageResult().get(0).getCardNumber();					
+			int rank = results.get(index).getStageResult().get(0).getRank();					
+			if (rank == Integer.MAX_VALUE) {			
+				resultData += "-,";
 			} else {
-				if (res.getTotalTime() == 0) {
-					resultData += "--:--" + ",";
-				} else {
-
-					resultData += CompetitionHelper.secToMinSec(res.getTotalTime()) + ",";
-				}
+				resultData += rank + ",";
 			}
-
-			int i = 0;
-			for (Long Time : res.getTime()) {
-				if (Time == Integer.MAX_VALUE) {
-					resultData += "--:--" + ",";
-				} else {
-					resultData += CompetitionHelper.secToMinSec(Time) + ",";
-				}
-
-				int pos = res.getRank().get(i);
-				if (pos == (long) Integer.MAX_VALUE) {
-					resultData += "-,";
-				} else {
-					resultData += String.valueOf(pos) + ",";
-				}
-				i++;
+			
+			resultData += competitors.getByCardNumber(cardNumber).getName() + ",";
+			resultData += cardNumber + ",";
+			if (type == 1)  {
+				resultData += competitors.getByCardNumber(cardNumber).getTeam() + ",";					
+				resultData += String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + ",";
 			}
-			rank++;
+			resultData += CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(0).getStageTimes()) + ",";	
+									
+			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {										
+				resultData += CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimes()) + ",";
+				resultData += results.get(index).getStageResult().get(stageNumber).getRank() + ",";
+				resultData += CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + ",";
+			}			
 			resultData += "\n";
 		}
-
-		resultData += "\n\n";
-*/
+		
 		return resultData;
-	}
-
-	public static Boolean checkNameExists(List<Competitor> competitors, String Name) {
-
-		for (int i = 0; i < competitors.size(); i++) {
-			if (Name.equalsIgnoreCase(competitors.get(i).getName())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static Boolean checkCardNumberExists(List<Competitor> competitors, int cardNumber) {
-
-		for (int i = 0; i < competitors.size(); i++) {
-			if (cardNumber == competitors.get(i).getCardNumber()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static Boolean checkStartNumberExists(List<Competitor> competitors, int startNumber) {
-
-		for (int i = 0; i < competitors.size(); i++) {
-			if (startNumber == competitors.get(i).getStartNumber()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static String getPunchesAsCsvString(List<Competitor> competitors) {
-		String PunchList = "";
-
-		if (competitors != null && !competitors.isEmpty()) {
-			Collections.sort(competitors);
-			for (Competitor competitor : competitors) {
-				PunchList += competitor.getCardNumber() + ",";
-
-				Card card = new Card();
-
-				card = competitor.getCard();
-
-				if (card != null) {
-					Collections.sort(card.getPunches(),
-							new Comparator<Punch>() {
-								@Override
-								public int compare(Punch s1, Punch s2) {
-									return new Long(s1.getTime()).compareTo(s2
-											.getTime());
-								}
-							});
-
-					for (Punch punch : card.getPunches()) {
-						PunchList += punch.getControl() + "," + punch.getTime()
-								+ ",";
-					}
-
-					PunchList += "\n";
-				}
-			}
-		}
-		return PunchList;
-	}
-
-	public static String getCompetitorsAsCsvString(List<Competitor> competitors) {
-		String competitorList = "";
-
-		if (competitors != null && !competitors.isEmpty()) {
-			Collections.sort(competitors);
-			for (Competitor competitor : competitors) {
-				competitorList += competitor.getName() + ","
-						+ competitor.getCardNumber() + "\n";
-			}
-		}
-
-		return competitorList;
-	}
-
-	/**
-	 * Finds a competitor in list of competitors supplied, it searches for the
-	 * competitors card number. If no competitor with the supplied cardNumer is
-	 * found, null is returned.
-	 * 
-	 * @param cardToMatch
-	 * @param competitors
-	 * @return
-	 */
-	public static Competitor findCompetitor(Card cardToMatch,
-			List<Competitor> competitors) {
-		for (Competitor competitor : competitors) {
-			if (competitor.getCardNumber() == cardToMatch.getCardNumber()) {
-				return competitor;
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -263,20 +148,10 @@ public class CompetitionHelper {
 			if (file.getName().contains(".dat")) {
 				result.add(file.getName().replace(".dat", ""));
 			}
-
 		}
 		return result;
 	}
 
-	/*
-	 * public static List<String> getSavedCompetitionsAsList(){ List<String>
-	 * result = new ArrayList<String>(); String[] fileList =
-	 * MainApplication.getAppContext().fileList(); for (String file : fileList)
-	 * { if (!file.equals(Competition.CURRENT_COMPETITION)) { result.add(file);
-	 * }
-	 * 
-	 * } return result; }
-	 */
 	/**
 	 * Does the same as getSavedCompetitionsAsList() but instead of returning a
 	 * list it returns a new line separated String of competitions.
@@ -300,14 +175,6 @@ public class CompetitionHelper {
 		return result;
 	}
 
-	/*
-	 * public static String getSavedCompetitions(){ String result = ""; String[]
-	 * fileList = MainApplication.getAppContext().fileList(); for (String file :
-	 * fileList) { if (!file.equals(Competition.CURRENT_COMPETITION)) { result
-	 * += file + "\n"; }
-	 * 
-	 * } return result; }
-	 */
 	/**
 	 * Will map a specific punch for the supplied card for a specific SI card
 	 * station. It will find the n:th punch of the specified station number on
@@ -323,8 +190,7 @@ public class CompetitionHelper {
 	 * @param instanceNumber
 	 * @return
 	 */
-	public static Punch findPunchForStationNrInCard(Card card,
-			long stationNumber, int instanceNumber) {
+	public static Punch findPunchForStationNrInCard(Card card, long stationNumber, int instanceNumber) {
 		int i = 0;
 		for (Punch punch : card.getPunches()) {
 			if (punch.getControl() == stationNumber) {
@@ -340,31 +206,28 @@ public class CompetitionHelper {
 	}
 
 	/**
-	 * Loops through the track and associates each TrackMarker in the track with
-	 * a punch from the card. It then calculates a track time, i.e. how long did
-	 * it take to reach from each pair of trackmarkers in the track. This method
+	 * Loops through the stages and associates each StageControl in the stages with
+	 * a punch from the card. It then calculates a stage time, i.e. how long did
+	 * it take to reach from each pair of stageControls in the stage. This method
 	 * will only work on a coherent number of punches. I.e. all double punches
-	 * and punches on Trackmarkers not in the track must be removed before
+	 * and punches on stageControls not in the stage must be removed before
 	 * calling this method
 	 * 
 	 * @param card
-	 * @param track
+	 * @param stage
 	 * @return a list of Long Integers denoting the time it took to get through
-	 *         each pair of track markers
+	 *         each pair of stage controls
 	 */
-	public static List<Long> extractResultFromCard(Card card,
-			List<TrackMarker> track) {
+	public static List<Long> extractResultFromCard(Card card, Stages stages) {
 		List<Long> result = new ArrayList<Long>();
 
 		try {
-			for (int i = 0; i < track.size(); i++) {
-				TrackMarker trackMarker = track.get(i);
-				Punch startPunch = findPunchForStationNrInCard(card,
-						trackMarker.getStart(), i + 1);
-				Punch finishPunch = findPunchForStationNrInCard(card,
-						trackMarker.getFinish(), i + 1);
-				long trackTime = finishPunch.getTime() - startPunch.getTime();
-				result.add(trackTime);
+			for (int i = 0; i < stages.size(); i++) {
+				StageControls stageControls = stages.get(i);
+				Punch startPunch = findPunchForStationNrInCard(card, stageControls.getStart(), i + 1);
+				Punch finishPunch = findPunchForStationNrInCard(card, stageControls.getFinish(), i + 1);
+				long stageTime = finishPunch.getTime() - startPunch.getTime();
+				result.add(stageTime);
 			}
 		} catch (Exception e) {
 
@@ -402,11 +265,9 @@ public class CompetitionHelper {
 			if (!dir.exists()) {
 				errorMsg += "Dir does not exist " + dir.getAbsolutePath();
 				if (!dir.mkdirs()) {
-					errorMsg += "Could not create directory: "
-							+ dir.getAbsolutePath();
+					errorMsg += "Could not create directory: " + dir.getAbsolutePath();
 
-					Toast.makeText(activity, "Error = " + errorMsg,
-							Toast.LENGTH_LONG).show();
+					Toast.makeText(activity, "Error = " + errorMsg, Toast.LENGTH_LONG).show();
 					return;
 				}
 			}
@@ -420,14 +281,11 @@ public class CompetitionHelper {
 				Intent mailIntent = new Intent(Intent.ACTION_SEND);
 				mailIntent.setType("text/plain");
 				mailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "" });
-				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro " + filetype
-						+ " for " + compName);
-				mailIntent.putExtra(Intent.EXTRA_TEXT, filetype
-						+ " in attached file");
+				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro " + filetype + " for " + compName);
+				mailIntent.putExtra(Intent.EXTRA_TEXT, filetype + " in attached file");
 				Uri uri = Uri.fromFile(file);
 				mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-				activity.startActivity(Intent.createChooser(mailIntent,
-						"Send mail"));
+				activity.startActivity(Intent.createChooser(mailIntent, "Send mail"));
 			}
 
 			fw.close();
@@ -447,13 +305,14 @@ public class CompetitionHelper {
 		Canvas canvas = new Canvas(returnedBitmap);
 		// Get the view's background
 		Drawable bgDrawable = view.getBackground();
-		if (bgDrawable != null)
+		if (bgDrawable != null) {
 			// has background drawable, then draw it on the canvas
 			bgDrawable.draw(canvas);
-		else
+		} else {
 			// does not have background drawable, then draw white background on
 			// the canvas
 			canvas.drawColor(Color.WHITE);
+		}
 		// draw the view on the canvas
 		view.draw(canvas);
 		// return the bitmap
@@ -488,22 +347,19 @@ public class CompetitionHelper {
 		List<Bitmap> bmps = new ArrayList<Bitmap>();
 
 		for (int i = 0; i < itemscount; i++) {
-
 			View childView = adapter.getView(i, null, listview);
 			childView.measure(MeasureSpec.makeMeasureSpec(listview.getWidth(),
 					MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0,
 					MeasureSpec.UNSPECIFIED));
 
-			childView.layout(0, 0, childView.getMeasuredWidth(),
-					childView.getMeasuredHeight());
+			childView.layout(0, 0, childView.getMeasuredWidth(), childView.getMeasuredHeight());
 			childView.setDrawingCacheEnabled(true);
 			childView.buildDrawingCache();
 			bmps.add(childView.getDrawingCache());
 			allitemsheight += childView.getMeasuredHeight();
 		}
 
-		Bitmap bigbitmap = Bitmap.createBitmap(listview.getMeasuredWidth(),
-				allitemsheight, Bitmap.Config.ARGB_8888);
+		Bitmap bigbitmap = Bitmap.createBitmap(listview.getMeasuredWidth(), allitemsheight, Bitmap.Config.ARGB_8888);
 		Canvas bigcanvas = new Canvas(bigbitmap);
 
 		Paint paint = new Paint();

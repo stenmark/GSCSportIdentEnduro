@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="10dp" >
+ 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name : "/>
+ 
+    <EditText
+        android:id="@+id/name_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+        <requestFocus /> 
+    </EditText>
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date of competition : "/>
+ 
+    <EditText
+        android:id="@+id/date_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"> 
+    </EditText>    
+    
+   	<LinearLayout 
+   	    android:id="@+id/modify_stage_spinner_layout"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"	
+		android:layout_weight="1"	
+		android:padding="4dp"	
+		android:visibility="gone"> 
+		
+	   	<TextView
+        	android:id="@+id/modify_stage_info"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:textSize="16sp"
+        	android:text="@string/add_stages_info" />					    
+	    
+ 			<Spinner
+     			android:id="@+id/modify_stage_spinner"
+     			android:layout_width="fill_parent"
+     			android:layout_height="wrap_content"
+     			android:prompt="@string/add_stages_info"
+ 			/>			    		    
+	</LinearLayout>		
+	
+	<LinearLayout
+	    android:id="@+id/modify_stage_manually_layout" 
+	    android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_weight="1"		
+		android:padding="4dp"
+		android:visibility="gone"> 
+		   
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			> 
+		     <TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="16sp"
+		        android:text="Stages:"        
+		        />  
+		        
+		    <EditText
+		        android:id="@+id/modify_stages_manually_input"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		    </EditText>	    
+		</LinearLayout>
+	    <TextView
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:textSize="8sp"
+	        android:text="@string/stages_info" />	
+	</LinearLayout>		   	
+ 
+</LinearLayout>

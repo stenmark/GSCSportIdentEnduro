@@ -9,14 +9,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.MainApplication;
 import se.gsc.stenmark.gscenduro.Results;
-import se.gsc.stenmark.gscenduro.TrackResult;
+import se.gsc.stenmark.gscenduro.StageResult;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,7 +26,7 @@ import android.os.Environment;
 import android.util.Log;
 
 /**
- * Represents a competition with a track, List of competitors and the name of
+ * Represents a competition with a stage, List of competitors and the name of
  * the competition. The competition can be saved to disc and loaded back from
  * disc.
  * 
@@ -41,33 +41,37 @@ public class Competition implements Serializable {
 	public final int ESS_TYPE = 1;	
 
 	private static final String CURRENT_COMPETITION = "current_competition";
-	private List<TrackMarker> mTrack = null;
-	private ArrayList<Competitor> mCompetitors = null;
+	private Stages mStages = null;
+	private Competitors mCompetitors = null;
 	private List<Results> mResults = null;
 	private List<Results> mResultLandscape = null;
 	private String mCompetitionName;
-	private String mCompetitionDate = "2015-06-07";
+	private String mCompetitionDate = "";
 	private int mCompetitionType = ESS_TYPE;
 	
 	public Competition() {
-		mTrack = new ArrayList<TrackMarker>();
-		mCompetitors = new ArrayList<Competitor>();
+		mStages = new Stages();
+		mCompetitors = new Competitors();
 		mResults = new ArrayList<Results>();
 		mResultLandscape = new ArrayList<Results>();
 		setCompetitionName("New");
-
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd");
+		String currentDateandTime = sdf.format(new Date());
+		setCompetitionDate(currentDateandTime);
+		
 		try {
 			saveSessionData(null);
 		} catch (Exception e1) {
 			Log.d("Competition", "Error = " + e1);
 		}
 	}
-
-	public List<TrackMarker> getTrack() {
-		return mTrack;
+	
+	public Stages getStages() {
+		return mStages;		
 	}
 
-	public ArrayList<Competitor> getCompetitors() {
+	public Competitors getCompetitors() {
 		return mCompetitors;
 	}
 
@@ -98,184 +102,11 @@ public class Competition implements Serializable {
 	public void setCompetitionType(int competitionType) {
 		mCompetitionType = competitionType;
 	}	
-	
-	public Competitor getCompetitor(int cardNumber) {		
-		for (Competitor competitor : mCompetitors) {
-			if (competitor.getCardNumber() == cardNumber) {
-				return competitor;
-			}
-		}
+
+	public void setCompetitionDate(String competitionDate) {
+		mCompetitionDate = competitionDate;
+	}		
 		
-		return null;
-	}
-	
-	public void sortCompetitors() {
-		Collections.sort(mCompetitors, new Comparator<Competitor>() {
-			@Override
-			public int compare(Competitor s1, Competitor s2) {
-				return s1.getName().compareToIgnoreCase(s2.getName());
-			}
-		});
-	}
-
-	/**
-	 * Add a new Competitor to the competition.
-	 * 
-	 * @param name
-	 * @param cardNumber
-	 *            the number of the SI card for this user
-	 */
-	public void addCompetitor(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup) {
-		Competitor competitor = new Competitor(name, cardNumber, team, competitorClass, startNumber, startGroup);
-		mCompetitors.add(competitor);
-
-		sortCompetitors();
-		calculateResults();
-	}
-
-	public void clearCompetitors() {
-		for (int i = 0; i < mCompetitors.size(); i++) {
-			mCompetitors.get(i).setCard(null);
-			mCompetitors.get(i).setTrackTimes(null);
-		}
-	}
-
-	/**
-	 * Will find and update the SI card number for the given user If user is
-	 * found nothing happens.
-	 * 
-	 * @param nameToModify
-	 * @param newCardNumber
-	 */
-	public void updateCompetitor(int index, String newName, String newCardNumber) {
-		Competitor newCompetitor = null;
-		newCardNumber = newCardNumber.replace(" ", "");
-		newCompetitor = mCompetitors.get(index);
-		newCompetitor.setName(newName);
-		newCompetitor.setCardNumber(Integer.parseInt(newCardNumber));
-		mCompetitors.set(index, newCompetitor);
-
-		sortCompetitors();
-		calculateResults();
-	}
-
-	public void updateCompetitorEss(int index, String newName, String newCardNumber, String newTeam, String newClass, String newStartNumber, String newStartGroup) {
-		Competitor newCompetitor = null;
-		newCardNumber = newCardNumber.replace(" ", "");
-
-		newCompetitor = mCompetitors.get(index);
-		newCompetitor.setName(newName);
-		newCompetitor.setCardNumber(Integer.parseInt(newCardNumber));
-		newCompetitor.setTeam(newTeam);
-		newCompetitor.setCompetitorClass(newClass);
-		newCompetitor.setStartNumber(Integer.parseInt(newStartNumber));
-		newCompetitor.setStartGroup(Integer.parseInt(newStartGroup));
-		mCompetitors.set(index, newCompetitor);
-
-		sortCompetitors();
-		calculateResults();
-	}
-
-	/**
-	 * Remove a competitor from the competition. Will find and delete competitor
-	 * by searching for the specified name. If the name is not found nothing
-	 * happens
-	 * 
-	 * @param nameToDelete
-	 */
-	public void removeCompetitor(String nameToDelete) {
-		for (Competitor competitor : mCompetitors) {
-			if (competitor.getName().equals(nameToDelete)) {
-				mCompetitors.remove(competitor);
-				break;
-			}
-		}
-
-		calculateResults();
-	}
-
-	public List<String> getCompetitorClasses() {		
-		List<String> competitorClasses = new ArrayList<String>();		
-		for (Competitor competitor : mCompetitors) {
-			String competitorClass = competitor.getCompetitorClass();
-			if (competitorClasses.contains(competitorClass)) {
-				//Already in list
-			} else {
-				competitorClasses.add(competitor.getCompetitorClass());
-			}
-		}
-		return competitorClasses;
-	}
-	
-	public int getNumberOfCompetitors(String competitorClass) {
-		int count = 0;
-		for (Competitor competitor : mCompetitors) {
-			if (competitorClass.contains(competitor.getCompetitorClass())) {
-				count++;
-			}
-		}
-		return count;
-	}	
-	
-
-	public int getNumbeofCompetitors() {
-		return mCompetitors.size();
-	}	
-	
-	public int getNumberOfTracks() {
-		if (mTrack != null) {
-			return mTrack.size();
-		}
-		return 0;
-	}
-
-	/**
-	 * Will remove the old track and replace it with the new one. The input is a
-	 * comma separated list of track markers (SI control unit) The user need to
-	 * specify the name of the track markers as String with integers, where each
-	 * Integer represents the number programmed in to theSI control unit
-	 * 
-	 * @param newTrack
-	 *            comma separated list of Integers i.e. "71,72,71,72"
-	 */
-	public void addNewTrack(String newTrack) {
-		String[] trackMarkers = newTrack.split(",");
-		mTrack.clear();
-		for (int i = 0; i < trackMarkers.length; i += 2) {
-
-			int startMarker = 0;
-			int finishMarker = 0;
-			startMarker = Integer.parseInt(trackMarkers[i]);
-			finishMarker = Integer.parseInt(trackMarkers[i + 1]);
-			mTrack.add(new TrackMarker(startMarker, finishMarker));
-		}
-
-		calculateResults();
-	}
-
-	/**
-	 * Reads the current track and returns at as a comma separated String of
-	 * Integers.
-	 * 
-	 * @return
-	 */
-	public String getTrackAsString() {
-		String trackAsString = "";
-		if (!mTrack.isEmpty() && mTrack != null) {
-			int i = 0;
-			for (TrackMarker trackMarker : mTrack) {
-				i++;
-				if (i != 1) {
-					trackAsString += "\n";
-				}
-				trackAsString += "SS" + i + ": " + trackMarker.getStart() + "->" + trackMarker.getFinish();
-			}
-		} else {
-			trackAsString += " No track loaded";
-		}
-		return trackAsString;
-	}
-
 	/**
 	 * Takes the whole current competition object and serializes it to the
 	 * Android file system. It is written to the applications private storage,
@@ -360,7 +191,7 @@ public class Competition implements Serializable {
 	 * competition. Will first search for the card number to find which
 	 * competitor it belongs to. It will try to make the card data coherent by
 	 * removing double punches It will read all the remaining punched and
-	 * calculate the track time for each track in the competition After this
+	 * calculate the stage time for each stage in the competition After this
 	 * method is completed the competitor should have all its competition data
 	 * added to the competition.
 	 * 
@@ -371,8 +202,7 @@ public class Competition implements Serializable {
 	 */
 	public String processNewCard(Card newCard, Boolean calculateResultsAfterAdd) {
 		String returnMsg = "";
-		Competitor foundCompetitor = CompetitionHelper.findCompetitor(newCard,
-				mCompetitors);
+		Competitor foundCompetitor = mCompetitors.findByCard(newCard);
 		if (foundCompetitor == null) {
 			return "Read new card with card number: " + newCard.getCardNumber()
 					+ " Could not find any competitor with this number";
@@ -383,16 +213,16 @@ public class Competition implements Serializable {
 		returnMsg += "New card read for " + foundCompetitor.getName() + " ";
 
 		// The results is a List of Long Integers where each integer represent
-		// the time the competitor took to complete the track
+		// the time the competitor took to complete the stage
 		// i.e. first entry will be for SS1, second SS2 etc.
 		List<Long> results = new ArrayList<Long>();
-		results = CompetitionHelper.extractResultFromCard(newCard, mTrack);
+		results = CompetitionHelper.extractResultFromCard(newCard, mStages);
 
-		foundCompetitor.setTrackTimes(new ArrayList<Long>());
+		foundCompetitor.setStageTimes(new ArrayList<Long>());
 		int i = 1;
-		for (Long trackTime : results) {
-			returnMsg += ", Time for SS " + i + " = " + trackTime + " seconds ";
-			foundCompetitor.getTrackTimes().add(trackTime);
+		for (Long stageTime : results) {
+			returnMsg += ", Time for SS " + i + " = " + stageTime + " seconds ";
+			foundCompetitor.getStageTimes().add(stageTime);
 			i++;
 		}
 
@@ -400,12 +230,12 @@ public class Competition implements Serializable {
 			calculateResults();
 		}
 
-		if (results.size() != mTrack.size()) {
+		if (results.size() != mStages.size()) {
 			return "Not all station punched";
 		}
 
 		returnMsg += ("Total time was: " + foundCompetitor.getTotalTime(true) + " seconds \n");
-
+		Log.d("processNewCard", returnMsg);
 		return returnMsg;
 	}
 
@@ -423,45 +253,60 @@ public class Competition implements Serializable {
 	}
 
 	public void exportCompetitorsAsCsv(Activity activity) throws IOException {
-		String competitorList = CompetitionHelper.getCompetitorsAsCsvString(mCompetitors);
+		String competitorList = mCompetitors.exportCsvString(mCompetitionType);
 		CompetitionHelper.exportString(activity, competitorList, "competitors", mCompetitionName);
 	}
 
 	public void exportResultsAsCsv(Activity activity) throws IOException {
-		String resultList = CompetitionHelper.getResultsAsCsvString(mTrack, mResultLandscape);
+		String resultList = CompetitionHelper.getResultsAsCsvString(mStages, mResultLandscape, mCompetitors, mCompetitionType);
 		CompetitionHelper.exportString(activity, resultList, "results", mCompetitionName);
 	}
 
 	public void exportPunchesAsCsv(Activity activity) throws IOException {
-		String punchList = CompetitionHelper.getPunchesAsCsvString(mCompetitors);
+		String punchList = mCompetitors.exportPunchesCvsString();
 		CompetitionHelper.exportString(activity, punchList, "punches", mCompetitionName);
 	}
 
 	public void exportCompetitionAsCsv(Activity activity) throws IOException {
-		String competitionList = CompetitionHelper.getCompetitionAsCsvString(mCompetitionName, mTrack, mCompetitors);
+		String competitionList = "";
+		
+		// Competition Name
+		competitionList += "[Name]\n";
+		competitionList += mCompetitionName + "\n";
+		competitionList += "[/Name]\n";
+		
+		// Competition Date
+		competitionList += "[Date]\n";
+		competitionList += mCompetitionDate + "\n";
+		competitionList += "[/Date]\n";
+
+		// Competition Type
+		competitionList += "[Type]\n";
+		competitionList += mCompetitionType + "\n";
+		competitionList += "[/Type]\n";
+
+		// Stages
+		competitionList += "[Stages]\n";
+		competitionList += mStages.exportStagesCvsString() + "\n";
+		competitionList += "[/Stages]\n";
+		
+		// Competitors
+		competitionList += "[Competitors]\n";
+		competitionList += mCompetitors.exportCsvString(mCompetitionType);
+		competitionList += "[/Competitors]\n";
+
+		// Punches
+		competitionList += "[Punches]\n";
+		competitionList += mCompetitors.exportPunchesCvsString();
+		competitionList += "[/Punches]\n";		
+		
 		CompetitionHelper.exportString(activity, competitionList, "competition", mCompetitionName);
-	}
-
-	public void exportAllAsCsv(Activity activity) throws IOException {
-		String AllList = "";
-		AllList += "Competitors\n";
-		AllList += CompetitionHelper.getCompetitorsAsCsvString(mCompetitors);
-		AllList += "\n\n";
-		AllList += "Results\n";
-		AllList += CompetitionHelper.getResultsAsCsvString(mTrack, mResultLandscape);
-		AllList += "\n\n";
-		AllList += "Punches\n";
-		AllList += CompetitionHelper.getPunchesAsCsvString(mCompetitors);
-
-		CompetitionHelper.exportString(activity, AllList, "all", mCompetitionName);
 	}
 	
 	public void calculateResults() {
 		int i, j;
-		ArrayList<Competitor> tempCompetitors = new ArrayList<Competitor>();
-		for (Competitor competitor : mCompetitors) {
-			tempCompetitors.add(competitor);
-		}
+		Competitors tempCompetitors = new Competitors();
+		tempCompetitors = mCompetitors;
 
 		mResults.clear();			
 		mResultLandscape.clear();
@@ -469,7 +314,7 @@ public class Competition implements Serializable {
 		//Get Competitor Classes
 		List<String> competitorClasses;
 		if (mCompetitionType == ESS_TYPE) {		
-			competitorClasses = getCompetitorClasses();
+			competitorClasses = mCompetitors.getCompetitorClasses();
 		} else {
 			competitorClasses = new ArrayList<String>();
 			competitorClasses.add("");
@@ -491,45 +336,45 @@ public class Competition implements Serializable {
 			result = new Results(classString + "Total time");
 			mResults.add(result);
 	
-			// Add track titles
-			for (i = 1; i < getTrack().size() + 1; i++) {
+			// Add stage titles
+			for (i = 1; i < mStages.size() + 1; i++) {
 				result = new Results(classString + "Stage " + i);
 				mResults.add(result);
 			}
 	
-			TrackResult trackResult;
+			StageResult stageResult;
 			
 			// Add total times			
 			for (i = 0; i < tempCompetitors.size(); i++) {
 				if ((mCompetitionType == SVARTVITT_TYPE) || (tempCompetitors.get(i).getCompetitorClass().equals(competitorClass))) {					
-					trackResult = new TrackResult(tempCompetitors.get(i).getCardNumber(), tempCompetitors.get(i).getTotalTime(true), false);
-					mResults.get(totalTimePosition).getTrackResult().add(trackResult);
+					stageResult = new StageResult(tempCompetitors.get(i).getCardNumber(), tempCompetitors.get(i).getTotalTime(true), false);
+					mResults.get(totalTimePosition).getStageResult().add(stageResult);
 				}
 			}
 			
 			//Sort total times
-			mResults.get(totalTimePosition).sortTrackResult();		
+			mResults.get(totalTimePosition).sortStageResult();		
 						
-			// Add track times
+			// Add stage times
 			for (j = 1; j < (mResults.size() - totalTimePosition); j++) {
 				for (i = 0; i < tempCompetitors.size(); i++) {
 					if ((mCompetitionType == SVARTVITT_TYPE) || (tempCompetitors.get(i).getCompetitorClass().equals(competitorClass))) {			
 
-						Long trackTime;
-						if ((tempCompetitors.get(i).hasResult()) && (tempCompetitors.get(i).getTrackTimes().size() > (j - 1))) {
-							trackTime = tempCompetitors.get(i).getTrackTimes().get(j - 1);
+						Long stageTime;
+						if ((tempCompetitors.get(i).hasResult()) && (tempCompetitors.get(i).getStageTimes().size() > (j - 1))) {
+							stageTime = tempCompetitors.get(i).getStageTimes().get(j - 1);
 						} else {
-							trackTime = (long) Integer.MAX_VALUE;
+							stageTime = (long) Integer.MAX_VALUE;
 						}
 		
-						trackResult = new TrackResult(tempCompetitors.get(i).getCardNumber(), trackTime, trackTime == (long) Integer.MAX_VALUE);
-						mResults.get(j + totalTimePosition).getTrackResult().add(trackResult);
+						stageResult = new StageResult(tempCompetitors.get(i).getCardNumber(), stageTime, stageTime == (long) Integer.MAX_VALUE);
+						mResults.get(j + totalTimePosition).getStageResult().add(stageResult);
 		
-						if (trackResult.getDnf()) {
+						if (stageResult.getDnf()) {
 							// Update the total and set competitor to DNF if one stage is DNF
-							for (int k = 0; k < mResults.get(totalTimePosition).getTrackResult().size(); k++) {
-								if (mResults.get(totalTimePosition).getTrackResult().get(k).getCardNumber() == trackResult.getCardNumber()) {
-									mResults.get(totalTimePosition).getTrackResult().get(k).setDnf(true);
+							for (int k = 0; k < mResults.get(totalTimePosition).getStageResult().size(); k++) {
+								if (mResults.get(totalTimePosition).getStageResult().get(k).getCardNumber() == stageResult.getCardNumber()) {
+									mResults.get(totalTimePosition).getStageResult().get(k).setDnf(true);
 									break;
 								}
 							}
@@ -537,45 +382,45 @@ public class Competition implements Serializable {
 					}						
 				}
 	
-				//Sort track times
-				mResults.get(j + totalTimePosition).sortTrackResult();
+				//Sort stages times
+				mResults.get(j + totalTimePosition).sortStageResult();
 			}
 
 			//Calculate time back
 			for (j = totalTimePosition; j < mResults.size(); j++) {
-				for (i = 0; i < mResults.get(j).getTrackResult().size(); i++) {
-					Long trackTimeBack = (long) Integer.MAX_VALUE;
-					if (mResults.get(j).getTrackResult().get(i).getTrackTimes() == (long) Integer.MAX_VALUE) {
-						trackTimeBack = (long) Integer.MAX_VALUE;
+				for (i = 0; i < mResults.get(j).getStageResult().size(); i++) {
+					Long stageTimeBack = (long) Integer.MAX_VALUE;
+					if (mResults.get(j).getStageResult().get(i).getStageTimes() == (long) Integer.MAX_VALUE) {
+						stageTimeBack = (long) Integer.MAX_VALUE;
 					} else {
-						if (mResults.get(j).getTrackResult().size() > 0) {
-							trackTimeBack = mResults.get(j).getTrackResult().get(i).getTrackTimes() - mResults.get(j).getTrackResult().get(0).getTrackTimes();
+						if (mResults.get(j).getStageResult().size() > 0) {
+							stageTimeBack = mResults.get(j).getStageResult().get(i).getStageTimes() - mResults.get(j).getStageResult().get(0).getStageTimes();
 						}
 					}
-					mResults.get(j).getTrackResult().get(i).setTrackTimesBack(trackTimeBack);
+					mResults.get(j).getStageResult().get(i).setStageTimesBack(stageTimeBack);
 				}
 			}
 					
 			//Calculate results for landscape
 			if (mResults != null && !mResults.isEmpty()) {
-				for (TrackResult totalTimeResult : mResults.get(totalTimePosition).getTrackResult()) {							
+				for (StageResult totalTimeResult : mResults.get(totalTimePosition).getStageResult()) {							
 					int cardNumber = totalTimeResult.getCardNumber();				
 					Results resultLandscapeObject = new Results();						
-					resultLandscapeObject.getTrackResult().add(totalTimeResult);
+					resultLandscapeObject.getStageResult().add(totalTimeResult);
 					
 					for (int stage = 1; stage < (mResults.size() - totalTimePosition); stage++) {										
-						TrackResult newTrackResult = new TrackResult(cardNumber, (long) Integer.MAX_VALUE, true);					
-						for (TrackResult stageTrackResultObject : mResults.get(stage + totalTimePosition).getTrackResult()) {						
-							if (cardNumber == stageTrackResultObject.getCardNumber()) {
-								newTrackResult = stageTrackResultObject;
+						StageResult newStageResult = new StageResult(cardNumber, (long) Integer.MAX_VALUE, true);					
+						for (StageResult stageResultObject : mResults.get(stage + totalTimePosition).getStageResult()) {						
+							if (cardNumber == stageResultObject.getCardNumber()) {
+								newStageResult = stageResultObject;
 							}																			
 						}					
 						
-						if (newTrackResult.getTrackTimes() == (long) Integer.MAX_VALUE) {
-							resultLandscapeObject.getTrackResult().get(0).setTrackTimes((long) Integer.MAX_VALUE);
+						if (newStageResult.getStageTimes() == (long) Integer.MAX_VALUE) {
+							resultLandscapeObject.getStageResult().get(0).setStageTimes((long) Integer.MAX_VALUE);
 						}
 						
-						resultLandscapeObject.getTrackResult().add(newTrackResult);
+						resultLandscapeObject.getStageResult().add(newStageResult);
 					}
 					
 					if (competitorClass.length() > 0) {

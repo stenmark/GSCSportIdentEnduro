@@ -16,18 +16,6 @@
 		android:layout_marginRight="8dp"			
 		>  
 
-		<TextView
-		   android:layout_width="fill_parent"
-		   android:layout_height="wrap_content"
-		   android:textSize="16sp"
-		   android:text="Import competition"
-		   android:textStyle="bold"
-		   android:layout_weight="1"		
-		   android:padding="4dp"
-		   android:textColor="@color/white"		
-		   android:background="@color/black"   	        
-		   />          
-		       
 	   	<LinearLayout 
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
@@ -36,6 +24,35 @@
 			android:padding="4dp"			
 			> 
 		 
+		    <TextView
+		        android:id="@+id/import_competition_info"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="8sp"
+		        android:text="Enter competition in the following way.\n\n
+[Name]\n
+Name\n
+[/Name]\n
+[Type]\n
+0 (=SvartVitt) or 1 (=ESS)\n
+[/Type]\n
+[Date]\n
+Date\n
+[/Date]\n
+[Stages]\n
+StartControl,FinishControl,StartControl,FinishControl,...\n
+[/Stages]\n
+[Competitors]\n
+Name,CardNumber (=SvartVitt) or Name,CardNumber,Team,CompetitorClass,StartNumber,StartGroup (=ESS)\n
+Name,CardNumber\n
+Name,CardNumber\n
+[/Competitors]\n
+[Punches]\n
+CardNumber,Control,Time,Control,Time..\n
+CardNumber,Control,Time,Control,Time..\n
+CardNumber,Control,Time,Control,Time..\n
+[/Punches]"/>
+	   	    
 		    <EditText
 		        android:id="@+id/import_competition_input"
 		        android:layout_width="match_parent"

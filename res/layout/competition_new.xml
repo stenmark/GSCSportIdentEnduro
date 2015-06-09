@@ -36,7 +36,29 @@
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content" >
 		    </EditText>	    
-		</LinearLayout>			
+		</LinearLayout>		
+		
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_weight="1"		
+			android:padding="4dp"		
+			>    
+			
+		     <TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="16sp"
+		        android:text="Date of competition:"        
+		        />  
+		        
+		    <EditText
+		        android:id="@+id/competition_date_input"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		    </EditText>	    
+		</LinearLayout>		
 		
 	   	<LinearLayout 
 			android:layout_width="fill_parent"
@@ -66,7 +88,7 @@
 		</LinearLayout>				
 		
 	   	<LinearLayout 
-	   	    android:id="@+id/add_track_spinner_layout"
+	   	    android:id="@+id/add_stage_spinner_layout"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal"	
@@ -75,22 +97,22 @@
 			> 
 			
 		   	<TextView
-	        	android:id="@+id/add_track_info"
+	        	android:id="@+id/add_stage_info"
 	        	android:layout_width="wrap_content"
 	        	android:layout_height="wrap_content"
 	        	android:textSize="16sp"
-	        	android:text="@string/start_add_stages_info" />					    
+	        	android:text="@string/add_stages_info" />					    
 		    
   			<Spinner
-      			android:id="@+id/add_track_spinner"
+      			android:id="@+id/add_stage_spinner"
       			android:layout_width="fill_parent"
       			android:layout_height="wrap_content"
-      			android:prompt="@string/start_add_stages_info"
+      			android:prompt="@string/add_stages_info"
   			/>			    		    
 		</LinearLayout>		
 		
 		<LinearLayout 
-		    android:id="@+id/add_track_manually_layout"
+		    android:id="@+id/add_stage_manually_layout"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical"
@@ -107,11 +129,11 @@
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:textSize="16sp"
-			        android:text="Track:"        
+			        android:text="Stages:"        
 			        />  
 			        
 			    <EditText
-			        android:id="@+id/add_track_manually_input"
+			        android:id="@+id/add_stages_manually_input"
 			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content" >
 			    </EditText>	    
@@ -120,7 +142,7 @@
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
 		        android:textSize="8sp"
-		        android:text="@string/start_track_info" />	
+		        android:text="@string/stages_info" />	
 		</LinearLayout>			   	
 
 		<LinearLayout 
@@ -135,15 +157,8 @@
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
     			android:onClick="itemClicked"
-    			android:text="Keep competitors" />		    
+    			android:text="Keep current competitors" />		    
 
-			<CheckBox
-    			android:id="@+id/add_track_manually_checkbox"
-    			android:layout_width="wrap_content"
-    			android:layout_height="wrap_content"
-    			android:onClick="itemClicked"
-    			android:text="Add Track Manually" />				
-			
 		</LinearLayout>			
 	</LinearLayout>    		
 </LinearLayout>

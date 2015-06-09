@@ -62,19 +62,19 @@ public class ResultsListAdapter extends BaseAdapter {
 		String Time = "";
 		String TimeBack = "";
 		
-		for(int i = 0; i < mResult.get(position).getTrackResult().size(); i++) {
-			int rank = mResult.get(position).getTrackResult().get(i).getRank();			
+		for(int i = 0; i < mResult.get(position).getStageResult().size(); i++) {
+			int rank = mResult.get(position).getStageResult().get(i).getRank();			
 			if (rank == Integer.MAX_VALUE) {			
 				Name += "-. ";
 			} else {
 				Name += rank + ". ";
 			}			
-			Name += ((MainActivity) mContext).competition.getCompetitor(mResult.get(position).getTrackResult().get(i).getCardNumber()).getName() + "\n";
-			StartNumber += ((MainActivity) mContext).competition.getCompetitor(mResult.get(position).getTrackResult().get(i).getCardNumber()).getStartNumber() + "\n";
-			Team += ((MainActivity) mContext).competition.getCompetitor(mResult.get(position).getTrackResult().get(i).getCardNumber()).getTeam() + "\n";
+			Name += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getName() + "\n";
+			StartNumber += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getStartNumber() + "\n";
+			Team += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getTeam() + "\n";
 					
-			Time += CompetitionHelper.secToMinSec(mResult.get(position).getTrackResult().get(i).getTrackTimes()) + "\n";
-			TimeBack += CompetitionHelper.secToMinSec(mResult.get(position).getTrackResult().get(i).getTrackTimesBack()) + "\n";			
+			Time += CompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTimes()) + "\n";
+			TimeBack += CompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTimesBack()) + "\n";			
 		}
 				
 		resultRowV.setResultName(Name);

@@ -36,7 +36,7 @@ public class CompetitorsListAdapter extends BaseAdapter {
 	}
 	
 	public void updateCompetitors () {
-		mCompetitor = ((MainActivity) mContext).competition.getCompetitors();
+		mCompetitor = ((MainActivity) mContext).competition.getCompetitors().getCompetitors();
 		this.notifyDataSetChanged();	
 	}
 	

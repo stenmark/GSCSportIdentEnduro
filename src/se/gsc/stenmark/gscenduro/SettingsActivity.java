@@ -7,14 +7,13 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
-public class SettingsActivity extends PreferenceActivity
-                                implements OnSharedPreferenceChangeListener {
+public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        getPreferenceManager().setSharedPreferencesName("GSC_ENDURO_PREFERNCES");
+        getPreferenceManager().setSharedPreferencesName("GSC_ENDURO_PREFERENCES");
         
         addPreferencesFromResource(R.xml.settings);
     }
@@ -22,15 +21,13 @@ public class SettingsActivity extends PreferenceActivity
     @Override
     protected void onResume(){
         super.onResume();
-        getPreferenceScreen().getSharedPreferences()
-                                .registerOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
  
     @Override
     protected void onPause() {
         super.onPause();
-        getPreferenceScreen().getSharedPreferences()
-                                .unregisterOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }  
  
     @Override
@@ -42,6 +39,5 @@ public class SettingsActivity extends PreferenceActivity
             pref.setSummary(listPref.getEntry());
             return;
         }
-    }  
-    
+    }      
 }

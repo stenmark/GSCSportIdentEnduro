@@ -14,7 +14,7 @@
     <application
         android:name="se.gsc.stenmark.gscenduro.MainApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/gsc_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" > 
         <activity android:name="se.gsc.stenmark.gscenduro.MainActivity"
@@ -33,7 +33,7 @@
         <activity android:name="se.gsc.stenmark.gscenduro.SettingsActivity">
         </activity>
 
-        <activity android:name="se.gsc.stenmark.gscenduro.PunchListActivity">
+        <activity android:name="se.gsc.stenmark.gscenduro.PunchActivity">
         </activity>
                 
     </application>    

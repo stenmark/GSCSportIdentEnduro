@@ -1,8 +1,5 @@
 package se.gsc.stenmark.gscenduro;
 
-import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.View;
@@ -37,13 +34,15 @@ public class CompetitorsFragment extends ListFragment {
 			getListView().addHeaderView(listView);
 		}
 				
-		mCompetitorAdapter = new CompetitorsListAdapter(mMainActivity, mMainActivity.competition.getCompetitors());
+		mCompetitorAdapter = new CompetitorsListAdapter(mMainActivity, mMainActivity.competition.getCompetitors().getCompetitors());
 		setListAdapter(mCompetitorAdapter);							
 				
         Button addCompetitorButton = (Button) getView().findViewById(R.id.add_competitor_button);
         addCompetitorButton.setOnClickListener(new Button.OnClickListener() {
 			@Override
-			public void onClick(View v) {		
+			public void onClick(View v) {
+				String status = "";
+				
 				mNameInput = (EditText) getView().findViewById(R.id.name_input);
 				mCardNumberInput = (EditText) getView().findViewById(R.id.card_number_input);
 				
@@ -52,15 +51,27 @@ public class CompetitorsFragment extends ListFragment {
 					mCompetitorClassInput = (EditText) getView().findViewById(R.id.class_input);
 					mStartNumberInput = (EditText) getView().findViewById(R.id.start_number_input);
 					mStartGroupInput = (EditText) getView().findViewById(R.id.start_group_input);
-					
-					addCompetitor(mNameInput.getText().toString(), mCardNumberInput.getText().toString(), 
-								  mTeamInput.getText().toString(), mCompetitorClassInput.getText().toString(), 
-								  mStartNumberInput.getText().toString(), mStartGroupInput.getText().toString());
+
+					status = mMainActivity.competition.getCompetitors().add(mNameInput.getText().toString(), 
+			   		   													    mCardNumberInput.getText().toString(), 
+			   		   													    mTeamInput.getText().toString(), 
+			   		   													    mCompetitorClassInput.getText().toString(), 
+			   		   													    mStartNumberInput.getText().toString(), 
+			   		   													    mStartGroupInput.getText().toString(),
+			   		   													    mMainActivity.competition.getCompetitionType());										
 				} else {
-					addCompetitor(mNameInput.getText().toString(), mCardNumberInput.getText().toString(), "", "", "", "");	
-				}				
-				
+					status = mMainActivity.competition.getCompetitors().add(mNameInput.getText().toString(), 
+								    										mCardNumberInput.getText().toString(), 
+								    										"", 
+								    										"",
+								    										"-1", 
+								    										"-1",
+								    										mMainActivity.competition.getCompetitionType());					
+				}						
+				mMainActivity.competition.calculateResults();
 				mMainActivity.updateFragments();
+				
+				Toast.makeText(mMainActivity, status, Toast.LENGTH_LONG).show();
 			}
 		});		
 			
@@ -78,42 +89,4 @@ public class CompetitorsFragment extends ListFragment {
 	    // free adapter
 	    setListAdapter(null);
 	}	
-		
-	public void addCompetitor(String CompetitorName, String CardNumber, String CompetitorTeam, String CompetitorClass, String StartNumber, String StartGroup) {
-		
-		Boolean error = false;
-		String errorText = "";
-		
-		if((CompetitorName.length() == 0) && (CardNumber.length() == 0)) {
-			error = true;
-			errorText = "Name and Card Number are empty";		
-		} else if ((mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE) &&
-	     		 ((CompetitorTeam.length() == 0) && (CompetitorClass.length() == 0) && (CompetitorTeam.length() == 0) && (StartGroup.length() == 0))) {
-			error = true;
-			errorText = "All data must be entered";			
-		} else if (CompetitionHelper.checkNameExists(mMainActivity.competition.getCompetitors(), CompetitorName)) {
-			error = true;
-			errorText = "Name already exists";		
-		} else if (CompetitionHelper.checkCardNumberExists(mMainActivity.competition.getCompetitors(), Integer.parseInt(CardNumber))) {
-			error = true;
-			errorText = "Card number exists";       
-		} else if (CompetitionHelper.checkStartNumberExists(mMainActivity.competition.getCompetitors(), Integer.parseInt(StartNumber))) {
-			error = true;
-			errorText = "Start number exists";	              
-		}
-		
-		if (error) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
-	        builder.setIcon(android.R.drawable.ic_dialog_alert);
-	        builder.setMessage(errorText).setTitle("Error").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog, int which) {}
-	        });
-	 
-	        AlertDialog alert = builder.create();
-	        alert.show();	
-		} else {
-			mMainActivity.competition.addCompetitor(CompetitorName, Integer.parseInt(CardNumber), CompetitorTeam, CompetitorClass, Integer.parseInt(StartNumber), Integer.parseInt(StartGroup));
-			Toast.makeText(mMainActivity, "Competitor added: " + CompetitorName + ", " + CardNumber + ", " + CompetitorTeam + ", " + CompetitorClass, Toast.LENGTH_LONG).show();
-		}	
-	}
 }

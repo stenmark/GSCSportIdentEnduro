@@ -9,7 +9,7 @@ public class Results implements Serializable {
 	
 	private static final long serialVersionUID = 201111020001L; 	
 	private String mTitle;	
-	private ArrayList<TrackResult> mTrackResult = new ArrayList<TrackResult>();
+	private ArrayList<StageResult> mStageResult = new ArrayList<StageResult>();
 	
 	public Results() {
 		setTitle("");
@@ -27,49 +27,49 @@ public class Results implements Serializable {
 		mTitle = title;
 	}
 	
-	public ArrayList<TrackResult> getTrackResult() {
-		return mTrackResult;
+	public ArrayList<StageResult> getStageResult() {
+		return mStageResult;
 	}		
 	
-	public void setTrackResult(ArrayList<TrackResult> trackResult) {
-		mTrackResult = trackResult;	
+	public void setStageResult(ArrayList<StageResult> stageResult) {
+		mStageResult = stageResult;	
 	}		
-	
-	public void sortTrackResult() {
 		
-		if (mTrackResult.size() > 0) {		
-			Collections.sort(mTrackResult, new Comparator<TrackResult>() {
+	public void sortStageResult() {
+		
+		if (mStageResult.size() > 0) {		
+			Collections.sort(mStageResult, new Comparator<StageResult>() {
 				@Override
-				public int compare(TrackResult lhs, TrackResult rhs) {
+				public int compare(StageResult lhs, StageResult rhs) {
 					if (lhs.getDnf()) {
 						return 1;
 					} else {
-						return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
+						return lhs.getStageTimes().compareTo(rhs.getStageTimes());
 					}
 				}
 			});
 		
 			//Calculate rank		
 			int rank = 1;		
-			if (mTrackResult.get(0).getTrackTimes() == Integer.MAX_VALUE)
+			if (mStageResult.get(0).getStageTimes() == Integer.MAX_VALUE)
 			{
 				//No results, set all to dnf
-				for (int i = 0; i < mTrackResult.size(); i++) {	
-					mTrackResult.get(i).setRank(Integer.MAX_VALUE);
+				for (int i = 0; i < mStageResult.size(); i++) {	
+					mStageResult.get(i).setRank(Integer.MAX_VALUE);
 				}
 			}
 			else
 			{
-				mTrackResult.get(0).setRank(rank);			
-				for (int i = 1; i < mTrackResult.size(); i++) {				
-					if (mTrackResult.get(i).getTrackTimes() > mTrackResult.get(i - 1).getTrackTimes()) {
+				mStageResult.get(0).setRank(rank);			
+				for (int i = 1; i < mStageResult.size(); i++) {				
+					if (mStageResult.get(i).getStageTimes() > mStageResult.get(i - 1).getStageTimes()) {
 						rank = i + 1;
 					}
 					
-					if (mTrackResult.get(i).getTrackTimes() == Integer.MAX_VALUE) {
-						mTrackResult.get(i).setRank(Integer.MAX_VALUE);
+					if (mStageResult.get(i).getStageTimes() == Integer.MAX_VALUE) {
+						mStageResult.get(i).setRank(Integer.MAX_VALUE);
 					} else {			
-						mTrackResult.get(i).setRank(rank);
+						mStageResult.get(i).setRank(rank);
 					}
 				}
 			}

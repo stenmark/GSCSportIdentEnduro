@@ -1,11 +1,13 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 import se.gsc.stenmark.gscenduro.R;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
+import se.gsc.stenmark.gscenduro.compmanagement.Stages;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
@@ -14,13 +16,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
 
-public class PunchListActivity extends ListActivity {
+public class PunchActivity extends ListActivity {
 
-	private PunchListAdapter mPunchAdapter;
+	private PunchAdapter mPunchAdapter;
 	private Card mUpdatedCard = null;
+	private Stages mStages;
+	private ArrayList<String> mControls;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);			
@@ -39,48 +46,63 @@ public class PunchListActivity extends ListActivity {
         
 		try {				
 			mUpdatedCard = (Card) getIntent().getExtras().getSerializable("Card");
+			mStages = (Stages) getIntent().getExtras().getSerializable("Stages");
+			
+			mControls = mStages.getControls();
 			
 			if (mUpdatedCard != null) {
 				mUpdatedCard.setNumberOfPunches(mUpdatedCard.getPunches().size());							
 			}			
 			
 			sortData();
-			mPunchAdapter = new PunchListAdapter(this, mUpdatedCard.getPunches());
+			mPunchAdapter = new PunchAdapter(this, mUpdatedCard.getPunches());
 			setListAdapter(mPunchAdapter);			
 		} catch( Exception e) {
 			Log.d("PunchListActivity", "Error = " + e);
 		}
 	}	
 	
+	public ArrayList<String> getControls() {
+		return mControls;		
+	}	
+	
 	public void addPunchAlert(){
 		LayoutInflater li = LayoutInflater.from(this);
 		View promptsView = li.inflate(R.layout.punch_add, null);
 	
-		final EditText controlInput = (EditText) promptsView.findViewById(R.id.control_input);		
+		final Spinner spinner = (Spinner) promptsView.findViewById(R.id.add_punch_controls_spinner);	
+        ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(PunchActivity.this, android.R.layout.simple_spinner_item, mControls);
+        LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
+        spinner.setAdapter(LTRadapter);			
+        spinner.setSelection(0);				
+		
 		final EditText timeInput = (EditText) promptsView.findViewById(R.id.time_input);
 		
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		alertDialogBuilder.setTitle("Add punch");
 		alertDialogBuilder.setView(promptsView);
-		alertDialogBuilder
-				.setCancelable(false)
-				.setPositiveButton("Add",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								Long time = Long.valueOf(timeInput.getText().toString());
-								Long control = Long.valueOf(controlInput.getText().toString());
-								
-								addPunch(time, control);
-							}
-						})
-				.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								dialog.cancel();
-							}
-						});
-	
-		AlertDialog alertDialog = alertDialogBuilder.create();
-		alertDialog.show();						
+		alertDialogBuilder.setPositiveButton("Add", null);
+		alertDialogBuilder.setNegativeButton("Cancel", null);		
+		
+		final AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.show();
+		alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            	if (timeInput.length() == 0) {
+            		Toast.makeText(PunchActivity.this, "No time was supplied", Toast.LENGTH_LONG).show();
+            		return;            		 
+            	}
+
+            	Long time = Long.valueOf(timeInput.getText().toString());
+				Long control = Long.valueOf(Integer.parseInt(spinner.getSelectedItem().toString()));
+				
+				addPunch(time, control);
+				
+				alertDialog.dismiss();
+            }
+		});			
 	}	
 	
 	@Override

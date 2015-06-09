@@ -8,7 +8,7 @@ import se.gsc.stenmark.gscenduro.SporIdent.Card;
 /**
  * Represents a Competitor with a competitor name, an SI-card connected to the
  * competitor and the SI-card number for the competitor. Also List of Long
- * Integers denote the results for this user in the form of tracktimes.
+ * Integers denote the results for this user in the form of stagetimes.
  * 
  * @author Andreas
  * 
@@ -19,7 +19,7 @@ public class Competitor implements Comparable<Competitor>, Serializable {
 	private String mName;
 	private int mCardNumber;
 	private Card mCard;
-	private ArrayList<Long> mTrackTimes;
+	private ArrayList<Long> mStageTimes;
 	private String mTeam;
 	private String mCompetitorClass;
 	private int mStartNumber;
@@ -29,21 +29,21 @@ public class Competitor implements Comparable<Competitor>, Serializable {
 		setName(name);
 		setCardNumber(-1);
 		setCard(null);
-		setTrackTimes(null);
+		setStageTimes(null);
 	}
 
 	Competitor(String name, int cardNumber) {
 		setName(name);
 		setCardNumber(cardNumber);
 		setCard(null);
-		setTrackTimes(null);
+		setStageTimes(null);
 	}
 
 	Competitor(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup) {
 		setName(name);
 		setCardNumber(cardNumber);
 		setCard(null);
-		setTrackTimes(null);
+		setStageTimes(null);
 		setTeam(team);
 		setCompetitorClass(competitorClass);
 		setStartNumber(startNumber);
@@ -51,15 +51,15 @@ public class Competitor implements Comparable<Competitor>, Serializable {
 	}
 
 	/**
-	 * Calculate the time it took for the competitor complete all tracks in the
-	 * tracTimes list.
+	 * Calculate the time it took for the competitor complete all stages in the
+	 * stageTimes list.
 	 * 
 	 * @param useMaxValueOnEmptyResult
 	 * @return
 	 */
 	public long getTotalTime(boolean useMaxValueOnEmptyResult) {
 		long totalTime = 0;
-		if (mTrackTimes == null) {
+		if (mStageTimes == null) {
 			if (useMaxValueOnEmptyResult) {
 				return Integer.MAX_VALUE;
 			} else {
@@ -67,8 +67,8 @@ public class Competitor implements Comparable<Competitor>, Serializable {
 			}
 		}
 
-		for (long trackTime : mTrackTimes) {
-			totalTime += trackTime;
+		for (long stageTime : mStageTimes) {
+			totalTime += stageTime;
 		}
 		return totalTime;
 	}
@@ -101,12 +101,12 @@ public class Competitor implements Comparable<Competitor>, Serializable {
 		return mCard != null;
 	}
 
-	public ArrayList<Long> getTrackTimes() {
-		return mTrackTimes;
+	public ArrayList<Long> getStageTimes() {
+		return mStageTimes;
 	}
 
-	public void setTrackTimes(ArrayList<Long> trackTimes) {
-		mTrackTimes = trackTimes;
+	public void setStageTimes(ArrayList<Long> stageTimes) {
+		mStageTimes = stageTimes;
 	}
 
 	public String getTeam() {

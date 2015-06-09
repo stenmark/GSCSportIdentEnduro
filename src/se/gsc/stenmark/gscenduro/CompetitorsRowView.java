@@ -3,13 +3,13 @@ package se.gsc.stenmark.gscenduro;
 import se.gsc.stenmark.gscenduro.R;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CompetitorsRowView extends LinearLayout {
 	
@@ -33,8 +33,7 @@ public class CompetitorsRowView extends LinearLayout {
 	EditText mStartGroupInput = null;
 
 	protected void init(Context context) {
-		LayoutInflater inflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		mContext = context;
 
@@ -66,211 +65,184 @@ public class CompetitorsRowView extends LinearLayout {
 	
 	public CompetitorsRowView(Context context, CompetitorsListAdapter adapter) {
 		super(context);
-		try {		
-			init(context);
-			mAdapter = adapter;
-		} catch( Exception e) {
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
-		}
+		init(context);
+		mAdapter = adapter;
 	}
 
 	public void setName(String name) {
-		try {
-			if (mName != null) {
-				mName.setText(name);
-			}
-		} catch( Exception e) {
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
+		if (mName != null) {
+			mName.setText(name);
 		}
 	}
 
 	public void setCardNumber(String CardNumber) {
-		try {
-			if (mCardNumber != null) {
-				mCardNumber.setText(CardNumber);
-			}
-		} catch( Exception e){
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
+		if (mCardNumber != null) {
+			mCardNumber.setText(CardNumber);
 		}
 	}
 
 	public void setTeam(String Team) {
-		try {
-			if (mTeam != null) {
-				mTeam.setText(Team);
-			}
-		} catch( Exception e) {
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
+		if (mTeam != null) {
+			mTeam.setText(Team);
 		}
 	}	
 	
 	public void setCompetitorClass(String competitorClass) {
-		try {
-			if (mCompetitorClass != null) {
-				mCompetitorClass.setText(competitorClass);
-			}
-		} catch( Exception e) {
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
+		if (mCompetitorClass != null) {
+			mCompetitorClass.setText(competitorClass);
 		}
 	}		
 	
 	public void setStartNumber(String startNumber) {
-		try {
-			if (mStartNumber != null) {
-				mStartNumber.setText(startNumber);
-			}
-		} catch( Exception e) {
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
+		if (mStartNumber != null) {
+			mStartNumber.setText(startNumber);
 		}
 	}	
 	
 	public void setStartGroup(String startGroup) {
-		try {
-			if (mStartGroup != null) {
-				mStartGroup.setText(startGroup);
-			}
-		} catch( Exception e) {
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
+		if (mStartGroup != null) {
+			mStartGroup.setText(startGroup);
 		}
 	}		
 	
 	public void setPosition(int Position) {
-		try {
-			mPosition = Position;
-		} catch( Exception e){
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-			dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");	
-		}		
+		mPosition = Position;
 	}
 
 	private OnClickListener mOnDeleteClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			try {
-				LayoutInflater li = LayoutInflater.from(mContext);
-				View promptsView = li.inflate(R.layout.competitor_delete, null);
-	
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);	
-				alertDialogBuilder.setView(promptsView);
-				alertDialogBuilder
-						.setCancelable(false)
-						.setPositiveButton("Yes",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,	int id) {
-										((MainActivity) mContext).competition.removeCompetitor((String) mName.getText());											
-										((MainActivity) mContext).updateFragments();
-									}
-								})
-						.setNegativeButton("No",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int id) {
-										dialog.cancel();
-									}
-								});
-	
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				alertDialog.show();
-			} catch( Exception e) {
-				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-				dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
-			}
+			LayoutInflater li = LayoutInflater.from(mContext);
+			View promptsView = li.inflate(R.layout.competitor_delete, null);
+
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);	
+			alertDialogBuilder.setTitle("Delete competitor");	   
+			alertDialogBuilder.setView(promptsView);
+			alertDialogBuilder.setPositiveButton("Delete", null);
+			alertDialogBuilder.setNegativeButton("Cancel", null);				
+
+			final AlertDialog alertDialog = alertDialogBuilder.create();
+			alertDialog.show();
+			alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View v) {								
+	            	((MainActivity) mContext).competition.getCompetitors().removeByName((String) mName.getText());		
+	            	((MainActivity) mContext).competition.calculateResults();
+					((MainActivity) mContext).updateFragments();
+					
+					alertDialog.dismiss();
+	            }
+			});				
 		}
 	};
 
 	private OnClickListener mOnModifyClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			try {
-				LayoutInflater li = LayoutInflater.from(mContext);
-				
-				View promptsView;
-				
-				if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE) {				
-					promptsView = li.inflate(R.layout.competitor_modify, null);
-				} else {
-					promptsView = li.inflate(R.layout.competitor_modify_ess, null);
-				}
-	
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);	
-				alertDialogBuilder.setView(promptsView);
-	
-				final EditText NameInput = (EditText) promptsView.findViewById(R.id.name_input);	
-				NameInput.setText(mName.getText());
-	
-				final EditText CardNumberInput = (EditText) promptsView.findViewById(R.id.card_number_input);	
-				CardNumberInput.setText(mCardNumber.getText());
-					
-				if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) {
-					mTeamInput = (EditText) promptsView.findViewById(R.id.team_input);	
-					mTeamInput.setText(mTeam.getText());
-					
-					mCompetitorClassInput = (EditText) promptsView.findViewById(R.id.class_input);	
-					mCompetitorClassInput.setText(mCompetitorClass.getText());
-					
-					mStartNumberInput = (EditText) promptsView.findViewById(R.id.start_number_input);	
-					mStartNumberInput.setText(mStartNumber.getText());	
-					
-					mStartGroupInput = (EditText) promptsView.findViewById(R.id.start_group_input);	
-					mStartGroupInput.setText(mStartGroup.getText());						
-				}
-				
-				alertDialogBuilder
-						.setCancelable(false)
-						.setPositiveButton("Modify",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int id) {
-										mName.setText(NameInput.getText());
-										mCardNumber.setText(CardNumberInput.getText());	
-										
-										if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) {
-											mTeam.setText(mTeamInput.getText());	
-											mCompetitorClass.setText(mCompetitorClassInput.getText());
-											mStartNumber.setText(mStartNumberInput.getText());
-											mStartGroup.setText(mStartGroupInput.getText());
-											
-											//todo
-											//om man ändrar namn, kortnumret eller startnumret så kollas inte det om det redan existerar
-											((MainActivity) mContext).competition.updateCompetitorEss(mPosition, mName.getText().toString(), mCardNumber.getText().toString(), 
-														mTeam.getText().toString(), mCompetitorClass.getText().toString(), mStartNumber.getText().toString(), mStartGroup.getText().toString());
-										} else {
-											//todo											
-											//om man ändrar kortnumret så kollas inte det om det redan existerar
-											((MainActivity) mContext).competition.updateCompetitor(mPosition, mName.getText().toString(),mCardNumber.getText().toString());	
-										}																		
-										((MainActivity) mContext).updateFragments();
-									}
-								})
-						.setNegativeButton("Cancel",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int id) {
-										dialog.cancel();
-									}
-								});
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				alertDialog.show();
-			} catch( Exception e) {
-				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-				dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
+			LayoutInflater li = LayoutInflater.from(mContext);
+			
+			View promptsView;
+			
+			if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE) {				
+				promptsView = li.inflate(R.layout.competitor_modify, null);
+			} else {
+				promptsView = li.inflate(R.layout.competitor_modify_ess, null);
 			}
+
+			final EditText nameInput = (EditText) promptsView.findViewById(R.id.name_input);	
+			nameInput.setText(mName.getText());
+
+			final EditText cardNumberInput = (EditText) promptsView.findViewById(R.id.card_number_input);	
+			cardNumberInput.setText(mCardNumber.getText());
+				
+			if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) {
+				mTeamInput = (EditText) promptsView.findViewById(R.id.team_input);	
+				mTeamInput.setText(mTeam.getText());
+				
+				mCompetitorClassInput = (EditText) promptsView.findViewById(R.id.class_input);	
+				mCompetitorClassInput.setText(mCompetitorClass.getText());
+				
+				mStartNumberInput = (EditText) promptsView.findViewById(R.id.start_number_input);	
+				mStartNumberInput.setText(mStartNumber.getText());	
+				
+				mStartGroupInput = (EditText) promptsView.findViewById(R.id.start_group_input);	
+				mStartGroupInput.setText(mStartGroup.getText());						
+			}				
+			
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);	
+			alertDialogBuilder.setTitle("Modify competitor");
+			alertDialogBuilder.setView(promptsView);
+			alertDialogBuilder.setPositiveButton("Modify", null);
+			alertDialogBuilder.setNegativeButton("Cancel", null);	
+
+			final AlertDialog alertDialog = alertDialogBuilder.create();
+			alertDialog.show();
+			alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View v) {
+	            	if ((nameInput.length() == 0) || (cardNumberInput.length() == 0)) {
+	            		Toast.makeText((MainActivity) mContext, "All data must be entered", Toast.LENGTH_LONG).show();
+	                    return;
+	        		} else if ((((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) &&
+	       	     		 	  ((mTeamInput.length() == 0) || (mCompetitorClassInput.length() == 0) || (mStartNumberInput.length() == 0) || (mStartGroupInput.length() == 0))) {
+	        			Toast.makeText((MainActivity) mContext, "All data must be entered", Toast.LENGTH_LONG).show();
+	        			return;
+	            	} else if (!mName.getText().toString().equalsIgnoreCase(nameInput.getText().toString()) && 
+	            			  (((MainActivity) mContext).competition.getCompetitors().checkIfNameExists(nameInput.getText().toString()))) {
+	            		Toast.makeText((MainActivity) mContext, "Name already exists", Toast.LENGTH_LONG).show();
+	            		return;
+					} else if (!mCardNumber.getText().toString().equalsIgnoreCase(cardNumberInput.getText().toString()) &&
+							  (((MainActivity) mContext).competition.getCompetitors().checkIfCardNumberExists(Integer.parseInt(cardNumberInput.getText().toString())))) {							
+						Toast.makeText((MainActivity) mContext, "Card number already exists", Toast.LENGTH_LONG).show();
+						return;
+					} else if ((((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) && 
+							(!mStartNumber.getText().toString().equalsIgnoreCase(mStartNumberInput.getText().toString()) &&
+							((MainActivity) mContext).competition.getCompetitors().checkIfStartNumberExists(Integer.parseInt(mStartNumberInput.getText().toString())))) {
+						Toast.makeText((MainActivity) mContext, "Start number already exists", Toast.LENGTH_LONG).show();
+						return;
+					}		            	 
+	            	
+	            	String status = "";
+					mName.setText(nameInput.getText());
+					mCardNumber.setText(cardNumberInput.getText());	
+					
+					if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) {
+						mTeam.setText(mTeamInput.getText());	
+						mCompetitorClass.setText(mCompetitorClassInput.getText());
+						mStartNumber.setText(mStartNumberInput.getText());
+						mStartGroup.setText(mStartGroupInput.getText());
+						
+						status = ((MainActivity) mContext).competition.getCompetitors().update(mPosition, 
+																				  		 	   mName.getText().toString(), 
+																				  		 	   mCardNumber.getText().toString(), 
+																				  		 	   mTeam.getText().toString(), 
+																				  		 	   mCompetitorClass.getText().toString(), 
+																				  		 	   mStartNumber.getText().toString(), 
+																				  		 	   mStartGroup.getText().toString());
+					} else {
+						status = ((MainActivity) mContext).competition.getCompetitors().update(mPosition, 
+																			   		  		   mName.getText().toString(),
+																			   		  		   mCardNumber.getText().toString(),
+																			   		  		   "",
+																			   		  		   "",
+																			   		  		   "-1",
+																			   		  		   "-1");	
+					}					
+					((MainActivity) mContext).competition.calculateResults();
+					((MainActivity) mContext).updateFragments();
+	            
+					Toast.makeText((MainActivity) mContext, status, Toast.LENGTH_LONG).show();
+					
+					alertDialog.dismiss();
+	            }
+			});		            		           
 		}
 	};
 	
 	private OnClickListener mOnPunchClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			try {
-				((MainActivity)mContext).listPunches(mPosition);
-			} catch( Exception e) {
-				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-				dialog.show(((MainActivity) mContext).getSupportFragmentManager(), "popUp");
-			}
+			((MainActivity)mContext).listPunches(mPosition);
 		}
 	};
 }

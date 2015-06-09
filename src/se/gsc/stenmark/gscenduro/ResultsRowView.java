@@ -19,8 +19,7 @@ public class ResultsRowView extends LinearLayout {
 	LinearLayout mCompoundView;
 
 	protected void Init(Context context) {
-		LayoutInflater inflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		mContext = context;
 		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE) {

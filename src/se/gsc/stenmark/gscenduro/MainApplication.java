@@ -7,7 +7,7 @@ public class MainApplication extends Application {
 
 	private static Context context;
 
-	public static StartFragment startScreenFragment = null;
+	public static StatusFragment statusScreenFragment = null;
 	public static ResultsFragment resultListFragment = null;
 	public static CompetitorsFragment compMangementFragment = null;	
 	

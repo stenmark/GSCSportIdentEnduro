@@ -1,9 +1,12 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -41,36 +44,28 @@ public class DialogNewCompetition {
 		final EditText newCompetitionInput = (EditText) promptsView.findViewById(R.id.new_competition_input);
 		newCompetitionInput.setText("New");					
 		
-		final LinearLayout layoutAddTrackSpinner = (LinearLayout) promptsView.findViewById(R.id.add_track_spinner_layout);
-		final LinearLayout layoutAddTrackManually = (LinearLayout) promptsView.findViewById(R.id.add_track_manually_layout);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String currentDateandTime = sdf.format(new Date());
+		final EditText dateCompetitionInput = (EditText) promptsView.findViewById(R.id.competition_date_input);		
+		dateCompetitionInput.setText(currentDateandTime);					
 		
-		final EditText addTrackManuallyInput = (EditText) promptsView.findViewById(R.id.add_track_manually_input);
-		addTrackManuallyInput.setText("");
+		final LinearLayout layoutAddStageSpinner = (LinearLayout) promptsView.findViewById(R.id.add_stage_spinner_layout);
+		final LinearLayout layoutAddStageManually = (LinearLayout) promptsView.findViewById(R.id.add_stage_manually_layout);
 		
-		final CheckBox addTrackManuallyCheckbox = (CheckBox) promptsView.findViewById(R.id.add_track_manually_checkbox);
-		addTrackManuallyCheckbox.setOnClickListener(new View.OnClickListener() {
-		      public void onClick(View v) {
-		    	  if (addTrackManuallyCheckbox.isChecked()) {
-		    		  layoutAddTrackSpinner.setVisibility(View.GONE);
-		    		  layoutAddTrackManually.setVisibility(View.VISIBLE);
-		    	  } else {
-		    		  layoutAddTrackSpinner.setVisibility(View.VISIBLE);
-		    		  layoutAddTrackManually.setVisibility(View.GONE);
-		    	  }
-		      }
-		});			
-		
+		final EditText addStagesManuallyInput = (EditText) promptsView.findViewById(R.id.add_stages_manually_input);
+		addStagesManuallyInput.setText("");
+				
 		final CheckBox keepCompetitorsCheckBox = (CheckBox) promptsView.findViewById(R.id.keep_competitors_checkbox);
 		keepCompetitorsCheckBox.setOnClickListener(new View.OnClickListener() {
 		      public void onClick(View v) {
 		      }
 		});
 		
-		final Spinner spinner = (Spinner) promptsView.findViewById(R.id.add_track_spinner);	
+		final Spinner spinner = (Spinner) promptsView.findViewById(R.id.add_stage_spinner);	
         ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_spinner_item, numerOfStages);
         LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
         spinner.setAdapter(LTRadapter);			
-        spinner.setSelection(mMainActivity.competition.getNumberOfTracks() - 1);			
+        spinner.setSelection(mMainActivity.competition.getStages().size() - 1);			
 	
 		if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE){
 			keepCompetitorsCheckBox.setVisibility(View.VISIBLE);							
@@ -84,7 +79,9 @@ public class DialogNewCompetition {
 		radioTypeOfCompetition.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
-				if ((checkedId == R.id.radio_type_ess) && mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE){
+				if ((mMainActivity.competition.getCompetitors().size() > 0) && 
+				   (((checkedId == R.id.radio_type_ess) && (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE) && (mMainActivity.competition.getCompetitors().size() > 0)) ||
+				   ((checkedId == R.id.radio_type_svartvitt) && (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE)))) {
 					keepCompetitorsCheckBox.setVisibility(View.VISIBLE);							
 				} else {					
 					keepCompetitorsCheckBox.setVisibility(View.GONE);
@@ -92,15 +89,11 @@ public class DialogNewCompetition {
 				}
 				
 				if (checkedId == R.id.radio_type_ess) {
-					addTrackManuallyCheckbox.setChecked(true);
-					addTrackManuallyCheckbox.setVisibility(View.GONE);
-		    		layoutAddTrackSpinner.setVisibility(View.GONE);
-		    		layoutAddTrackManually.setVisibility(View.VISIBLE);
+		    		layoutAddStageSpinner.setVisibility(View.GONE);
+		    		layoutAddStageManually.setVisibility(View.VISIBLE);
 				} else {
-					addTrackManuallyCheckbox.setChecked(false);
-		    		layoutAddTrackSpinner.setVisibility(View.VISIBLE);
-		    		layoutAddTrackManually.setVisibility(View.GONE);						
-					addTrackManuallyCheckbox.setVisibility(View.VISIBLE);
+		    		layoutAddStageSpinner.setVisibility(View.VISIBLE);
+		    		layoutAddStageManually.setVisibility(View.GONE);						
 				}
 			}
 		});	        
@@ -118,26 +111,38 @@ public class DialogNewCompetition {
             public void onClick(View v) {
             	
             	//Check if all data is entered
-                if (addTrackManuallyCheckbox.isChecked() && (addTrackManuallyInput.length() == 0)) {
-                    Toast.makeText(mMainActivity, "Competition not created! No track was supplied", Toast.LENGTH_LONG).show();
+                if (radioTypeEss.isChecked() && (addStagesManuallyInput.length() == 0)) {
+                    Toast.makeText(mMainActivity, "Competition not created! No stages was supplied", Toast.LENGTH_LONG).show();
                     return;
                 } else if (newCompetitionInput.length() == 0) {
                 	Toast.makeText(mMainActivity, "Competition not created! No competition name was supplied", Toast.LENGTH_LONG).show();
                     return;
+                } else if (dateCompetitionInput.length() == 0) {
+                	Toast.makeText(mMainActivity, "Competition not created! No competition date was supplied", Toast.LENGTH_LONG).show();
+                    return;                	
                 }
 
+                if (radioTypeEss.isChecked()) {
+                	String status = mMainActivity.competition.getStages().checkStagesData(addStagesManuallyInput.getText().toString());
+                	if (status.length() > 0) {
+                		Toast.makeText(mMainActivity, "Competition not created! " + status, Toast.LENGTH_LONG).show();                		
+                		return;
+                	}
+                }
+                
 				if (keepCompetitorsCheckBox.isChecked()) {
 					//Keep competitors, clear all other data
-					mMainActivity.competition.getTrack().clear();
+					mMainActivity.competition.getStages().clear();
 					mMainActivity.competition.getResults().clear();
 					mMainActivity.competition.getResultLandscape().clear();
-					mMainActivity.competition.clearCompetitors();									
+					mMainActivity.competition.getCompetitors().clearPunches();									
 				} else {
 					//Create a new competition
 					mMainActivity.competition.getCompetitors().clear();
 					mMainActivity.competition = new Competition();
 				}									
 				mMainActivity.competition.setCompetitionName(newCompetitionInput.getText().toString());	
+				mMainActivity.competition.setCompetitionDate(dateCompetitionInput.getText().toString());
 				
 				if (radioTypeEss.isChecked()) {
 					mMainActivity.competition.setCompetitionType(mMainActivity.competition.ESS_TYPE);
@@ -145,35 +150,35 @@ public class DialogNewCompetition {
 					mMainActivity.competition.setCompetitionType(mMainActivity.competition.SVARTVITT_TYPE);
 				}										
 				
-				if (addTrackManuallyCheckbox.isChecked()) {										
-					mMainActivity.competition.addNewTrack(addTrackManuallyInput.getText().toString());
+				if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE) {										
+					mMainActivity.competition.getStages().importStages(addStagesManuallyInput.getText().toString());
 				} else {
 					SharedPreferences settings = mMainActivity.getSharedPreferences(MainActivity.PREF_NAME, 0);
 					int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
 					int finishStationNumner = Integer.parseInt(settings.getString("FINISH_STATION_NUMBER", "72"));
 					
-					String newTrack = spinner.getSelectedItem().toString();	
+					String newStage = spinner.getSelectedItem().toString();	
 				
-					if (newTrack.length() == 0) {
-				        Toast.makeText(mMainActivity, "Competition not created! No track was supplied", Toast.LENGTH_LONG).show();
+					if (newStage.length() == 0) {
+				        Toast.makeText(mMainActivity, "Competition not created! No stages was supplied", Toast.LENGTH_LONG).show();
 				        return;
 					} else {
 						int numberOfSs = 1;
 						try {
-							numberOfSs = Integer.parseInt(newTrack);
+							numberOfSs = Integer.parseInt(newStage);
 						}
 						catch( NumberFormatException e){											
-							Toast.makeText(mMainActivity, "Competition not created! Invalid track has been entered", Toast.LENGTH_LONG).show();
+							Toast.makeText(mMainActivity, "Competition not created! Invalid stages has been entered", Toast.LENGTH_LONG).show();
 							return;
 						}
 						
-						String trackString = "";
+						String stageString = "";
 						for (int i = 0; i < numberOfSs;  i++) {
-							trackString += startStationNumner + "," + finishStationNumner + ",";
+							stageString += startStationNumner + "," + finishStationNumner + ",";
 						}
-						trackString = trackString.substring(0, trackString.length() - 1);   //remove last ","
+						stageString = stageString.substring(0, stageString.length() - 1);   //remove last ","
 						
-						mMainActivity.competition.addNewTrack(trackString);										
+						mMainActivity.competition.getStages().importStages(stageString);										
 					}					
 				}					
 				mMainActivity.updateFragments();                    

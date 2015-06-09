@@ -70,9 +70,9 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			}
 				
 			resultLandscapeRowV.setComp();
-			int cardNumber = mResultLandscape.get(position).getTrackResult().get(0).getCardNumber();
+			int cardNumber = mResultLandscape.get(position).getStageResult().get(0).getCardNumber();
 			
-			int rank = mResultLandscape.get(position).getTrackResult().get(0).getRank();
+			int rank = mResultLandscape.get(position).getStageResult().get(0).getRank();
 			String name = "";
 			if (rank == Integer.MAX_VALUE) {			
 				name += "-. ";
@@ -80,16 +80,16 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 				name += rank + ". ";
 			}
 			
-			name += ((MainActivity) mContext).competition.getCompetitor(cardNumber).getName();
+			name += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(cardNumber).getName();
 			resultLandscapeRowV.setResultLandscapeName(name);
 			
-			String startNumber = String.valueOf(((MainActivity) mContext).competition.getCompetitor(cardNumber).getStartNumber());	
+			String startNumber = String.valueOf(((MainActivity) mContext).competition.getCompetitors().getByCardNumber(cardNumber).getStartNumber());	
 			resultLandscapeRowV.setResultLandscapeStartNumber(startNumber);			
 			
-			String team = ((MainActivity) mContext).competition.getCompetitor(cardNumber).getTeam();	
+			String team = ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(cardNumber).getTeam();	
 			resultLandscapeRowV.setResultLandscapeTeam(team);
 			
-			long totalTime = mResultLandscape.get(position).getTrackResult().get(0).getTrackTimes();			
+			long totalTime = mResultLandscape.get(position).getStageResult().get(0).getStageTimes();			
 			resultLandscapeRowV.setResultLandscapeTotalTime(CompetitionHelper.secToMinSec(totalTime));				
 			
 			//First clear all stages
@@ -97,40 +97,20 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 				resultLandscapeRowV.setResultLandscapeStageTime(stageNumber, "", Color.WHITE);
 			}
 			
-			for(int stageNumber = 1; stageNumber < mResultLandscape.get(position).getTrackResult().size(); stageNumber++) {
-				Long fastestTimeOnStage = Long.MAX_VALUE;
-				for(Results resultFastest : mResultLandscape){
-					
-					if (mResultLandscape.get(position).getTitle() == resultFastest.getTitle()) {						
-						try{
-							fastestTimeOnStage = Math.min(fastestTimeOnStage, resultFastest.getTrackResult().get(stageNumber).getTrackTimes());
-						}
-						catch(IndexOutOfBoundsException e){	
-						}
-					}
-				}
+			for(int stageNumber = 1; stageNumber < mResultLandscape.get(position).getStageResult().size(); stageNumber++) {
 				
-				Long slowestTimeOnStage = Long.MIN_VALUE;
-				for(Results resultSlowest : mResultLandscape){
-					if (mResultLandscape.get(position).getTitle() == resultSlowest.getTitle()) {
-						try{
-							slowestTimeOnStage = Math.max(slowestTimeOnStage, resultSlowest.getTrackResult().get(stageNumber).getTrackTimes());
-						}
-						catch(IndexOutOfBoundsException e){	
-						}
-					}
-				}
-									
-				String StageTime = CompetitionHelper.secToMinSec(mResultLandscape.get(position).getTrackResult().get(stageNumber).getTrackTimes());
+				Long fastestTimeOnStage = CompetitionHelper.getFastestOnStage(mResultLandscape, mResultLandscape.get(position).getTitle(), stageNumber);				
+				Long slowestTimeOnStage = CompetitionHelper.getSlowestOnStage(mResultLandscape, mResultLandscape.get(position).getTitle(), stageNumber);									
+				String StageTime = CompetitionHelper.secToMinSec(mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTimes());
 				
-				rank = mResultLandscape.get(position).getTrackResult().get(stageNumber).getRank();
+				rank = mResultLandscape.get(position).getStageResult().get(stageNumber).getRank();
 				int color;
 				if (rank == Integer.MAX_VALUE) {
 					StageTime = "";
 					color = Color.WHITE;
 				} else {
 					StageTime += "\n(" + String.valueOf(rank) + ")";											
-					Long competitorStageTime = mResultLandscape.get(position).getTrackResult().get(stageNumber).getTrackTimes();		
+					Long competitorStageTime = mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTimes();		
 					float myTimeDiff = competitorStageTime - fastestTimeOnStage;
 					float stageTimeDiff = slowestTimeOnStage - fastestTimeOnStage;
 					color = generateRedToGreenColorTransition(1f - (myTimeDiff / stageTimeDiff));	  //1.0 => red, 0.0 => green	

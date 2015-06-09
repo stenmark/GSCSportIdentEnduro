@@ -9,6 +9,7 @@ import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
+import se.gsc.stenmark.gscenduro.compmanagement.Stages;
 import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -24,6 +25,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +43,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	public static final String PREF_NAME = "GSC_ENDURO_PREFERENCES";
 	
+	SectionsPagerAdapter mSectionsPagerAdapter;
+	ViewPager mViewPager;
 	public Competition competition = null;
 	public SiDriver siDriver = null;
 	public static long lastCalltime;
@@ -50,34 +54,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		
 	public String getConnectionStatus() {
 		return connectionStatus;
-	}
-	
-	/**
-	 * The {@link android.support.v4.view.PagerAdapter} that will provide
-	 * fragments for each of the sections. We use a {@link FragmentPagerAdapter}
-	 * derivative, which will keep every loaded fragment in memory. If this
-	 * becomes too memory intensive, it may be best to switch to a
-	 * {@link android.support.v13.app.FragmentStatePagerAdapter}.
-	 */
-	SectionsPagerAdapter mSectionsPagerAdapter;
-
-	/**
-	 * The {@link ViewPager} that will host the section contents.
-	 */
-	ViewPager mViewPager;
+	}	
 	
 	public void listPunches(int position) {		
 		try{
 			Intent punchListIntent = new Intent();		
-			punchListIntent.setClass(this, PunchListActivity.class);		
+			punchListIntent.setClass(this, PunchActivity.class);		
 			
 			if (this.competition.getCompetitors().get(position).getCard() == null) {
 				this.competition.getCompetitors().get(position).setCard(new Card());				
 				this.competition.getCompetitors().get(position).getCard().setCardNumber(this.competition.getCompetitors().get(position).getCardNumber());
 			}			
 
+			Stages stages = new Stages(this.competition.getStages().getStages());
+			
 			Bundle bundle = new Bundle();
 			bundle.putSerializable("Card", this.competition.getCompetitors().get(position).getCard());
+			bundle.putSerializable("Stages", stages);
 			punchListIntent.putExtras(bundle);
 			
 			startActivityForResult(punchListIntent, 2);		
@@ -100,6 +93,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	
 	    	if (updatedCard.getPunches().size() > 0) {
 				if (updatedCard.getCardNumber() != 0) {
+					Log.d("onActivityResult", "Card = " + updatedCard);
 					displayNewCard(updatedCard);
 				}
 	    	}	    		    
@@ -109,26 +103,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void updateFragments() {
      	SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());
      	
-		ResultsFragment resultListFragment = (ResultsFragment)mAdapter.getRegisteredFragment(1);
-		if (resultListFragment != null) {
-			if (resultListFragment.getResultAdapter() != null) {
-				resultListFragment.getResultAdapter().updateResult();				
+		ResultsFragment resultsFragment = (ResultsFragment)mAdapter.getRegisteredFragment(1);
+		if (resultsFragment != null) {
+			if (resultsFragment.getResultAdapter() != null) {
+				resultsFragment.getResultAdapter().updateResult();				
 			}
-			if (resultListFragment.getResultLandscapeAdapter() != null) {				
-				resultListFragment.getResultLandscapeAdapter().updateResultLandscape();
+			if (resultsFragment.getResultLandscapeAdapter() != null) {				
+				resultsFragment.getResultLandscapeAdapter().updateResultLandscape();
 			}
 		}
 
-		CompetitorsFragment compMangementFragment = (CompetitorsFragment)mAdapter.getRegisteredFragment(2);
-		if (compMangementFragment != null){
-			if (compMangementFragment.getListCompetitorAdapter() != null) {
-				compMangementFragment.getListCompetitorAdapter().updateCompetitors();
+		CompetitorsFragment competitorsFragment = (CompetitorsFragment)mAdapter.getRegisteredFragment(2);
+		if (competitorsFragment != null){
+			if (competitorsFragment.getListCompetitorAdapter() != null) {
+				competitorsFragment.getListCompetitorAdapter().updateCompetitors();
 			}
 		}     	
 
-		StartFragment startScreenFragment = (StartFragment)mAdapter.getRegisteredFragment(0);
-		if (startScreenFragment != null) {
-			startScreenFragment.updateCompetitionStatus();
+		StatusFragment statusFragment = (StatusFragment)mAdapter.getRegisteredFragment(0);
+		if (statusFragment != null) {
+			statusFragment.updateCompetitionStatus();
 		}
 	}	
 	
@@ -136,20 +130,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		String processNewCardStatus = competition.processNewCard(newCard, true);
 		if(processNewCardStatus.contains("Could not find any competitor")) {
 			PopupMessage dialog = new PopupMessage( processNewCardStatus );
-			dialog.show( getSupportFragmentManager(), "popUp");
+			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 		if(processNewCardStatus.contains("Not all station punched")) {
 			PopupMessage dialog = new PopupMessage("Warning!\n" +
-					"Not all station on all tracks have been punched.\n" +
+					"Not all station on all stages have been punched.\n" +
 					"You might have to edit this competitor manually");
-			dialog.show( getSupportFragmentManager(), "popUp");
+			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 		if(processNewCardStatus.contains("double punch")) {
 			PopupMessage dialog = new PopupMessage("Warning!\n" +
 					"Double punche(s) was detected for at least one station\n" +
 					"You might have to edit this competitor manually");
-			dialog.show( getSupportFragmentManager(), "popUp");
+			dialog.show(getSupportFragmentManager(), "popUp");
 		}
+		
+		Log.d("displayNewCard", "processNewCardStatus = " + processNewCardStatus);
 		
 		updateFragments();
 	}
@@ -200,8 +196,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 			// Create the adapter that will return a fragment for each of the
-			// three
-			// primary sections of the activity.
+			// three primary sections of the activity.
 			mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
 
 			// Set up the ViewPager with the sections adapter.
@@ -225,8 +220,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				// the adapter. Also specify this Activity object, which
 				// implements
 				// the TabListener interface, as the callback (listener) for
-				// when
-				// this tab is selected.
+				// when this tab is selected.
 				actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
 			}				
 			
@@ -290,9 +284,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			} else {
 				connectionStatus = "Disconnected";				
 		     	SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());		     	
-		     	StartFragment startFragment = (StartFragment)mAdapter.getRegisteredFragment(0);
-				if (startFragment != null) {
-					startFragment.updateConnectText();
+		     	StatusFragment statusFragment = (StatusFragment)mAdapter.getRegisteredFragment(0);
+				if (statusFragment != null) {
+					statusFragment.updateConnectText();
 				}								
 			}
 		} catch (Exception e) {
@@ -305,9 +299,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 	
-	/**
-	 * Autocrated template code
-	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -315,9 +306,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		return true;
 	}
 
-	/**
-	 * Autocrated template code
-	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -427,9 +415,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
     }	    
     
-	/**
-	 * Autocrated template code
-	 */
 	@Override
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 		// When the given tab is selected, switch to the corresponding page in
@@ -437,16 +422,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mViewPager.setCurrentItem(tab.getPosition());
 	}
 
-	/**
-	 * Autocrated template code
-	 */
 	@Override
 	public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 	}
 
-	/**
-	 * Autocrated template code
-	 */
 	@Override
 	public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 	}
@@ -472,7 +451,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Fragment fragment = null; 
 			switch (position) {
 			case 0:
-				fragment = new StartFragment();
+				fragment = new StatusFragment();
 				break;
 			case 1:
 				fragment = new ResultsFragment();

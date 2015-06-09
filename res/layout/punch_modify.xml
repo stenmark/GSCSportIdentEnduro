@@ -11,14 +11,12 @@
         android:layout_height="wrap_content"
         android:text="Control : "/>
  
-    <EditText
-        android:id="@+id/control_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
- 
-        <requestFocus />
- 
-    </EditText>
+	<Spinner
+    	android:id="@+id/add_punch_controls_spinner"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:prompt="@string/add_punch_info"
+	/>
     
     <TextView
         android:layout_width="wrap_content"
@@ -28,7 +26,8 @@
     <EditText
         android:id="@+id/time_input"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" > 
+        android:layout_height="wrap_content"
+        android:inputType="number"> 
     </EditText>    
  
 </LinearLayout>

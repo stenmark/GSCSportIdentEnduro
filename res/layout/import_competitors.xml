@@ -16,18 +16,6 @@
 		android:layout_marginRight="8dp"			
 		>  
 
-		<TextView
-		   android:layout_width="fill_parent"
-		   android:layout_height="wrap_content"
-		   android:textSize="16sp"
-		   android:text="Import competitors"
-		   android:textStyle="bold"
-		   android:layout_weight="1"		
-		   android:padding="4dp"
-		   android:textColor="@color/white"		
-		   android:background="@color/black"   	        
-		   />          
-		       
 	   	<LinearLayout 
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
@@ -37,10 +25,11 @@
 			> 
 			    
 		    <TextView
+		        android:id="@+id/import_competitors_info"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:textSize="12sp"
-		        android:text="Enter competitors in the following way.\n\nName1,CardNumber1\nName2,CardNumber2\nName3,CardNumber3"/>
+		        android:text="Enter competitors in the following way.\n\nName,CardNumber\nName,CardNumber\nName,CardNumber"/>
 		 
 		    <EditText
 		        android:id="@+id/import_competitors_input"
@@ -50,6 +39,22 @@
 		    	android:minLines="6">
 		 
 		    </EditText>
-		</LinearLayout>		    
+		</LinearLayout>		
+		
+		<LinearLayout 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:layout_weight="1"		
+			android:padding="4dp"		
+			>
+			<CheckBox
+    			android:id="@+id/import_competitors_keep_checkbox"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:onClick="itemClicked"
+    			android:text="Keep current competitors" />		    
+
+		</LinearLayout>		   	
 	</LinearLayout> 
 </LinearLayout>

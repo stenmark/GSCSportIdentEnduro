@@ -115,7 +115,7 @@ public class SiDriver {
     	card.setNumberOfPunches(numberOfPunches);
     	//Log.d("parseCard5Alt", "Number of punches: " + numberOfPunches + "\n"); 
     	
-    	byte firstStartMaker = (byte) comp.getTrack().get(0).getStart();
+    	byte firstStartMaker = (byte) comp.getStages().get(0).getStart();
     	int firstMarkerPos = 0;
     	int i = 0;
     	for( byte data : allData ){
@@ -134,18 +134,18 @@ public class SiDriver {
     		currentPos++;
     	
     		byte byte1;
-    		int byte1Pos;
+    		//int byte1Pos;
     		if( allData[firstMarkerPos + currentPos] == 0x10){
     			currentPos++;
     		}
     		byte1 = allData[firstMarkerPos + currentPos];
-    		byte1Pos = firstMarkerPos + currentPos;
-    		int byte2Pos = 0;
+    		//byte1Pos = firstMarkerPos + currentPos;
+    		//int byte2Pos = 0;
     		currentPos++;
     		byte byte2;
     		if( allData[firstMarkerPos + currentPos] == 0x10){
     			byte2 = allData[firstMarkerPos + currentPos+1];
-    			byte2Pos = firstMarkerPos + currentPos+1;
+    			//byte2Pos = firstMarkerPos + currentPos+1;
     			currentPos++;
     			currentPos++;
 //    			if( allData[firstMarkerPos + currentPos] == 0x00){
@@ -154,7 +154,7 @@ public class SiDriver {
     		}
     		else{
     			byte2 = allData[firstMarkerPos + currentPos];
-    			byte2Pos = firstMarkerPos + currentPos;
+    			//byte2Pos = firstMarkerPos + currentPos;
     			currentPos++;
     		}
     		int time = makeIntFromBytes(byte2, byte1 );
@@ -180,7 +180,7 @@ public class SiDriver {
 //    	
     	return card;
     }
-    
+        
     private Card parseCard5( byte[] card5Data ){
     	Card card = new Card();;
     	int dataPos = 0;
@@ -260,7 +260,7 @@ public class SiDriver {
     }
     
     public Card getCard5Data( Competition comp){
-    	String msg = "";
+//    	String msg = "";
     	byte[] allData = new byte[256];
     	byte[] rawData = readSiMessage(256, 1000, false);
     	MessageBuffer messageBuffer = new MessageBuffer(rawData);
@@ -303,7 +303,7 @@ public class SiDriver {
     public Card getCard6Data( ){
     	byte[] allData = new byte[128*3];
     	
-    	boolean compact = false;
+//    	boolean compact = false;
 		for(int blockNumber = 0; blockNumber < 3 ; blockNumber++){
 //			androidActivity.msg += "Loop " + blockNumber + "\n";
 			byte[] rawData = readSiMessage(256, 1000, false);

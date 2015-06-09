@@ -26,7 +26,8 @@
     <EditText
         android:id="@+id/card_number_input"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" > 
+        android:layout_height="wrap_content"
+        android:inputType="number"> 
     </EditText>    
     
     <TextView
@@ -59,7 +60,8 @@
     <EditText
         android:id="@+id/start_number_input"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" > 
+        android:layout_height="wrap_content"
+        android:inputType="number"> 
     </EditText>        
     
     <TextView
@@ -70,7 +72,8 @@
     <EditText
         android:id="@+id/start_group_input"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" > 
+        android:layout_height="wrap_content"
+        android:inputType="number"> 
     </EditText>       
     
 </LinearLayout>
