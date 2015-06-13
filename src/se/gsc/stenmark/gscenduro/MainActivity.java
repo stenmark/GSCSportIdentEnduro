@@ -90,13 +90,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		if (requestCode == 2) {		
 			Card updatedCard = new Card();
 	    	updatedCard = (Card) data.getExtras().getSerializable("updateCard");
-	    	
-	    	if (updatedCard.getPunches().size() > 0) {
-				if (updatedCard.getCardNumber() != 0) {
-					Log.d("onActivityResult", "Card = " + updatedCard);
-					displayNewCard(updatedCard);
-				}
-	    	}	    		    
+	    		    	
+	    	if (updatedCard.getCardNumber() != 0) {
+	    		if (updatedCard.getPunches().size() > 0) {				
+					displayNewCard(updatedCard);				
+	    		} else {
+	    			this.competition.getCompetitors().getByCardNumber(updatedCard.getCardNumber()).setCard(null);
+	    		}
+	    	}   		    
 		}
 	}
 	
@@ -126,27 +127,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}	
 	
-	public void displayNewCard(Card newCard) {
+	public void displayNewCard(Card newCard) {		
 		String processNewCardStatus = competition.processNewCard(newCard, true);
-		if(processNewCardStatus.contains("Could not find any competitor")) {
-			PopupMessage dialog = new PopupMessage( processNewCardStatus );
-			dialog.show(getSupportFragmentManager(), "popUp");
-		}
-		if(processNewCardStatus.contains("Not all station punched")) {
-			PopupMessage dialog = new PopupMessage("Warning!\n" +
-					"Not all station on all stages have been punched.\n" +
-					"You might have to edit this competitor manually");
-			dialog.show(getSupportFragmentManager(), "popUp");
-		}
-		if(processNewCardStatus.contains("double punch")) {
-			PopupMessage dialog = new PopupMessage("Warning!\n" +
-					"Double punche(s) was detected for at least one station\n" +
-					"You might have to edit this competitor manually");
-			dialog.show(getSupportFragmentManager(), "popUp");
-		}
-		
-		Log.d("displayNewCard", "processNewCardStatus = " + processNewCardStatus);
-		
+
+		PopupMessage dialog = new PopupMessage(processNewCardStatus);
+		dialog.setTitle("Card read");
+		dialog.show(getSupportFragmentManager(), "popUp");
+				
 		updateFragments();
 	}
     

@@ -96,7 +96,7 @@ public class SiDriver {
     	Card card = new Card();;
     	int dataPos = 0;
     	
-    	long cardNumber = 0;
+    	int cardNumber = 0;
     	cardNumber = makeIntFromBytes( dleData[5], dleData[4] );
     	
     	if(dleData[6]==1)
@@ -185,7 +185,7 @@ public class SiDriver {
     	Card card = new Card();;
     	int dataPos = 0;
     	
-    	long cardNumber = 0;
+    	int cardNumber = 0;
     	cardNumber = makeIntFromBytes( card5Data[5], card5Data[4] );
     	
     	if(card5Data[6]==1)
@@ -227,7 +227,7 @@ public class SiDriver {
     	Card card = new Card();;
     	int dataPos = 0;
     	
-    	long cardNumber = 0;
+    	int cardNumber = 0;
     	int cardHi = makeIntFromBytes( card6Data[11], card6Data[10] );
     	int cardLow = makeIntFromBytes( card6Data[13], card6Data[12] );
     	cardNumber = (cardHi*65536) + cardLow;

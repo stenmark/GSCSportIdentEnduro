@@ -3,6 +3,8 @@ package se.gsc.stenmark.gscenduro.SporIdent;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import android.util.Log;
+
 /**
  * This class is created when a new SI card is read by the SI main unit. All
  * essential data is parsed from the SI Card and stored in this class.
@@ -14,7 +16,7 @@ public class Card implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private int mNumberOfPunches;
-	private long mCardNumber;
+	private int mCardNumber;
 	private Punch mStartPunch; // Not used by GSC competitions
 	private Punch mFinishPunch; // Not used by GSC competitions
 	private Punch mCheckPunch; // Not used by GSC competitions
@@ -44,14 +46,6 @@ public class Card implements Serializable {
 		return result;
 	}
 
-	public void findDoublePunches() {
-		for (int i = 0; i < mPunches.size() - 1; i++) {
-			if (mPunches.get(i).getControl() == mPunches.get(i + 1).getControl()) {
-				mPunches.get(i).setMarkAsDoublePunch(true);
-			}
-		}
-	}
-
 	public int getNumberOfPunches() {
 		return mNumberOfPunches;
 	}
@@ -60,11 +54,11 @@ public class Card implements Serializable {
 		mNumberOfPunches = numberOfPunches;
 	}
 
-	public long getCardNumber() {
+	public int getCardNumber() {
 		return mCardNumber;
 	}
 
-	public void setCardNumber(long cardNumber) {
+	public void setCardNumber(int cardNumber) {
 		mCardNumber = cardNumber;
 	}
 
@@ -99,4 +93,99 @@ public class Card implements Serializable {
 	public void setPunches(ArrayList<Punch> punches) {
 		mPunches = punches;
 	}
+	
+	public Long getTimeOfControlEss(int control, Boolean startControl) {
+		long time;
+		
+		if (startControl) {
+			time = 0;
+		} else {
+			time = (long) Integer.MAX_VALUE;
+		}			
+		
+		for (Punch punch : mPunches) {
+			if (punch.getControl() == control) {
+				if (startControl) {
+					if (punch.getTime() > time) {
+						time = punch.getTime();
+					}
+				} else {
+					if (punch.getTime() < time) {
+						time = punch.getTime();
+					}
+				}											
+			}
+		}
+		return time;
+	}		
+	
+	public Long getStageTimeEss(int startControl, int finishControl) {
+		return getTimeOfControlEss(finishControl, false) - getTimeOfControlEss(startControl, true);
+	}	
+	
+	public Long getTimeOfControlSvartVitt(int control, Boolean startControl, int stageNumber) {
+		long time;
+		int currentStage = 1;
+		
+		if (startControl) {
+			time = 0;
+		} else {
+			time = (long) Integer.MAX_VALUE;
+		}			
+		
+		for (int i = 0; i < mPunches.size(); i++) {
+			//Found one punch with that control
+			if (mPunches.get(i).getControl() == control) {				
+				if (startControl) {
+					if (mPunches.get(i).getTime() > time) {
+						time = mPunches.get(i).getTime();
+					}
+				} else {
+					if (mPunches.get(i).getTime() < time) {
+						time = mPunches.get(i).getTime();
+					}
+				}	
+				
+				//Is there more punches made?
+				if ((i + 1) == mPunches.size()) {
+					//No more punches
+					if (stageNumber == currentStage) {
+						//Correct stage
+						return time;
+					} else {
+						//Not correct stage, continue search, reset time
+						if (startControl) {
+							time = 0;
+						} else {
+							time = (long) Integer.MAX_VALUE;
+						}	
+						currentStage++;
+					}
+				} else {	
+					//Yes there are more punches
+					if (mPunches.get(i).getControl() != mPunches.get(i + 1).getControl()) {				
+						//Next punch is a different control 						
+						if (stageNumber == currentStage) {
+							//Correct stage
+							return time;
+						} else {
+							//Not correct stage, continue search, reset time
+							if (startControl) {
+								time = 0;
+							} else {
+								time = (long) Integer.MAX_VALUE;
+							}	
+							currentStage++;
+						}
+					}
+				}
+			}
+		}
+
+		return time;
+	}	
+	
+	public Long getStageTimeSvartVitt(int startControl, int finishControl, int stageNumber) {
+		return getTimeOfControlSvartVitt(finishControl, false, stageNumber) - getTimeOfControlSvartVitt(startControl, true, stageNumber);
+	}		
 }

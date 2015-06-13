@@ -112,10 +112,6 @@ public class PunchActivity extends ListActivity {
     }   
 	
 	public void sendCard(){
-		//Need to reset the doublePunch marker and let the main program re-evaluate after someone manually edited the card
-		for(Punch punch : mUpdatedCard.getPunches()) {
-			punch.setMarkAsDoublePunch(false);
-		}
 		Intent intent = new Intent(this, MainActivity.class);		
 		
 		Bundle bundle = new Bundle();

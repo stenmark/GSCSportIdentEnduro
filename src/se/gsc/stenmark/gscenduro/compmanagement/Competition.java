@@ -186,56 +186,35 @@ public class Competition implements Serializable {
 		return loadCompetition;
 	}
 
-	/**
-	 * When a new card is read call this method to add the SI card data to the
-	 * competition. Will first search for the card number to find which
-	 * competitor it belongs to. It will try to make the card data coherent by
-	 * removing double punches It will read all the remaining punched and
-	 * calculate the stage time for each stage in the competition After this
-	 * method is completed the competitor should have all its competition data
-	 * added to the competition.
-	 * 
-	 * @param newCard
-	 *            the SI card read and that should be added to a competitor
-	 * @return a message String informing on have the parsing of the SI card
-	 *         data went
-	 */
 	public String processNewCard(Card newCard, Boolean calculateResultsAfterAdd) {
 		String returnMsg = "";
 		Competitor foundCompetitor = mCompetitors.findByCard(newCard);
 		if (foundCompetitor == null) {
-			return "Read new card with card number: " + newCard.getCardNumber()
-					+ " Could not find any competitor with this number";
+			return "Could not find card number: " + newCard.getCardNumber();
 		}
-		newCard.findDoublePunches();
+
 		foundCompetitor.setCard(newCard);
-
-		returnMsg += "New card read for " + foundCompetitor.getName() + " ";
-
-		// The results is a List of Long Integers where each integer represent
-		// the time the competitor took to complete the stage
-		// i.e. first entry will be for SS1, second SS2 etc.
-		List<Long> results = new ArrayList<Long>();
-		results = CompetitionHelper.extractResultFromCard(newCard, mStages);
-
-		foundCompetitor.setStageTimes(new ArrayList<Long>());
-		int i = 1;
-		for (Long stageTime : results) {
-			returnMsg += ", Time for SS " + i + " = " + stageTime + " seconds ";
-			foundCompetitor.getStageTimes().add(stageTime);
-			i++;
-		}
-
+		returnMsg += foundCompetitor.getName() + ", ";
+		foundCompetitor.getStageTimes().clear();
+		
+		for (int i = 0; i < mStages.size(); i++) {
+			long stageTime;
+						
+			if (mCompetitionType == ESS_TYPE) {
+				stageTime = newCard.getStageTimeEss(mStages.getStages().get(i).getStart(), mStages.getStages().get(i).getFinish());
+			} else {
+				stageTime = newCard.getStageTimeSvartVitt(mStages.getStages().get(i).getStart(), mStages.getStages().get(i).getFinish(), i + 1);
+			}
+			
+			returnMsg += "SS " + (i + 1) + " = " + CompetitionHelper.secToMinSec(stageTime) + ", ";
+			foundCompetitor.getStageTimes().setTimesOfStage(i, stageTime);
+		}		
+		
 		if (calculateResultsAfterAdd) {				
 			calculateResults();
 		}
 
-		if (results.size() != mStages.size()) {
-			return "Not all station punched";
-		}
-
-		returnMsg += ("Total time was: " + foundCompetitor.getTotalTime(true) + " seconds \n");
-		Log.d("processNewCard", returnMsg);
+		returnMsg += ("Total = " + CompetitionHelper.secToMinSec(foundCompetitor.getTotalTime(mStages.size())) + "\n");
 		return returnMsg;
 	}
 
@@ -305,9 +284,6 @@ public class Competition implements Serializable {
 	
 	public void calculateResults() {
 		int i, j;
-		Competitors tempCompetitors = new Competitors();
-		tempCompetitors = mCompetitors;
-
 		mResults.clear();			
 		mResultLandscape.clear();
 		
@@ -345,10 +321,14 @@ public class Competition implements Serializable {
 			StageResult stageResult;
 			
 			// Add total times			
-			for (i = 0; i < tempCompetitors.size(); i++) {
-				if ((mCompetitionType == SVARTVITT_TYPE) || (tempCompetitors.get(i).getCompetitorClass().equals(competitorClass))) {					
-					stageResult = new StageResult(tempCompetitors.get(i).getCardNumber(), tempCompetitors.get(i).getTotalTime(true), false);
-					mResults.get(totalTimePosition).getStageResult().add(stageResult);
+			for (i = 0; i < mCompetitors.size(); i++) {
+				if ((mCompetitionType == SVARTVITT_TYPE) || (mCompetitors.get(i).getCompetitorClass().equals(competitorClass))) {
+					if ((mCompetitors.get(i).getStageTimes() == null) || (mCompetitors.get(i).getStageTimes().size() < mStages.getStages().size())) {
+					 	stageResult = new StageResult(mCompetitors.get(i).getCardNumber(), (long) Integer.MAX_VALUE, true);
+					} else {
+						stageResult = new StageResult(mCompetitors.get(i).getCardNumber(), mCompetitors.get(i).getTotalTime(mStages.size()), false);							
+					}
+					mResults.get(totalTimePosition).getStageResult().add(stageResult);					
 				}
 			}
 			
@@ -357,17 +337,17 @@ public class Competition implements Serializable {
 						
 			// Add stage times
 			for (j = 1; j < (mResults.size() - totalTimePosition); j++) {
-				for (i = 0; i < tempCompetitors.size(); i++) {
-					if ((mCompetitionType == SVARTVITT_TYPE) || (tempCompetitors.get(i).getCompetitorClass().equals(competitorClass))) {			
+				for (i = 0; i < mCompetitors.size(); i++) {
+					if ((mCompetitionType == SVARTVITT_TYPE) || (mCompetitors.get(i).getCompetitorClass().equals(competitorClass))) {			
 
 						Long stageTime;
-						if ((tempCompetitors.get(i).hasResult()) && (tempCompetitors.get(i).getStageTimes().size() > (j - 1))) {
-							stageTime = tempCompetitors.get(i).getStageTimes().get(j - 1);
+						if ((mCompetitors.get(i).hasResult()) && (mCompetitors.get(i).getStageTimes().size() > (j - 1))) {
+							stageTime = mCompetitors.get(i).getStageTimes().getTimesOfStage(j - 1);
 						} else {
 							stageTime = (long) Integer.MAX_VALUE;
 						}
 		
-						stageResult = new StageResult(tempCompetitors.get(i).getCardNumber(), stageTime, stageTime == (long) Integer.MAX_VALUE);
+						stageResult = new StageResult(mCompetitors.get(i).getCardNumber(), stageTime, stageTime == (long) Integer.MAX_VALUE);
 						mResults.get(j + totalTimePosition).getStageResult().add(stageResult);
 		
 						if (stageResult.getDnf()) {

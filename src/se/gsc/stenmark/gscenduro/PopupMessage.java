@@ -8,20 +8,28 @@ import android.support.v4.app.DialogFragment;
 
 public class PopupMessage extends DialogFragment {
 
-	private String message;
+	private String mMessage;
+	private String mTitle = "";
 
 	public PopupMessage() {
 	}	
 	
 	public PopupMessage(String message) {
-		this.message = message;
+		this.mMessage = message;
 	}
+	
+	public void setTitle(String title) {
+		mTitle = title;
+	}	
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// Use the Builder class for convenient dialog construction
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(message).setPositiveButton("OK",
+		if (mTitle.length() > 0) {
+			builder.setTitle(mTitle);
+		}
+		builder.setMessage(mMessage).setPositiveButton("OK",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 					}

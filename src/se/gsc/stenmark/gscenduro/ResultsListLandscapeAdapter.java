@@ -7,6 +7,7 @@ import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -99,8 +100,8 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			
 			for(int stageNumber = 1; stageNumber < mResultLandscape.get(position).getStageResult().size(); stageNumber++) {
 				
-				Long fastestTimeOnStage = CompetitionHelper.getFastestOnStage(mResultLandscape, mResultLandscape.get(position).getTitle(), stageNumber);				
-				Long slowestTimeOnStage = CompetitionHelper.getSlowestOnStage(mResultLandscape, mResultLandscape.get(position).getTitle(), stageNumber);									
+				Long fastestTimeOnStage = ((MainActivity) mContext).competition.getCompetitors().getFastestOnStage(mResultLandscape.get(position).getTitle(), stageNumber); 
+				Long slowestTimeOnStage = ((MainActivity) mContext).competition.getCompetitors().getSlowestOnStage(mResultLandscape.get(position).getTitle(), stageNumber);
 				String StageTime = CompetitionHelper.secToMinSec(mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTimes());
 				
 				rank = mResultLandscape.get(position).getStageResult().get(stageNumber).getRank();

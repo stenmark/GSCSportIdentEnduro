@@ -42,18 +42,18 @@ public class DialogImportPunches {
 				try {					
 					PunchParser punchParser = new PunchParser();
 					punchParser.parsePunches(importPunchesInput.getText().toString(), mMainActivity.competition.getCompetitors().getCompetitors());
-																		
+					
+					String statusMsg = punchParser.getStatus();
+					statusMsg += "Processing cards:\n";
 					for (Card cardObject : punchParser.getCards()) {		
 						if (cardObject.getPunches().size() > 0) {
 							if (cardObject.getCardNumber() != 0) {
-								mMainActivity.competition.processNewCard(cardObject, false);
+								statusMsg += mMainActivity.competition.processNewCard(cardObject, false);
 							}
 						}
 					}												
 					
-					mMainActivity.competition.calculateResults();
-					
-					String statusMsg = punchParser.getStatus();
+					mMainActivity.competition.calculateResults();									
 					mMainActivity.updateFragments();
 					
 					AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);

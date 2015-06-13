@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
-import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;

@@ -14,25 +14,15 @@ public class Punch implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private long mTime;
 	private long mControl;
-	private boolean mMarkAsDoublePunch;
 
 	public Punch(long time, long control) {
 		setTime(time);
 		setControl(control);
-		setMarkAsDoublePunch(false);
 	}
 
 	@Override
 	public String toString() {
 		return "Control=" + mControl + "  Time=" + mTime;
-	}
-
-	public boolean getMarkAsDoublePunch() {
-		return mMarkAsDoublePunch;
-	}
-
-	public void setMarkAsDoublePunch(boolean markAsDoublePunch) {
-		mMarkAsDoublePunch = markAsDoublePunch;
 	}
 
 	public long getTime() {

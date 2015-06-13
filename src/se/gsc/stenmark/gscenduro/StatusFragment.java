@@ -2,10 +2,15 @@ package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.gsc.stenmark.gscenduro.SporIdent.Card;
+import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
+
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -150,7 +155,35 @@ public class StatusFragment extends Fragment {
 								}
 								stageString = stageString.substring(0, stageString.length() - 1);   //remove last ","
 								
-								mMainActivity.competition.getStages().importStages(stageString);										
+								Boolean processCards = false;
+								//Process all cards again if number of stages has changed								
+								if (numberOfSs != mMainActivity.competition.getStages().size()) {
+									processCards = true;
+								} 	
+								
+								mMainActivity.competition.getStages().importStages(stageString);
+								if (processCards) {
+									String statusMsg = "";
+									for (int i = 0; i < mMainActivity.competition.getCompetitors().size(); i++) {		
+										if (mMainActivity.competition.getCompetitors().get(i).getCard().getPunches().size() > 0) {
+											if (mMainActivity.competition.getCompetitors().get(i).getCard().getCardNumber() != 0) {
+												statusMsg += mMainActivity.competition.processNewCard(mMainActivity.competition.getCompetitors().get(i).getCard(), false);
+											}
+										}
+									}																	
+									
+									mMainActivity.competition.calculateResults();									
+									mMainActivity.updateFragments();
+									
+									AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
+							        builder.setIcon(android.R.drawable.ic_dialog_alert);
+							        builder.setMessage(statusMsg).setTitle("Processed cards").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+							            public void onClick(DialogInterface dialog, int which) {}
+							        });
+							 
+							        AlertDialog alert = builder.create();
+							        alert.show();										
+								}
 							}											
 		            	} else {
 		                   	String status = mMainActivity.competition.getStages().checkStagesData(stagesInput.getText().toString());

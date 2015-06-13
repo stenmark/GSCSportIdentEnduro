@@ -27,9 +27,9 @@
     <string name="string_new">NEW</string>   
     <string name="string_manual_add">ADD MANUALLY</string>               
     
-    <string name="action_new">New</string>
-    <string name="action_load">Load</string>
-    <string name="action_save">Save</string>
+    <string name="action_new">New competition</string>
+    <string name="action_load">Load competition</string>
+    <string name="action_save">Save competition</string>
     <string name="action_import">Import</string>
     <string name="action_export_as_cvs">Export as csv</string>
     <string name="action_export_as_image">Export as image</string>                   

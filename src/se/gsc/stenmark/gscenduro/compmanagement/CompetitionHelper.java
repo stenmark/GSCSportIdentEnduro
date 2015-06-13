@@ -22,8 +22,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import se.gsc.stenmark.gscenduro.Results;
-import se.gsc.stenmark.gscenduro.SporIdent.Card;
-import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
 /**
  * Stateless helper class that can perform various operations on a competition.
@@ -47,36 +45,6 @@ public class CompetitionHelper {
 		}
 	}
 
-	public static Long getFastestOnStage(List<Results> results, String competitorClass, int stageNumber) {
-		Long fastestTimeOnStage = Long.MAX_VALUE;
-		for(Results resultFastest : results){
-			
-			if (competitorClass == resultFastest.getTitle()) {						
-				try{
-					fastestTimeOnStage = Math.min(fastestTimeOnStage, resultFastest.getStageResult().get(stageNumber).getStageTimes());
-				}
-				catch(IndexOutOfBoundsException e){	
-				}
-			}
-		}
-		return fastestTimeOnStage;
-	}
-	
-	public static Long getSlowestOnStage(List<Results> results, String competitorClass, int stageNumber) {
-		Long slowestTimeOnStage = Long.MIN_VALUE;
-		for(Results resultSlowest : results){
-			if (competitorClass == resultSlowest.getTitle()) {
-				try{
-					slowestTimeOnStage = Math.max(slowestTimeOnStage, resultSlowest.getStageResult().get(stageNumber).getStageTimes());
-				}
-				catch(IndexOutOfBoundsException e){	
-				}
-			}
-		}
-		
-		return slowestTimeOnStage;
-	}	
-	
 	public static String getResultsAsCsvString(Stages stage, List<Results> results, Competitors competitors, int type) {
 		String resultData = "";
 		
@@ -174,68 +142,7 @@ public class CompetitionHelper {
 		}
 		return result;
 	}
-
-	/**
-	 * Will map a specific punch for the supplied card for a specific SI card
-	 * station. It will find the n:th punch of the specified station number on
-	 * the card, denoted by instanceNumber. I.e. if the card has punches from
-	 * the following station number: 71,72,71,72,71,72 Then if: StationNumber =
-	 * 71 and instanceNumber = 3 it will find the punch for 71,72,71,72, ->71<-
-	 * ,72 StationNumber = 72 and instanceNumber = 1 it will find the punch for
-	 * 71, ->72<- ,71,72,71,72 If the punch is not found null is returned. i.e.
-	 * StationNumber = 72 and instanceNumber = 4 -> null is returned
-	 * 
-	 * @param card
-	 * @param stationNumber
-	 * @param instanceNumber
-	 * @return
-	 */
-	public static Punch findPunchForStationNrInCard(Card card, long stationNumber, int instanceNumber) {
-		int i = 0;
-		for (Punch punch : card.getPunches()) {
-			if (punch.getControl() == stationNumber) {
-				if (!punch.getMarkAsDoublePunch()) {
-					i++;
-					if (i == instanceNumber) {
-						return punch;
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Loops through the stages and associates each StageControl in the stages with
-	 * a punch from the card. It then calculates a stage time, i.e. how long did
-	 * it take to reach from each pair of stageControls in the stage. This method
-	 * will only work on a coherent number of punches. I.e. all double punches
-	 * and punches on stageControls not in the stage must be removed before
-	 * calling this method
-	 * 
-	 * @param card
-	 * @param stage
-	 * @return a list of Long Integers denoting the time it took to get through
-	 *         each pair of stage controls
-	 */
-	public static List<Long> extractResultFromCard(Card card, Stages stages) {
-		List<Long> result = new ArrayList<Long>();
-
-		try {
-			for (int i = 0; i < stages.size(); i++) {
-				StageControls stageControls = stages.get(i);
-				Punch startPunch = findPunchForStationNrInCard(card, stageControls.getStart(), i + 1);
-				Punch finishPunch = findPunchForStationNrInCard(card, stageControls.getFinish(), i + 1);
-				long stageTime = finishPunch.getTime() - startPunch.getTime();
-				result.add(stageTime);
-			}
-		} catch (Exception e) {
-
-		}
-
-		return result;
-	}
-
+	
 	/**
 	 * Simple helper to ensure that we can write to Android filesystem.
 	 * 

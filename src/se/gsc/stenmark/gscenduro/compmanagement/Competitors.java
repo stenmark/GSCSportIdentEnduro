@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import android.util.Log;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
@@ -171,19 +170,52 @@ public class Competitors implements Serializable {
 		return competitorClasses;
 	}	
 	
+	public Long getFastestOnStage(String competitorClass, int stageNumber) {
+		Long fastestTimeOnStage = Long.MAX_VALUE;
+		for(Competitor competitor : mCompetitors) {
+			
+			if (competitorClass.contains(competitor.getCompetitorClass())) {						
+				try{
+					fastestTimeOnStage = Math.min(fastestTimeOnStage, competitor.getStageTimes().getTimesOfStage(stageNumber - 1));
+				}
+				catch(IndexOutOfBoundsException e){	
+				}
+			}
+		}
+		return fastestTimeOnStage;
+	}	
+	
+	public Long getSlowestOnStage(String competitorClass, int stageNumber) {
+		Long slowestTimeOnStage = (long) 0;
+		for(Competitor competitor : mCompetitors){
+			if (competitorClass.contains(competitor.getCompetitorClass())) {
+				try{
+					if (competitor.getStageTimes().getTimesOfStage(stageNumber) != (long) Integer.MAX_VALUE) {
+						slowestTimeOnStage = Math.max(slowestTimeOnStage, competitor.getStageTimes().getTimesOfStage(stageNumber - 1));
+					}
+				}
+				catch(IndexOutOfBoundsException e){
+					return (long) Integer.MAX_VALUE;
+				}
+			}
+		}
+		
+		return slowestTimeOnStage;
+	}	
+	
+	
 	public String exportCsvString(int type) {
 		String competitorsAsCvs = "";
 
 		if (mCompetitors != null && !mCompetitors.isEmpty()) {
-			Collections.sort(mCompetitors);
 			for (Competitor competitor : mCompetitors) {			
 				if (type == 1) { //ESS_TYPE
 					competitorsAsCvs += competitor.getName() + "," + 
-									  competitor.getCardNumber() + "," + 
-									  competitor.getTeam() + "," + 
-									  competitor.getCompetitorClass() + "," + 
-									  competitor.getStartNumber() + "," + 
-									  competitor.getStartGroup() + "\n";					
+									  	competitor.getCardNumber() + "," + 
+									  	competitor.getTeam() + "," + 
+									  	competitor.getCompetitorClass() + "," + 
+									  	competitor.getStartNumber() + "," + 
+									  	competitor.getStartGroup() + "\n";					
 				} else {
 					competitorsAsCvs += competitor.getName() + "," + competitor.getCardNumber() + "\n";
 				}
@@ -206,7 +238,6 @@ public class Competitors implements Serializable {
 		String punchesAsCvs = "";
 
 		if (mCompetitors != null && !mCompetitors.isEmpty()) {
-			Collections.sort(mCompetitors);
 			for (Competitor competitor : mCompetitors) {
 				Card card = new Card();
 
