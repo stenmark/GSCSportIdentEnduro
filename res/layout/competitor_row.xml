@@ -5,49 +5,148 @@
 	android:layout_height="wrap_content"
 	android:orientation="horizontal"
 	android:background="@color/white">
-	   					    
+	
     <LinearLayout 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:layout_marginTop="8dp"
-		android:layout_marginBottom="8dp"
-		android:layout_marginLeft="4dp"
-		android:layout_weight="1"
-		
-		>
-		
+		android:orientation="vertical"	
+		android:layout_weight="1">          
 		<TextView		 	
 		    android:id="@+id/competitor_name"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:layout_marginLeft="8dp"			    
 		    android:layout_marginRight="8dp"
-		    android:textSize="16sp"
+		    android:textSize="30dp"
 		    android:text="Namn Namnsson"	
-		    android:textStyle="bold"
-		    android:layout_weight="1"			      		   
-	   	/>		   
-  					
-		<TextView		 	
-		    android:id="@+id/competitor_cardnumber"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_marginLeft="8dp"			    
-		    android:layout_marginRight="8dp"
-		    android:textSize="12sp"		    
-		    android:text="123456789"   
-		    android:layout_weight="1"     	     	    	    		    	    	   
-	   	/>	
-   	
-	</LinearLayout>
-	
+		    android:textStyle="bold"/>		
+		    
+	    <LinearLayout 
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_marginLeft="8dp"			    
+			android:layout_marginRight="8dp">     	
+			<TextView		 	
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="12sp"		    
+			    android:text="Card number: "   
+			    android:textStyle="bold"/>     	    
+	    	    
+			<TextView		 	
+			    android:id="@+id/competitor_cardnumber"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:textSize="12sp"		    
+			    android:text="123456789"/>				   	
+		</LinearLayout>	
+	</LinearLayout>	
+
+    <LinearLayout 
+	    android:id="@+id/competitor_row_ess_layout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_weight="1"
+		android:visibility="gone">
+	 
+			<LinearLayout 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_marginLeft="8dp"			    
+				android:layout_marginRight="8dp"	
+				android:paddingLeft="20dp">     	
+				<TextView		 	
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:textSize="12sp"		    
+				    android:text="Start number: "   
+				    android:textStyle="bold"/>  
+			   	     	
+				<TextView		 	
+				    android:id="@+id/competitor_startnumber"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:textSize="12sp"		    
+				    android:text="startnumber"/>
+			</LinearLayout>   
+			
+	     	<LinearLayout 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_marginLeft="8dp"			    
+				android:layout_marginRight="8dp"	
+				android:paddingLeft="20dp">     	
+				<TextView		 	
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:textSize="12sp"		    
+				    android:text="Team: "   
+				    android:textStyle="bold"/>  
+			   	     	
+				<TextView		 	
+				    android:id="@+id/competitor_team"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:textSize="12sp"		    
+				    android:text="team"/>
+			</LinearLayout>			
+			
+	     	<LinearLayout 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_marginLeft="8dp"			    
+				android:layout_marginRight="8dp"	
+				android:paddingLeft="20dp">     	
+				<TextView		 	
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:textSize="12sp"		    
+				    android:text="Class: "   
+				    android:textStyle="bold"/>  
+			   	     	
+				<TextView		 	
+				    android:id="@+id/competitor_class"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:textSize="12sp"		    
+				    android:text="class"/>	
+			</LinearLayout>  	     	
+			
+	     	<LinearLayout 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_marginLeft="8dp"			    
+				android:layout_marginRight="8dp"	
+				android:paddingLeft="20dp"			
+				>     	
+				<TextView		 	
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:textSize="12sp"		    
+				    android:text="Start group: "   
+				    android:textStyle="bold"/>  		
+	     	
+				<TextView		 	
+				    android:id="@+id/competitor_startgroup"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:textSize="12sp"		    
+				    android:text="1"/>			
+			</LinearLayout>		     	
+        
+	</LinearLayout>    
+    
     <LinearLayout 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"	
-		android:layout_gravity="center_vertical|right"			
-	>
+		android:layout_gravity="center_vertical|right">
     
 		<Button
 		    android:id="@+id/competitor_delete"
@@ -59,8 +158,7 @@
 		    android:text="DELETE"		    
 		    android:textColor="@color/button_text"
 		    android:background="@drawable/button" 
-		    android:layout_gravity="center_vertical|right"	
-		    />
+		    android:layout_gravity="center_vertical|right"/>
 
 		<Button
 		    android:id="@+id/competitor_modify"
@@ -72,8 +170,7 @@
     		android:text="MODIFY"
     		android:textColor="@color/button_text"   
     		android:background="@drawable/button"	
-    		android:layout_gravity="center_vertical|right"		
-    	/>
+    		android:layout_gravity="center_vertical|right"/>
 		
 		<Button
 		    android:id="@+id/competitor_punch"
@@ -85,8 +182,7 @@
     		android:text="PUNCHES"
     		android:textColor="@color/button_text"   
     		android:background="@drawable/button"	
-    		android:layout_gravity="center_vertical|right"		
-    	/>		
-	</LinearLayout>
-
+    		android:layout_gravity="center_vertical|right"/>		
+	</LinearLayout>    
+    
 </LinearLayout>	

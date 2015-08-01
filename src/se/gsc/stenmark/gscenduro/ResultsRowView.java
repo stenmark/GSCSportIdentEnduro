@@ -3,6 +3,7 @@ package se.gsc.stenmark.gscenduro;
 import se.gsc.stenmark.gscenduro.R;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -11,6 +12,9 @@ public class ResultsRowView extends LinearLayout {
 	Context mContext;
 	TextView mTitle;
 	TextView mResultName;
+	TextView mResultStartNumberTitle;
+	TextView mResultTeamTitle;
+	
 	TextView mResultStartNumber;
 	TextView mResultTeam;
 	TextView mResultTime;
@@ -19,15 +23,26 @@ public class ResultsRowView extends LinearLayout {
 	LinearLayout mCompoundView;
 
 	protected void Init(Context context) {
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
 		mContext = context;
+		
+		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	
+		mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_row, this);
+		mResultStartNumberTitle = (TextView) mCompoundView.findViewById(R.id.result_start_number_title);
+		mResultTeamTitle = (TextView) mCompoundView.findViewById(R.id.result_team_title);
+		mResultStartNumber = (TextView) mCompoundView.findViewById(R.id.result_start_number);
+		mResultTeam = (TextView) mCompoundView.findViewById(R.id.result_team);
+		
 		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE) {
-			mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_row, this);
+			mResultStartNumberTitle.setVisibility(View.GONE);
+			mResultTeamTitle.setVisibility(View.GONE);
+			mResultStartNumber.setVisibility(View.GONE);
+			mResultTeam.setVisibility(View.GONE);
 		} else {
-			mCompoundView = (LinearLayout) inflater.inflate(R.layout.result_ess_row, this);
-			mResultStartNumber = (TextView) mCompoundView.findViewById(R.id.result_start_number);
-			mResultTeam = (TextView) mCompoundView.findViewById(R.id.result_team);
+			mResultStartNumberTitle.setVisibility(View.VISIBLE);
+			mResultTeamTitle.setVisibility(View.VISIBLE);
+			mResultStartNumber.setVisibility(View.VISIBLE);
+			mResultTeam.setVisibility(View.VISIBLE);
 		}
 			
 		mTitle = (TextView) mCompoundView.findViewById(R.id.result_title);

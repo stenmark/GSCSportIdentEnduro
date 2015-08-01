@@ -2,15 +2,10 @@ package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.gsc.stenmark.gscenduro.SporIdent.Card;
-import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
-
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,10 +66,8 @@ public class StatusFragment extends Fragment {
         editCompetitionButton.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {			
-				LayoutInflater li = LayoutInflater.from(mMainActivity);
-				
-				View promptsView;
-				promptsView = li.inflate(R.layout.competition_modify, null);						
+				LayoutInflater li = LayoutInflater.from(mMainActivity);				
+				View promptsView = li.inflate(R.layout.competition_modify, null);						
 		       
 				final LinearLayout layoutModifyStageSpinner = (LinearLayout) promptsView.findViewById(R.id.modify_stage_spinner_layout);
 				final LinearLayout layoutModifyStageManually = (LinearLayout) promptsView.findViewById(R.id.modify_stage_manually_layout);
@@ -86,7 +79,7 @@ public class StatusFragment extends Fragment {
 				dateInput.setText(((MainActivity) mMainActivity).competition.getCompetitionDate());																		
 				
 				final EditText stagesInput = (EditText) promptsView.findViewById(R.id.modify_stages_manually_input);	
-				stagesInput.setText(((MainActivity) mMainActivity).competition.getStages().exportStagesCvsString());
+				stagesInput.setText(((MainActivity) mMainActivity).competition.getStages().exportStagesCsvString());
 				
 				if (((MainActivity) mMainActivity).competition.getCompetitionType() == ((MainActivity) mMainActivity).competition.SVARTVITT_TYPE) {
 					layoutModifyStageSpinner.setVisibility(View.VISIBLE);
@@ -161,37 +154,29 @@ public class StatusFragment extends Fragment {
 									processCards = true;
 								} 	
 								
-								mMainActivity.competition.getStages().importStages(stageString);
+								mMainActivity.competition.getStages().importStages(stageString, 0);
 								if (processCards) {
-									String statusMsg = "";
+									String status = "Number of stages has changed so all cards have been processed again.\n\n";
 									for (int i = 0; i < mMainActivity.competition.getCompetitors().size(); i++) {		
-										if (mMainActivity.competition.getCompetitors().get(i).getCard().getPunches().size() > 0) {
+										if ((mMainActivity.competition.getCompetitors().get(i).getCard() != null) &&(mMainActivity.competition.getCompetitors().get(i).getCard().getPunches().size() > 0)) {
 											if (mMainActivity.competition.getCompetitors().get(i).getCard().getCardNumber() != 0) {
-												statusMsg += mMainActivity.competition.processNewCard(mMainActivity.competition.getCompetitors().get(i).getCard(), false);
+												status += mMainActivity.competition.processNewCard(mMainActivity.competition.getCompetitors().get(i).getCard(), false);
 											}
 										}
-									}																	
+									}	
+									Toast.makeText(mMainActivity, status, Toast.LENGTH_LONG).show();  
 									
 									mMainActivity.competition.calculateResults();									
-									mMainActivity.updateFragments();
-									
-									AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
-							        builder.setIcon(android.R.drawable.ic_dialog_alert);
-							        builder.setMessage(statusMsg).setTitle("Processed cards").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-							            public void onClick(DialogInterface dialog, int which) {}
-							        });
-							 
-							        AlertDialog alert = builder.create();
-							        alert.show();										
+									mMainActivity.updateFragments();									
 								}
 							}											
 		            	} else {
-		                   	String status = mMainActivity.competition.getStages().checkStagesData(stagesInput.getText().toString());
+		                   	String status = mMainActivity.competition.getStages().checkStagesData(stagesInput.getText().toString(), 1);
 		                	if (status.length() > 0) {
 		                		Toast.makeText(mMainActivity, status, Toast.LENGTH_LONG).show();                		
 		                		return;
 		                	}
-		                	mMainActivity.competition.getStages().importStages(stagesInput.getText().toString());		                	
+		                	mMainActivity.competition.getStages().importStages(stagesInput.getText().toString(), 1);		                	
 		            	}
 		            	mMainActivity.competition.setCompetitionName(nameInput.getText().toString());	
 						mMainActivity.competition.setCompetitionDate(dateInput.getText().toString());
@@ -208,58 +193,60 @@ public class StatusFragment extends Fragment {
 		return rootView;
 	}
 	
-	public void updateConnectText(){
-		if(inView){
-			try {
-				TextView statusTextView = (TextView) getView().findViewById(R.id.status_text);	
+	public void updateConnectText() {
+		if (inView) {
+			TextView statusTextView = (TextView) getView().findViewById(R.id.status_text);
+			if (mMainActivity.getConnectionStatus() != null) {
 				statusTextView.setText(mMainActivity.getConnectionStatus());
-			} catch (Exception e) {
-				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-				dialog.show(getFragmentManager(), "popUp");
 			}
 		}
 	}
 	
-	public void updateCompetitionStatus(){
-		if(inView){
-			try {						
-				TextView statusTextView;				
-				
-				statusTextView = (TextView) getView().findViewById(R.id.competition_competition_date);	
+	public void updateCompetitionStatus() {
+		if (inView) {
+			TextView statusTextView;				
+			
+			statusTextView = (TextView) getView().findViewById(R.id.competition_competition_date);
+			if (mMainActivity.competition.getCompetitionDate() != null) {
 				statusTextView.setText(mMainActivity.competition.getCompetitionDate());
-				
-				statusTextView = (TextView) getView().findViewById(R.id.competition_type);				
-				if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE) {
-					statusTextView.setText("SvartVitt");	
-				} else {
-					statusTextView.setText("Enduro Sweden Series");
-				}
-				
-				statusTextView = (TextView) getView().findViewById(R.id.competition_name);	
+			}
+			
+			statusTextView = (TextView) getView().findViewById(R.id.competition_type);				
+			if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE) {
+				statusTextView.setText("SvartVitt");	
+			} else {
+				statusTextView.setText("Enduro Sweden Series");
+			}
+			
+			statusTextView = (TextView) getView().findViewById(R.id.competition_name);
+			if (mMainActivity.competition.getCompetitionName() != null) {
 				statusTextView.setText(mMainActivity.competition.getCompetitionName());
-				
-				statusTextView = (TextView) getView().findViewById(R.id.stages_status);	
+			}
+			
+			statusTextView = (TextView) getView().findViewById(R.id.stages_status);
+			if (mMainActivity.competition.getStages().toString() != null) {
 				statusTextView.setText(mMainActivity.competition.getStages().toString());
-				
-				statusTextView = (TextView) getView().findViewById(R.id.competitor_status);	
-				if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE) {
+			}
+			
+			statusTextView = (TextView) getView().findViewById(R.id.competitor_status);	
+			if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE) {
+				if (mMainActivity.competition.getCompetitors() != null) {
 					statusTextView.setText("Total: " + mMainActivity.competition.getCompetitors().size());
-				} else {					
-					String numberOfCompetitors = "";
-					for (String competitorClass : mMainActivity.competition.getCompetitors().getCompetitorClasses()) {
-						
-						if (numberOfCompetitors.length() != 0) {
-							numberOfCompetitors += "\n";
-						}
-						
-						numberOfCompetitors += competitorClass + ": " + mMainActivity.competition.getCompetitors().sizeByClass(competitorClass);
+				}
+			} else {					
+				String numberOfCompetitors = "";
+				for (String competitorClass : mMainActivity.competition.getCompetitors().getCompetitorClasses()) {
+					
+					if (numberOfCompetitors.length() != 0) {
+						numberOfCompetitors += "\n";
 					}
 					
-					statusTextView.setText("Total: " + mMainActivity.competition.getCompetitors().size() + "\n" + numberOfCompetitors);					
+					numberOfCompetitors += competitorClass + ": " + mMainActivity.competition.getCompetitors().sizeByClass(competitorClass);
 				}
-			} catch (Exception e) {
-				PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-				dialog.show(getFragmentManager(), "popUp");
+				
+				if (mMainActivity.competition.getCompetitors() != null) {
+					statusTextView.setText("Total: " + mMainActivity.competition.getCompetitors().size() + "\n" + numberOfCompetitors);
+				}
 			}
 		}
 	}

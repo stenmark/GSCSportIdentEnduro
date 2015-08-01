@@ -5,7 +5,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:padding="10dp" >
- 
+    
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,13 +29,28 @@
         android:layout_height="wrap_content"
         android:inputType="number"> 
     </EditText>    
-	
-	<LinearLayout 
-	    android:id="@+id/modify_competitor_ess_layout"
+    
+	<Spinner
+		android:id="@+id/card_number_spinner"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:visibility="gone">	    
+		android:prompt="@string/cardnumber_info"
+		android:visibility="gone"/>	    
+	
+	<CheckBox
+		android:id="@+id/cardnumber_checkbox"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="itemClicked"
+		android:text="Add card number manually" 
+		android:visibility="gone"/>			
+	
+	<LinearLayout 
+	    android:id="@+id/add_competitor_ess_layout"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+        	    
 	    <TextView
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -80,7 +95,7 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:inputType="number"> 
-	    </EditText>	            
-	</LinearLayout>	
-	
+	    </EditText>    	    
+	    
+	</LinearLayout>    
 </LinearLayout>

@@ -16,12 +16,12 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import se.gsc.stenmark.gscenduro.Results;
 
 /**
  * Stateless helper class that can perform various operations on a competition.
@@ -45,6 +45,28 @@ public class CompetitionHelper {
 		}
 	}
 
+	/**
+	 * Generate an RGB value for a transition from Red to Green.
+	 * @return RGB coded color
+	 */
+	public static int generateRedToGreenColorTransition(Long fastestTimeOnStage, Long slowestTimeOnStage, Long competitorStageTime, int rank){		
+		if (rank == Integer.MAX_VALUE) {
+			return Color.WHITE;
+		} else {
+			float myTimeDiff = competitorStageTime - fastestTimeOnStage;
+			float stageTimeDiff = slowestTimeOnStage - fastestTimeOnStage;
+			float transition;
+			if (stageTimeDiff != 0) {
+				transition = 1f - (myTimeDiff / stageTimeDiff);				
+			} else {
+				transition = 1f;
+			}
+			
+			float hue = 20f + (transition*70f);  //the full red and full green are very close to each other for the eye. So dont use full red and full green
+		    return android.graphics.Color.HSVToColor(new float[]{hue,1f,1f});
+		}			
+	}	
+	
 	public static String getResultsAsCsvString(Stages stage, List<Results> results, Competitors competitors, int type) {
 		String resultData = "";
 		
@@ -95,6 +117,103 @@ public class CompetitionHelper {
 		return resultData;
 	}
 
+	public static String getResultsAsHtmlString(String name, String date, Stages stage, List<Results> results, Competitors competitors, int type) {
+		String resultData = "<!DOCTYPE html>\n<html>\n<body>\n";		
+		resultData += "<style>\ntable, th, td {\nborder: 1px solid black;\nborder-collapse: collapse;\n}\nth, td {\npadding: 5px;\n}\n</style>\n";		
+		resultData += "<h1>" + name + ", " + date + "</h1>\n";
+		
+		for (int index = 0; index < results.size(); index++) {
+			
+			if (type == 1)  {				
+				if (index == 0) {
+					resultData += "<h1>" + results.get(index).getTitle() + "</h1>\n";
+					resultData += "<table style=\"width:100%\">\n";
+					resultData += "<tr>\n<th><center>Rank</center></th><th>Name</th><th>Card Number</th><th>Team</th><th>Start Number</th><th>Total Time</th>";
+					for (int i = 0; i < stage.size(); i++) {
+						resultData += "<th>Stage " + (i + 1) + "</th><th>Rank</th><th>Time Back</th>";
+					}
+					resultData += "</tr>\n";							
+				} else if (results.get(index).getTitle() != results.get(index - 1).getTitle()) {
+					resultData += "</table>\n";
+					resultData += "<h1>" + results.get(index).getTitle() + "</h1>\n";
+					resultData += "<table style=\"width:100%\">\n";
+					resultData += "<tr>\n<th><center>Rank</center></th><th>Name</th><th>Card Number</th><th>Team</th><th>Start Number</th><th>Total Time</th>";
+					for (int i = 0; i < stage.size(); i++) {
+						resultData += "<th>Stage " + (i + 1) + "</th><th>Rank</th><th>Time Back</th>";
+					}
+					resultData += "</tr>\n";		
+				}				
+			} else if (index == 0) {
+				resultData += "<table style=\"width:100%\">\n";
+				resultData += "<tr><th><center>Rank</center></th><th>Name</th><th>Card Number</th><th>Total Time</th>";
+				
+				for (int i = 0; i < stage.size(); i++) {
+					resultData += "<th>Stage " + (i + 1) + "</th><th>Rank</th><th>Time Back</th>";
+				}
+				resultData += "</tr>\n";
+			}			
+			
+			resultData += "<tr>\n";								
+			int rank = results.get(index).getStageResult().get(0).getRank();
+			resultData += "<td><center>";
+			if (rank == Integer.MAX_VALUE) {			
+				resultData += "-";
+			} else {
+				resultData += rank;
+			}
+			resultData += "</center></td>";
+			
+			int cardNumber = results.get(index).getStageResult().get(0).getCardNumber();
+			resultData += "<td>" + convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()) + "</td>";			
+			resultData += "<td><center>" + cardNumber + "</center></td>";
+			
+			Log.d("html", "convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()) = " + convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()));
+			Log.d("html", "competitors.getByCardNumber(cardNumber).getName() = " + competitors.getByCardNumber(cardNumber).getName());
+			
+			if (type == 1)  {
+				resultData += "<td>" + convertToHtmlChars(competitors.getByCardNumber(cardNumber).getTeam()) + "</td>";					
+				resultData += "<td><center>" + String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + "</center></td>";
+			}
+			resultData += "<td><center>" + CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(0).getStageTimes()) + "</center></td>";	
+						
+			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {			
+				
+				if (results.get(index).getStageResult().get(stageNumber).getRank() != Integer.MAX_VALUE) {								
+					Long fastestTimeOnStage = competitors.getFastestOnStage(results.get(index).getTitle(), stageNumber); 
+					Long slowestTimeOnStage = competitors.getSlowestOnStage(results.get(index).getTitle(), stageNumber);
+					Long competitorStageTime = results.get(index).getStageResult().get(stageNumber).getStageTimes();
+					
+					int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
+	
+					color -= 0xff000000;
+					resultData += "<td bgcolor=\"#" + Integer.toHexString(color) + "\"><center>" + CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimes()) + "</center></td>";
+					resultData += "<td><center>" + results.get(index).getStageResult().get(stageNumber).getRank() + "</center></td>";
+					resultData += "<td><center>" + CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + "</center></td>";
+				} else {
+					resultData += "<td><center>-</center></td>";
+					resultData += "<td><center>-</center></td>";
+					resultData += "<td><center>-</center></td>";
+				}
+			}			
+			resultData += "</tr>\n";
+		}		
+		
+		resultData += "</table>\n</body>\n</html>\n";
+		
+		return resultData;
+	}
+	
+	public static String convertToHtmlChars(String text)
+	{
+		text = text.replaceAll("å", "&aring;").
+		replaceAll("ä", "&auml;").
+		replaceAll("ö", "&ouml;").
+		replaceAll("Å", "&Aring;").
+		replaceAll("Ä", "&Auml;").
+		replaceAll("Ö", "&Ouml;");
+		return text;
+	}  		
+	
 	/**
 	 * Searched the Android file system for saved competitions and returns a
 	 * list with filenames for all files found. The current competition is
@@ -160,8 +279,7 @@ public class CompetitionHelper {
 		}
 	}
 
-	public static void exportString(Activity activity, String StringToSend,
-			String filetype, String compName) throws IOException {
+	public static void exportString(Activity activity, String StringToSend, String exporttype, String compName, String filetype) throws IOException {
 		String errorMsg = "";
 
 		if (CompetitionHelper.isExternalStorageWritable()) {
@@ -179,7 +297,7 @@ public class CompetitionHelper {
 				}
 			}
 
-			File file = new File(dir, compName + "_" + filetype + ".csv");
+			File file = new File(dir, compName + "_" + exporttype + "." + filetype);
 
 			FileWriter fw = new FileWriter(file);
 			fw.write(StringToSend);
@@ -188,8 +306,8 @@ public class CompetitionHelper {
 				Intent mailIntent = new Intent(Intent.ACTION_SEND);
 				mailIntent.setType("text/plain");
 				mailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "" });
-				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro " + filetype + " for " + compName);
-				mailIntent.putExtra(Intent.EXTRA_TEXT, filetype + " in attached file");
+				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro " + exporttype + " for " + compName);
+				mailIntent.putExtra(Intent.EXTRA_TEXT, exporttype + " in attached file");
 				Uri uri = Uri.fromFile(file);
 				mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
 				activity.startActivity(Intent.createChooser(mailIntent, "Send mail"));
@@ -198,8 +316,7 @@ public class CompetitionHelper {
 			fw.close();
 		} else {
 			errorMsg = "External file storage not available, could not export competitors";
-			Toast.makeText(activity, "Error = " + errorMsg, Toast.LENGTH_LONG)
-					.show();
+			Toast.makeText(activity, "Error = " + errorMsg, Toast.LENGTH_LONG).show();
 			return;
 		}
 	}

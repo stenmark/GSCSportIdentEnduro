@@ -19,7 +19,7 @@ public class DialogImportCompetitors {
 	
     public void createImportCompetitorsDialog() {   
 		LayoutInflater li = LayoutInflater.from(mMainActivity);
-		View promptsView = li.inflate(R.layout.import_competitors, null);
+		View promptsView = li.inflate(R.layout.competitor_import, null);
 
 		final EditText importCompetitorsInput = (EditText) promptsView.findViewById(R.id.import_competitors_input);
 		TextView importCompetitorsInfo = (TextView) promptsView.findViewById(R.id.import_competitors_info);
@@ -45,41 +45,50 @@ public class DialogImportCompetitors {
 		final AlertDialog alertDialog = alertDialogBuilder.create();
 		alertDialog.show();
 		alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            	 if (importCompetitorsInput.length() == 0) {
-                     Toast.makeText(mMainActivity, "No competitors was supplied", Toast.LENGTH_LONG).show();
-                     return;
-            	 }
-            	
-				try {	
-					String statusMsg = mMainActivity.competition.getCompetitors().importCompetitors(importCompetitorsInput.getText().toString(), keepCheckBox.isChecked(), mMainActivity.competition.getCompetitionType());						
-					mMainActivity.competition.calculateResults();
-					mMainActivity.updateFragments();													
-					
-					AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
-			        builder.setIcon(android.R.drawable.ic_dialog_alert);
-			        builder.setMessage(statusMsg).setTitle("Import competitor status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			            public void onClick(DialogInterface dialog, int which) {}
-			        });
-			 
-			        AlertDialog alert = builder.create();
-			        alert.show();																					
+			@Override
+			public void onClick(View v) {
+				if (importCompetitorsInput.length() == 0) {
+					Toast.makeText(mMainActivity, "No competitors was supplied", Toast.LENGTH_LONG).show();
+					return;
+				}
+
+				String errorText = "";
+				errorText = mMainActivity.competition.getCompetitors().checkImportCompetitors(importCompetitorsInput.getText().toString(), keepCheckBox.isChecked(), mMainActivity.competition.getCompetitionType());
+				if (errorText.length() != 0) {
+					Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
+					return;
+				}
+
+				try {
+					mMainActivity.competition.getCompetitors().importCompetitors(importCompetitorsInput.getText().toString(), keepCheckBox.isChecked(), mMainActivity.competition.getCompetitionType());
 				} catch (Exception e) {
-					String statusMsg = MainActivity.generateErrorMessage(e);
+					errorText = MainActivity.generateErrorMessage(e);
 
 					AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
-			        builder.setIcon(android.R.drawable.ic_dialog_alert);
-			        builder.setMessage(statusMsg).setTitle("Error importing competitors").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener()
-			        {
-			            public void onClick(DialogInterface dialog, int which) {}
-			        });		
-			        AlertDialog alert = builder.create();
-			        alert.show();	
-				}																					
+					builder.setIcon(android.R.drawable.ic_dialog_alert);
+					builder.setMessage(errorText).setTitle("Error importing competitors").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+						}
+					});
+					AlertDialog alert = builder.create();
+					alert.show();
+				}
+
+				mMainActivity.competition.calculateResults();
+				mMainActivity.updateFragments();
+
+				AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
+				builder.setIcon(android.R.drawable.ic_dialog_alert);
+				builder.setMessage("Competitors added").setTitle("Import competitor status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+					}
+				});
+
+				AlertDialog alert = builder.create();
+				alert.show();
 
 				alertDialog.dismiss();
-            }
-        });
+			}
+		});
 	}
 }

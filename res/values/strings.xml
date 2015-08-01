@@ -17,6 +17,7 @@
     <string name="card_number">Card Number:</string>
     
     <string name="add_stages_info">Number of stages:</string>
+    <string name="cardnumber_info">Card number:</string>
     <string name="add_punch_info">Control:</string>
     <string name="stages_info">Add stages in format start,stop,start,stop e.g. 71,72,73,74</string>
         
@@ -30,8 +31,10 @@
     <string name="action_new">New competition</string>
     <string name="action_load">Load competition</string>
     <string name="action_save">Save competition</string>
+    <string name="action_add_competitor">Add competitor</string>
     <string name="action_import">Import</string>
-    <string name="action_export_as_cvs">Export as csv</string>
+    <string name="action_export_as_csv">Export as csv</string>
+    <string name="action_export_as_html">Export as html</string>
     <string name="action_export_as_image">Export as image</string>                   
     
 </resources>

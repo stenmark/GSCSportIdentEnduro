@@ -15,13 +15,9 @@ import java.util.Date;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.MainApplication;
-import se.gsc.stenmark.gscenduro.Results;
-import se.gsc.stenmark.gscenduro.StageResult;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Environment;
 import android.util.Log;
 
@@ -47,7 +43,7 @@ public class Competition implements Serializable {
 	private List<Results> mResultLandscape = null;
 	private String mCompetitionName;
 	private String mCompetitionDate = "";
-	private int mCompetitionType = ESS_TYPE;
+	private int mCompetitionType = SVARTVITT_TYPE;
 	
 	public Competition() {
 		mStages = new Stages();
@@ -175,9 +171,6 @@ public class Competition implements Serializable {
 			}
 			File file = new File(dir, competionName + ".dat");
 			fileInputComp = new FileInputStream(file);
-
-			// fileInputComp =
-			// MainApplication.getAppContext().openFileInput(competionName);
 		}
 		ObjectInputStream objStreamInComp = new ObjectInputStream(fileInputComp);
 		Competition loadCompetition = (Competition) objStreamInComp.readObject();
@@ -186,64 +179,34 @@ public class Competition implements Serializable {
 		return loadCompetition;
 	}
 
-	public String processNewCard(Card newCard, Boolean calculateResultsAfterAdd) {
-		String returnMsg = "";
-		Competitor foundCompetitor = mCompetitors.findByCard(newCard);
+	public String processNewCard(Card card, Boolean calculateResultsAfterAdd) {
+		Competitor foundCompetitor = mCompetitors.findByCard(card);
 		if (foundCompetitor == null) {
-			return "Could not find card number: " + newCard.getCardNumber();
+			return "Card not added, could not find any competitor with that card number: " + card.getCardNumber();
 		}
-
-		foundCompetitor.setCard(newCard);
-		returnMsg += foundCompetitor.getName() + ", ";
-		foundCompetitor.getStageTimes().clear();
 		
-		for (int i = 0; i < mStages.size(); i++) {
-			long stageTime;
-						
-			if (mCompetitionType == ESS_TYPE) {
-				stageTime = newCard.getStageTimeEss(mStages.getStages().get(i).getStart(), mStages.getStages().get(i).getFinish());
-			} else {
-				stageTime = newCard.getStageTimeSvartVitt(mStages.getStages().get(i).getStart(), mStages.getStages().get(i).getFinish(), i + 1);
-			}
-			
-			returnMsg += "SS " + (i + 1) + " = " + CompetitionHelper.secToMinSec(stageTime) + ", ";
-			foundCompetitor.getStageTimes().setTimesOfStage(i, stageTime);
-		}		
+		String status = foundCompetitor.processCard(card, mStages, mCompetitionType);
 		
 		if (calculateResultsAfterAdd) {				
 			calculateResults();
 		}
 
-		returnMsg += ("Total = " + CompetitionHelper.secToMinSec(foundCompetitor.getTotalTime(mStages.size())) + "\n");
-		return returnMsg;
-	}
-
-	public void messageAlert(Activity activity, String title, String message) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-		builder.setIcon(android.R.drawable.ic_dialog_alert);
-		builder.setMessage(message).setTitle(title).setCancelable(false)
-				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-					}
-				});
-
-		AlertDialog alert = builder.create();
-		alert.show();
+		return status;
 	}
 
 	public void exportCompetitorsAsCsv(Activity activity) throws IOException {
 		String competitorList = mCompetitors.exportCsvString(mCompetitionType);
-		CompetitionHelper.exportString(activity, competitorList, "competitors", mCompetitionName);
+		CompetitionHelper.exportString(activity, competitorList, "competitors", mCompetitionName, "csv");
 	}
 
 	public void exportResultsAsCsv(Activity activity) throws IOException {
 		String resultList = CompetitionHelper.getResultsAsCsvString(mStages, mResultLandscape, mCompetitors, mCompetitionType);
-		CompetitionHelper.exportString(activity, resultList, "results", mCompetitionName);
+		CompetitionHelper.exportString(activity, resultList, "results", mCompetitionName, "csv");
 	}
 
 	public void exportPunchesAsCsv(Activity activity) throws IOException {
-		String punchList = mCompetitors.exportPunchesCvsString();
-		CompetitionHelper.exportString(activity, punchList, "punches", mCompetitionName);
+		String punchList = mCompetitors.exportPunchesCsvString();
+		CompetitionHelper.exportString(activity, punchList, "punches", mCompetitionName, "csv");
 	}
 
 	public void exportCompetitionAsCsv(Activity activity) throws IOException {
@@ -266,7 +229,7 @@ public class Competition implements Serializable {
 
 		// Stages
 		competitionList += "[Stages]\n";
-		competitionList += mStages.exportStagesCvsString() + "\n";
+		competitionList += mStages.exportStagesCsvString() + "\n";
 		competitionList += "[/Stages]\n";
 		
 		// Competitors
@@ -276,10 +239,10 @@ public class Competition implements Serializable {
 
 		// Punches
 		competitionList += "[Punches]\n";
-		competitionList += mCompetitors.exportPunchesCvsString();
+		competitionList += mCompetitors.exportPunchesCsvString();
 		competitionList += "[/Punches]\n";		
 		
-		CompetitionHelper.exportString(activity, competitionList, "competition", mCompetitionName);
+		CompetitionHelper.exportString(activity, competitionList, "competition", mCompetitionName, "csv");
 	}
 	
 	public void calculateResults() {

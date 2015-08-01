@@ -24,10 +24,9 @@ public class PunchRowView extends LinearLayout {
 	LinearLayout mCompoundView;
 
 	protected void init(Context context) {
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
 		mContext = context;
-
+		
+		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);		
 		mCompoundView = (LinearLayout) inflater.inflate(R.layout.punch_row, this);
 
 		mControl = (TextView) mCompoundView.findViewById(R.id.punch_control);
@@ -117,7 +116,7 @@ public class PunchRowView extends LinearLayout {
 	            	
 	            	mControl.setText(spinner.getSelectedItem().toString());
 	            	mTime.setText(timeInput.getText());
-					((PunchActivity) mContext).updatePunch(mPosition, Long.valueOf(mControl.getText().toString()), Long.valueOf(mTime.getText().toString()));
+					((PunchActivity) mContext).updatePunch(mPosition, Integer.valueOf(mControl.getText().toString()), Long.valueOf(mTime.getText().toString()));
 					
 					alertDialog.dismiss();
 	            }

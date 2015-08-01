@@ -19,7 +19,7 @@ public class DialogImportPunches {
 	
     public void createImportPunchesDialog() {   
 		LayoutInflater li = LayoutInflater.from(mMainActivity);
-		View promptsView = li.inflate(R.layout.import_punches, null);
+		View promptsView = li.inflate(R.layout.punch_import, null);
 
 		final EditText importPunchesInput = (EditText) promptsView.findViewById(R.id.import_punches_input);
 		
@@ -41,7 +41,7 @@ public class DialogImportPunches {
             	
 				try {					
 					PunchParser punchParser = new PunchParser();
-					punchParser.parsePunches(importPunchesInput.getText().toString(), mMainActivity.competition.getCompetitors().getCompetitors());
+					punchParser.parsePunches(importPunchesInput.getText().toString(), mMainActivity.competition.getCompetitors().getCompetitors(), mMainActivity.competition.getStages());
 					
 					String statusMsg = punchParser.getStatus();
 					statusMsg += "Processing cards:\n";

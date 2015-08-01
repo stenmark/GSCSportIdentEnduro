@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
+import se.gsc.stenmark.gscenduro.compmanagement.Results;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,8 +34,7 @@ public class ResultsListAdapter extends BaseAdapter {
 	    return mResult;
 	}
 	
-	public void updateResult ()
-	{
+	public void updateResult () {
 		mResult = ((MainActivity) mContext).competition.getResults();
 		this.notifyDataSetChanged();	
 	}	

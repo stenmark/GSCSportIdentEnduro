@@ -1,9 +1,10 @@
-package se.gsc.stenmark.gscenduro;
+package se.gsc.stenmark.gscenduro.compmanagement;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+
 
 public class Results implements Serializable {
 	

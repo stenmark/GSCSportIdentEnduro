@@ -36,7 +36,6 @@ public class PunchActivity extends ListActivity {
         getListView().setEmptyView(findViewById(R.id.empty));
 		
         Button addButton = (Button) findViewById(R.id.punch_list_add);
-
         addButton.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -96,7 +95,7 @@ public class PunchActivity extends ListActivity {
             	}
 
             	Long time = Long.valueOf(timeInput.getText().toString());
-				Long control = Long.valueOf(Integer.parseInt(spinner.getSelectedItem().toString()));
+				int control = Integer.parseInt(spinner.getSelectedItem().toString());
 				
 				addPunch(time, control);
 				
@@ -165,14 +164,14 @@ public class PunchActivity extends ListActivity {
 		reloadData();
 	}
 	
-	public void addPunch(long Time, long Control) {
+	public void addPunch(long Time, int Control) {
 		Punch newPunch = new Punch(Time, Control);
 		mUpdatedCard.getPunches().add(newPunch);		
 		sortData();
 		reloadData();
 	}
 	
-	public void updatePunch(int Position, long Control, long Time) {
+	public void updatePunch(int Position, int Control, long Time) {
 		mUpdatedCard.getPunches().get(Position).setControl(Control);
 		mUpdatedCard.getPunches().get(Position).setTime(Time);		
 		sortData();

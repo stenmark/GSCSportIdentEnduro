@@ -1,6 +1,7 @@
 package se.gsc.stenmark.gscenduro;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,6 +31,7 @@ import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 /**
  * Android Main class. This class is the creator of the GUI fragments via the SectionPageer and also implements OnCompetitionChanged
@@ -62,8 +64,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			punchListIntent.setClass(this, PunchActivity.class);		
 			
 			if (this.competition.getCompetitors().get(position).getCard() == null) {
-				this.competition.getCompetitors().get(position).setCard(new Card());				
-				this.competition.getCompetitors().get(position).getCard().setCardNumber(this.competition.getCompetitors().get(position).getCardNumber());
+				this.competition.getCompetitors().get(position).processCard(new Card(), this.competition.getStages(), this.competition.getCompetitionType());				
 			}			
 
 			Stages stages = new Stages(this.competition.getStages().getStages());
@@ -91,14 +92,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Card updatedCard = new Card();
 	    	updatedCard = (Card) data.getExtras().getSerializable("updateCard");
 	    		    	
-	    	if (updatedCard.getCardNumber() != 0) {
-	    		if (updatedCard.getPunches().size() > 0) {				
-					displayNewCard(updatedCard);				
-	    		} else {
-	    			this.competition.getCompetitors().getByCardNumber(updatedCard.getCardNumber()).setCard(null);
-	    		}
+	    	if (updatedCard.getCardNumber() != 0) {	    		
+	    		this.competition.processNewCard(updatedCard, true);
+	    		Toast.makeText(this, "Card updated", Toast.LENGTH_LONG).show();
 	    	}   		    
 		}
+		
+		updateFragments();
 	}
 	
     public void updateFragments() {
@@ -126,18 +126,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			statusFragment.updateCompetitionStatus();
 		}
 	}	
-	
-	public void displayNewCard(Card newCard) {		
-		String processNewCardStatus = competition.processNewCard(newCard, true);
 
-		PopupMessage dialog = new PopupMessage(processNewCardStatus);
-		dialog.setTitle("Card read");
-		dialog.show(getSupportFragmentManager(), "popUp");
-				
-		updateFragments();
-	}
-    
-	/**
+    /**
 	 * Disconnect the SI main unit and save all competition session data to disc.
 	 */
 	@Override
@@ -263,7 +253,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public void writeCard(Card card) {
 		try {
 			if (card.getCardNumber() != 0) {
-				displayNewCard(card);
+				String errorText = competition.processNewCard(card, true);			
+				if (errorText.length() == 0) {  
+					Toast.makeText(this, errorText, Toast.LENGTH_LONG).show();
+				} else {
+					Toast.makeText(this, "Card added", Toast.LENGTH_LONG).show();
+				}
 			} 
 			//The Listener dies once it has received once message, so kick it again to restart it
 			if (!disconected) {
@@ -282,7 +277,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 			dialog.show(getSupportFragmentManager(), "popUp");
-
 		}
 	}
 	
@@ -312,11 +306,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			DialogSelectCompetition selectCompetitionDialog = new DialogSelectCompetition(savedCompetitions, competitionOnClickListener, this, competitionOnClickListener);
 			selectCompetitionDialog.createSelectCompetitionDialog();
 			return true;			    
-			
-		case R.id.action_save:			
+							
+		case R.id.action_save:
 			DialogSaveCompetition saveCompetitionDialog = new DialogSaveCompetition(this);
 			saveCompetitionDialog.createSaveCompetitionDialog();				
 			return true;			
+			
+		case R.id.action_add_competitor:
+			DialogAddCompetitor addCompetitorDialog = new DialogAddCompetitor(this);
+			addCompetitorDialog.createAddCompetitorDialog();	
+			return true;
 			
 		case R.id.action_settings:
 	        Intent settingsIntent = new Intent();
@@ -330,11 +329,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			selectImportDialog.createImportDialog();	
 			return true;	
 			
-		case R.id.action_export_as_cvs:
+		case R.id.action_export_as_csv:
 			ExportOnClickListener exportOnClickListener = new ExportOnClickListener();
 			DialogSelectExport selectExportDialog = new DialogSelectExport(exportOnClickListener, this, exportOnClickListener);
 			selectExportDialog.createExportDialog();							
 			return true;			
+
+		case R.id.action_export_as_html:
+			String resultList = CompetitionHelper.getResultsAsHtmlString(this.competition.getCompetitionName(), this.competition.getCompetitionDate(), this.competition.getStages(), this.competition.getResultLandscape(), this.competition.getCompetitors(), this.competition.getCompetitionType());
+			try {
+				CompetitionHelper.exportString(this, resultList, "results", this.competition.getCompetitionName(), "htm");
+			} catch (IOException e) {
+				Log.d("action_export_as_html", "Error = " + Log.getStackTraceString(e));
+			}						
+			return true;				
 			
 		case R.id.action_export_as_image:			
 			try{				

@@ -40,57 +40,56 @@ public class Competitors implements Serializable {
 	
 	public void clearPunches() {
 		for (int i = 0; i < mCompetitors.size(); i++) {
-			mCompetitors.get(i).setCard(null);
-			mCompetitors.get(i).setStageTimes(null);
+			mCompetitors.get(i).clearCard();
 		}
 	}	
 	
-	public Boolean checkData(String name, String cardNumber, String team, String competitorClass, String startNumber, String startGroup, int type) {
-		Boolean error = false;
+	public String checkData(String name, String cardNumber, String team, String competitorClass, String startNumber, String startGroup, int type, Boolean checkAgainstCurrent, ArrayList<Competitor> competitors) {
 		mErrorText = "";
 		
-		if((name.length() == 0) || (cardNumber.length() == 0)) {
-			error = true;
-			mErrorText = "All data must be entered\n";		
-		} else if ((type == 1) &&	//ESS
-	     		 ((team.length() == 0) || (competitorClass.length() == 0) || (startNumber.length() == 0) || (startGroup.length() == 0))) {
-			error = true;
-			mErrorText = "All data must be entered\n";			
-		} else if (checkIfNameExists(name)) {
-			error = true;
+		if(name.length() == 0) {
+			mErrorText = "Incorrect name\n";
+		}else if(cardNumber.length() == 0) {
+			mErrorText = "Incorrect card number\n";			
+		} else if ((type == 1) && (team.length() == 0)) { //ESS
+			mErrorText = "Incorrect team\n";		
+		} else if ((type == 1) && (competitorClass.length() == 0)) { //ESS
+			mErrorText = "Incorrect competitor class\n";	
+		} else if ((type == 1) && (startNumber.length() == 0) || (startGroup.length() == 0)) { //ESS
+			mErrorText = "Incorrect startnumber\n";	
+		} else if ((type == 1) && (startGroup.length() == 0)) { //ESS
+			mErrorText = "Incorrect start group\n";				
+		} else if (checkAgainstCurrent && checkIfNameExists(name)) {
 			mErrorText = "Name already exists\n";		
 		} else if (!cardNumber.matches("\\d+")) {
-			error = true;
 			mErrorText = "Card number not a number\n";
-		} else if (checkIfCardNumberExists(Integer.parseInt(cardNumber))) {
-			error = true;
+		} else if (checkAgainstCurrent && checkIfCardNumberExists(Integer.parseInt(cardNumber))) {
 			mErrorText = "Card number already exists\n";       
 		} else if ((type == 1) && (!startNumber.matches("\\d+"))) {
-			error = true;
 			mErrorText = "Start number not a number\n";			
-		} else if ((type == 1) && (checkIfStartNumberExists(Integer.parseInt(startNumber)))) {
-			error = true;
+		} else if (checkAgainstCurrent && (type == 1) && (checkIfStartNumberExists(Integer.parseInt(startNumber)))) {
 			mErrorText = "Start number already exists\n";	              
 		} else if ((type == 1) && (!startGroup.matches("\\d+"))) {
-			error = true;
 			mErrorText = "Start group not a number\n";
+		} else if(competitors != null) {
+			if (checkIfNameExists(name, competitors)) {
+				mErrorText = "Name already exists\n";	
+			} else if (checkIfCardNumberExists(Integer.parseInt(cardNumber), competitors)) {
+				mErrorText = "Card number already exists\n";  
+			} else if ((type == 1) && (checkIfStartNumberExists(Integer.parseInt(startNumber), competitors))) {
+				mErrorText = "Start number already exists\n";	
+			}
 		}
 		
-		return error;
+		return mErrorText;
 	}
 	
-	public String add(String name, String cardNumber, String team, String competitorClass, String startNumber, String startGroup, int type) {				
+	public void add(String name, String cardNumber, String team, String competitorClass, String startNumber, String startGroup, int type) {				
 		name = name.replaceFirst("\\s+$", "");
-		
-		if (checkData(name, cardNumber, team, competitorClass, startNumber, startGroup, type)) {
-			return mErrorText;
-		} else {							
-			Competitor competitor = new Competitor(name, Integer.parseInt(cardNumber), team, competitorClass, Integer.parseInt(startNumber), Integer.parseInt(startGroup));
-			mCompetitors.add(competitor);
+		Competitor competitor = new Competitor(name, Integer.parseInt(cardNumber), team, competitorClass, Integer.parseInt(startNumber), Integer.parseInt(startGroup));
+		mCompetitors.add(competitor);
 
-			sort();
-			return name + ", " + cardNumber + " added\n";
-		}
+		sort();
 	}	
 	
 	public void removeByName(String nameToDelete) {
@@ -103,21 +102,17 @@ public class Competitors implements Serializable {
 	}	
 	
 	public String update(int index, String name, String cardNumber, String team, String competitorClass, String startNumber, String startGroup) {
-		if (checkData(name, cardNumber, team, competitorClass, startNumber, startGroup, 1)) {
-			return mErrorText;
-		} else {			
-			Competitor newCompetitor = null;
-			cardNumber = cardNumber.replace(" ", "");
-	
-			newCompetitor = mCompetitors.get(index);
-			newCompetitor.setName(name);
-			newCompetitor.setCardNumber(Integer.parseInt(cardNumber));
-			newCompetitor.setTeam(team);
-			newCompetitor.setCompetitorClass(competitorClass);
-			newCompetitor.setStartNumber(Integer.parseInt(startNumber));
-			newCompetitor.setStartGroup(Integer.parseInt(startGroup));
-			mCompetitors.set(index, newCompetitor);		
-		}			
+		Competitor newCompetitor = null;
+		cardNumber = cardNumber.replace(" ", "");
+
+		newCompetitor = mCompetitors.get(index);
+		newCompetitor.setName(name);
+		newCompetitor.setCardNumber(Integer.parseInt(cardNumber));
+		newCompetitor.setTeam(team);
+		newCompetitor.setCompetitorClass(competitorClass);
+		newCompetitor.setStartNumber(Integer.parseInt(startNumber));
+		newCompetitor.setStartGroup(Integer.parseInt(startGroup));
+		mCompetitors.set(index, newCompetitor);		
 
 		sort();
 		
@@ -140,7 +135,7 @@ public class Competitors implements Serializable {
 	public int sizeByClass(String competitorClass) {
 		int count = 0;
 		for (Competitor competitor : mCompetitors) {
-			if (competitorClass.contains(competitor.getCompetitorClass())) {
+			if (competitorClass.equals(competitor.getCompetitorClass())) {
 				count++;
 			}
 		}
@@ -161,7 +156,7 @@ public class Competitors implements Serializable {
 		List<String> competitorClasses = new ArrayList<String>();		
 		for (Competitor competitor : mCompetitors) {
 			String competitorClass = competitor.getCompetitorClass();
-			if (competitorClasses.contains(competitorClass)) {
+			if (competitorClasses.equals(competitorClass)) {
 				//Already in list
 			} else {
 				competitorClasses.add(competitor.getCompetitorClass());
@@ -174,7 +169,7 @@ public class Competitors implements Serializable {
 		Long fastestTimeOnStage = Long.MAX_VALUE;
 		for(Competitor competitor : mCompetitors) {
 			
-			if (competitorClass.contains(competitor.getCompetitorClass())) {						
+			if (competitorClass.equals(competitor.getCompetitorClass())) {						
 				try{
 					fastestTimeOnStage = Math.min(fastestTimeOnStage, competitor.getStageTimes().getTimesOfStage(stageNumber - 1));
 				}
@@ -188,9 +183,9 @@ public class Competitors implements Serializable {
 	public Long getSlowestOnStage(String competitorClass, int stageNumber) {
 		Long slowestTimeOnStage = (long) 0;
 		for(Competitor competitor : mCompetitors){
-			if (competitorClass.contains(competitor.getCompetitorClass())) {
+			if (competitorClass.equals(competitor.getCompetitorClass())) {
 				try{
-					if (competitor.getStageTimes().getTimesOfStage(stageNumber) != (long) Integer.MAX_VALUE) {
+					if (competitor.getStageTimes().getTimesOfStage(stageNumber - 1) != (long) Integer.MAX_VALUE) {
 						slowestTimeOnStage = Math.max(slowestTimeOnStage, competitor.getStageTimes().getTimesOfStage(stageNumber - 1));
 					}
 				}
@@ -200,29 +195,32 @@ public class Competitors implements Serializable {
 			}
 		}
 		
+		if (slowestTimeOnStage == 0) {
+			return (long) Integer.MAX_VALUE;
+		}
 		return slowestTimeOnStage;
 	}	
 	
 	
 	public String exportCsvString(int type) {
-		String competitorsAsCvs = "";
+		String competitorsAsCsv = "";
 
 		if (mCompetitors != null && !mCompetitors.isEmpty()) {
 			for (Competitor competitor : mCompetitors) {			
 				if (type == 1) { //ESS_TYPE
-					competitorsAsCvs += competitor.getName() + "," + 
+					competitorsAsCsv += competitor.getName() + "," + 
 									  	competitor.getCardNumber() + "," + 
 									  	competitor.getTeam() + "," + 
 									  	competitor.getCompetitorClass() + "," + 
 									  	competitor.getStartNumber() + "," + 
 									  	competitor.getStartGroup() + "\n";					
 				} else {
-					competitorsAsCvs += competitor.getName() + "," + competitor.getCardNumber() + "\n";
+					competitorsAsCsv += competitor.getName() + "," + competitor.getCardNumber() + "\n";
 				}
 			}
 		}
 
-		return competitorsAsCvs;
+		return competitorsAsCsv;
 	}	
 	
 	public Competitor findByCard(Card cardToMatch) {
@@ -234,8 +232,8 @@ public class Competitors implements Serializable {
 		return null;
 	}
 		
-	public String exportPunchesCvsString() {
-		String punchesAsCvs = "";
+	public String exportPunchesCsvString() {
+		String punchesAsCsv = "";
 
 		if (mCompetitors != null && !mCompetitors.isEmpty()) {
 			for (Competitor competitor : mCompetitors) {
@@ -252,26 +250,41 @@ public class Competitors implements Serializable {
 							}
 						});
 
-					punchesAsCvs += competitor.getCardNumber() + ",";
+					punchesAsCsv += competitor.getCardNumber() + ",";
 					int i = 0;					
 					for (Punch punch : card.getPunches()) {
 						if (i != 0) {
-							punchesAsCvs += ",";	
+							punchesAsCsv += ",";	
 						}
-						punchesAsCvs += punch.getControl() + "," + punch.getTime();
+						punchesAsCsv += punch.getControl() + "," + punch.getTime();
 						i++;
 					}
-					punchesAsCvs += "\n";
+					punchesAsCsv += "\n";
 				}
 			}
 		}
-		return punchesAsCvs;
+		return punchesAsCsv;
 	}	
 	
-	public Boolean checkIfNameExists(String Name) {
+	public Boolean checkIfNameExists(String name, ArrayList<Competitor> competitors) {
+		name = name.replaceFirst("\\s+$", "");
+		
+		for (int i = 0; i < competitors.size(); i++) {
+			if (name.equalsIgnoreCase(competitors.get(i).getName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Boolean checkIfNameExists(String name) {
+		return checkIfNameExists(name, mCompetitors);
+	}		
+	
+	public Boolean checkIfCardNumberExists(int cardNumber, ArrayList<Competitor> competitors) {
 
-		for (int i = 0; i < mCompetitors.size(); i++) {
-			if (Name.equalsIgnoreCase(mCompetitors.get(i).getName())) {
+		for (int i = 0; i < competitors.size(); i++) {
+			if (cardNumber == competitors.get(i).getCardNumber()) {
 				return true;
 			}
 		}
@@ -279,9 +292,13 @@ public class Competitors implements Serializable {
 	}	
 	
 	public Boolean checkIfCardNumberExists(int cardNumber) {
+		return checkIfCardNumberExists(cardNumber, mCompetitors);
+	}
+	
+	public Boolean checkIfStartNumberExists(int startNumber, ArrayList<Competitor> competitors) {
 
-		for (int i = 0; i < mCompetitors.size(); i++) {
-			if (cardNumber == mCompetitors.get(i).getCardNumber()) {
+		for (int i = 0; i < competitors.size(); i++) {
+			if (startNumber == competitors.get(i).getStartNumber()) {
 				return true;
 			}
 		}
@@ -289,17 +306,119 @@ public class Competitors implements Serializable {
 	}	
 	
 	public Boolean checkIfStartNumberExists(int startNumber) {
-
-		for (int i = 0; i < mCompetitors.size(); i++) {
-			if (startNumber == mCompetitors.get(i).getStartNumber()) {
-				return true;
-			}
-		}
-		return false;
+		return checkIfStartNumberExists(startNumber, mCompetitors);
 	}	
 	
-	public String importCompetitors(String newCompetitors, Boolean keep, int type) throws NumberFormatException, IOException {	
+	public String checkImportCompetitors(String competitorsInput, Boolean checkAgainstCurrent, int type) {	
+		ArrayList<Competitor> newCompetitors = new ArrayList<Competitor>();
+		
 		String status = "";
+		String name = "";
+		String cardNumber = "";
+		String team = "";
+		String competitorClass = "";
+		String startNumber = "";
+		String startGroup = "";
+		int start = 0;
+		int end = 0;
+		String line = null;
+		BufferedReader bufReader = new BufferedReader(new StringReader(competitorsInput));
+				
+		//todo kolla så inte kortnumret mm redan finns bland de som håller på att läggas till, just nu kollas bara mot de som redan finns.
+		//keep
+		
+		try {
+			while ((line = bufReader.readLine()) != null) {					
+				int number = 0;			
+				
+				for (int i = 0, len = line.length(); i < len; ++i) {
+					Character c = line.charAt(i);
+					if (c == ',') {
+						number++;
+					}
+				}
+				
+				if (type == 1) { //ESS_TYPE
+					/*
+					name,cardNumber,team,competitorClass,startNumber,startGroup
+					name,cardNumber,team,competitorClass,startNumber,startGroup
+					name,cardNumber,team,competitorClass,startNumber,startGroup
+					*/
+					
+					if (number != 5) {
+						//import data error
+						if (line.length() != 0) {
+							status += "Can not parse line = " + line + "\n";
+						}
+					} else {
+						start = 0;
+						end = line.indexOf(",", start);
+						name = line.substring(start, end);
+
+						start = end + 1;
+						end = line.indexOf(",", start);
+						cardNumber = line.substring(start, end);
+
+						start = end + 1;
+						end = line.indexOf(",", start);
+						team = line.substring(start, end);
+
+						start = end + 1;
+						end = line.indexOf(",", start);
+						competitorClass = line.substring(start, end);
+
+						start = end + 1;
+						end = line.indexOf(",", start);
+						startNumber = line.substring(start, end);				
+
+						start = end + 1;
+						end = line.indexOf(",", start);
+						startGroup = line.substring(start, line.length());
+						
+						String errorText = checkData(name, cardNumber.replaceAll("[^\\d]", ""), team, competitorClass, startNumber.replaceAll("[^\\d]", ""), startGroup.replaceAll("[^\\d]", ""), 1, checkAgainstCurrent, newCompetitors);
+						
+						if (errorText.length() != 0) {
+							status += name + ", " + cardNumber + ", " + team + ", " + competitorClass + ", " + startNumber + ", " + startGroup + ". " + errorText;
+						} else {
+							Competitor competitor = new Competitor(name, Integer.parseInt(cardNumber.replaceAll("[^\\d]", "")), team, competitorClass, Integer.parseInt(startNumber.replaceAll("[^\\d]", "")), Integer.parseInt(startGroup.replaceAll("[^\\d]", "")));
+							newCompetitors.add(competitor);
+						}
+					}	
+				} else {				
+					/*
+					name,cardNumber
+					name,cardNumber
+					name,cardNumber
+					*/
+
+					if (number != 1) {
+						//import data error
+						if (line.length() != 0) {
+							status += "Can not parse line = " + line + "\n";
+						}
+					} else {
+						int pos = line.indexOf(",", 0);
+						name = line.substring(0, pos);
+						cardNumber = line.substring(pos + 1, line.length());
+
+						String errorText = checkData(name, cardNumber.replaceAll("[^\\d]", ""), "", "", "-1", "-1", 0, checkAgainstCurrent, newCompetitors);
+
+						if (errorText.length() != 0) {
+							status += name + ", " + cardNumber + ". " + errorText;
+						} else {
+							Competitor competitor = new Competitor(name, Integer.parseInt(cardNumber.replaceAll("[^\\d]", "")));
+							newCompetitors.add(competitor);
+						}
+					}			
+				}					
+			}
+		} catch (IOException e) {
+			status += "Can not parse competitors";
+		}
+		return status;
+	}		
+	
+	public void importCompetitors(String newCompetitors, Boolean keep, int type) throws NumberFormatException, IOException {	
 		String name = "";
 		String cardNumber = "";
 		String team = "";
@@ -316,15 +435,6 @@ public class Competitors implements Serializable {
 		}
 		
 		while ((line = bufReader.readLine()) != null) {					
-			int number = 0;			
-			
-			for (int i = 0, len = line.length(); i < len; ++i) {
-				Character c = line.charAt(i);
-				if (c == ',') {
-					number++;
-				}
-			}
-			
 			if (type == 1) { //ESS_TYPE
 				/*
 				name,cardNumber,team,competitorClass,startNumber,startGroup
@@ -332,41 +442,31 @@ public class Competitors implements Serializable {
 				name,cardNumber,team,competitorClass,startNumber,startGroup
 				*/
 				
-				if (number != 5) {
-					//import data error
-					if (line.length() != 0) {
-						status += "Error = " + line + "\n";
-					}
-				} else {
-					start = 0;
-					end = line.indexOf(",", start);
-					name = line.substring(start, end);
-	
-					start = end + 1;
-					end = line.indexOf(",", start);
-					cardNumber = line.substring(start, end);
-					cardNumber = cardNumber.replaceAll("[^\\d]", ""); // remove all non numerical digits
-	
-					start = end + 1;
-					end = line.indexOf(",", start);
-					team = line.substring(start, end);
-	
-					start = end + 1;
-					end = line.indexOf(",", start);
-					competitorClass = line.substring(start, end);
-	
-					start = end + 1;
-					end = line.indexOf(",", start);
-					startNumber = line.substring(start, end);
-					startNumber = startNumber.replaceAll("[^\\d]", ""); // remove all non numerical digits
-	
-					start = end + 1;
-					end = line.indexOf(",", start);
-					startGroup = line.substring(start, line.length());
-					startGroup = startGroup.replaceAll("[^\\d]", ""); // remove all non numerical digits
-					
-					status += add(name, cardNumber, team, competitorClass, startNumber, startGroup, 1);
-				}	
+				start = 0;
+				end = line.indexOf(",", start);
+				name = line.substring(start, end);
+
+				start = end + 1;
+				end = line.indexOf(",", start);
+				cardNumber = line.substring(start, end);
+
+				start = end + 1;
+				end = line.indexOf(",", start);
+				team = line.substring(start, end);
+
+				start = end + 1;
+				end = line.indexOf(",", start);
+				competitorClass = line.substring(start, end);
+
+				start = end + 1;
+				end = line.indexOf(",", start);
+				startNumber = line.substring(start, end);				
+
+				start = end + 1;
+				end = line.indexOf(",", start);
+				startGroup = line.substring(start, line.length());
+				
+				add(name, cardNumber.replaceAll("[^\\d]", ""), team, competitorClass, startNumber.replaceAll("[^\\d]", ""), startGroup.replaceAll("[^\\d]", ""), 1);				
 			} else {				
 				/*
 				name,cardNumber
@@ -374,21 +474,58 @@ public class Competitors implements Serializable {
 				name,cardNumber
 				*/
 	
-				if (number != 1) {
-					//import data error
-					if (line.length() != 0) {
-						status += "Error = " + line + "\n";
-					}
-				} else {
-					int pos = line.indexOf(",", 0);
-					name = line.substring(0, pos);
-					cardNumber = line.substring(pos + 1, line.length());
-					cardNumber = cardNumber.replaceAll("[^\\d]", ""); // remove all non numerical digits
-						
-					status += add(name, cardNumber, "", "", "-1", "-1", 0);
-				}			
+				int pos = line.indexOf(",", 0);
+				name = line.substring(0, pos);
+				cardNumber = line.substring(pos + 1, line.length());
+
+				add(name, cardNumber.replaceAll("[^\\d]", ""), "", "", "-1", "-1", 0);					
 			}					
 		}
-		return status;
+	}	
+	
+	public void importPunches(String punches, Stages stages, int type) throws IOException {
+		//cardNumber,control,time,control,time..
+		//cardNumber,control,time,control,time..
+		//cardNumber,control,time,control,time..
+		
+		BufferedReader bufReader = new BufferedReader(new StringReader(punches));
+		String line = null;
+		while ((line = bufReader.readLine()) != null) {	
+			Card cardObject = new Card();
+			
+			int start = 0;
+			int end = 0;
+	
+			end = line.indexOf(",", start);
+			String cardNumber = line.substring(start, end);
+			start = end + 1;
+	
+			for (int i = 0; i < mCompetitors.size(); i++) {
+				if (mCompetitors.get(i).getCardNumber() == Integer.parseInt(cardNumber)) {
+					cardObject.setCardNumber(mCompetitors.get(i).getCardNumber());
+					while (start < line.length()) {
+						end = line.indexOf(",", start);
+						String control = line.substring(start, end);
+						start = end + 1;								
+						
+						end = line.indexOf(",", start);
+						String time;
+						if (end == -1) {
+							time = line.substring(start, line.length());
+							start = line.length() + 1;
+						} else {											
+							time = line.substring(start, end);
+							start = end + 1;
+						}				
+						
+						Punch punchObject = new Punch(Long.valueOf(time), Integer.valueOf(control));
+						cardObject.getPunches().add(punchObject);
+					}
+					
+					mCompetitors.get(i).processCard(cardObject, stages, type);	
+					break;						
+				}
+			}					
+		}
 	}	
 }

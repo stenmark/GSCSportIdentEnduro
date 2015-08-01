@@ -13,9 +13,9 @@ public class Punch implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private long mTime;
-	private long mControl;
+	private int mControl;
 
-	public Punch(long time, long control) {
+	public Punch(long time, int control) {
 		setTime(time);
 		setControl(control);
 	}
@@ -37,7 +37,7 @@ public class Punch implements Serializable {
 		return mControl;
 	}
 
-	public void setControl(long control) {
+	public void setControl(int control) {
 		mControl = control;
 	}
 }

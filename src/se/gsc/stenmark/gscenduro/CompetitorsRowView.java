@@ -23,24 +23,27 @@ public class CompetitorsRowView extends LinearLayout {
 	Button mDeleteButton;
 	Button mModifyButton;
 	Button mCardButton;
-	int mPosition;
-	LinearLayout mCompoundView;
+	int mPosition;	
 	CompetitorsListAdapter mAdapter;
 	
+	EditText mNameInput = null;
+	EditText mCardNumberInput = null;
 	EditText mTeamInput = null;
 	EditText mCompetitorClassInput = null;
 	EditText mStartNumberInput = null;
 	EditText mStartGroupInput = null;
 
 	protected void init(Context context) {
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
 		mContext = context;
-
+		
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LinearLayout mCompoundView = (LinearLayout) inflater.inflate(R.layout.competitor_row, this);			
+		final LinearLayout competitorRowEssLayout = (LinearLayout) mCompoundView.findViewById(R.id.competitor_row_ess_layout);
+		
 		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE)	{
-			mCompoundView = (LinearLayout) inflater.inflate(R.layout.competitor_row, this);
+			competitorRowEssLayout.setVisibility(View.GONE);
 		} else {
-			mCompoundView = (LinearLayout) inflater.inflate(R.layout.competitor_ess_row, this);
+			competitorRowEssLayout.setVisibility(View.VISIBLE);		
 			mTeam = (TextView) mCompoundView.findViewById(R.id.competitor_team);
 			mCompetitorClass = (TextView) mCompoundView.findViewById(R.id.competitor_class);
 			mStartNumber = (TextView) mCompoundView.findViewById(R.id.competitor_startnumber);
@@ -49,6 +52,7 @@ public class CompetitorsRowView extends LinearLayout {
 
 		mName = (TextView) mCompoundView.findViewById(R.id.competitor_name);
 		mCardNumber = (TextView) mCompoundView.findViewById(R.id.competitor_cardnumber);
+
 		mDeleteButton = (Button) mCompoundView.findViewById(R.id.competitor_delete);
 		mModifyButton = (Button) mCompoundView.findViewById(R.id.competitor_modify);
 		mCardButton = (Button) mCompoundView.findViewById(R.id.competitor_punch);
@@ -139,21 +143,16 @@ public class CompetitorsRowView extends LinearLayout {
 	private OnClickListener mOnModifyClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			LayoutInflater li = LayoutInflater.from(mContext);
+			LayoutInflater li = LayoutInflater.from(mContext);			
+			View promptsView = li.inflate(R.layout.competitor_modify, null);
 			
-			View promptsView;
+			final LinearLayout modifyCompetitorEssLayout = (LinearLayout) promptsView.findViewById(R.id.modify_competitor_ess_layout);
 			
 			if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE) {				
-				promptsView = li.inflate(R.layout.competitor_modify, null);
+				modifyCompetitorEssLayout.setVisibility(View.GONE);	
 			} else {
-				promptsView = li.inflate(R.layout.competitor_modify_ess, null);
+				modifyCompetitorEssLayout.setVisibility(View.VISIBLE);	
 			}
-
-			final EditText nameInput = (EditText) promptsView.findViewById(R.id.name_input);	
-			nameInput.setText(mName.getText());
-
-			final EditText cardNumberInput = (EditText) promptsView.findViewById(R.id.card_number_input);	
-			cardNumberInput.setText(mCardNumber.getText());
 				
 			if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) {
 				mTeamInput = (EditText) promptsView.findViewById(R.id.team_input);	
@@ -167,7 +166,13 @@ public class CompetitorsRowView extends LinearLayout {
 				
 				mStartGroupInput = (EditText) promptsView.findViewById(R.id.start_group_input);	
 				mStartGroupInput.setText(mStartGroup.getText());						
-			}				
+			}
+			
+			mNameInput = (EditText) promptsView.findViewById(R.id.name_input);	
+			mNameInput.setText(mName.getText());
+
+			mCardNumberInput = (EditText) promptsView.findViewById(R.id.card_number_input);	
+			mCardNumberInput.setText(mCardNumber.getText());
 			
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);	
 			alertDialogBuilder.setTitle("Modify competitor");
@@ -180,19 +185,19 @@ public class CompetitorsRowView extends LinearLayout {
 			alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
 	            @Override
 	            public void onClick(View v) {
-	            	if ((nameInput.length() == 0) || (cardNumberInput.length() == 0)) {
+	            	if ((mNameInput.length() == 0) || (mCardNumberInput.length() == 0)) {
 	            		Toast.makeText((MainActivity) mContext, "All data must be entered", Toast.LENGTH_LONG).show();
 	                    return;
 	        		} else if ((((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) &&
 	       	     		 	  ((mTeamInput.length() == 0) || (mCompetitorClassInput.length() == 0) || (mStartNumberInput.length() == 0) || (mStartGroupInput.length() == 0))) {
 	        			Toast.makeText((MainActivity) mContext, "All data must be entered", Toast.LENGTH_LONG).show();
 	        			return;
-	            	} else if (!mName.getText().toString().equalsIgnoreCase(nameInput.getText().toString()) && 
-	            			  (((MainActivity) mContext).competition.getCompetitors().checkIfNameExists(nameInput.getText().toString()))) {
+	            	} else if (!mName.getText().toString().equalsIgnoreCase(mNameInput.getText().toString()) && 
+	            			  (((MainActivity) mContext).competition.getCompetitors().checkIfNameExists(mNameInput.getText().toString()))) {
 	            		Toast.makeText((MainActivity) mContext, "Name already exists", Toast.LENGTH_LONG).show();
 	            		return;
-					} else if (!mCardNumber.getText().toString().equalsIgnoreCase(cardNumberInput.getText().toString()) &&
-							  (((MainActivity) mContext).competition.getCompetitors().checkIfCardNumberExists(Integer.parseInt(cardNumberInput.getText().toString())))) {							
+					} else if (!mCardNumber.getText().toString().equalsIgnoreCase(mCardNumberInput.getText().toString()) &&
+							  (((MainActivity) mContext).competition.getCompetitors().checkIfCardNumberExists(Integer.parseInt(mCardNumberInput.getText().toString())))) {							
 						Toast.makeText((MainActivity) mContext, "Card number already exists", Toast.LENGTH_LONG).show();
 						return;
 					} else if ((((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) && 
@@ -203,8 +208,8 @@ public class CompetitorsRowView extends LinearLayout {
 					}		            	 
 	            	
 	            	String status = "";
-					mName.setText(nameInput.getText());
-					mCardNumber.setText(cardNumberInput.getText());	
+					mName.setText(mNameInput.getText());
+					mCardNumber.setText(mCardNumberInput.getText());	
 					
 					if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) {
 						mTeam.setText(mTeamInput.getText());	

@@ -27,7 +27,7 @@ public class PunchParser implements Serializable {
 		return mCards;
 	}
 
-	public void parsePunches(String punches, List<Competitor> competitors) throws IOException {
+	public void parsePunches(String punches, List<Competitor> competitors, Stages stages) throws IOException {
 		mCards = new ArrayList<Card>();
 		
 		//cardNumber,control,time,control,time..
@@ -38,7 +38,7 @@ public class PunchParser implements Serializable {
 		String line = null;
 		while ((line = bufReader.readLine()) != null) {
 
-			// count so at least 3, each line
+			// count so at least 4, each line
 			int number = 0;
 			for (int i = 0, len = line.length(); i < len; ++i) {
 				Character c = line.charAt(i);
@@ -47,13 +47,16 @@ public class PunchParser implements Serializable {
 				}
 			}
 		
-			if (number < 3) {
+			if (number < 4) {
 				if (line.length() == 0) {
-					mStatus += "Error, empty line\n";
+					mStatus += "Can not parse line = empty line\n";
 				} else {
-					mStatus += "Error = " + line + "\n";
+					mStatus += "Can not parse line = " + line + "\n";
 				}
-			} else {
+			} else if ((number > 4) && ((number - 2) % 3 != 0)) { 
+				//Not correct number of commas
+				mStatus += "Can not parse line = " + line + "\n";
+			}else {
 				Card cardObject = new Card();
 
 				int start = 0;
@@ -64,16 +67,19 @@ public class PunchParser implements Serializable {
 				start = end + 1;
 
 				if (!cardNumber.matches("\\d+")) {
-					mStatus += "Error, cardnumber not a number\n";
-				} else {				
+					mStatus += line + ". Card number is not a number\n";
+				} else {	
+					boolean error = false; 
+					boolean foundCompetitor = false;
 					for (int i = 0; i < competitors.size(); i++) {
 						if (competitors.get(i).getCardNumber() == Integer.parseInt(cardNumber)) {
+							foundCompetitor = true;
 							cardObject.setCardNumber(competitors.get(i).getCardNumber());
 							while (start < line.length()) {
 								end = line.indexOf(",", start);
 								String control = line.substring(start, end);
-								start = end + 1;
-															
+								start = end + 1;								
+								
 								end = line.indexOf(",", start);
 								String time;
 								if (end == -1) {
@@ -82,20 +88,43 @@ public class PunchParser implements Serializable {
 								} else {											
 									time = line.substring(start, end);
 									start = end + 1;
-								}							
-								Punch punchObject = new Punch(Long.valueOf(time), Long.valueOf(control));
+								}				
+								
+								if (!control.matches("\\d+")) {
+									mStatus += line + ". Control is not a number\n";
+									error = true;
+									break;
+								}
+								
+								if (!stages.validStageControl(Integer.valueOf(control))) {
+									mStatus += line + ". Control is not in any of the stages\n";
+									error = true;
+									break;									
+								}
+								
+								if (!time.matches("\\d+")) {
+									mStatus += line + ". Time is not a number\n";
+									error = true;
+									break;
+								} 							
+								
+								Punch punchObject = new Punch(Long.valueOf(time), Integer.valueOf(control));
 								cardObject.getPunches().add(punchObject);
 							}
+							break;						
 						}
 					}
-
-					if (cardObject.getPunches().size() > 0) {
-						if (cardObject.getCardNumber() != 0) {
-							mCards.add(cardObject);
-							mStatus += "card added";
+					
+					if (!error && foundCompetitor) {
+						if (cardObject.getPunches().size() > 0) {
+							if (cardObject.getCardNumber() != 0) {
+								mCards.add(cardObject);
+								mStatus += line + ". Added\n";
+							}
 						}
-					}				
-					mStatus += "\n";
+					} else if (!foundCompetitor) {
+						mStatus += line + ". No competitor with that card number found\n";
+					}
 				}
 			}
 		}

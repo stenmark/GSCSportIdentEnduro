@@ -122,7 +122,7 @@ public class DialogNewCompetition {
                 }
 
                 if (radioTypeEss.isChecked()) {
-                	String status = mMainActivity.competition.getStages().checkStagesData(addStagesManuallyInput.getText().toString());
+                	String status = mMainActivity.competition.getStages().checkStagesData(addStagesManuallyInput.getText().toString(), 1);
                 	if (status.length() > 0) {
                 		Toast.makeText(mMainActivity, "Competition not created! " + status, Toast.LENGTH_LONG).show();                		
                 		return;
@@ -137,7 +137,6 @@ public class DialogNewCompetition {
 					mMainActivity.competition.getCompetitors().clearPunches();									
 				} else {
 					//Create a new competition
-					mMainActivity.competition.getCompetitors().clear();
 					mMainActivity.competition = new Competition();
 				}									
 				mMainActivity.competition.setCompetitionName(newCompetitionInput.getText().toString());	
@@ -150,7 +149,7 @@ public class DialogNewCompetition {
 				}										
 				
 				if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE) {										
-					mMainActivity.competition.getStages().importStages(addStagesManuallyInput.getText().toString());
+					mMainActivity.competition.getStages().importStages(addStagesManuallyInput.getText().toString(), 1);
 				} else {
 					SharedPreferences settings = mMainActivity.getSharedPreferences(MainActivity.PREF_NAME, 0);
 					int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
@@ -177,7 +176,7 @@ public class DialogNewCompetition {
 						}
 						stageString = stageString.substring(0, stageString.length() - 1);   //remove last ","
 						
-						mMainActivity.competition.getStages().importStages(stageString);										
+						mMainActivity.competition.getStages().importStages(stageString, 0);										
 					}					
 				}					
 				mMainActivity.updateFragments();                    
