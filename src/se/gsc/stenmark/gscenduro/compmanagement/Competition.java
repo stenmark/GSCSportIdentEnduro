@@ -91,14 +91,7 @@ public class Competition implements Serializable{
 		Collections.sort(trackResult, new Comparator<TrackResult>() {
 			@Override
 			public int compare(TrackResult lhs, TrackResult rhs) {
-				if (lhs.getDNF())
-				{
-					return 1;
-				}
-				else
-				{
-					return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
-				}
+				return lhs.getTrackTimes().compareTo(rhs.getTrackTimes());
 			}
 		});		
 	}

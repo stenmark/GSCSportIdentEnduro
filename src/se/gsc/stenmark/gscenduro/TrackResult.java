@@ -34,6 +34,9 @@ public class TrackResult implements Serializable {
 	}
 	
 	public Long getTrackTimes() {
+		if( getDNF() ){
+			return 1000000L;   //Just add 1 million seconds as penalty for DNF to make sure they are sorted at the end of the result list
+		}
 	    return mTrackTimes;
 	}
 	
