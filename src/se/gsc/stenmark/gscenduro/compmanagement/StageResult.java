@@ -27,6 +27,9 @@ public class StageResult implements Serializable {
 	}	
 	
 	public Long getStageTimes() {
+		if( getDnf() ){
+			return 1000000L;  //Just set 1 million seconds for DNF result to sort it at the end of the result list
+		}
 	    return mStageTimes;
 	}
 	

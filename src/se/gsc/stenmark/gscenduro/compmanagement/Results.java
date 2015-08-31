@@ -42,11 +42,7 @@ public class Results implements Serializable {
 			Collections.sort(mStageResult, new Comparator<StageResult>() {
 				@Override
 				public int compare(StageResult lhs, StageResult rhs) {
-					if (lhs.getDnf()) {
-						return 1;
-					} else {
-						return lhs.getStageTimes().compareTo(rhs.getStageTimes());
-					}
+					return lhs.getStageTimes().compareTo(rhs.getStageTimes());
 				}
 			});
 		
