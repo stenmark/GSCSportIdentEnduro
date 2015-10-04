@@ -230,9 +230,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					return;
 				}
 			}
+			else{
+				PopupMessage dialog = new PopupMessage(	"Could not connect to the USB service" );
+				dialog.show(getSupportFragmentManager(), "popUp");
+				return;
+			}
 			if (siDriver.mode != SiMessage.STATION_MODE_READ_CARD) {
 				connectionStatus = "SiMain is not configured as Reas Si";
-				PopupMessage dialog = new PopupMessage(	connectionStatus + " Is configured as: "	+ SiMessage.getStationMode(siDriver.mode) );
+				PopupMessage dialog = new PopupMessage(	connectionStatus + " Is configured as: " + siDriver.mode + "  :  "	+ SiMessage.getStationMode(siDriver.mode) );
 				dialog.show(getSupportFragmentManager(), "popUp");
 				disconected = true;
 			}
@@ -525,7 +530,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			try {
 				Card cardData = new Card();
 				while (true) {
-					byte[] readSiMessage = siDriver[0].readSiMessage(100, 2000, false);
+					byte[] readSiMessage = siDriver[0].readSiMessage(100, 2000, false, null);
 
 					if(disconected){
 						//Log.d("SiCardListener", "Was disconnected");
@@ -539,7 +544,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 						//Check if the Magic byte 0x66 was received -> SiCard6 was read
 						if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x66) {
 							siDriver[0].sendSiMessage(SiMessage.request_si_card6.sequence());
-							cardData = siDriver[0].getCard6Data();
+							cardData = siDriver[0].getCard6Data( false );
 							siDriver[0].sendSiMessage(SiMessage.ack_sequence.sequence());
 							return cardData;
 							

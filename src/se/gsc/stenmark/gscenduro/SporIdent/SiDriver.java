@@ -1,10 +1,17 @@
 package se.gsc.stenmark.gscenduro.SporIdent;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Calendar;
+
 import se.gsc.stenmark.gscenduro.SporIdent.CRCCalculator;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import android.hardware.usb.UsbManager;
+import android.os.Environment;
+
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 
@@ -32,7 +39,7 @@ public class SiDriver {
     	else{
     		if( performHandShake(false) ){
     	    	//Flush buffer
-    	    	readSiMessage(16, 500, false);
+    	    	readSiMessage(16, 500, false, null);
     	    	return true;
     		}
     		return false;
@@ -45,11 +52,11 @@ public class SiDriver {
     	if( withStartup ){
 			sendSiMessage(SiMessage.startup_sequence.sequence());
 			sleep(700);
-			startupResponse = readSiMessage(16, 500, false);
+			startupResponse = readSiMessage(16, 500, false, null);
 		}
 		if( (startupResponse.length >= 1 && startupResponse[0]== SiMessage.STX ) || (withStartup == false)) {
 			sendMessage( appendMarkesAndCrcToMessage(SiMessage.read_system_data.sequence() ));
-			byte[] systemData = readSiMessage(32, 8000, false);
+			byte[] systemData = readSiMessage(32, 8000, false, null);
 			if( (systemData[0] == SiMessage.STX) &&  
 				(systemData.length > 14) ){
 				stationId = makeIntFromBytes( systemData[4], systemData[3] );
@@ -262,7 +269,7 @@ public class SiDriver {
     public Card getCard5Data( Competition comp){
 //    	String msg = "";
     	byte[] allData = new byte[256];
-    	byte[] rawData = readSiMessage(256, 1000, false);
+    	byte[] rawData = readSiMessage(256, 1000, false, null);
     	MessageBuffer messageBuffer = new MessageBuffer(rawData);
     	byte[] dleOutputPre = new byte[10];
     	
@@ -300,60 +307,81 @@ public class SiDriver {
     	
     }
     
-    public Card getCard6Data( ){
+    public Card getCard6Data( boolean verbose){
     	byte[] allData = new byte[128*3];
-    	
-//    	boolean compact = false;
-		for(int blockNumber = 0; blockNumber < 3 ; blockNumber++){
-//			androidActivity.msg += "Loop " + blockNumber + "\n";
-			byte[] rawData = readSiMessage(256, 1000, false);
-			MessageBuffer messageBuffer = new MessageBuffer(rawData);
-			byte[] dleOutputPre = new byte[10];
-			readBytesDle(messageBuffer, dleOutputPre, 0, 4);
-			byte[] dleOutput = new byte[150];
-			int bytesRead = readBytesDle(messageBuffer, dleOutput, 0, 128);
+    	BufferedWriter bw  = null;
+    	try{
+    		if( verbose ){
+		    	File sdCard = Environment.getExternalStorageDirectory();
+		    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}
+				File file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString() + ".dat");
+				FileWriter fw = new FileWriter(file.getAbsoluteFile());
+				bw = new BufferedWriter(fw);
+    		}
 			
-			byte[] dleBytesCorrectSize = new byte[bytesRead];
-			for( int i = 0; i < dleBytesCorrectSize.length; i++){
-				dleBytesCorrectSize[i] = dleOutput[i];
+	//    	boolean compact = false;
+			for(int blockNumber = 0; blockNumber < 3 ; blockNumber++){
+				if( verbose ){
+					bw.write("Loop " + blockNumber + "\n");
+				}
+				byte[] rawData = readSiMessage(256, 1000, verbose, bw);
+				MessageBuffer messageBuffer = new MessageBuffer(rawData);
+				byte[] dleOutputPre = new byte[10];
+				readBytesDle(messageBuffer, dleOutputPre, 0, 4);
+				byte[] dleOutput = new byte[150];
+				int bytesRead = readBytesDle(messageBuffer, dleOutput, 0, 128);
+				
+				byte[] dleBytesCorrectSize = new byte[bytesRead];
+				for( int i = 0; i < dleBytesCorrectSize.length; i++){
+					dleBytesCorrectSize[i] = dleOutput[i];
+				}
+				
+				if( verbose ){
+					bw.write( "After DLE: bytesRead " + bytesRead + "  " );
+					for(int i = 0; i < dleOutput.length; i++){
+						bw.write(i + "=0x" + byteToHex(dleOutput[i]) + ", ");
+					}
+					bw.write( "\n" );	
+				}
+	
+				for(int i = 0; i < dleBytesCorrectSize.length; i++){
+					allData[(blockNumber*128)+i] = dleBytesCorrectSize[i];
+				}
+				
+				
+	//			msg += "Card6 block:  ";
+	//			for(int i = 0; i < card6Block.blockData.length; i++){
+	//				msg += "[" + i + "]=" + byteToHex(card6Block.blockData[i]) + ", ";
+	//			}
+	//			msg+= "\n";
+	//			if( !card6Block.readSuccesful ){
+	//				if( blockNumber <= 2 ){
+	//					msg += "Reading card6 block failed, less than 2 blocks\n";
+	//					return;
+	//				}
+	//				else{
+	//					msg += "Break from block read loop\n";
+	//					break;
+	//				}
+	//			}
+	//			
+	//			if( blockNumber > 2){
+	//				msg += "Compact is true\n";
+	//				compact = true;
+	//			}
+				
 			}
-			
-//			androidActivity.msg += "DLE READ: bytesRead " + bytesRead + "  ";
-			for(int i = 0; i < dleOutput.length; i++){
-//				androidActivity.msg += i + "=0x" + byteToHex(dleOutput[i]) + ", ";
+	    	bw.close();
+    	}
+    	catch( Exception e){
+    		try {
+				bw.close();
+			} catch (IOException e1) {
 			}
-//			androidActivity.msg+= "\n";
-			
-			
-			
-			for(int i = 0; i < dleBytesCorrectSize.length; i++){
-				allData[(blockNumber*128)+i] = dleBytesCorrectSize[i];
-			}
-			
-			
-//			msg += "Card6 block:  ";
-//			for(int i = 0; i < card6Block.blockData.length; i++){
-//				msg += "[" + i + "]=" + byteToHex(card6Block.blockData[i]) + ", ";
-//			}
-//			msg+= "\n";
-//			if( !card6Block.readSuccesful ){
-//				if( blockNumber <= 2 ){
-//					msg += "Reading card6 block failed, less than 2 blocks\n";
-//					return;
-//				}
-//				else{
-//					msg += "Break from block read loop\n";
-//					break;
-//				}
-//			}
-//			
-//			if( blockNumber > 2){
-//				msg += "Compact is true\n";
-//				compact = true;
-//			}
-			
-		}
-		
+    	}
 		return parseCard6( allData );
     	
     }
@@ -428,7 +456,7 @@ public class SiDriver {
 		}
 	}
 	
-    public byte[] readSiMessage( int size, int timeout, boolean verbose){
+    public byte[] readSiMessage( int size, int timeout, boolean verbose, BufferedWriter bw){
 	    byte buffer[] = new byte[size];
 	    int numBytesRead = -2;
 		try {
@@ -441,11 +469,17 @@ public class SiDriver {
 		}
 	    		
 		if (verbose) {
-//			androidActivity.msg += "Read numbytes: " + numBytesRead + " Data: ";
-			for (int i = 0; i < numBytesRead; i++) {
-//				androidActivity.msg += "0x" + byteToHex(buffer[i]) + ", ";
+			try{
+				bw.write("RAW Read numbytes: " + numBytesRead + " Data: ");
+				for (int i = 0; i < numBytesRead; i++) {
+					bw.write("0x" + byteToHex(buffer[i]) + ", ");
+				}
+				bw.write( "\n" );
 			}
-//			androidActivity.msg += "\n";
+			catch( Exception e ){
+				
+			}
+
 		}
 	   
 		byte[] result = Arrays.copyOfRange(buffer, 0, numBytesRead);
