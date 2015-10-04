@@ -541,7 +541,7 @@ public class SiDriver {
     
     /**
      * Send in a preread data buffer and extract data between DLE
-     * @param data preRead databuffer
+     * @param data preRead databuffer. 
      * @param bytes output data of all read bytes
      * @param pos where to start put the new data in the bytes area
      * @param len number of bytes to read from the databuffer
@@ -551,10 +551,11 @@ public class SiDriver {
     	byte[] localBytes = data.readBytes( len );
 	
     	if( localBytes.length > 0 ){
-        	int ip = 0;
-        	int op = 0;
+        	int ip = 0;  //Inpointer 
+        	int op = 0;  //Outpointer
         	
         	for( ip = 0; ip  < localBytes.length-1; ip++ ){
+        		//If byte is 0x10. Swap down the next coming byte to previous position.
         		if( localBytes[ip] == 0x10 ){
         			localBytes[op++] = localBytes[++ip];
         		}
@@ -563,7 +564,9 @@ public class SiDriver {
         		}
         	}
     		
+        	//If we didnt find any 0x10 bytes i.e. read all bytes except one
     		if( ip < localBytes.length ){
+    			//If the last byte is 0x10, this is not 0x10 to be skipped, but a "real" data byte. Save it in the array.
     			if( localBytes[ip] == 0x10 ){
     				byte[] readByte = data.readByte();
     				localBytes[op++] = readByte[0];
@@ -573,12 +576,17 @@ public class SiDriver {
     			}
     		}
     		
+    		//We have not read all the bytes yet: Call this method recursivly until all bytes are read.
     		if( op < len ){
+    			//Copy the bytes we have managed to read to the result buffer (the bytes array is the return value of this function)
     			for(int i = 0; i < localBytes.length; i++ ){
     				bytes[i+pos] = localBytes[i];
     			}
+    			//Recursive call. Re-read the remaining bytes by starting to read at the position of the current outpointer. And remove the number of already read bytes from the new request
+    			//TODO: Should it be op+pos instead?
     			return op+readBytesDle(data, bytes, op, len-op);
     		}
+    		//All bytes read. Copy the localcopy to the result buffer (the bytes array is the return value of this function)
     		else{
     			for(int i = 0; i < localBytes.length; i++ ){
     				bytes[i+pos] = localBytes[i];
