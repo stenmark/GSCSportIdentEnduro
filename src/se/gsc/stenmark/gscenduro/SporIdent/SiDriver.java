@@ -547,7 +547,7 @@ public class SiDriver {
      * @param len number of bytes to read from the databuffer
      * @return
      */
-    private int readBytesDle( MessageBuffer data, byte[] bytes, int pos, int len ){
+    public int readBytesDle( MessageBuffer data, byte[] bytes, int pos, int len ){
     	byte[] localBytes = data.readBytes( len );
 	
     	if( localBytes.length > 0 ){
