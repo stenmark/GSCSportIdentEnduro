@@ -19,6 +19,8 @@ import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 
 public class SiDriverTest {
 
+	private SiDriver siDriver;
+
 	/**
 	 * 
 	 * @param fileName
@@ -33,12 +35,13 @@ public class SiDriverTest {
 			File file = new File( workingDir + File.separator + "testData" + File.separator + fileName);
 			FileReader reader = new FileReader(file.getAbsoluteFile());
 			fileBuffer = new BufferedReader(reader);
+			fileBuffer.readLine();  //First line is comment line, read and discard
 			String currentLine;
 			while ((currentLine = fileBuffer.readLine()) != null) {
 				List<Integer> parsedInts = new ArrayList<>();
 				for( String hexString : currentLine.replaceAll("0x", "").split(",")){
-					if(!hexString.replace(" ", "").isEmpty()){
-						parsedInts.add( Integer.parseInt(hexString.replace(" ", ""), 16) );
+					if(!hexString.isEmpty()){
+						parsedInts.add( Integer.parseInt(hexString, 16) );
 					}
 				}
 				byte[] tmpIndataBytes = new byte[parsedInts.size()];
@@ -50,8 +53,8 @@ public class SiDriverTest {
 				String currentLineExpectedData = fileBuffer.readLine();
 				parsedInts = new ArrayList<>();
 				for( String hexString : currentLineExpectedData.replaceAll("0x", "").split(",")){
-					if(!hexString.replaceAll(" ", "").isEmpty()){
-						parsedInts.add( Integer.parseInt(hexString.replaceAll(" ", ""), 16) );
+					if(!hexString.isEmpty()){
+						parsedInts.add( Integer.parseInt(hexString, 16) );
 					}
 				}
 				byte[] tmpExpectedBytes = new byte[parsedInts.size()];
@@ -78,17 +81,12 @@ public class SiDriverTest {
 		}
 	}
 	
-	@Test
-	public void testReadBytesDle() {
-		final String TEST_CARD_1 = "testCard_2065381_12punches.card";
-		
-		SiDriver siDriver = new SiDriver();
-		
+	private void testCard6( String cardname ){		
 		List<byte[]> inData = new ArrayList<>();
 		List<byte[]> expectedData = new ArrayList<>();
-		readTestDataFromFile(TEST_CARD_1, inData, expectedData);		
+		readTestDataFromFile(cardname, inData, expectedData);		
 		
-		assertEquals("Testdata read failuer, the testfile " + TEST_CARD_1 + " Does not contain the same number of inData rows as ExpectedData rows",
+		assertEquals("Testdata read failuer, the testfile " + cardname + " Does not contain the same number of inData rows as ExpectedData rows",
 					  inData.size(), 
 					  expectedData.size());
 		for( int i = 0; i < inData.size(); i++){
@@ -107,8 +105,38 @@ public class SiDriverTest {
 				assertEquals("DLE output did not match on position " + j, expectedData.get(i)[j], dleOutput[j]);
 			}
 		}
-
-				
+	}
+	
+	@Test
+	public void testReadBytesDle() {
+		siDriver = new SiDriver();
+		
+		final String TEST_CARD_1 = "testCard6_2065381_12punches.card";
+		final String TEST_CARD_2 = "testCard6_2065396_12punches.card";
+		final String TEST_CARD_3 = "testCard6_2079768_12punches.card";
+		final String TEST_CARD_4 = "testCard6_2078064_12punches.card";
+		final String TEST_CARD_5 = "testCard6_2078082_12punches.card";
+		final String TEST_CARD_6 = "testCard6_2079749_12punches.card";
+		final String TEST_CARD_7 = "testCard6_2078056_12punches.card";
+		final String TEST_CARD_8 = "testCard6_2078040_12punches.card";
+		final String TEST_CARD_9 = "testCard6_2079752_12punches.card";
+		final String TEST_CARD_10 = "testCard6_2079747_12punches.card";
+		final String TEST_CARD_11 = "testCard6_2065349_12punches.card";
+		final String TEST_CARD_12 = "testCard6_2065339_12punches.card";
+		
+		testCard6(TEST_CARD_1);
+		testCard6(TEST_CARD_2);
+		testCard6(TEST_CARD_3);
+		testCard6(TEST_CARD_4);
+		testCard6(TEST_CARD_5);
+		testCard6(TEST_CARD_6);
+		testCard6(TEST_CARD_7);
+		testCard6(TEST_CARD_8);
+		testCard6(TEST_CARD_9);
+		testCard6(TEST_CARD_10);
+		testCard6(TEST_CARD_11);
+		testCard6(TEST_CARD_12);
+			
 	}
 
 }

@@ -320,13 +320,11 @@ public class SiDriver {
 				File file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString() + ".dat");
 				FileWriter fw = new FileWriter(file.getAbsoluteFile());
 				bw = new BufferedWriter(fw);
+				bw.write("#Testdata for readDleByte method. First line is raw data read at 128 bytes chunks from the card. The second line is the expected output after performing readBytesDle\n");
     		}
 			
 	//    	boolean compact = false;
 			for(int blockNumber = 0; blockNumber < 3 ; blockNumber++){
-				if( verbose ){
-					bw.write("Loop " + blockNumber + "\n");
-				}
 				byte[] rawData = readSiMessage(256, 1000, verbose, bw);
 				MessageBuffer messageBuffer = new MessageBuffer(rawData);
 				byte[] dleOutputPre = new byte[10];
@@ -340,9 +338,8 @@ public class SiDriver {
 				}
 				
 				if( verbose ){
-					bw.write( "After DLE: bytesRead " + bytesRead + "  " );
 					for(int i = 0; i < dleOutput.length; i++){
-						bw.write(i + "=0x" + byteToHex(dleOutput[i]) + ", ");
+						bw.write("0x" + byteToHex(dleOutput[i]) + ",");
 					}
 					bw.write( "\n" );	
 				}
@@ -374,12 +371,17 @@ public class SiDriver {
 	//			}
 				
 			}
-	    	bw.close();
+			if( bw != null ){
+				bw.close();
+			}
     	}
     	catch( Exception e){
     		try {
-				bw.close();
-			} catch (IOException e1) {
+    			if( bw != null){
+    				bw.close();
+    			}
+			} 
+    		catch (IOException e1) {
 			}
     	}
 		return parseCard6( allData );
@@ -470,9 +472,8 @@ public class SiDriver {
 	    		
 		if (verbose) {
 			try{
-				bw.write("RAW Read numbytes: " + numBytesRead + " Data: ");
 				for (int i = 0; i < numBytesRead; i++) {
-					bw.write("0x" + byteToHex(buffer[i]) + ", ");
+					bw.write("0x" + byteToHex(buffer[i]) + ",");
 				}
 				bw.write( "\n" );
 			}
