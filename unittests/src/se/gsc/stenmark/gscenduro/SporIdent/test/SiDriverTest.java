@@ -14,8 +14,10 @@ import java.util.List;
 
 import org.junit.Test;
 
+import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.MessageBuffer;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
+import se.gsc.stenmark.gscenduro.SporIdent.test.driverStubs.UsbDriverStub;
 
 public class SiDriverTest {
 
@@ -128,6 +130,54 @@ public class SiDriverTest {
 			testCard6(cardToTest);
 		}
 			
+	}
+	
+	@Test
+	public void testGetCard6Data() {
+		System.out.println("Testing Card6 parsing");
+		siDriver = new SiDriver();
+		UsbDriverStub stubUsbDriver = new UsbDriverStub();
+		siDriver.setUsbDriver(stubUsbDriver);
+		
+		List<byte[]> inData = new ArrayList<>();
+		List<byte[]> expectedData = new ArrayList<>();
+		readTestDataFromFile("testCard6_2065381_12punches.card", inData, expectedData);
+		stubUsbDriver.setStubUsbData(inData);
+		
+		Card card6Data = siDriver.getCard6Data(false);
+		
+		assertNotNull("Card6 data was null", card6Data);
+		System.out.println("Card6 data: " + card6Data.toString());
+		assertEquals(12, card6Data.getNumberOfPunches());
+		assertEquals(card6Data.getNumberOfPunches(), card6Data.getPunches().size());
+		assertEquals(2065381, card6Data.getCardNumber());
+		
+		assertEquals(71, card6Data.getPunches().get(0).getControl());
+		assertEquals(72, card6Data.getPunches().get(1).getControl());
+		assertEquals(71, card6Data.getPunches().get(2).getControl());
+		assertEquals(72, card6Data.getPunches().get(3).getControl());
+		assertEquals(71, card6Data.getPunches().get(4).getControl());
+		assertEquals(72, card6Data.getPunches().get(5).getControl());
+		assertEquals(71, card6Data.getPunches().get(6).getControl());
+		assertEquals(72, card6Data.getPunches().get(7).getControl());
+		assertEquals(71, card6Data.getPunches().get(8).getControl());
+		assertEquals(72, card6Data.getPunches().get(9).getControl());
+		assertEquals(71, card6Data.getPunches().get(10).getControl());
+		assertEquals(72, card6Data.getPunches().get(11).getControl());
+
+		assertEquals(39152, card6Data.getPunches().get(0).getTime());
+		assertEquals(39257, card6Data.getPunches().get(1).getTime());
+		assertEquals(41200, card6Data.getPunches().get(2).getTime());
+		assertEquals(41351, card6Data.getPunches().get(3).getTime());
+		assertEquals(42727, card6Data.getPunches().get(4).getTime());
+		assertEquals(42819, card6Data.getPunches().get(5).getTime());
+		assertEquals(47462, card6Data.getPunches().get(6).getTime());
+		assertEquals(47581, card6Data.getPunches().get(7).getTime());
+		assertEquals(48957, card6Data.getPunches().get(8).getTime());
+		assertEquals(49064, card6Data.getPunches().get(9).getTime());
+		assertEquals(52272, card6Data.getPunches().get(10).getTime());
+		assertEquals(52394, card6Data.getPunches().get(11).getTime());
+		
 	}
 
 }

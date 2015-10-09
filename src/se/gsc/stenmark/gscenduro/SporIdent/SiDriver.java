@@ -47,6 +47,10 @@ public class SiDriver {
 
     }
     
+    public void setUsbDriver( UsbSerialDriver usbDriver){
+    	driver = usbDriver;
+    }
+    
     private boolean performHandShake( boolean withStartup){
 		byte[] startupResponse = new byte[16];
     	if( withStartup ){
