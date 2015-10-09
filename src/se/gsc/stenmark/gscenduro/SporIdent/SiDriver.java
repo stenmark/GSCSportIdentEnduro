@@ -285,12 +285,12 @@ public class SiDriver {
     		return null;
     	}
     	
-    	int numberOfBytesRead = readBytesDle(messageBuffer, dleOutputPre, 0, 3);
+    	int numberOfBytesRead = readBytesDle(messageBuffer, dleOutputPre, 3);
     	if( numberOfBytesRead < 2){
     		return null;
     	}
     	if( dleOutputPre[0] == SiMessage.STX && (dleOutputPre[1] & 0xFF)  == 0x31 ){
-    		readBytesDle(messageBuffer, allData, 0, 128);
+    		readBytesDle(messageBuffer, allData, 128);
 //    		msg += "Parse card\n";
 //    		int i = 0;
 //        	for( byte readbyte: allData){
@@ -328,9 +328,9 @@ public class SiDriver {
 				byte[] rawData = readSiMessage(256, 1000, verbose, bw);
 				MessageBuffer messageBuffer = new MessageBuffer(rawData);
 				byte[] dleOutputPre = new byte[10];
-				readBytesDle(messageBuffer, dleOutputPre, 0, 4);
+				readBytesDle(messageBuffer, dleOutputPre, 4);
 				byte[] dleOutput = new byte[150];
-				int bytesRead = readBytesDle(messageBuffer, dleOutput, 0, 128);
+				int bytesRead = readBytesDle(messageBuffer, dleOutput, 128);
 				
 				byte[] dleBytesCorrectSize = new byte[bytesRead];
 				for( int i = 0; i < dleBytesCorrectSize.length; i++){
@@ -541,54 +541,102 @@ public class SiDriver {
        	
     
     /**
+     * Strip out all occurrences of 0x10 bytes (Except if 0x10 follow by one more 0x10, then keep one of the 0x10 bytes)
+     * @param data Buffer with all the read data raw data. This is the buffer coming directly from the SI-master containing the 0x10 bytes that shall be stripped away
+     * @param bytes This is the result buffer. The buffer need to be at least the size of len. This buffer will contain the data with all 0x10 bytes stripped away (except if there are two consecutive 0x10, then keep one)
+     * @param len Number of bytes to read from the buffer, after 0x10 removal. I
+     * @return number of bytes read. If the MessageBuffer data runs out of read bytes, then the number of read bytes until we ran out will be returned. Otherwise len will be returned.
+     */
+    public int readBytesDle( MessageBuffer data, byte[] bytes, int len ){
+    	for( int i = 0; i < len; i++){
+    		//Read one byte from the buffer
+    		byte[] currentByte = data.readByte();
+    		//If the buffer is empyt, it will return an array with size 0. Return the number of bytes we managed to read
+    		if( currentByte.length == 0){
+    			return i;
+    		}
+    		
+    		//Strip away 0x10 bytes. If the byte is not 0x10 copy it to the out buffer
+    		if( currentByte[0] != 0x10 ){
+    			bytes[i] = currentByte[0];
+    		}
+    		//If the byte is ox10, then copy the next byte in the buffer. Do not check for 0x10 for the nextbyte, since if the next byte is 0x10 we need to copy it as real data
+    		else{
+    			byte[] nextByte = data.readByte();
+    			//If the buffer is empty, it will return an array with size 0. Return the number of bytes we managed to read
+        		if( nextByte.length == 0){
+        			return i;
+        		}
+    			bytes[i] = nextByte[0];
+    		}
+    	}
+    	
+    	return len;
+    }
+    /**
      * Send in a preread data buffer and extract data between DLE
      * @param data preRead databuffer. 
      * @param bytes output data of all read bytes
      * @param pos where to start put the new data in the bytes area
      * @param len number of bytes to read from the databuffer
      * @return
+     * @deprecated Use public int readBytesDle( MessageBuffer data, byte[] bytes, int len ) instead
      */
     public int readBytesDle( MessageBuffer data, byte[] bytes, int pos, int len ){
     	byte[] localBytes = data.readBytes( len );
 	
+//    	System.out.println("NEW CALL TO readBytesDle pos"+pos +" len "+len);
+    	
     	if( localBytes.length > 0 ){
         	int ip = 0;  //Inpointer 
         	int op = 0;  //Outpointer
         	
+//        	System.out.println("Before for lopp ip=" + ip + " localBytes.length-1=" + (localBytes.length-1));
         	for( ip = 0; ip  < localBytes.length-1; ip++ ){
         		//If byte is 0x10. Swap down the next coming byte to previous position.
         		if( localBytes[ip] == 0x10 ){
+//        			System.out.println("0x10 found SKIP BYTE ip=" + ip + " op=" +op);
         			localBytes[op++] = localBytes[++ip];
         		}
         		else{
+//        			System.out.println("normal byte, COPY BYTE ip=" + ip + " op=" +op);
         			localBytes[op++]=localBytes[ip];
         		}
         	}
     		
-        	//If we didnt find any 0x10 bytes i.e. read all bytes except one
+//        	System.out.println("After for lopp ip=" + ip + " localBytes.length=" + localBytes.length);
+        	//If last byte read was 0x10 the inPointer will have been incremented after loop check -> dont execute the code in this if statement
     		if( ip < localBytes.length ){
-    			//If the last byte is 0x10, this is not 0x10 to be skipped, but a "real" data byte. Save it in the array.
+//    			System.out.println("Last byte in for loop was normal byte. READ LAST BYTE: ip=" + ip + " op=" +op);
+    			//If the last byte is 0x10, we need to read one more byte and discard the current 0x10 byte.
     			if( localBytes[ip] == 0x10 ){
+//    				System.out.println("Last byte= 0x10 ip=" + ip + " op=" +op);
     				byte[] readByte = data.readByte();
     				localBytes[op++] = readByte[0];
+//    				System.out.println("Read one EXTRA byte= " + readByte[0] + " at indata point " +( len+1) + " ip=" + ip + " op=" + op );
     			}
     			else{
+//    				System.out.println("Last is normal byte, copy it  ip=" + ip + " op=" +op);
     				localBytes[op++] = localBytes[ip];
     			}
     		}
     		
     		//We have not read all the bytes yet: Call this method recursivly until all bytes are read.
+//    		System.out.println("Check if we read all byte " + op + " < " + len );
     		if( op < len ){
     			//Copy the bytes we have managed to read to the result buffer (the bytes array is the return value of this function)
     			for(int i = 0; i < localBytes.length; i++ ){
+//    				System.out.println("Copy byte [i+pos]="+ (i+pos) + " localBytes[i]="+localBytes[i]);
     				bytes[i+pos] = localBytes[i];
     			}
     			//Recursive call. Re-read the remaining bytes by starting to read at the position of the current outpointer. And remove the number of already read bytes from the new request
     			//TODO: Should it be op+pos instead?
+//    			System.out.println("RECURSIVE READ readBytesDle(data, bytes, op, len-op)  readBytesDle(-," + op + "," + (len-op));
     			return op+readBytesDle(data, bytes, op, len-op);
     		}
     		//All bytes read. Copy the localcopy to the result buffer (the bytes array is the return value of this function)
     		else{
+//    			System.out.println("All bytes read RETURN FINAL RESULT len=" + len);
     			for(int i = 0; i < localBytes.length; i++ ){
     				bytes[i+pos] = localBytes[i];
     			}
