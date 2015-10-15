@@ -53,6 +53,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public static int disconnectCounter;
 	public static boolean disconected;
 	private String connectionStatus = "";
+
+	public static String driverLayerErrorMsg;
 		
 	public String getConnectionStatus() {
 		return connectionStatus;
@@ -217,8 +219,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * */
 	public void connectToSiMaster() {
 		try {
+			driverLayerErrorMsg = "";
 			siDriver = new SiDriver();
-			if (siDriver.connectDriver((UsbManager) getSystemService(Context.USB_SERVICE))) {
+			UsbManager usbSystemService = (UsbManager) getSystemService(Context.USB_SERVICE);
+			if( usbSystemService == null ){
+				disconected = true;
+				connectionStatus = "Could not get the USB system service from the Android system";
+				PopupMessage dialog = new PopupMessage( connectionStatus + driverLayerErrorMsg );
+				dialog.show(getSupportFragmentManager(), "popUp");
+				return;
+			}
+			
+			if (siDriver.connectDriver( usbSystemService ) ) {
 				if (siDriver.connectToSiMaster()) {
 					connectionStatus = "SiMain " + siDriver.stationId + " connected";
 					disconected = false;
@@ -226,15 +238,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					new SiCardListener().execute(siDriver);
 				} else {
 					connectionStatus = "Failed ot connect SI master";
+					PopupMessage dialog = new PopupMessage( connectionStatus + driverLayerErrorMsg );
+					dialog.show(getSupportFragmentManager(), "popUp");
 					disconected = true;
 					return;
 				}
 			}
-			else{
-				PopupMessage dialog = new PopupMessage(	"Could not connect to the USB service" );
+			else{			
+				connectionStatus = "Could not connect to the USB service";
+				PopupMessage dialog = new PopupMessage( connectionStatus + driverLayerErrorMsg );
 				dialog.show(getSupportFragmentManager(), "popUp");
+				disconected = true;
 				return;
 			}
+			
 			if (siDriver.mode != SiMessage.STATION_MODE_READ_CARD) {
 				connectionStatus = "SiMain is not configured as Reas Si";
 				PopupMessage dialog = new PopupMessage(	connectionStatus + " Is configured as: " + siDriver.mode + "  :  "	+ SiMessage.getStationMode(siDriver.mode) );
@@ -243,7 +260,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 		} catch (Exception e) {
 			connectionStatus = "Unknown connection problem";
-			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			PopupMessage dialog = new PopupMessage(driverLayerErrorMsg + "\n" + MainActivity.generateErrorMessage(e) );
 			dialog.show(getSupportFragmentManager(), "popUp");
 			disconected = true;
 		}

@@ -20,10 +20,12 @@
 
 package com.hoho.android.usbserial.driver;
 
+import java.util.HashMap;
 import java.util.Map;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
+import se.gsc.stenmark.gscenduro.MainActivity;
 
 
 
@@ -79,6 +81,7 @@ public enum UsbSerialProber {
             }
             final UsbDeviceConnection connection = manager.openDevice(usbDevice);
             if (connection == null) {
+            	MainActivity.driverLayerErrorMsg += " Could not open connection to USB device \n";
                 return null;
             }
             return new Cp2102SerialDriver(usbDevice, connection);
@@ -107,17 +110,15 @@ public enum UsbSerialProber {
      *         no devices could be acquired
      */
     public static UsbSerialDriver acquire(final UsbManager usbManager) {
-        for (final UsbDevice usbDevice : usbManager.getDeviceList().values()) {
+    	HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
+        for (final UsbDevice usbDevice : deviceList.values()) {
             final UsbSerialDriver probedDevice = acquire(usbManager, usbDevice);
             if (probedDevice != null) {
                 return probedDevice;
             }
         }
         
-//        TextView textView = new TextView(act);
-//        textView.setTextSize(80);
-//        textView.setText(debug);
-//        act.setContentView(textView);
+        MainActivity.driverLayerErrorMsg += "No device found in device list. Size of list was: " + deviceList.size() + " size of values was " + deviceList.values().size();
         return null;
     }
 
@@ -138,11 +139,7 @@ public enum UsbSerialProber {
                 return probedDevice;
             }
         }
-    	
-//        TextView textView = new TextView(act);
-//        textView.setTextSize(80);
-//        textView.setText(debug);
-//        act.setContentView(textView);
+    	MainActivity.driverLayerErrorMsg += "Could not find any device for " + usbDevice.getProductId();
         return null;
     }
 
@@ -165,6 +162,7 @@ public enum UsbSerialProber {
 				return true;
 			}
 		}
+		MainActivity.driverLayerErrorMsg += " productId " + productId + " is unsupported\n";
 		return false;
 	}
 
