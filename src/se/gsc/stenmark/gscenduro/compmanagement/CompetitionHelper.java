@@ -22,6 +22,7 @@ import android.view.View.MeasureSpec;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import se.gsc.stenmark.gscenduro.MainActivity;
 
 /**
  * Stateless helper class that can perform various operations on a competition.
@@ -31,18 +32,23 @@ import android.widget.Toast;
  * @author Andreas
  * 
  */
-public class CompetitionHelper {
+public abstract class CompetitionHelper {
 
 	public static String secToMinSec(Long sec) {
-		if (sec == Integer.MAX_VALUE) {
+		if (sec == Competition.NO_TIME_FOR_STAGE) {
 			return "no result";
-		} else {
-			Long totalTime_sec = sec;
-			Long toltalTime_min = sec / 60;
-			totalTime_sec -= toltalTime_min * 60;
-
-			return String.format("%02d:%02d", toltalTime_min, totalTime_sec);
 		}
+		
+		if (sec == Competition.NO_TIME_FOR_COMPETITION) {
+			return "no time";
+		}
+			
+		Long totalTime_sec = sec;
+		Long toltalTime_min = sec / 60;
+		totalTime_sec -= toltalTime_min * 60;
+
+		return String.format("%02d:%02d", toltalTime_min, totalTime_sec);
+
 	}
 
 	/**
@@ -50,7 +56,7 @@ public class CompetitionHelper {
 	 * @return RGB coded color
 	 */
 	public static int generateRedToGreenColorTransition(Long fastestTimeOnStage, Long slowestTimeOnStage, Long competitorStageTime, int rank){		
-		if (rank == Integer.MAX_VALUE) {
+		if (rank == Competition.RANK_DNF) {
 			return Color.WHITE;
 		} else {
 			float myTimeDiff = competitorStageTime - fastestTimeOnStage;
@@ -92,7 +98,7 @@ public class CompetitionHelper {
 			
 			int cardNumber = results.get(index).getStageResult().get(0).getCardNumber();					
 			int rank = results.get(index).getStageResult().get(0).getRank();					
-			if (rank == Integer.MAX_VALUE) {			
+			if (rank == Competition.RANK_DNF) {			
 				resultData += "-,";
 			} else {
 				resultData += rank + ",";
@@ -104,10 +110,10 @@ public class CompetitionHelper {
 				resultData += competitors.getByCardNumber(cardNumber).getTeam() + ",";					
 				resultData += String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + ",";
 			}
-			resultData += CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(0).getStageTimes()) + ",";	
+			resultData += CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(0).getStageTime()) + ",";	
 									
 			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {										
-				resultData += CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimes()) + ",";
+				resultData += CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + ",";
 				resultData += results.get(index).getStageResult().get(stageNumber).getRank() + ",";
 				resultData += CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + ",";
 			}			
@@ -156,7 +162,7 @@ public class CompetitionHelper {
 			resultData += "<tr>\n";								
 			int rank = results.get(index).getStageResult().get(0).getRank();
 			resultData += "<td><center>";
-			if (rank == Integer.MAX_VALUE) {			
+			if (rank == Competition.RANK_DNF) {			
 				resultData += "-";
 			} else {
 				resultData += rank;
@@ -174,19 +180,19 @@ public class CompetitionHelper {
 				resultData += "<td>" + convertToHtmlChars(competitors.getByCardNumber(cardNumber).getTeam()) + "</td>";					
 				resultData += "<td><center>" + String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + "</center></td>";
 			}
-			resultData += "<td><center>" + CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(0).getStageTimes()) + "</center></td>";	
+			resultData += "<td><center>" + CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(0).getStageTime()) + "</center></td>";	
 						
 			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {			
 				
-				if (results.get(index).getStageResult().get(stageNumber).getRank() != Integer.MAX_VALUE) {								
+				if (results.get(index).getStageResult().get(stageNumber).getRank() != Competition.RANK_DNF) {								
 					Long fastestTimeOnStage = competitors.getFastestOnStage(results.get(index).getTitle(), stageNumber); 
 					Long slowestTimeOnStage = competitors.getSlowestOnStage(results.get(index).getTitle(), stageNumber);
-					Long competitorStageTime = results.get(index).getStageResult().get(stageNumber).getStageTimes();
+					Long competitorStageTime = results.get(index).getStageResult().get(stageNumber).getStageTime();
 					
 					int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
 	
 					color -= 0xff000000;
-					resultData += "<td bgcolor=\"#" + Integer.toHexString(color) + "\"><center>" + CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimes()) + "</center></td>";
+					resultData += "<td bgcolor=\"#" + Integer.toHexString(color) + "\"><center>" + CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + "</center></td>";
 					resultData += "<td><center>" + results.get(index).getStageResult().get(stageNumber).getRank() + "</center></td>";
 					resultData += "<td><center>" + CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + "</center></td>";
 				} else {

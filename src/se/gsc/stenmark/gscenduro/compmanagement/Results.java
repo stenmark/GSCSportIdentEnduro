@@ -4,13 +4,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 
 public class Results implements Serializable {
 	
 	private static final long serialVersionUID = 201111020001L; 	
 	private String mTitle;	
-	private ArrayList<StageResult> mStageResult = new ArrayList<StageResult>();
+	private List<StageResult> mStageResult = new ArrayList<StageResult>();
 	
 	public Results() {
 		setTitle("");
@@ -28,11 +29,11 @@ public class Results implements Serializable {
 		mTitle = title;
 	}
 	
-	public ArrayList<StageResult> getStageResult() {
+	public List<StageResult> getStageResult() {
 		return mStageResult;
 	}		
 	
-	public void setStageResult(ArrayList<StageResult> stageResult) {
+	public void setStageResult(List<StageResult> stageResult) {
 		mStageResult = stageResult;	
 	}		
 		
@@ -42,29 +43,29 @@ public class Results implements Serializable {
 			Collections.sort(mStageResult, new Comparator<StageResult>() {
 				@Override
 				public int compare(StageResult lhs, StageResult rhs) {
-					return lhs.getStageTimes().compareTo(rhs.getStageTimes());
+					return lhs.getStageTimeForSorting().compareTo(rhs.getStageTimeForSorting());
 				}
 			});
 		
 			//Calculate rank		
 			int rank = 1;		
-			if (mStageResult.get(0).getStageTimes() == Integer.MAX_VALUE)
+			if (mStageResult.get(0).getStageTime() == Competition.NO_TIME_FOR_STAGE)
 			{
 				//No results, set all to dnf
 				for (int i = 0; i < mStageResult.size(); i++) {	
-					mStageResult.get(i).setRank(Integer.MAX_VALUE);
+					mStageResult.get(i).setRank(Competition.RANK_DNF);
 				}
 			}
 			else
 			{
 				mStageResult.get(0).setRank(rank);			
 				for (int i = 1; i < mStageResult.size(); i++) {				
-					if (mStageResult.get(i).getStageTimes() > mStageResult.get(i - 1).getStageTimes()) {
+					if (mStageResult.get(i).getStageTime() > mStageResult.get(i - 1).getStageTime()) {
 						rank = i + 1;
 					}
 					
-					if (mStageResult.get(i).getStageTimes() == Integer.MAX_VALUE) {
-						mStageResult.get(i).setRank(Integer.MAX_VALUE);
+					if (mStageResult.get(i).getStageTime() == Competition.NO_TIME_FOR_STAGE) {
+						mStageResult.get(i).setRank(Competition.RANK_DNF);
 					} else {			
 						mStageResult.get(i).setRank(rank);
 					}

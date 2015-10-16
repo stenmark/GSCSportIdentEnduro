@@ -149,12 +149,12 @@ public class Competitor implements Serializable {
 		long totalTime = 0;
 		
 		if (mStageTimes.size() < numberOfStages) {
-			return Integer.MAX_VALUE;
+			return Competition.NO_TIME_FOR_COMPETITION;
 		}
 		
 		for (int i = 0; i < mStageTimes.size(); i++) {
-			if (mStageTimes.getTimesOfStage(i) == Integer.MAX_VALUE) {
-				return Integer.MAX_VALUE;
+			if (mStageTimes.getTimesOfStage(i) == Competition.NO_TIME_FOR_STAGE) {
+				return Competition.NO_TIME_FOR_COMPETITION;
 			}			
 			totalTime += mStageTimes.getTimesOfStage(i);
 		}

@@ -16,7 +16,7 @@ public class Competitors implements Serializable {
 
 	private static final long serialVersionUID = 44L;
 	private String mErrorText = "";
-	private ArrayList<Competitor> mCompetitors = null;
+	private List<Competitor> mCompetitors = null;
 	
 	public Competitors() {
 		mCompetitors = new ArrayList<Competitor>();
@@ -26,7 +26,7 @@ public class Competitors implements Serializable {
 		return mCompetitors.get(index);
 	}			
 	
-	public ArrayList<Competitor> getCompetitors() {
+	public List<Competitor> getCompetitors() {
 		return mCompetitors;
 	}	
 	
@@ -166,7 +166,7 @@ public class Competitors implements Serializable {
 	}	
 	
 	public Long getFastestOnStage(String competitorClass, int stageNumber) {
-		Long fastestTimeOnStage = Long.MAX_VALUE;
+		Long fastestTimeOnStage = Competition.NO_TIME_FOR_STAGE;
 		for(Competitor competitor : mCompetitors) {
 			
 			if (competitorClass.equals(competitor.getCompetitorClass())) {						
@@ -185,18 +185,18 @@ public class Competitors implements Serializable {
 		for(Competitor competitor : mCompetitors){
 			if (competitorClass.equals(competitor.getCompetitorClass())) {
 				try{
-					if (competitor.getStageTimes().getTimesOfStage(stageNumber - 1) != (long) Integer.MAX_VALUE) {
+					if (competitor.getStageTimes().getTimesOfStage(stageNumber - 1) != Competition.NO_TIME_FOR_STAGE) {
 						slowestTimeOnStage = Math.max(slowestTimeOnStage, competitor.getStageTimes().getTimesOfStage(stageNumber - 1));
 					}
 				}
 				catch(IndexOutOfBoundsException e){
-					return (long) Integer.MAX_VALUE;
+					return Competition.NO_TIME_FOR_STAGE;
 				}
 			}
 		}
 		
 		if (slowestTimeOnStage == 0) {
-			return (long) Integer.MAX_VALUE;
+			return Competition.NO_TIME_FOR_STAGE;
 		}
 		return slowestTimeOnStage;
 	}	
@@ -266,7 +266,7 @@ public class Competitors implements Serializable {
 		return punchesAsCsv;
 	}	
 	
-	public Boolean checkIfNameExists(String name, ArrayList<Competitor> competitors) {
+	public Boolean checkIfNameExists(String name, List<Competitor> competitors) {
 		name = name.replaceFirst("\\s+$", "");
 		
 		for (int i = 0; i < competitors.size(); i++) {
@@ -281,7 +281,7 @@ public class Competitors implements Serializable {
 		return checkIfNameExists(name, mCompetitors);
 	}		
 	
-	public Boolean checkIfCardNumberExists(int cardNumber, ArrayList<Competitor> competitors) {
+	public Boolean checkIfCardNumberExists(int cardNumber, List<Competitor> competitors) {
 
 		for (int i = 0; i < competitors.size(); i++) {
 			if (cardNumber == competitors.get(i).getCardNumber()) {
@@ -295,7 +295,7 @@ public class Competitors implements Serializable {
 		return checkIfCardNumberExists(cardNumber, mCompetitors);
 	}
 	
-	public Boolean checkIfStartNumberExists(int startNumber, ArrayList<Competitor> competitors) {
+	public Boolean checkIfStartNumberExists(int startNumber, List<Competitor> competitors) {
 
 		for (int i = 0; i < competitors.size(); i++) {
 			if (startNumber == competitors.get(i).getStartNumber()) {

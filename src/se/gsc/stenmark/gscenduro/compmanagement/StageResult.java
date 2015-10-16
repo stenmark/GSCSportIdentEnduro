@@ -26,9 +26,13 @@ public class StageResult implements Serializable {
 	    mCardNumber = cardNumber;
 	}	
 	
-	public Long getStageTimes() {
+	public Long getStageTime() {
+	    return mStageTimes;
+	}
+	
+	public Long getStageTimeForSorting() {
 		if( getDnf() ){
-			return 1000000L;  //Just set 1 million seconds for DNF result to sort it at the end of the result list
+			return Competition.NO_TIME_FOR_STAGE;
 		}
 	    return mStageTimes;
 	}

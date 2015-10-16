@@ -35,7 +35,11 @@ public class Competition implements Serializable {
 	
 	public final int SVARTVITT_TYPE = 0;
 	public final int ESS_TYPE = 1;	
-
+	
+	public static final long NO_TIME_FOR_STAGE = 10000000L;
+	public static final long NO_TIME_FOR_COMPETITION = 10000000L;
+	public static final int RANK_DNF = 30000000;
+	
 	private static final String CURRENT_COMPETITION = "current_competition";
 	private Stages mStages = null;
 	private Competitors mCompetitors = null;
@@ -284,12 +288,12 @@ public class Competition implements Serializable {
 			StageResult stageResult;
 			
 			// Add total times			
-			for (i = 0; i < mCompetitors.size(); i++) {
-				if ((mCompetitionType == SVARTVITT_TYPE) || (mCompetitors.get(i).getCompetitorClass().equals(competitorClass))) {
-					if ((mCompetitors.get(i).getStageTimes() == null) || (mCompetitors.get(i).getStageTimes().size() < mStages.getStages().size())) {
-					 	stageResult = new StageResult(mCompetitors.get(i).getCardNumber(), (long) Integer.MAX_VALUE, true);
+			for (Competitor currentCompetitor : mCompetitors.getCompetitors() ) {
+				if ((mCompetitionType == SVARTVITT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {
+					if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < mStages.getStages().size())) {
+					 	stageResult = new StageResult(currentCompetitor.getCardNumber(), NO_TIME_FOR_STAGE, true);
 					} else {
-						stageResult = new StageResult(mCompetitors.get(i).getCardNumber(), mCompetitors.get(i).getTotalTime(mStages.size()), false);							
+						stageResult = new StageResult(currentCompetitor.getCardNumber(), currentCompetitor.getTotalTime(mStages.size()), false);							
 					}
 					mResults.get(totalTimePosition).getStageResult().add(stageResult);					
 				}
@@ -303,14 +307,12 @@ public class Competition implements Serializable {
 				for (i = 0; i < mCompetitors.size(); i++) {
 					if ((mCompetitionType == SVARTVITT_TYPE) || (mCompetitors.get(i).getCompetitorClass().equals(competitorClass))) {			
 
-						Long stageTime;
+						Long stageTime = NO_TIME_FOR_STAGE;
 						if ((mCompetitors.get(i).hasResult()) && (mCompetitors.get(i).getStageTimes().size() > (j - 1))) {
 							stageTime = mCompetitors.get(i).getStageTimes().getTimesOfStage(j - 1);
-						} else {
-							stageTime = (long) Integer.MAX_VALUE;
-						}
+						} 
 		
-						stageResult = new StageResult(mCompetitors.get(i).getCardNumber(), stageTime, stageTime == (long) Integer.MAX_VALUE);
+						stageResult = new StageResult(mCompetitors.get(i).getCardNumber(), stageTime, stageTime == NO_TIME_FOR_STAGE);
 						mResults.get(j + totalTimePosition).getStageResult().add(stageResult);
 		
 						if (stageResult.getDnf()) {
@@ -332,12 +334,10 @@ public class Competition implements Serializable {
 			//Calculate time back
 			for (j = totalTimePosition; j < mResults.size(); j++) {
 				for (i = 0; i < mResults.get(j).getStageResult().size(); i++) {
-					Long stageTimeBack = (long) Integer.MAX_VALUE;
-					if (mResults.get(j).getStageResult().get(i).getStageTimes() == (long) Integer.MAX_VALUE) {
-						stageTimeBack = (long) Integer.MAX_VALUE;
-					} else {
+					Long stageTimeBack = NO_TIME_FOR_STAGE;
+					if (mResults.get(j).getStageResult().get(i).getStageTime() != NO_TIME_FOR_STAGE) {
 						if (mResults.get(j).getStageResult().size() > 0) {
-							stageTimeBack = mResults.get(j).getStageResult().get(i).getStageTimes() - mResults.get(j).getStageResult().get(0).getStageTimes();
+							stageTimeBack = mResults.get(j).getStageResult().get(i).getStageTime() - mResults.get(j).getStageResult().get(0).getStageTime();
 						}
 					}
 					mResults.get(j).getStageResult().get(i).setStageTimesBack(stageTimeBack);
@@ -352,15 +352,15 @@ public class Competition implements Serializable {
 					resultLandscapeObject.getStageResult().add(totalTimeResult);
 					
 					for (int stage = 1; stage < (mResults.size() - totalTimePosition); stage++) {										
-						StageResult newStageResult = new StageResult(cardNumber, (long) Integer.MAX_VALUE, true);					
+						StageResult newStageResult = new StageResult(cardNumber, NO_TIME_FOR_STAGE, true);					
 						for (StageResult stageResultObject : mResults.get(stage + totalTimePosition).getStageResult()) {						
 							if (cardNumber == stageResultObject.getCardNumber()) {
 								newStageResult = stageResultObject;
 							}																			
 						}					
 						
-						if (newStageResult.getStageTimes() == (long) Integer.MAX_VALUE) {
-							resultLandscapeObject.getStageResult().get(0).setStageTimes((long) Integer.MAX_VALUE);
+						if (newStageResult.getStageTime() == NO_TIME_FOR_STAGE) {
+							resultLandscapeObject.getStageResult().get(0).setStageTimes(NO_TIME_FOR_STAGE);
 						}
 						
 						resultLandscapeObject.getStageResult().add(newStageResult);

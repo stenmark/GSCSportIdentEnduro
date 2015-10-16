@@ -2,6 +2,8 @@ package se.gsc.stenmark.gscenduro;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Results;
 import android.content.Context;
@@ -72,7 +74,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 		
 		int rank = mResultLandscape.get(position).getStageResult().get(0).getRank();
 		String name = "";
-		if (rank == Integer.MAX_VALUE) {			
+		if (rank == Competition.RANK_DNF) {			
 			name += "-. ";
 		} else {
 			name += rank + ". ";
@@ -87,7 +89,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 		String team = ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(cardNumber).getTeam();	
 		resultLandscapeRowV.setResultLandscapeTeam(team);
 		
-		long totalTime = mResultLandscape.get(position).getStageResult().get(0).getStageTimes();			
+		long totalTime = mResultLandscape.get(position).getStageResult().get(0).getStageTime();			
 		resultLandscapeRowV.setResultLandscapeTotalTime(CompetitionHelper.secToMinSec(totalTime));				
 		
 		//First clear all stages
@@ -99,12 +101,12 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			
 			Long fastestTimeOnStage = ((MainActivity) mContext).competition.getCompetitors().getFastestOnStage(mResultLandscape.get(position).getTitle(), stageNumber); 
 			Long slowestTimeOnStage = ((MainActivity) mContext).competition.getCompetitors().getSlowestOnStage(mResultLandscape.get(position).getTitle(), stageNumber);
-			String StageTime = CompetitionHelper.secToMinSec(mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTimes());
-			Long competitorStageTime = mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTimes();				
+			String StageTime = CompetitionHelper.secToMinSec(mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime());
+			Long competitorStageTime = mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime();				
 			rank = mResultLandscape.get(position).getStageResult().get(stageNumber).getRank();
 			
 			int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
-			if (rank == Integer.MAX_VALUE) {
+			if (rank == Competition.RANK_DNF) {
 				StageTime = "";
 			} else {
 				StageTime += "\n(" + String.valueOf(rank) + ")";											

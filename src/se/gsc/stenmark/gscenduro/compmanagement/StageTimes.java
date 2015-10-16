@@ -23,7 +23,7 @@ public class StageTimes implements Serializable {
 			}
 		}
 		
-		return Integer.MAX_VALUE;
+		return Competition.NO_TIME_FOR_STAGE;
 	}
 
 	public void setTimesOfStage(int stage, long time) {

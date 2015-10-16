@@ -282,7 +282,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					Toast.makeText(this, "Card added", Toast.LENGTH_LONG).show();
 				}
 			} 
-			//The Listener dies once it has received once message, so kick it again to restart it
+			//The Listener dies once it has received one message, so kick it again to restart it
 			if (!disconected) {
 				new SiCardListener().execute(siDriver);
 			} else {
@@ -300,6 +300,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
+		updateFragments();
 	}
 	
 	@Override

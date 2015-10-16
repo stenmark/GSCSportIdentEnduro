@@ -3,6 +3,7 @@ package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Results;
 import android.content.Context;
@@ -64,7 +65,7 @@ public class ResultsListAdapter extends BaseAdapter {
 		
 		for(int i = 0; i < mResult.get(position).getStageResult().size(); i++) {
 			int rank = mResult.get(position).getStageResult().get(i).getRank();			
-			if (rank == Integer.MAX_VALUE) {			
+			if (rank == Competition.RANK_DNF) {			
 				Name += "-. ";
 			} else {
 				Name += rank + ". ";
@@ -73,7 +74,7 @@ public class ResultsListAdapter extends BaseAdapter {
 			StartNumber += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getStartNumber() + "\n";
 			Team += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getTeam() + "\n";
 					
-			Time += CompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTimes()) + "\n";
+			Time += CompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTime()) + "\n";
 			TimeBack += CompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTimesBack()) + "\n";			
 		}
 				

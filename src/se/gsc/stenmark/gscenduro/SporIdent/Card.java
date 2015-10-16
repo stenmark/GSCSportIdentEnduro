@@ -3,6 +3,8 @@ package se.gsc.stenmark.gscenduro.SporIdent;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+
 /**
  * This class is created when a new SI card is read by the SI main unit. All
  * essential data is parsed from the SI Card and stored in this class.
@@ -122,7 +124,7 @@ public class Card implements Serializable {
 		long start = getTimeOfControlEss(startControl, true);
 		
 		if ((start == (long) Integer.MAX_VALUE) || (finish == (long) Integer.MAX_VALUE)) {
-			return (long) Integer.MAX_VALUE;
+			return Competition.NO_TIME_FOR_STAGE;
 		} else {			
 			return finish - start;
 		}		
@@ -195,7 +197,7 @@ public class Card implements Serializable {
 		long start = getTimeOfControlSvartVitt(startControl, true, stageNumber);
 		
 		if ((start == (long) Integer.MAX_VALUE) || (finish == (long) Integer.MAX_VALUE)) {
-			return (long) Integer.MAX_VALUE;
+			return Competition.NO_TIME_FOR_STAGE;
 		} else {			
 			return finish - start;
 		}

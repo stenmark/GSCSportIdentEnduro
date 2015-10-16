@@ -81,7 +81,7 @@ public enum UsbSerialProber {
             }
             final UsbDeviceConnection connection = manager.openDevice(usbDevice);
             if (connection == null) {
-            	MainActivity.driverLayerErrorMsg += " Could not open connection to USB device \n";
+            	MainActivity.driverLayerErrorMsg += " Could not open connection to USB device\n Try to disconnect the USB cable, reconnect it again and answer YES when aksed if you want to start GSCEnduro automatically \n";
                 return null;
             }
             return new Cp2102SerialDriver(usbDevice, connection);
@@ -139,7 +139,7 @@ public enum UsbSerialProber {
                 return probedDevice;
             }
         }
-    	MainActivity.driverLayerErrorMsg += "Could not find any device for " + usbDevice.getProductId();
+    	MainActivity.driverLayerErrorMsg += "Could not find any device for " + usbDevice.getProductId() + "\n";
         return null;
     }
 
