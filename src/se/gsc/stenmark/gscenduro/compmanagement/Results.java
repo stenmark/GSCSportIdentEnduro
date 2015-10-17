@@ -7,6 +7,11 @@ import java.util.Comparator;
 import java.util.List;
 
 
+/**
+ * Contains results of competitors for a specific stage. 
+ * @author Peter
+ *
+ */
 public class Results implements Serializable {
 	
 	private static final long serialVersionUID = 201111020001L; 	
@@ -31,25 +36,29 @@ public class Results implements Serializable {
 	
 	public List<StageResult> getStageResult() {
 		return mStageResult;
-	}		
+	}	
 	
-	public void setStageResult(List<StageResult> stageResult) {
-		mStageResult = stageResult;	
-	}		
+	public void addStageResult(StageResult newStageResult ){
+		mStageResult.add(newStageResult);
+	}
+	
+	public void addTotalTimeResult( StageResult totalTimeResult ){
+		mStageResult.add(totalTimeResult);
+	}
 		
-	public void sortStageResult() {
+	public void sortStageResult( final long NO_TIME_MAGIC_NUMBER) {
 		
 		if (mStageResult.size() > 0) {		
 			Collections.sort(mStageResult, new Comparator<StageResult>() {
 				@Override
 				public int compare(StageResult lhs, StageResult rhs) {
-					return lhs.getStageTimeForSorting().compareTo(rhs.getStageTimeForSorting());
+					return lhs.getStageTime().compareTo(rhs.getStageTime());
 				}
 			});
 		
 			//Calculate rank		
 			int rank = 1;		
-			if (mStageResult.get(0).getStageTime() == Competition.NO_TIME_FOR_STAGE)
+			if (mStageResult.get(0).getStageTime() == NO_TIME_MAGIC_NUMBER)
 			{
 				//No results, set all to dnf
 				for (int i = 0; i < mStageResult.size(); i++) {	
@@ -64,7 +73,7 @@ public class Results implements Serializable {
 						rank = i + 1;
 					}
 					
-					if (mStageResult.get(i).getStageTime() == Competition.NO_TIME_FOR_STAGE) {
+					if (mStageResult.get(i).getStageTime() == NO_TIME_MAGIC_NUMBER) {
 						mStageResult.get(i).setRank(Competition.RANK_DNF);
 					} else {			
 						mStageResult.get(i).setRank(rank);

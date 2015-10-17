@@ -6,6 +6,7 @@ import java.util.List;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Results;
+import se.gsc.stenmark.gscenduro.compmanagement.StageResult;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
@@ -70,9 +71,10 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 		}
 			
 		resultLandscapeRowV.setComp();
-		int cardNumber = mResultLandscape.get(position).getStageResult().get(0).getCardNumber();
+		StageResult totalTimeResult = mResultLandscape.get(position).getStageResult().get(0);
+		int cardNumber = totalTimeResult.getCardNumber();
 		
-		int rank = mResultLandscape.get(position).getStageResult().get(0).getRank();
+		int rank = totalTimeResult.getRank();
 		String name = "";
 		if (rank == Competition.RANK_DNF) {			
 			name += "-. ";
@@ -89,7 +91,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 		String team = ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(cardNumber).getTeam();	
 		resultLandscapeRowV.setResultLandscapeTeam(team);
 		
-		long totalTime = mResultLandscape.get(position).getStageResult().get(0).getStageTime();			
+		long totalTime = totalTimeResult.getStageTime();			
 		resultLandscapeRowV.setResultLandscapeTotalTime(CompetitionHelper.secToMinSec(totalTime));				
 		
 		//First clear all stages

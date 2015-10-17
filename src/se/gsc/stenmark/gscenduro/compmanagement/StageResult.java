@@ -9,13 +9,11 @@ public class StageResult implements Serializable {
 	private int mRank;
 	private Long mStageTimes;
 	private Long mStageTimesBack;
-	private Boolean mDnf;
 	
-	public StageResult(int cardNumber, Long stageTimes, Boolean dnf) {
+	public StageResult(int cardNumber, Long stageTimes) {
 		setCardNumber(cardNumber);
 		setStageTimes(stageTimes);
 		setStageTimesBack((long) 0);
-		setDnf(dnf);
 	}
 
 	public int getCardNumber() {
@@ -30,12 +28,12 @@ public class StageResult implements Serializable {
 	    return mStageTimes;
 	}
 	
-	public Long getStageTimeForSorting() {
-		if( getDnf() ){
-			return Competition.NO_TIME_FOR_STAGE;
-		}
-	    return mStageTimes;
-	}
+//	public Long getStageTimeForSorting() {
+//		if( getDnf() ){
+//			return Competition.NO_TIME_FOR_STAGE;
+//		}
+//	    return mStageTimes;
+//	}
 	
 	public void setStageTimes(Long stageTimes) {
 		mStageTimes = stageTimes;
@@ -48,14 +46,6 @@ public class StageResult implements Serializable {
 	public void setStageTimesBack(Long stageTimesBack) {
 	    mStageTimesBack = stageTimesBack;
 	}
-
-	public Boolean getDnf() {
-		return mDnf;
-	}
-	
-	public void setDnf(Boolean dnf) {
-		mDnf = dnf;
-	}	
 	
 	public int getRank() {
 		return mRank;

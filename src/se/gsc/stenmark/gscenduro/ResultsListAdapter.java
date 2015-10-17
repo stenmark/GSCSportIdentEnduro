@@ -57,32 +57,32 @@ public class ResultsListAdapter extends BaseAdapter {
 		
 		resultRowV.setTitle(mResult.get(position).getTitle());
 		
-		String Name = "";
-		String StartNumber = "";
-		String Team = "";
-		String Time = "";
-		String TimeBack = "";
+		String name = "";
+		String startNumber = "";
+		String team = "";
+		String time = "";
+		String timeBack = "";
 		
 		for(int i = 0; i < mResult.get(position).getStageResult().size(); i++) {
 			int rank = mResult.get(position).getStageResult().get(i).getRank();			
 			if (rank == Competition.RANK_DNF) {			
-				Name += "-. ";
+				name += "-. ";
 			} else {
-				Name += rank + ". ";
+				name += rank + ". ";
 			}			
-			Name += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getName() + "\n";
-			StartNumber += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getStartNumber() + "\n";
-			Team += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getTeam() + "\n";
+			name += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getName() + "\n";
+			startNumber += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getStartNumber() + "\n";
+			team += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getTeam() + "\n";
 					
-			Time += CompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTime()) + "\n";
-			TimeBack += CompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTimesBack()) + "\n";			
+			time += CompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTime()) + "\n";
+			timeBack += CompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTimesBack()) + "\n";			
 		}
 				
-		resultRowV.setResultName(Name);
-		resultRowV.setResultStartNumber(StartNumber);
-		resultRowV.setResultTeam(Team);
-		resultRowV.setResultTime(Time);
-		resultRowV.setResultTimeBack(TimeBack);	
+		resultRowV.setResultName(name);
+		resultRowV.setResultStartNumber(startNumber);
+		resultRowV.setResultTeam(team);
+		resultRowV.setResultTime(time);
+		resultRowV.setResultTimeBack(timeBack);	
 		
 		resultRowV.setPosition(position);
 
