@@ -9,6 +9,16 @@ public class ResultList<E> extends ArrayList<E> {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private int currentTotalResult = 0;
+	
+	public void setTotalResultPosition(  ){
+		currentTotalResult = size();
+	}
+	
+	@Deprecated
+	public int getTotalResultPosition(){
+		return currentTotalResult;
+	}
 
 	public ResultList() {
 		super();
@@ -20,6 +30,18 @@ public class ResultList<E> extends ArrayList<E> {
 
 	public ResultList(Collection<? extends E> collection) {
 		super(collection);
+	}
+	
+	public boolean addTotalResult( E totalResult ){
+		return add(totalResult);
+	}
+	
+	public E getTotalResult(){
+		return get(currentTotalResult);
+	}
+	
+	public E getStageResult( int stageNumber){
+		return super.get(stageNumber+currentTotalResult);
 	}
 
 }
