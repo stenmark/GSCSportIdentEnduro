@@ -1,10 +1,10 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
+import se.gsc.stenmark.gscenduro.compmanagement.ResultList;
 import se.gsc.stenmark.gscenduro.compmanagement.Results;
 import android.content.Context;
 import android.view.View;
@@ -14,9 +14,9 @@ import android.widget.BaseAdapter;
 public class ResultsListAdapter extends BaseAdapter {
 	
 	private Context mContext;
-	private List<Results> mResult = new ArrayList<Results>();
+	private ResultList<Results> mResult = new ResultList<Results>();
 
-	public ResultsListAdapter(Context context, List<Results> Items) {
+	public ResultsListAdapter(Context context, ResultList<Results> Items) {
 		mContext = context;
 		mResult = Items;		
 	}		

@@ -79,11 +79,11 @@ public class ResultList<E> extends ArrayList<E> {
 		throw new RuntimeException("DO NOT USE add with ResultList Class. Use addTotalResult and addAllStageResults instead");
 	}
 	
-	@Override
-	@Deprecated
-	public E get( int i ){
-		throw new RuntimeException("DO NOT USE get with ResultList Class. Use getAllResults, getAllStageResults, getStageResult and getTotalResult  instead");
-	}
+//	@Override
+//	@Deprecated
+//	public E get( int i ){
+//		throw new RuntimeException("DO NOT USE get with ResultList Class. Use getAllResults, getAllStageResults, getStageResult and getTotalResult  instead");
+//	}
 	
 	private class CompetitionStartStopMarker implements Serializable{
 		private static final long serialVersionUID = 1L;

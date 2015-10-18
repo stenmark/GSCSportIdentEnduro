@@ -38,6 +38,10 @@ public class Results implements Serializable {
 		return mStageResult;
 	}	
 	
+	public List<StageResult> getTotalTimeResult() {
+		return mStageResult;
+	}
+	
 	public void addStageResult(StageResult newStageResult ){
 		mStageResult.add(newStageResult);
 	}

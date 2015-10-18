@@ -44,7 +44,7 @@ public class Competition implements Serializable {
 	private Stages mStages = null;
 	private Competitors mCompetitors = null;
 	private ResultList<Results> mResults = null;
-	private List<Results> mResultLandscape = null;
+	private List<Results> mResultLandscapeList = null;
 	private String mCompetitionName;
 	private String mCompetitionDate = "";
 	private int mCompetitionType = SVARTVITT_TYPE;
@@ -53,7 +53,7 @@ public class Competition implements Serializable {
 		mStages = new Stages();
 		mCompetitors = new Competitors();
 		mResults = new ResultList<Results>();
-		mResultLandscape = new ArrayList<Results>();
+		mResultLandscapeList = new ArrayList<Results>();
 		setCompetitionName("New");
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd");
@@ -92,7 +92,7 @@ public class Competition implements Serializable {
 	}	
 	
 	public List<Results> getResultLandscape() {
-		return mResultLandscape;
+		return mResultLandscapeList;
 	}
 
 	public int getCompetitionType() {
@@ -204,7 +204,7 @@ public class Competition implements Serializable {
 	}
 
 	public void exportResultsAsCsv(Activity activity) throws IOException {
-		String resultList = CompetitionHelper.getResultsAsCsvString(mStages, mResultLandscape, mCompetitors, mCompetitionType);
+		String resultList = CompetitionHelper.getResultsAsCsvString(mStages, mResultLandscapeList, mCompetitors, mCompetitionType);
 		CompetitionHelper.exportString(activity, resultList, "results", mCompetitionName, "csv");
 	}
 
@@ -251,7 +251,7 @@ public class Competition implements Serializable {
 	
 	public void calculateResults() {
 		mResults.clear();			
-		mResultLandscape.clear();
+		mResultLandscapeList.clear();
 		
 		//Get Competitor Classes
 		List<String> competitorClasses;
@@ -366,7 +366,7 @@ public class Competition implements Serializable {
 					if (competitorClass.length() > 0) {
 						resultLandscapeObject.setTitle(competitorClass);
 					}
-					mResultLandscape.add(resultLandscapeObject);
+					mResultLandscapeList.add(resultLandscapeObject);
 				}
 			}
 		}
