@@ -22,7 +22,6 @@ import android.view.View.MeasureSpec;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import se.gsc.stenmark.gscenduro.MainActivity;
 
 /**
  * Stateless helper class that can perform various operations on a competition.
