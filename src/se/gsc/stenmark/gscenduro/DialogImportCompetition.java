@@ -162,7 +162,7 @@ public class DialogImportCompetition {
 							mMainActivity.competition.setCompetitionType(Integer.parseInt(importData));
 						} else if (line.equals("[/Stages]")) {
 							importType = "";
-							mMainActivity.competition.getStages().importStages(importData, mMainActivity.competition.getCompetitionType());
+							mMainActivity.competition.getStages().importStages(importData);
 						} else if (line.equals("[/Competitors]")) {
 							importType = "";
 							mMainActivity.competition.getCompetitors().importCompetitors(importData, false, mMainActivity.competition.getCompetitionType());

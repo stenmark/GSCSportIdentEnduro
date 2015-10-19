@@ -154,7 +154,7 @@ public class StatusFragment extends Fragment {
 									processCards = true;
 								} 	
 								
-								mMainActivity.competition.getStages().importStages(stageString, 0);
+								mMainActivity.competition.getStages().importStages(stageString);
 								if (processCards) {
 									String status = "Number of stages has changed so all cards have been processed again.\n\n";
 									for (int i = 0; i < mMainActivity.competition.getCompetitors().size(); i++) {		
@@ -176,7 +176,7 @@ public class StatusFragment extends Fragment {
 		                		Toast.makeText(mMainActivity, status, Toast.LENGTH_LONG).show();                		
 		                		return;
 		                	}
-		                	mMainActivity.competition.getStages().importStages(stagesInput.getText().toString(), 1);		                	
+		                	mMainActivity.competition.getStages().importStages(stagesInput.getText().toString());		                	
 		            	}
 		            	mMainActivity.competition.setCompetitionName(nameInput.getText().toString());	
 						mMainActivity.competition.setCompetitionDate(dateInput.getText().toString());

@@ -156,7 +156,7 @@ public class Competitors implements Serializable {
 		List<String> competitorClasses = new ArrayList<String>();		
 		for (Competitor competitor : mCompetitors) {
 			String competitorClass = competitor.getCompetitorClass();
-			if (competitorClasses.equals(competitorClass)) {
+			if (competitorClasses.contains(competitorClass)) {
 				//Already in list
 			} else {
 				competitorClasses.add(competitor.getCompetitorClass());

@@ -33,8 +33,8 @@ public class Competition implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	public final int SVARTVITT_TYPE = 0;
-	public final int ESS_TYPE = 1;	
+	public static final int SVARTVITT_TYPE = 0;
+	public static final int ESS_TYPE = 1;	
 	
 	public static final long NO_TIME_FOR_STAGE = 10000000L;
 	public static final long NO_TIME_FOR_COMPETITION = 20000000L;
@@ -357,7 +357,7 @@ public class Competition implements Serializable {
 						}					
 						
 						if (newStageResult.getStageTime() == NO_TIME_FOR_STAGE) {
-							resultLandscapeObject.getStageResult().get(0).setStageTimes(NO_TIME_FOR_STAGE);
+							resultLandscapeObject.getStageResult().get(0).setStageTimes(NO_TIME_FOR_COMPETITION);
 						}
 						
 						resultLandscapeObject.addStageResult(newStageResult);

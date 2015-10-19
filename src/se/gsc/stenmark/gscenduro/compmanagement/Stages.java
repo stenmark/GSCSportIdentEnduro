@@ -136,7 +136,7 @@ public class Stages implements Serializable {
 		}		
 	}
 	
-	public void importStages(String stages, int type) {
+	public void importStages(String stages) {
 		String[] stageControls = stages.split(",");				
 		mStages.clear();
 		for (int i = 0; i < stageControls.length; i += 2) {

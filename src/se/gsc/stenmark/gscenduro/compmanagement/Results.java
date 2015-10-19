@@ -8,7 +8,7 @@ import java.util.List;
 
 
 /**
- * Contains results of competitors for a specific stage. 
+ * Contains results of all competitors for a specific stage. 
  * @author Peter
  *
  */
@@ -86,4 +86,9 @@ public class Results implements Serializable {
 			}
 		}
 	}	
+	
+	@Override
+	public String toString(){
+		return "Stage Title: " + mTitle + " Stage results: " +mStageResult;
+	}
 }

@@ -47,11 +47,16 @@ public class StageResult implements Serializable {
 	    mStageTimesBack = stageTimesBack;
 	}
 	
-	public int getRank() {
+	public Integer getRank() {
 		return mRank;
 	}
 
 	public void setRank(int rank) {
 		mRank = rank;
-	}	
+	}
+	
+	@Override
+	public String toString(){
+		return "CardNumber: " +mCardNumber + " Rank: " + mRank + " StageTime: " + mStageTimes + " time back " + mStageTimesBack;
+	}
 }

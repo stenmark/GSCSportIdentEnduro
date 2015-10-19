@@ -149,7 +149,7 @@ public class DialogNewCompetition {
 				}										
 				
 				if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE) {										
-					mMainActivity.competition.getStages().importStages(addStagesManuallyInput.getText().toString(), 1);
+					mMainActivity.competition.getStages().importStages(addStagesManuallyInput.getText().toString());
 				} else {
 					SharedPreferences settings = mMainActivity.getSharedPreferences(MainActivity.PREF_NAME, 0);
 					int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
@@ -176,7 +176,7 @@ public class DialogNewCompetition {
 						}
 						stageString = stageString.substring(0, stageString.length() - 1);   //remove last ","
 						
-						mMainActivity.competition.getStages().importStages(stageString, 0);										
+						mMainActivity.competition.getStages().importStages(stageString);										
 					}					
 				}					
 				mMainActivity.updateFragments();                    
