@@ -204,7 +204,7 @@ public class Competition implements Serializable {
 	}
 
 	public void exportResultsAsCsv(Activity activity) throws IOException {
-		String resultList = CompetitionHelper.getResultsAsCsvString(mStages, mResultLandscapeList, mCompetitors, mCompetitionType);
+		String resultList = AndroidIndependantCompetitionHelper.getResultsAsCsvString(mStages, mResultLandscapeList, mCompetitors, mCompetitionType);
 		CompetitionHelper.exportString(activity, resultList, "results", mCompetitionName, "csv");
 	}
 

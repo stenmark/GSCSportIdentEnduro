@@ -3,6 +3,7 @@ package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.gsc.stenmark.gscenduro.compmanagement.AndroidIndependantCompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Results;
@@ -92,7 +93,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 		resultLandscapeRowV.setResultLandscapeTeam(team);
 		
 		long totalTime = totalTimeResult.getStageTime();			
-		resultLandscapeRowV.setResultLandscapeTotalTime(CompetitionHelper.secToMinSec(totalTime));				
+		resultLandscapeRowV.setResultLandscapeTotalTime(AndroidIndependantCompetitionHelper.secToMinSec(totalTime));				
 		
 		//First clear all stages
 		for(int stageNumber = 1; stageNumber < 11; stageNumber++) {
@@ -103,7 +104,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			
 			Long fastestTimeOnStage = ((MainActivity) mContext).competition.getCompetitors().getFastestOnStage(mResultLandscape.get(position).getTitle(), stageNumber); 
 			Long slowestTimeOnStage = ((MainActivity) mContext).competition.getCompetitors().getSlowestOnStage(mResultLandscape.get(position).getTitle(), stageNumber);
-			String StageTime = CompetitionHelper.secToMinSec(mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime());
+			String StageTime = AndroidIndependantCompetitionHelper.secToMinSec(mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime());
 			Long competitorStageTime = mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime();				
 			rank = mResultLandscape.get(position).getStageResult().get(stageNumber).getRank();
 			

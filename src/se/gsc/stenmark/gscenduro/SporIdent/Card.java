@@ -2,6 +2,7 @@ package se.gsc.stenmark.gscenduro.SporIdent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 
@@ -20,7 +21,7 @@ public class Card implements Serializable {
 	private Punch mStartPunch; // Not used by GSC competitions
 	private Punch mFinishPunch; // Not used by GSC competitions
 	private Punch mCheckPunch; // Not used by GSC competitions
-	private ArrayList<Punch> mPunches;
+	private List<Punch> mPunches;
 
 	public Card() {
 		setCardNumber(0);
@@ -86,11 +87,11 @@ public class Card implements Serializable {
 		mCheckPunch = checkPunch;
 	}
 
-	public ArrayList<Punch> getPunches() {
+	public List<Punch> getPunches() {
 		return mPunches;
 	}
 
-	public void setPunches(ArrayList<Punch> punches) {
+	public void setPunches(List<Punch> punches) {
 		mPunches = punches;
 	}
 	

@@ -33,23 +33,6 @@ import android.widget.Toast;
  */
 public abstract class CompetitionHelper {
 
-	public static String secToMinSec(Long sec) {
-		if (sec == Competition.NO_TIME_FOR_STAGE) {
-			return "no result";
-		}
-		
-		if (sec == Competition.NO_TIME_FOR_COMPETITION) {
-			return "no time";
-		}
-			
-		Long totalTime_sec = sec;
-		Long toltalTime_min = sec / 60;
-		totalTime_sec -= toltalTime_min * 60;
-
-		return String.format("%02d:%02d", toltalTime_min, totalTime_sec);
-
-	}
-
 	/**
 	 * Generate an RGB value for a transition from Red to Green.
 	 * @return RGB coded color
@@ -72,56 +55,6 @@ public abstract class CompetitionHelper {
 		}			
 	}	
 	
-	public static String getResultsAsCsvString(Stages stage, List<Results> results, Competitors competitors, int type) {
-		String resultData = "";
-		
-		if (type == 1)  {
-			resultData = "Rank,Name,Card Number,Team,Start Number,Total Time,";
-		} else {
-			resultData = "Rank,Name,Card Number,Total Time,";
-		}
-			
-		for (int i = 0; i < stage.size(); i++) {
-			resultData += "Stage " + (i + 1) + ",Rank,Time Back,";
-		}
-		resultData += "\n";
-
-		for (int index = 0; index < results.size(); index++) {
-			if (type == 1)  {
-				if (index == 0) {
-					resultData += results.get(index).getTitle() + "\n";
-				} else if (results.get(index).getTitle() != results.get(index - 1).getTitle()) {
-					resultData += results.get(index).getTitle() + "\n";
-				}
-			}				
-			
-			int cardNumber = results.get(index).getStageResult().get(0).getCardNumber();					
-			int rank = results.get(index).getStageResult().get(0).getRank();					
-			if (rank == Competition.RANK_DNF) {			
-				resultData += "-,";
-			} else {
-				resultData += rank + ",";
-			}
-			
-			resultData += competitors.getByCardNumber(cardNumber).getName() + ",";
-			resultData += cardNumber + ",";
-			if (type == 1)  {
-				resultData += competitors.getByCardNumber(cardNumber).getTeam() + ",";					
-				resultData += String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + ",";
-			}
-			resultData += CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(0).getStageTime()) + ",";	
-									
-			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {										
-				resultData += CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + ",";
-				resultData += results.get(index).getStageResult().get(stageNumber).getRank() + ",";
-				resultData += CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + ",";
-			}			
-			resultData += "\n";
-		}
-		
-		return resultData;
-	}
-
 	public static String getResultsAsHtmlString(String name, String date, Stages stage, List<Results> results, Competitors competitors, int type) {
 		String resultData = "<!DOCTYPE html>\n<html>\n<body>\n";		
 		resultData += "<style>\ntable, th, td {\nborder: 1px solid black;\nborder-collapse: collapse;\n}\nth, td {\npadding: 5px;\n}\n</style>\n";		
@@ -169,17 +102,17 @@ public abstract class CompetitionHelper {
 			resultData += "</center></td>";
 			
 			int cardNumber = results.get(index).getStageResult().get(0).getCardNumber();
-			resultData += "<td>" + convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()) + "</td>";			
+			resultData += "<td>" + AndroidIndependantCompetitionHelper.convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()) + "</td>";			
 			resultData += "<td><center>" + cardNumber + "</center></td>";
 			
-			Log.d("html", "convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()) = " + convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()));
+			Log.d("html", "convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()) = " + AndroidIndependantCompetitionHelper.convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()));
 			Log.d("html", "competitors.getByCardNumber(cardNumber).getName() = " + competitors.getByCardNumber(cardNumber).getName());
 			
 			if (type == 1)  {
-				resultData += "<td>" + convertToHtmlChars(competitors.getByCardNumber(cardNumber).getTeam()) + "</td>";					
+				resultData += "<td>" + AndroidIndependantCompetitionHelper.convertToHtmlChars(competitors.getByCardNumber(cardNumber).getTeam()) + "</td>";					
 				resultData += "<td><center>" + String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + "</center></td>";
 			}
-			resultData += "<td><center>" + CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(0).getStageTime()) + "</center></td>";	
+			resultData += "<td><center>" + AndroidIndependantCompetitionHelper.secToMinSec(results.get(index).getStageResult().get(0).getStageTime()) + "</center></td>";	
 						
 			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {			
 				
@@ -191,9 +124,9 @@ public abstract class CompetitionHelper {
 					int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
 	
 					color -= 0xff000000;
-					resultData += "<td bgcolor=\"#" + Integer.toHexString(color) + "\"><center>" + CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + "</center></td>";
+					resultData += "<td bgcolor=\"#" + Integer.toHexString(color) + "\"><center>" + AndroidIndependantCompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + "</center></td>";
 					resultData += "<td><center>" + results.get(index).getStageResult().get(stageNumber).getRank() + "</center></td>";
-					resultData += "<td><center>" + CompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + "</center></td>";
+					resultData += "<td><center>" + AndroidIndependantCompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + "</center></td>";
 				} else {
 					resultData += "<td><center>-</center></td>";
 					resultData += "<td><center>-</center></td>";
@@ -207,17 +140,6 @@ public abstract class CompetitionHelper {
 		
 		return resultData;
 	}
-	
-	public static String convertToHtmlChars(String text)
-	{
-		text = text.replaceAll("å", "&aring;").
-		replaceAll("ä", "&auml;").
-		replaceAll("ö", "&ouml;").
-		replaceAll("Å", "&Aring;").
-		replaceAll("Ä", "&Auml;").
-		replaceAll("Ö", "&Ouml;");
-		return text;
-	}  		
 	
 	/**
 	 * Searched the Android file system for saved competitions and returns a

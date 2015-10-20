@@ -95,7 +95,8 @@ public class Competitor implements Serializable {
 			if (i != 0) {
 				status += ", ";
 			}				
-			status += "SS" + i + "=" + CompetitionHelper.secToMinSec(stageTime);
+//			status += "SS" + i + "=" + 
+			AndroidIndependantCompetitionHelper.secToMinSec(stageTime);
 		}		
 		status += "\n";
 		return status;
