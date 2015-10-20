@@ -93,7 +93,8 @@ public class CompetitionTest {
 		andreasPunches.add( new Punch(600, 71));
 		andreasPunches.add( new Punch(900, 72));
 		cardAndreas.setPunches(andreasPunches);
-		competitorAndreas.processCard(cardAndreas, competition.getStages(), Competition.SVARTVITT_TYPE);
+		String cardStatus = competitorAndreas.processCard(cardAndreas, competition.getStages(), Competition.SVARTVITT_TYPE);
+		System.out.println("Proccess card status for Andreas S" + cardStatus);
 		assertEquals(competitorAndreas.getCardNumber(), competitorAndreas.getCard().getCardNumber());
 		competition.calculateResults();
 		results = competition.getResults();
@@ -136,7 +137,8 @@ public class CompetitionTest {
 		sverkerPunches.add( new Punch(60, 71));
 		sverkerPunches.add( new Punch(90, 72));
 		cardSverker.setPunches(sverkerPunches);
-		competitorSverker.processCard(cardSverker, competition.getStages(), Competition.SVARTVITT_TYPE);
+		cardStatus = competitorSverker.processCard(cardSverker, competition.getStages(), Competition.SVARTVITT_TYPE);
+		System.out.println("Proccess card status for Sverker G" + cardStatus);
 		assertEquals(competitorSverker.getCardNumber(), competitorSverker.getCard().getCardNumber());
 		competition.calculateResults();
 		results = competition.getResults();
@@ -192,7 +194,8 @@ public class CompetitionTest {
 		sledgeHammerPunches.add( new Punch(200, 71));
 		sledgeHammerPunches.add( new Punch(210, 72));
 		cardSledgeHammer.setPunches(sledgeHammerPunches);
-		competitorSledgeHammer.processCard(cardSledgeHammer, competition.getStages(), Competition.SVARTVITT_TYPE);
+		cardStatus = competitorSledgeHammer.processCard(cardSledgeHammer, competition.getStages(), Competition.SVARTVITT_TYPE);
+		System.out.println("Proccess card status for Släggan" + cardStatus);
 		assertEquals(competitorSledgeHammer.getCardNumber(), competitorSledgeHammer.getCard().getCardNumber());
 		competition.calculateResults();
 		results = competition.getResults();
@@ -217,9 +220,9 @@ public class CompetitionTest {
 		assertEquals(2079749,totalResult.getTotalTimeResult().get(1).getCardNumber() );
 		
 		System.out.println("Check third entry in the total result, should be Släggan but with DNF result");
-//		assertEquals( (Long)600L, totalResult.getTotalTimeResult().get(2).getStageTime() );
-//		assertEquals( (Integer)2, totalResult.getTotalTimeResult().get(2).getRank() );
-//		assertEquals( (Long)540L, totalResult.getTotalTimeResult().get(2).getStageTimesBack() );
+		assertEquals( (Long)Competition.COMPETITION_DNF, totalResult.getTotalTimeResult().get(2).getStageTime() );
+		assertEquals( (Integer)Competition.RANK_DNF, totalResult.getTotalTimeResult().get(2).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, totalResult.getTotalTimeResult().get(2).getStageTimesBack() );
 		assertEquals(2078082,totalResult.getTotalTimeResult().get(2).getCardNumber() );
 		
 

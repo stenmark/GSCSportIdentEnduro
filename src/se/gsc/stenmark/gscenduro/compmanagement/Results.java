@@ -77,7 +77,7 @@ public class Results implements Serializable {
 						rank = i + 1;
 					}
 					
-					if (mStageResult.get(i).getStageTime() == NO_TIME_MAGIC_NUMBER) {
+					if (mStageResult.get(i).getStageTime() == NO_TIME_MAGIC_NUMBER || mStageResult.get(i).getStageTime() == Competition.COMPETITION_DNF ) {
 						mStageResult.get(i).setRank(Competition.RANK_DNF);
 					} else {			
 						mStageResult.get(i).setRank(rank);

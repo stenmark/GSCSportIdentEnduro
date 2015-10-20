@@ -20,6 +20,10 @@ public abstract class AndroidIndependantCompetitionHelper {
 		if (sec == Competition.NO_TIME_FOR_COMPETITION) {
 			return "no time";
 		}
+		
+		if (sec == Competition.COMPETITION_DNF) {
+			return "DNF";
+		}
 			
 		Long totalTime_sec = sec;
 		Long toltalTime_min = sec / 60;

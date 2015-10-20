@@ -36,6 +36,7 @@ public class Competition implements Serializable {
 	public static final int SVARTVITT_TYPE = 0;
 	public static final int ESS_TYPE = 1;	
 	
+	public static final long COMPETITION_DNF = 5000000L;
 	public static final long NO_TIME_FOR_STAGE = 10000000L;
 	public static final long NO_TIME_FOR_COMPETITION = 20000000L;
 	public static final int RANK_DNF = 30000000;
@@ -285,9 +286,12 @@ public class Competition implements Serializable {
 			for (Competitor currentCompetitor : mCompetitors.getCompetitors() ) {
 				StageResult totalTimeResult;
 				if ((mCompetitionType == SVARTVITT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {
-					if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < mStages.getStages().size())) {
-						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), NO_TIME_FOR_COMPETITION);
-					} else {
+					if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() == 0) ) {
+						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(),NO_TIME_FOR_COMPETITION);
+					} else if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < mStages.getStages().size())) {
+						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), COMPETITION_DNF);
+					} 
+					else {
 						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), currentCompetitor.getTotalTime(mStages.size()));							
 					}
 					mResults.getTotalResult(competitorClass).addTotalTimeResult(totalTimeResult);					
@@ -310,16 +314,6 @@ public class Competition implements Serializable {
 		
 						stageResult = new StageResult(currentCompetitor.getCardNumber(), stageTime);
 						mResults.getStageResult(stageNumber,competitorClass).addStageResult(stageResult);
-		
-						if (stageTime == NO_TIME_FOR_STAGE) {
-							// Update the total and set competitor to DNF if one stage is DNF
-							for (int k = 0; k < mResults.getTotalResult(competitorClass).getStageResult().size(); k++) {
-								if (mResults.getTotalResult(competitorClass).getStageResult().get(k).getCardNumber() == stageResult.getCardNumber()) {
-									mResults.getTotalResult(competitorClass).getStageResult().get(k).setStageTimes(NO_TIME_FOR_COMPETITION);;
-									break;
-								}
-							}
-						}
 					}						
 				}
 	
@@ -332,7 +326,7 @@ public class Competition implements Serializable {
 				for (StageResult currentStageResult : currentResult.getStageResult() ) {
 					Long stageTimeBack = NO_TIME_FOR_STAGE;
 					Long currentStageTime = currentStageResult.getStageTime();
-					if (currentStageTime != NO_TIME_FOR_STAGE && currentStageTime != NO_TIME_FOR_COMPETITION ) {
+					if (currentStageTime != NO_TIME_FOR_STAGE && currentStageTime != COMPETITION_DNF && currentStageTime != NO_TIME_FOR_COMPETITION ) {
 						if (currentResult.getStageResult().size() > 0) {
 							stageTimeBack = currentStageTime - currentResult.getStageResult().get(0).getStageTime();
 						}
@@ -355,11 +349,7 @@ public class Competition implements Serializable {
 								newStageResult = stageResultObject;
 							}																			
 						}					
-						
-						if (newStageResult.getStageTime() == NO_TIME_FOR_STAGE) {
-							resultLandscapeObject.getStageResult().get(0).setStageTimes(NO_TIME_FOR_COMPETITION);
-						}
-						
+												
 						resultLandscapeObject.addStageResult(newStageResult);
 					}
 					

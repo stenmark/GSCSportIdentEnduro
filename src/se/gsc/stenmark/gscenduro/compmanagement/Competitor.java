@@ -95,8 +95,7 @@ public class Competitor implements Serializable {
 			if (i != 0) {
 				status += ", ";
 			}				
-//			status += "SS" + i + "=" + 
-			AndroidIndependantCompetitionHelper.secToMinSec(stageTime);
+			status += "SS" + i + "=" + AndroidIndependantCompetitionHelper.secToMinSec(stageTime);
 		}		
 		status += "\n";
 		return status;
@@ -151,6 +150,19 @@ public class Competitor implements Serializable {
 		
 		if (mStageTimes.size() < numberOfStages) {
 			return Competition.NO_TIME_FOR_COMPETITION;
+		}
+		
+		int numberOfCompletedStages = 0;
+		for( int i = 0; i < mStageTimes.size(); i++){
+			if (mStageTimes.getTimesOfStage(i) != Competition.NO_TIME_FOR_STAGE) {
+				numberOfCompletedStages++;
+			}
+		}
+		if( numberOfCompletedStages == 0){
+			return Competition.NO_TIME_FOR_COMPETITION;
+		}
+		if( numberOfCompletedStages < numberOfStages){
+			return Competition.COMPETITION_DNF;
 		}
 		
 		for (int i = 0; i < mStageTimes.size(); i++) {
