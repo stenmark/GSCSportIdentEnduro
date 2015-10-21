@@ -337,18 +337,21 @@ public class Competition implements Serializable {
 					
 			//Calculate results for landscape
 			if (mResults != null && !mResults.isEmpty()) {
-				for (StageResult totalTimeResult : mResults.getTotalResult(competitorClass).getStageResult()) {							
-					int cardNumber = totalTimeResult.getCardNumber();				
-					Results resultLandscapeObject = new Results();						
-					resultLandscapeObject.addTotalTimeResult(totalTimeResult);
-					
+				for (StageResult totalTimeResultForCompetitor : mResults.getTotalResult(competitorClass).getTotalTimeResult()) {							
+					int cardNumber = totalTimeResultForCompetitor.getCardNumber();				
+					Results resultLandscapeObject = new Results();	
+					//We need to create a true copy of the totalTimeResult for each competitor, otherwise we will overwrite in the original List
+					resultLandscapeObject.addTotalTimeResult((StageResult) AndroidIndependantCompetitionHelper.deepClone(totalTimeResultForCompetitor));					
 					for (int stage = 1; stage <= mResults.getAllStageResults(competitorClass).size(); stage++) {										
 						StageResult newStageResult = new StageResult(cardNumber, NO_TIME_FOR_STAGE );					
 						for (StageResult stageResultObject : mResults.getStageResult(stage,competitorClass).getStageResult()) {						
 							if (cardNumber == stageResultObject.getCardNumber()) {
 								newStageResult = stageResultObject;
-							}																			
-						}					
+							}
+							if (newStageResult.getStageTime() == NO_TIME_FOR_STAGE) {
+								newStageResult.setStageTimes(Competition.NO_TIME_FOR_STAGE);
+							}
+						}
 												
 						resultLandscapeObject.addStageResult(newStageResult);
 					}

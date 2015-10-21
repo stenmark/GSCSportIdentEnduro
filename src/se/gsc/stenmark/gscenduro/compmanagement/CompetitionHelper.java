@@ -327,4 +327,6 @@ public abstract class CompetitionHelper {
 
 		return bigbitmap;
 	}
+	
+
 }
