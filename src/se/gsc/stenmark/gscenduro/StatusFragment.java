@@ -81,7 +81,7 @@ public class StatusFragment extends Fragment {
 				final EditText stagesInput = (EditText) promptsView.findViewById(R.id.modify_stages_manually_input);	
 				stagesInput.setText(((MainActivity) mMainActivity).competition.getStages().exportStagesCsvString());
 				
-				if (((MainActivity) mMainActivity).competition.getCompetitionType() == ((MainActivity) mMainActivity).competition.SVARTVITT_TYPE) {
+				if (((MainActivity) mMainActivity).competition.getCompetitionType() == ((MainActivity) mMainActivity).competition.SVART_VIT_TYPE) {
 					layoutModifyStageSpinner.setVisibility(View.VISIBLE);
 					layoutModifyStageManually.setVisibility(View.GONE);
 				} else {
@@ -122,7 +122,7 @@ public class StatusFragment extends Fragment {
 		                    return;                	
 		                }		            	
 		            			
-		            	if (((MainActivity) mMainActivity).competition.getCompetitionType() == ((MainActivity) mMainActivity).competition.SVARTVITT_TYPE) {
+		            	if (((MainActivity) mMainActivity).competition.getCompetitionType() == ((MainActivity) mMainActivity).competition.SVART_VIT_TYPE) {
 							SharedPreferences settings = mMainActivity.getSharedPreferences(MainActivity.PREF_NAME, 0);
 							int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
 							int finishStationNumner = Integer.parseInt(settings.getString("FINISH_STATION_NUMBER", "72"));
@@ -212,7 +212,7 @@ public class StatusFragment extends Fragment {
 			}
 			
 			statusTextView = (TextView) getView().findViewById(R.id.competition_type);				
-			if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE) {
+			if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVART_VIT_TYPE) {
 				statusTextView.setText("SvartVitt");	
 			} else {
 				statusTextView.setText("Enduro Sweden Series");
@@ -229,7 +229,7 @@ public class StatusFragment extends Fragment {
 			}
 			
 			statusTextView = (TextView) getView().findViewById(R.id.competitor_status);	
-			if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE) {
+			if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVART_VIT_TYPE) {
 				if (mMainActivity.competition.getCompetitors() != null) {
 					statusTextView.setText("Total: " + mMainActivity.competition.getCompetitors().size());
 				}

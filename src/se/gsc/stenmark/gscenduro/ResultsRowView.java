@@ -33,7 +33,7 @@ public class ResultsRowView extends LinearLayout {
 		mResultStartNumber = (TextView) mCompoundView.findViewById(R.id.result_start_number);
 		mResultTeam = (TextView) mCompoundView.findViewById(R.id.result_team);
 		
-		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE) {
+		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVART_VIT_TYPE) {
 			mResultStartNumberTitle.setVisibility(View.GONE);
 			mResultTeamTitle.setVisibility(View.GONE);
 			mResultStartNumber.setVisibility(View.GONE);

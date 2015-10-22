@@ -74,6 +74,7 @@ public class Competitor implements Serializable {
 	}
 	
 	public String processCard(Card card, Stages stages, int type) {
+		boolean containsAllPunches = true;
 		mCard = card;
 		mCard.setCardNumber(mCardNumber);
 		setStageTimes(new StageTimes());
@@ -81,15 +82,25 @@ public class Competitor implements Serializable {
 		for (int i = 0; i < stages.size(); i++) {
 			long stageTime;
 						
-			if (type == 1) {
+			if (type == Competition.ESS_TYPE) {
 				stageTime = mCard.getStageTimeEss(stages.getStages().get(i).getStart(), stages.getStages().get(i).getFinish());
 			} else {
 				stageTime = mCard.getStageTimeSvartVitt(stages.getStages().get(i).getStart(), stages.getStages().get(i).getFinish(), i + 1);
+				if( stageTime == Competition.NO_TIME_FOR_STAGE ){
+					containsAllPunches = false;
+				}
 			}
 			
 			mStageTimes.setTimesOfStage(i, stageTime);
 		}		
-		return "Added card: " + mCardNumber + "  Competitor:  " + mName + "\n";
+		
+		if( containsAllPunches){
+			return "Added card: " + mCardNumber + "  Competitor:  " + mName + "\n";
+		}
+		else{
+			return "WARNING! " + mName + " has not completed all stages. Cardnumber: " + mCardNumber + "\n";
+		}
+		
 	}
 	
 	public boolean hasResult() {

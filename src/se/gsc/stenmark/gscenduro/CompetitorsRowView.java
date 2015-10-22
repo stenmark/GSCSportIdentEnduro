@@ -40,7 +40,7 @@ public class CompetitorsRowView extends LinearLayout {
 		LinearLayout mCompoundView = (LinearLayout) inflater.inflate(R.layout.competitor_row, this);			
 		final LinearLayout competitorRowEssLayout = (LinearLayout) mCompoundView.findViewById(R.id.competitor_row_ess_layout);
 		
-		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE)	{
+		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVART_VIT_TYPE)	{
 			competitorRowEssLayout.setVisibility(View.GONE);
 		} else {
 			competitorRowEssLayout.setVisibility(View.VISIBLE);		
@@ -148,7 +148,7 @@ public class CompetitorsRowView extends LinearLayout {
 			
 			final LinearLayout modifyCompetitorEssLayout = (LinearLayout) promptsView.findViewById(R.id.modify_competitor_ess_layout);
 			
-			if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVARTVITT_TYPE) {				
+			if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVART_VIT_TYPE) {				
 				modifyCompetitorEssLayout.setVisibility(View.GONE);	
 			} else {
 				modifyCompetitorEssLayout.setVisibility(View.VISIBLE);	

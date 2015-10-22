@@ -66,7 +66,7 @@ public class DialogNewCompetition {
         spinner.setAdapter(LTRadapter);			
         spinner.setSelection(mMainActivity.competition.getStages().size() - 1);			
 	
-		if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE){
+		if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVART_VIT_TYPE){
 			keepCompetitorsCheckBox.setVisibility(View.VISIBLE);							
 		} else {					
 			keepCompetitorsCheckBox.setVisibility(View.GONE);
@@ -80,7 +80,7 @@ public class DialogNewCompetition {
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				if ((mMainActivity.competition.getCompetitors().size() > 0) && 
 				   (((checkedId == R.id.radio_type_ess) && (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE) && (mMainActivity.competition.getCompetitors().size() > 0)) ||
-				   ((checkedId == R.id.radio_type_svartvitt) && (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE)))) {
+				   ((checkedId == R.id.radio_type_svartvitt) && (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVART_VIT_TYPE)))) {
 					keepCompetitorsCheckBox.setVisibility(View.VISIBLE);							
 				} else {					
 					keepCompetitorsCheckBox.setVisibility(View.GONE);
@@ -145,7 +145,7 @@ public class DialogNewCompetition {
 				if (radioTypeEss.isChecked()) {
 					mMainActivity.competition.setCompetitionType(mMainActivity.competition.ESS_TYPE);
 				} else {
-					mMainActivity.competition.setCompetitionType(mMainActivity.competition.SVARTVITT_TYPE);
+					mMainActivity.competition.setCompetitionType(mMainActivity.competition.SVART_VIT_TYPE);
 				}										
 				
 				if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE) {										

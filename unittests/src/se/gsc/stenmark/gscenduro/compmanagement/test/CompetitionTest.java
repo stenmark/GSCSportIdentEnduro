@@ -34,7 +34,7 @@ public class CompetitionTest {
 		competition.getCompetitors().add("Släggan", "2078082", "", COMP_CLASS_TO_TEST, "0", "0", 0);
 		competition.getCompetitors().add("Fruttberg", "2078040", "", COMP_CLASS_TO_TEST, "0", "0", 0);
 		competition.setCompetitionDate("2015-09-12");
-		competition.setCompetitionType( Competition.SVARTVITT_TYPE);
+		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
 		competition.setCompetitionName("Competition test name");
 		
 		//Assert some basic competition fields
@@ -117,7 +117,7 @@ public class CompetitionTest {
 		andreasPunches.add( new Punch(600, 71));
 		andreasPunches.add( new Punch(900, 72));
 		cardAndreas.setPunches(andreasPunches);
-		String cardStatus = competitorAndreas.processCard(cardAndreas, competition.getStages(), Competition.SVARTVITT_TYPE);
+		String cardStatus = competitorAndreas.processCard(cardAndreas, competition.getStages(), Competition.SVART_VIT_TYPE);
 		System.out.println("Proccess card status for Andreas S" + cardStatus);
 		assertEquals(competitorAndreas.getCardNumber(), competitorAndreas.getCard().getCardNumber());
 		competition.calculateResults();
@@ -163,7 +163,7 @@ public class CompetitionTest {
 		sverkerPunches.add( new Punch(60, 71));
 		sverkerPunches.add( new Punch(90, 72));
 		cardSverker.setPunches(sverkerPunches);
-		cardStatus = competitorSverker.processCard(cardSverker, competition.getStages(), Competition.SVARTVITT_TYPE);
+		cardStatus = competitorSverker.processCard(cardSverker, competition.getStages(), Competition.SVART_VIT_TYPE);
 		System.out.println("Proccess card status for Sverker G" + cardStatus);
 		assertEquals(competitorSverker.getCardNumber(), competitorSverker.getCard().getCardNumber());
 		competition.calculateResults();
@@ -223,7 +223,7 @@ public class CompetitionTest {
 		sledgeHammerPunches.add( new Punch(200, 71));
 		sledgeHammerPunches.add( new Punch(210, 72));
 		cardSledgeHammer.setPunches(sledgeHammerPunches);
-		cardStatus = competitorSledgeHammer.processCard(cardSledgeHammer, competition.getStages(), Competition.SVARTVITT_TYPE);
+		cardStatus = competitorSledgeHammer.processCard(cardSledgeHammer, competition.getStages(), Competition.SVART_VIT_TYPE);
 		System.out.println("Proccess card status for Släggan" + cardStatus);
 		assertEquals(competitorSledgeHammer.getCardNumber(), competitorSledgeHammer.getCard().getCardNumber());
 		competition.calculateResults();
@@ -350,7 +350,7 @@ public class CompetitionTest {
 		peterPunches.add( new Punch(500, 71));
 		peterPunches.add( new Punch(970, 72));
 		cardPeter.setPunches(peterPunches);
-		cardStatus = competitorPeter.processCard(cardPeter, competition.getStages(), Competition.SVARTVITT_TYPE);
+		cardStatus = competitorPeter.processCard(cardPeter, competition.getStages(), Competition.SVART_VIT_TYPE);
 		assertEquals(competitorPeter.getCardNumber(), competitorPeter.getCard().getCardNumber());
 		competition.calculateResults();
 		results = competition.getResults();
@@ -403,7 +403,7 @@ public class CompetitionTest {
 		fruttbergPunches.add( new Punch(1000, 71));
 		fruttbergPunches.add( new Punch(1300, 72));
 		cardFruttberg.setPunches(fruttbergPunches);
-		cardStatus = competitorFruttberg.processCard(cardFruttberg, competition.getStages(), Competition.SVARTVITT_TYPE);
+		cardStatus = competitorFruttberg.processCard(cardFruttberg, competition.getStages(), Competition.SVART_VIT_TYPE);
 		assertEquals(competitorFruttberg.getCardNumber(), competitorFruttberg.getCard().getCardNumber());
 		competition.calculateResults();
 		results = competition.getResults();

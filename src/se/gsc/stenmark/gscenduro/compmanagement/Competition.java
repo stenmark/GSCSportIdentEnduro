@@ -33,7 +33,7 @@ public class Competition implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final int SVARTVITT_TYPE = 0;
+	public static final int SVART_VIT_TYPE = 0;
 	public static final int ESS_TYPE = 1;	
 	
 	public static final long COMPETITION_DNF = 5000000L;
@@ -48,7 +48,7 @@ public class Competition implements Serializable {
 	private List<Results> mResultLandscapeList = null;
 	private String mCompetitionName;
 	private String mCompetitionDate = "";
-	private int mCompetitionType = SVARTVITT_TYPE;
+	private int mCompetitionType = SVART_VIT_TYPE;
 	
 	public Competition() {
 		mStages = new Stages();
@@ -187,7 +187,7 @@ public class Competition implements Serializable {
 	public String processNewCard(Card card, Boolean calculateResultsAfterAdd) {
 		Competitor foundCompetitor = mCompetitors.findByCard(card);
 		if (foundCompetitor == null) {
-			return "ERROR! Could not find any competitor with card number: " + card.getCardNumber();
+			return "WARNING! Could not find any competitor with card number: " + card.getCardNumber();
 		}
 		
 		String status = foundCompetitor.processCard(card, mStages, mCompetitionType);
@@ -285,7 +285,7 @@ public class Competition implements Serializable {
 			// Add total times			
 			for (Competitor currentCompetitor : mCompetitors.getCompetitors() ) {
 				StageResult totalTimeResult;
-				if ((mCompetitionType == SVARTVITT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {
+				if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {
 					if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() == 0) ) {
 						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(),NO_TIME_FOR_COMPETITION);
 					} else if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < mStages.getStages().size())) {
@@ -305,7 +305,7 @@ public class Competition implements Serializable {
 			// Add stage times
 			for (int stageNumber = 1; stageNumber <= mResults.getAllStageResults(competitorClass).size(); stageNumber++) {
 				for (Competitor currentCompetitor : mCompetitors.getCompetitors() ) {
-					if ((mCompetitionType == SVARTVITT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {			
+					if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {			
 
 						Long stageTime = NO_TIME_FOR_STAGE;
 						if ((currentCompetitor.hasResult()) && (currentCompetitor.getStageTimes().size() > (stageNumber - 1))) {

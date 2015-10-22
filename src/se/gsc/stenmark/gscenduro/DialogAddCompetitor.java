@@ -108,7 +108,7 @@ public class DialogAddCompetitor {
 		      }
 		});			
 		
-		if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVARTVITT_TYPE) {				
+		if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVART_VIT_TYPE) {				
 			addCompetitorEssLayout.setVisibility(View.GONE);
 			cardNumberCheckBox.setVisibility(View.VISIBLE);
 			cardNumberInput.setVisibility(View.GONE);
