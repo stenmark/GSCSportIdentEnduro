@@ -17,9 +17,110 @@ import se.gsc.stenmark.gscenduro.compmanagement.StageResult;
 
 
 public class CompetitionTest {
-
 	@Test
-	public void test() {
+	public void testDoublePunch(){
+		final int EXPECTED_NUM_STAGES = 4;
+		final int EXPECTED_NUM_COMPETITORS = 1;
+		final String COMP_CLASS_TO_TEST = "";
+		
+		//Init Competition with test parameters
+		Competition competition = new CompetiotnStub();
+		competition.getStages().importStages("71,72,71,72,71,72,71,72");
+		competition.getCompetitors().add("Andreas S", "2079749", COMP_CLASS_TO_TEST, "", "0", "0", 0);
+		competition.setCompetitionDate("2015-09-12");
+		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
+		competition.setCompetitionName("Competition test name");
+		
+		//Assert some basic competition fields
+		assertEquals(EXPECTED_NUM_STAGES, competition.getStages().size() );
+		assertEquals( 71, competition.getStages().get(0).getStart() );
+		assertEquals( 72, competition.getStages().get(0).getFinish() );
+		assertEquals( 71, competition.getStages().get(1).getStart() );
+		assertEquals( 72, competition.getStages().get(1).getFinish() );
+		assertEquals( 71, competition.getStages().get(2).getStart() );
+		assertEquals( 72, competition.getStages().get(2).getFinish() );
+		assertEquals( 71, competition.getStages().get(3).getStart() );
+		assertEquals( 72, competition.getStages().get(3).getFinish() );
+
+		assertEquals(EXPECTED_NUM_COMPETITORS, competition.getCompetitors().getCompetitors().size() );
+		assertEquals(1, competition.getCompetitors().getCompetitorClasses().size());
+		assertEquals( COMP_CLASS_TO_TEST, competition.getCompetitors().getCompetitorClasses().get(0) );
+		
+		System.out.println("Add results with double punches for competitor 1: Andreas S - 2079749");
+		Competitor competitorAndreas = competition.getCompetitors().getByCardNumber(2079749);
+		assertEquals(2079749, competitorAndreas.getCardNumber() );
+		Card cardAndreas = new Card();
+		cardAndreas.setCardNumber(2079749);
+		cardAndreas.setNumberOfPunches(6);
+		List<Punch> andreasPunches = new ArrayList<>();
+		//SS1 Double punch start Should be 90 seconds
+		andreasPunches.add( new Punch(100, 71));
+		andreasPunches.add( new Punch(110, 71));
+		andreasPunches.add( new Punch(200, 72));
+		
+		//SS2 no double punches  Should be 200 seconds
+		andreasPunches.add( new Punch(300, 71));
+		andreasPunches.add( new Punch(500, 72));
+		
+		//SS3 double punch finish  Should be 300 seconds
+		andreasPunches.add( new Punch(600, 71));
+		andreasPunches.add( new Punch(900, 72));
+		andreasPunches.add( new Punch(912, 72));
+		
+		//SS4 double punch both start and finish should be 177 seconds
+		andreasPunches.add( new Punch(1200, 71));
+		andreasPunches.add( new Punch(1223, 71));
+		andreasPunches.add( new Punch(1400, 72));
+		andreasPunches.add( new Punch(1414, 72));
+		cardAndreas.setPunches(andreasPunches);
+		String cardStatus = competitorAndreas.processCard(cardAndreas, competition.getStages(), Competition.SVART_VIT_TYPE);
+		System.out.println("Proccess card status for Andreas S: " + cardStatus);
+		assertEquals(competitorAndreas.getCardNumber(), competitorAndreas.getCard().getCardNumber());
+		
+		competition.calculateResults();
+		ResultList<Results> results = competition.getResults();
+		assertNotNull(results);
+		Results totalResult = results.getTotalResult(COMP_CLASS_TO_TEST);
+		assertNotNull(totalResult);
+		System.out.println("Total results is: " + totalResult);
+		assertEquals(EXPECTED_NUM_COMPETITORS, totalResult.getTotalTimeResult().size() );
+		assertEquals(EXPECTED_NUM_STAGES, results.getAllStageResults(COMP_CLASS_TO_TEST).size() );
+		assertEquals(EXPECTED_NUM_STAGES+1, results.getAllResults(COMP_CLASS_TO_TEST).size() );
+		
+		System.out.println("Check first entry in the total result, should be Andreas S");
+		assertEquals( (Long)767L, totalResult.getTotalTimeResult().get(0).getStageTime() );
+		assertEquals( (Integer)1, totalResult.getTotalTimeResult().get(0).getRank() );
+		assertEquals( (Long)0L, totalResult.getTotalTimeResult().get(0).getStageTimesBack() );
+		assertEquals(2079749,totalResult.getTotalTimeResult().get(0).getCardNumber() );
+		
+		Results stage1Result = results.getStageResult(1, COMP_CLASS_TO_TEST);
+		Results stage2Result = results.getStageResult(2, COMP_CLASS_TO_TEST);
+		Results stage3Result = results.getStageResult(3, COMP_CLASS_TO_TEST);
+		Results stage4Result = results.getStageResult(4, COMP_CLASS_TO_TEST);
+		
+		assertEquals( (Long)90L, stage1Result.getStageResult().get(0).getStageTime() );
+		assertEquals( (Integer)1, stage1Result.getStageResult().get(0).getRank() );
+		assertEquals( (Long)0L, stage1Result.getStageResult().get(0).getStageTimesBack() );
+		assertEquals(2079749,stage1Result.getStageResult().get(0).getCardNumber() );
+		
+		assertEquals( (Long)200L, stage2Result.getStageResult().get(0).getStageTime() );
+		assertEquals( (Integer)1, stage2Result.getStageResult().get(0).getRank() );
+		assertEquals( (Long)0L, stage2Result.getStageResult().get(0).getStageTimesBack() );
+		assertEquals(2079749,stage2Result.getStageResult().get(0).getCardNumber() );
+		
+		assertEquals( (Long)300L, stage3Result.getStageResult().get(0).getStageTime() );
+		assertEquals( (Integer)1, stage3Result.getStageResult().get(0).getRank() );
+		assertEquals( (Long)0L, stage3Result.getStageResult().get(0).getStageTimesBack() );
+		assertEquals(2079749,stage3Result.getStageResult().get(0).getCardNumber() );
+		
+		assertEquals( (Long)177L, stage4Result.getStageResult().get(0).getStageTime() );
+		assertEquals( (Integer)1, stage4Result.getStageResult().get(0).getRank() );
+		assertEquals( (Long)0L, stage4Result.getStageResult().get(0).getStageTimesBack() );
+		assertEquals(2079749,stage4Result.getStageResult().get(0).getCardNumber() );
+	}
+	
+//	@Test
+	public void testFullCompetition() {
 		final String COMP_CLASS_TO_TEST = "";
 		final int EXPECTED_NUM_COMPETITORS = 6;
 		final int EXPECTED_NUM_STAGES = 3;
