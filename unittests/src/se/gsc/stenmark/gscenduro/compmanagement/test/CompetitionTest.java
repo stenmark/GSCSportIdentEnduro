@@ -21,7 +21,7 @@ public class CompetitionTest {
 	@Test
 	public void test() {
 		final String COMP_CLASS_TO_TEST = "";
-		final int EXPECTED_NUM_COMPETITORS = 5;
+		final int EXPECTED_NUM_COMPETITORS = 6;
 		final int EXPECTED_NUM_STAGES = 3;
 		
 		//Init Competition with test parameters
@@ -32,6 +32,7 @@ public class CompetitionTest {
 		competition.getCompetitors().add("Sverker G", "2078056", "", COMP_CLASS_TO_TEST, "0", "0", 0);
 		competition.getCompetitors().add("Ingemar G", "2079747", "", COMP_CLASS_TO_TEST, "0", "0", 0);
 		competition.getCompetitors().add("Släggan", "2078082", "", COMP_CLASS_TO_TEST, "0", "0", 0);
+		competition.getCompetitors().add("Fruttberg", "2078040", "", COMP_CLASS_TO_TEST, "0", "0", 0);
 		competition.setCompetitionDate("2015-09-12");
 		competition.setCompetitionType( Competition.SVARTVITT_TYPE);
 		competition.setCompetitionName("Competition test name");
@@ -332,14 +333,356 @@ public class CompetitionTest {
 				assertEquals((Integer)Competition.RANK_DNF, competitorStageResult.getRank());
 			}	
 		}
+		
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		System.out.println("Add results for competitor 4: Peter B - 2065396. Set same stage time as Sverker on stage 2. And same total Time as Andreas S");
+		Competitor competitorPeter = competition.getCompetitors().getByCardNumber(2065396);
+		assertEquals(2065396, competitorPeter.getCardNumber() );
+		Card cardPeter = new Card();
+		cardPeter.setCardNumber(2065396);
+		cardPeter.setNumberOfPunches(6);
+		List<Punch> peterPunches = new ArrayList<>();
+		peterPunches.add( new Punch(5, 71));
+		peterPunches.add( new Punch(115, 72));
+		peterPunches.add( new Punch(130, 71));
+		peterPunches.add( new Punch(150, 72));
+		peterPunches.add( new Punch(500, 71));
+		peterPunches.add( new Punch(970, 72));
+		cardPeter.setPunches(peterPunches);
+		cardStatus = competitorPeter.processCard(cardPeter, competition.getStages(), Competition.SVARTVITT_TYPE);
+		assertEquals(competitorPeter.getCardNumber(), competitorPeter.getCard().getCardNumber());
+		competition.calculateResults();
+		results = competition.getResults();
+		assertNotNull(results);
+		totalResult = results.getTotalResult(COMP_CLASS_TO_TEST);
+		assertNotNull(totalResult);
+		System.out.println("Total results is: " + totalResult);
+		assertEquals(EXPECTED_NUM_COMPETITORS, totalResult.getTotalTimeResult().size() );
+		assertEquals(EXPECTED_NUM_STAGES, results.getAllStageResults(COMP_CLASS_TO_TEST).size() );
+		assertEquals(EXPECTED_NUM_STAGES+1, results.getAllResults(COMP_CLASS_TO_TEST).size() );
+		
+		System.out.println("Check first entry in the total result, should be Sverker G");
+		assertEquals( (Long)60L, totalResult.getTotalTimeResult().get(0).getStageTime() );
+		assertEquals( (Integer)1, totalResult.getTotalTimeResult().get(0).getRank() );
+		assertEquals( (Long)0L, totalResult.getTotalTimeResult().get(0).getStageTimesBack() );
+		assertEquals(2078056,totalResult.getTotalTimeResult().get(0).getCardNumber() );
+		
+		System.out.println("Check second entry in the total result, should be Andreas S");
+		assertEquals( (Long)600L, totalResult.getTotalTimeResult().get(1).getStageTime() );
+		assertEquals( (Integer)2, totalResult.getTotalTimeResult().get(1).getRank() );
+		assertEquals( (Long)540L, totalResult.getTotalTimeResult().get(1).getStageTimesBack() );
+		assertEquals(2079749,totalResult.getTotalTimeResult().get(1).getCardNumber() );
+		
+		System.out.println("Check third entry in the total result, should be Peter B. Should have same time and Rank as Andreas S");
+		assertEquals( (Long)600L, totalResult.getTotalTimeResult().get(2).getStageTime() );
+		assertEquals( (Integer)2, totalResult.getTotalTimeResult().get(2).getRank() );
+		assertEquals( (Long)540L, totalResult.getTotalTimeResult().get(2).getStageTimesBack() );
+		assertEquals(2065396,totalResult.getTotalTimeResult().get(2).getCardNumber() );
 
-		List<Results> resultLandscape = competition.getResultLandscape();
-		for( Results lResult : resultLandscape){
-			System.out.println( "resultLandscape " + lResult.getStageResult() );
+		System.out.println("Check fourth entry in the total result, should be Släggan but with DNF result");
+		assertEquals( (Long)Competition.COMPETITION_DNF, totalResult.getTotalTimeResult().get(3).getStageTime() );
+		assertEquals( (Integer)Competition.RANK_DNF, totalResult.getTotalTimeResult().get(3).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, totalResult.getTotalTimeResult().get(3).getStageTimesBack() );
+		assertEquals(2078082,totalResult.getTotalTimeResult().get(3).getCardNumber() );
+
+		
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		System.out.println("Add results for competitor 5: Fruttberg - 2078040. Total time highest, check that rank is last");
+		Competitor competitorFruttberg = competition.getCompetitors().getByCardNumber(2078040);
+		assertEquals(2078040, competitorFruttberg.getCardNumber() );
+		Card cardFruttberg = new Card();
+		cardFruttberg.setCardNumber(2078040);
+		cardFruttberg.setNumberOfPunches(6);
+		List<Punch> fruttbergPunches = new ArrayList<>();
+		fruttbergPunches.add( new Punch(250, 71));
+		fruttbergPunches.add( new Punch(450, 72));
+		fruttbergPunches.add( new Punch(550, 71));
+		fruttbergPunches.add( new Punch(750, 72));
+		fruttbergPunches.add( new Punch(1000, 71));
+		fruttbergPunches.add( new Punch(1300, 72));
+		cardFruttberg.setPunches(fruttbergPunches);
+		cardStatus = competitorFruttberg.processCard(cardFruttberg, competition.getStages(), Competition.SVARTVITT_TYPE);
+		assertEquals(competitorFruttberg.getCardNumber(), competitorFruttberg.getCard().getCardNumber());
+		competition.calculateResults();
+		results = competition.getResults();
+		assertNotNull(results);
+		totalResult = results.getTotalResult(COMP_CLASS_TO_TEST);
+		assertNotNull(totalResult);
+		System.out.println("Total results is: " + totalResult);
+		assertEquals(EXPECTED_NUM_COMPETITORS, totalResult.getTotalTimeResult().size() );
+		assertEquals(EXPECTED_NUM_STAGES, results.getAllStageResults(COMP_CLASS_TO_TEST).size() );
+		assertEquals(EXPECTED_NUM_STAGES+1, results.getAllResults(COMP_CLASS_TO_TEST).size() );
+		
+		System.out.println("Check first entry in the total result, should be Sverker G");
+		assertEquals( (Long)60L, totalResult.getTotalTimeResult().get(0).getStageTime() );
+		assertEquals( (Integer)1, totalResult.getTotalTimeResult().get(0).getRank() );
+		assertEquals( (Long)0L, totalResult.getTotalTimeResult().get(0).getStageTimesBack() );
+		assertEquals(2078056,totalResult.getTotalTimeResult().get(0).getCardNumber() );
+		
+		System.out.println("Check second entry in the total result, should be Andreas S");
+		assertEquals( (Long)600L, totalResult.getTotalTimeResult().get(1).getStageTime() );
+		assertEquals( (Integer)2, totalResult.getTotalTimeResult().get(1).getRank() );
+		assertEquals( (Long)540L, totalResult.getTotalTimeResult().get(1).getStageTimesBack() );
+		assertEquals(2079749,totalResult.getTotalTimeResult().get(1).getCardNumber() );
+		
+		System.out.println("Check third entry in the total result, should be Peter B. Should have same time and Rank as Andreas S");
+		assertEquals( (Long)600L, totalResult.getTotalTimeResult().get(2).getStageTime() );
+		assertEquals( (Integer)2, totalResult.getTotalTimeResult().get(2).getRank() );
+		assertEquals( (Long)540L, totalResult.getTotalTimeResult().get(2).getStageTimesBack() );
+		assertEquals(2065396,totalResult.getTotalTimeResult().get(2).getCardNumber() );
+		
+		System.out.println("Check fourth entry in the total result, should be Fruttberg. Should be rank 4");
+		assertEquals( (Long)700L, totalResult.getTotalTimeResult().get(3).getStageTime() );
+		assertEquals( (Integer)4, totalResult.getTotalTimeResult().get(3).getRank() );
+		assertEquals( (Long)640L, totalResult.getTotalTimeResult().get(3).getStageTimesBack() );
+		assertEquals(2078040,totalResult.getTotalTimeResult().get(3).getCardNumber() );
+
+		System.out.println("Check fifth entry in the total result, should be Släggan but with DNF result");
+		assertEquals( (Long)Competition.COMPETITION_DNF, totalResult.getTotalTimeResult().get(4).getStageTime() );
+		assertEquals( (Integer)Competition.RANK_DNF, totalResult.getTotalTimeResult().get(4).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, totalResult.getTotalTimeResult().get(4).getStageTimesBack() );
+		assertEquals(2078082,totalResult.getTotalTimeResult().get(4).getCardNumber() );
+		
+		System.out.println("Check sixth entry in the total result, should be Ingemar but with \"no time result\"");
+		assertEquals( (Long)Competition.NO_TIME_FOR_COMPETITION, totalResult.getTotalTimeResult().get(5).getStageTime() );
+		assertEquals( (Integer)Competition.RANK_DNF, totalResult.getTotalTimeResult().get(5).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, totalResult.getTotalTimeResult().get(5).getStageTimesBack() );
+		assertEquals(2079747,totalResult.getTotalTimeResult().get(5).getCardNumber() );
+		
+		System.out.println("Check first entry in each stage, should be Sverker G");
+		for( int stageNumber = 1; stageNumber <= EXPECTED_NUM_STAGES; stageNumber++){
+			Results stageResult = results.getStageResult(stageNumber, COMP_CLASS_TO_TEST);
+			System.out.println("Stage " + stageNumber + " results: " + stageResult );
+			//Sverker is not the winner on stage 2
+			if( stageNumber == 2){ 
+				assertEquals( (Long)(stageNumber*10L), stageResult.getStageResult().get(1).getStageTime() );
+				assertEquals( (Integer)2, stageResult.getStageResult().get(1).getRank() );
+				assertEquals( (Long)10L, stageResult.getStageResult().get(1).getStageTimesBack() );
+				//Same time as Peter B on stage 2, Peter ends up in position 1 in the array but shall have the same rank as sverker
+				assertEquals(2078056,stageResult.getStageResult().get(2).getCardNumber() );
+			}
+			else { 
+				assertEquals( (Long)(stageNumber*10L), stageResult.getStageResult().get(0).getStageTime() ); 
+				assertEquals( (Integer)1, stageResult.getStageResult().get(0).getRank() );
+				assertEquals( (Long)0L, stageResult.getStageResult().get(0).getStageTimesBack() );
+				assertEquals(2078056,stageResult.getStageResult().get(0).getCardNumber() );
+			}	
 		}
-		for( Results cResult : results){
-			System.out.println( "cResult " + cResult.getStageResult() );
-		}
+		
+		System.out.println("Check contents of stage results");
+		Results stage1Result = results.getStageResult(1, COMP_CLASS_TO_TEST);
+		Results stage2Result = results.getStageResult(2, COMP_CLASS_TO_TEST);
+		Results stage3Result = results.getStageResult(3, COMP_CLASS_TO_TEST);
+		assertEquals("Stage 1", stage1Result.getTitle());
+		assertEquals("Stage 2", stage2Result.getTitle());
+		assertEquals("Stage 3", stage3Result.getTitle());
+		assertEquals(EXPECTED_NUM_COMPETITORS, stage1Result.getStageResult().size());
+		assertEquals(EXPECTED_NUM_COMPETITORS, stage2Result.getStageResult().size());
+		assertEquals(EXPECTED_NUM_COMPETITORS, stage3Result.getStageResult().size());
+		
+		System.out.println("Check results for each stage Competitor Andreas S");
+		assertEquals( (Long)(100L), stage1Result.getStageResult().get(2).getStageTime() ); 
+		assertEquals( (Integer)3, stage1Result.getStageResult().get(2).getRank() );
+		assertEquals( (Long)90L, stage1Result.getStageResult().get(2).getStageTimesBack() );
+		assertEquals(2079749,stage1Result.getStageResult().get(2).getCardNumber() );
+		assertEquals( (Long)(200L), stage2Result.getStageResult().get(3).getStageTime() ); 
+		assertEquals( (Integer)4, stage2Result.getStageResult().get(3).getRank() );
+		assertEquals( (Long)190L, stage2Result.getStageResult().get(3).getStageTimesBack() );
+		assertEquals(2079749,stage2Result.getStageResult().get(3).getCardNumber() );
+		assertEquals( (Long)(300L), stage3Result.getStageResult().get(1).getStageTime() ); 
+		assertEquals( (Integer)2, stage3Result.getStageResult().get(1).getRank() );
+		assertEquals( (Long)270L, stage3Result.getStageResult().get(1).getStageTimesBack() );
+		assertEquals(2079749,stage3Result.getStageResult().get(1).getCardNumber() );
+		
+		System.out.println("Check results for each stage Competitor Peter B");
+		assertEquals( (Long)(110L), stage1Result.getStageResult().get(3).getStageTime() ); 
+		assertEquals( (Integer)4, stage1Result.getStageResult().get(3).getRank() );
+		assertEquals( (Long)100L, stage1Result.getStageResult().get(3).getStageTimesBack() );
+		assertEquals(2065396,stage1Result.getStageResult().get(3).getCardNumber() );
+		assertEquals( (Long)(20L), stage2Result.getStageResult().get(1).getStageTime() ); 
+		assertEquals( (Integer)2, stage2Result.getStageResult().get(1).getRank() );
+		assertEquals( (Long)10L, stage2Result.getStageResult().get(1).getStageTimesBack() );
+		assertEquals(2065396,stage2Result.getStageResult().get(1).getCardNumber() );
+		assertEquals( (Long)(470L), stage3Result.getStageResult().get(3).getStageTime() ); 
+		assertEquals( (Integer)4, stage3Result.getStageResult().get(3).getRank() );
+		assertEquals( (Long)440L, stage3Result.getStageResult().get(3).getStageTimesBack() );
+		assertEquals(2065396,stage3Result.getStageResult().get(3).getCardNumber() );
+		
+		System.out.println("Check results for each stage Competitor Fruttberg");
+		assertEquals( (Long)(200L), stage1Result.getStageResult().get(4).getStageTime() ); 
+		assertEquals( (Integer)5, stage1Result.getStageResult().get(4).getRank() );
+		assertEquals( (Long)190L, stage1Result.getStageResult().get(4).getStageTimesBack() );
+		assertEquals(2078040,stage1Result.getStageResult().get(4).getCardNumber() );
+		assertEquals( (Long)(200L), stage2Result.getStageResult().get(4).getStageTime() ); 
+		assertEquals( (Integer)4, stage2Result.getStageResult().get(4).getRank() );
+		assertEquals( (Long)190L, stage2Result.getStageResult().get(4).getStageTimesBack() );
+		assertEquals(2078040,stage2Result.getStageResult().get(4).getCardNumber() );
+		assertEquals( (Long)(300L), stage3Result.getStageResult().get(2).getStageTime() ); 
+		assertEquals( (Integer)2, stage3Result.getStageResult().get(2).getRank() );
+		assertEquals( (Long)270L, stage3Result.getStageResult().get(2).getStageTimesBack() );
+		assertEquals(2078040,stage3Result.getStageResult().get(2).getCardNumber() );
+		
+		System.out.println("Check results for each stage Competitor Släggan");
+		assertEquals( (Long)(50L), stage1Result.getStageResult().get(1).getStageTime() ); 
+		assertEquals( (Integer)2, stage1Result.getStageResult().get(1).getRank() );
+		assertEquals( (Long)40L, stage1Result.getStageResult().get(1).getStageTimesBack() );
+		assertEquals(2078082,stage1Result.getStageResult().get(1).getCardNumber() );
+		assertEquals( (Long)(10L), stage2Result.getStageResult().get(0).getStageTime() ); 
+		assertEquals( (Integer)1, stage2Result.getStageResult().get(0).getRank() );
+		assertEquals( (Long)0L, stage2Result.getStageResult().get(0).getStageTimesBack() );
+		assertEquals(2078082,stage2Result.getStageResult().get(0).getCardNumber() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage3Result.getStageResult().get(5).getStageTime() ); 
+		assertEquals( (Integer)Competition.RANK_DNF, stage3Result.getStageResult().get(5).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage3Result.getStageResult().get(5).getStageTimesBack() );
+		assertEquals(2078082,stage3Result.getStageResult().get(5).getCardNumber() );
+		
+		System.out.println("Check results for each stage Competitor Ingemar (No time on any stage)");
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage1Result.getStageResult().get(5).getStageTime() ); 
+		assertEquals( (Integer)Competition.RANK_DNF, stage1Result.getStageResult().get(5).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage1Result.getStageResult().get(5).getStageTimesBack() );
+		assertEquals(2079747,stage1Result.getStageResult().get(5).getCardNumber() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage2Result.getStageResult().get(5).getStageTime() ); 
+		assertEquals( (Integer)Competition.RANK_DNF, stage2Result.getStageResult().get(5).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage2Result.getStageResult().get(5).getStageTimesBack() );
+		assertEquals(2079747,stage2Result.getStageResult().get(5).getCardNumber() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage3Result.getStageResult().get(4).getStageTime() ); 
+		assertEquals( (Integer)Competition.RANK_DNF, stage3Result.getStageResult().get(4).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage3Result.getStageResult().get(4).getStageTimesBack() );
+		assertEquals(2079747,stage3Result.getStageResult().get(4).getCardNumber() );
+		
+		System.out.println("Check landscape results");
+		landscapeResults = competition.getResultLandscape();
+		assertNotNull(landscapeResults);
+		assertEquals(EXPECTED_NUM_COMPETITORS, landscapeResults.size());
+		
+		assertEquals(EXPECTED_NUM_COMPETITORS, landscapeResults.size());
+		winnerTotalResult = landscapeResults.get(0).getStageResult().get(0);
+		winnerStage1Result = landscapeResults.get(0).getStageResult().get(1);
+		winnerStage2Result = landscapeResults.get(0).getStageResult().get(2);
+		winnerStage3Result = landscapeResults.get(0).getStageResult().get(3);
+		assertEquals(2078056, winnerTotalResult.getCardNumber() );
+		assertEquals((Long)60L, winnerTotalResult.getStageTime() );
+		assertEquals((Long)0L, winnerTotalResult.getStageTimesBack() );
+		assertEquals((Integer)1, winnerTotalResult.getRank() );
+		assertEquals(2078056, winnerStage1Result.getCardNumber() );
+		assertEquals((Long)10L, winnerStage1Result.getStageTime() );
+		assertEquals((Long)0L, winnerStage1Result.getStageTimesBack() );
+		assertEquals((Integer)1, winnerStage1Result.getRank() );
+		assertEquals(2078056, winnerStage2Result.getCardNumber() );
+		assertEquals((Long)20L, winnerStage2Result.getStageTime() );
+		assertEquals((Long)10L, winnerStage2Result.getStageTimesBack() );
+		assertEquals((Integer)2, winnerStage2Result.getRank() );
+		assertEquals(2078056, winnerStage3Result.getCardNumber() );
+		assertEquals((Long)30L, winnerStage3Result.getStageTime() );
+		assertEquals((Long)0L, winnerStage3Result.getStageTimesBack() );
+		assertEquals((Integer)1, winnerStage3Result.getRank() );
+		
+		secondTotalResult = landscapeResults.get(1).getStageResult().get(0);
+		secondStage1Result = landscapeResults.get(1).getStageResult().get(1);
+		secondStage2Result = landscapeResults.get(1).getStageResult().get(2);
+		secondStage3Result = landscapeResults.get(1).getStageResult().get(3);
+		assertEquals(2079749, secondTotalResult.getCardNumber() );
+		assertEquals((Long)600L, secondTotalResult.getStageTime() );
+		assertEquals((Long)540L, secondTotalResult.getStageTimesBack() );
+		assertEquals((Integer)2, secondTotalResult.getRank() );
+		assertEquals(2079749, secondStage1Result.getCardNumber() );
+		assertEquals((Long)100L, secondStage1Result.getStageTime() );
+		assertEquals((Long)90L, secondStage1Result.getStageTimesBack() );
+		assertEquals((Integer)3, secondStage1Result.getRank() );
+		assertEquals(2079749, secondStage2Result.getCardNumber() );
+		assertEquals((Long)200L, secondStage2Result.getStageTime() );
+		assertEquals((Long)190L, secondStage2Result.getStageTimesBack() );
+		assertEquals((Integer)4, secondStage2Result.getRank() );
+		assertEquals(2079749, secondStage3Result.getCardNumber() );
+		assertEquals((Long)300L, secondStage3Result.getStageTime() );
+		assertEquals((Long)270L, secondStage3Result.getStageTimesBack() );
+		assertEquals((Integer)2, secondStage3Result.getRank() );
+		
+		thirdTotalResult = landscapeResults.get(2).getStageResult().get(0);
+		thirdStage1Result = landscapeResults.get(2).getStageResult().get(1);
+		thirdStage2Result = landscapeResults.get(2).getStageResult().get(2);
+		thirdStage3Result = landscapeResults.get(2).getStageResult().get(3);
+		assertEquals(2065396, thirdTotalResult.getCardNumber() );
+		assertEquals((Long)600L, thirdTotalResult.getStageTime() );
+		assertEquals((Long)540L, thirdTotalResult.getStageTimesBack() );
+		assertEquals((Integer)2, thirdTotalResult.getRank() );
+		assertEquals(2065396, thirdStage1Result.getCardNumber() );
+		assertEquals((Long)110L, thirdStage1Result.getStageTime() );
+		assertEquals((Long)100L, thirdStage1Result.getStageTimesBack() );
+		assertEquals((Integer)4, thirdStage1Result.getRank() );
+		assertEquals(2065396, thirdStage2Result.getCardNumber() );
+		assertEquals((Long)20L, thirdStage2Result.getStageTime() );
+		assertEquals((Long)10L, thirdStage2Result.getStageTimesBack() );
+		assertEquals((Integer)2, thirdStage2Result.getRank() );
+		assertEquals(2065396, thirdStage3Result.getCardNumber() );
+		assertEquals((Long)470L, thirdStage3Result.getStageTime() );
+		assertEquals((Long)440L, thirdStage3Result.getStageTimesBack() );
+		assertEquals((Integer)4, thirdStage3Result.getRank() );
+		
+		StageResult fourthTotalResult = landscapeResults.get(3).getStageResult().get(0);
+		StageResult fourthStage1Result = landscapeResults.get(3).getStageResult().get(1);
+		StageResult fourthStage2Result = landscapeResults.get(3).getStageResult().get(2);
+		StageResult fourthStage3Result = landscapeResults.get(3).getStageResult().get(3);
+		assertEquals(2078040, fourthTotalResult.getCardNumber() );
+		assertEquals((Long)700L, fourthTotalResult.getStageTime() );
+		assertEquals((Long)640L, fourthTotalResult.getStageTimesBack() );
+		assertEquals((Integer)4, fourthTotalResult.getRank() );
+		assertEquals(2078040, fourthStage1Result.getCardNumber() );
+		assertEquals((Long)200L, fourthStage1Result.getStageTime() );
+		assertEquals((Long)190L, fourthStage1Result.getStageTimesBack() );
+		assertEquals((Integer)5, fourthStage1Result.getRank() );
+		assertEquals(2078040, fourthStage2Result.getCardNumber() );
+		assertEquals((Long)200L, fourthStage2Result.getStageTime() );
+		assertEquals((Long)190L, fourthStage2Result.getStageTimesBack() );
+		assertEquals((Integer)4, fourthStage2Result.getRank() );
+		assertEquals(2078040, fourthStage3Result.getCardNumber() );
+		assertEquals((Long)300L, fourthStage3Result.getStageTime() );
+		assertEquals((Long)270L, fourthStage3Result.getStageTimesBack() );
+		assertEquals((Integer)2, fourthStage3Result.getRank() );
+		
+		StageResult fifthTotalResult = landscapeResults.get(4).getStageResult().get(0);
+		StageResult fifthStage1Result = landscapeResults.get(4).getStageResult().get(1);
+		StageResult fifthStage2Result = landscapeResults.get(4).getStageResult().get(2);
+		StageResult fifthStage3Result = landscapeResults.get(4).getStageResult().get(3);
+		assertEquals(2078082, fifthTotalResult.getCardNumber() );
+		assertEquals((Long)Competition.COMPETITION_DNF, fifthTotalResult.getStageTime() );
+		assertEquals((Long)Competition.NO_TIME_FOR_STAGE, fifthTotalResult.getStageTimesBack() );
+		assertEquals((Integer)Competition.RANK_DNF, fifthTotalResult.getRank() );
+		assertEquals(2078082, fifthStage1Result.getCardNumber() );
+		assertEquals((Long)50L, fifthStage1Result.getStageTime() );
+		assertEquals((Long)40L, fifthStage1Result.getStageTimesBack() );
+		assertEquals((Integer)2, fifthStage1Result.getRank() );
+		assertEquals(2078082, fifthStage2Result.getCardNumber() );
+		assertEquals((Long)10L, fifthStage2Result.getStageTime() );
+		assertEquals((Long)0L, fifthStage2Result.getStageTimesBack() );
+		assertEquals((Integer)1, fifthStage2Result.getRank() );
+		assertEquals(2078082, fifthStage3Result.getCardNumber() );
+		assertEquals((Long)Competition.NO_TIME_FOR_STAGE, fifthStage3Result.getStageTime() );
+		assertEquals((Long)Competition.NO_TIME_FOR_STAGE, fifthStage3Result.getStageTimesBack() );
+		assertEquals((Integer)Competition.RANK_DNF, fifthStage3Result.getRank() );
+		
+		StageResult sixthTotalResult = landscapeResults.get(5).getStageResult().get(0);
+		StageResult sixthStage1Result = landscapeResults.get(5).getStageResult().get(1);
+		StageResult sixthStage2Result = landscapeResults.get(5).getStageResult().get(2);
+		StageResult sixthStage3Result = landscapeResults.get(5).getStageResult().get(3);
+		assertEquals(2079747, sixthTotalResult.getCardNumber() );
+		assertEquals((Long)Competition.NO_TIME_FOR_COMPETITION, sixthTotalResult.getStageTime() );
+		assertEquals((Long)Competition.NO_TIME_FOR_STAGE, sixthTotalResult.getStageTimesBack() );
+		assertEquals((Integer)Competition.RANK_DNF, sixthTotalResult.getRank() );
+		assertEquals(2079747, sixthStage1Result.getCardNumber() );
+		assertEquals((Long)Competition.NO_TIME_FOR_STAGE, sixthStage1Result.getStageTime() );
+		assertEquals((Long)Competition.NO_TIME_FOR_STAGE, sixthStage1Result.getStageTimesBack() );
+		assertEquals((Integer)Competition.RANK_DNF, sixthStage1Result.getRank() );
+		assertEquals(2079747, sixthStage2Result.getCardNumber() );
+		assertEquals((Long)Competition.NO_TIME_FOR_STAGE, sixthStage2Result.getStageTime() );
+		assertEquals((Long)Competition.NO_TIME_FOR_STAGE, sixthStage2Result.getStageTimesBack() );
+		assertEquals((Integer)Competition.RANK_DNF, sixthStage2Result.getRank() );
+		assertEquals(2079747, sixthStage3Result.getCardNumber() );
+		assertEquals((Long)Competition.NO_TIME_FOR_STAGE, sixthStage3Result.getStageTime() );
+		assertEquals((Long)Competition.NO_TIME_FOR_STAGE, sixthStage3Result.getStageTimesBack() );
+		assertEquals((Integer)Competition.RANK_DNF, sixthStage3Result.getRank() );
 		
 	}
 

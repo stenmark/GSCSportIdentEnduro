@@ -276,11 +276,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		try {
 			if (card.getCardNumber() != 0) {
 				String errorText = competition.processNewCard(card, true);			
-				if (errorText.length() == 0) {  
-					Toast.makeText(this, errorText, Toast.LENGTH_LONG).show();
-				} else {
-					Toast.makeText(this, "Card added", Toast.LENGTH_LONG).show();
-				}
+				Toast.makeText(this, errorText, Toast.LENGTH_LONG).show();
 			} 
 			//The Listener dies once it has received one message, so kick it again to restart it
 			if (!disconected) {

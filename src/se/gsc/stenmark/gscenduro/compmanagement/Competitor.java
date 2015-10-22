@@ -74,12 +74,9 @@ public class Competitor implements Serializable {
 	}
 	
 	public String processCard(Card card, Stages stages, int type) {
-		String status = "";
 		mCard = card;
 		mCard.setCardNumber(mCardNumber);
 		setStageTimes(new StageTimes());
-		
-		status += mName + ", " + mCardNumber + ", ";
 		
 		for (int i = 0; i < stages.size(); i++) {
 			long stageTime;
@@ -91,14 +88,8 @@ public class Competitor implements Serializable {
 			}
 			
 			mStageTimes.setTimesOfStage(i, stageTime);
-			
-			if (i != 0) {
-				status += ", ";
-			}				
-			status += "SS" + i + "=" + AndroidIndependantCompetitionHelper.secToMinSec(stageTime);
 		}		
-		status += "\n";
-		return status;
+		return "Added card: " + mCardNumber + "  Competitor:  " + mName + "\n";
 	}
 	
 	public boolean hasResult() {

@@ -187,7 +187,7 @@ public class Competition implements Serializable {
 	public String processNewCard(Card card, Boolean calculateResultsAfterAdd) {
 		Competitor foundCompetitor = mCompetitors.findByCard(card);
 		if (foundCompetitor == null) {
-			return "Card not added, could not find any competitor with that card number: " + card.getCardNumber();
+			return "ERROR! Could not find any competitor with card number: " + card.getCardNumber();
 		}
 		
 		String status = foundCompetitor.processCard(card, mStages, mCompetitionType);
