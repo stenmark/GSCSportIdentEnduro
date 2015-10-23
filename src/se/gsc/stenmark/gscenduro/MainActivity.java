@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.collections4.queue.CircularFifoQueue;
+
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
@@ -53,6 +55,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public static int disconnectCounter;
 	public static boolean disconected;
 	private String connectionStatus = "";
+	//Circular buffer to hold the 6 most recently read cards
+	public CircularFifoQueue<String> lastReadCards = new CircularFifoQueue<String>(6);
 
 	public static String driverLayerErrorMsg;
 		
@@ -275,8 +279,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public void writeCard(Card card) {
 		try {
 			if (card.getCardNumber() != 0) {
-				String errorText = competition.processNewCard(card, true);			
-				Toast.makeText(this, errorText, Toast.LENGTH_LONG).show();
+				String cardStatus = competition.processNewCard(card, true);			
+				Toast.makeText(this, cardStatus, Toast.LENGTH_LONG).show();
+				lastReadCards.add(cardStatus);		
 			} 
 			//The Listener dies once it has received one message, so kick it again to restart it
 			if (!disconected) {

@@ -34,15 +34,15 @@ public final class R {
         public static final int gsc_icon=0x7f020001;
     }
     public static final class id {
-        public static final int action_add_competitor=0x7f0a0068;
-        public static final int action_export_as_csv=0x7f0a006a;
-        public static final int action_export_as_html=0x7f0a006b;
-        public static final int action_export_as_image=0x7f0a006c;
-        public static final int action_import=0x7f0a0069;
-        public static final int action_load=0x7f0a0066;
-        public static final int action_new=0x7f0a0065;
-        public static final int action_save=0x7f0a0067;
-        public static final int action_settings=0x7f0a006d;
+        public static final int action_add_competitor=0x7f0a0069;
+        public static final int action_export_as_csv=0x7f0a006b;
+        public static final int action_export_as_html=0x7f0a006c;
+        public static final int action_export_as_image=0x7f0a006d;
+        public static final int action_import=0x7f0a006a;
+        public static final int action_load=0x7f0a0067;
+        public static final int action_new=0x7f0a0066;
+        public static final int action_save=0x7f0a0068;
+        public static final int action_settings=0x7f0a006e;
         public static final int add_competitor_ess_layout=0x7f0a0019;
         public static final int add_punch_controls_spinner=0x7f0a002d;
         public static final int add_stage_info=0x7f0a0010;
@@ -52,6 +52,7 @@ public final class R {
         public static final int add_stages_manually_input=0x7f0a0013;
         public static final int card_number_input=0x7f0a0016;
         public static final int card_number_spinner=0x7f0a0017;
+        public static final int card_status=0x7f0a0064;
         public static final int cardnumber_checkbox=0x7f0a0018;
         public static final int class_input=0x7f0a001b;
         public static final int competition_competition_date=0x7f0a0060;
@@ -80,7 +81,7 @@ public final class R {
         public static final int import_punches_input=0x7f0a002f;
         public static final int keep_competitors_checkbox=0x7f0a0014;
         public static final int layout_root=0x7f0a0000;
-        public static final int modify_competition_button=0x7f0a0064;
+        public static final int modify_competition_button=0x7f0a0065;
         public static final int modify_competitor_ess_layout=0x7f0a0021;
         public static final int modify_stage_info=0x7f0a0006;
         public static final int modify_stage_manually_layout=0x7f0a0008;

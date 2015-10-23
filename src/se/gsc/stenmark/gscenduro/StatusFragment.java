@@ -1,6 +1,10 @@
 package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.collections4.iterators.ReverseListIterator;
 
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
@@ -247,6 +251,22 @@ public class StatusFragment extends Fragment {
 				if (mMainActivity.competition.getCompetitors() != null) {
 					statusTextView.setText("Total: " + mMainActivity.competition.getCompetitors().size() + "\n" + numberOfCompetitors);
 				}
+			}
+			
+			statusTextView = (TextView) getView().findViewById(R.id.card_status);	
+			if( mMainActivity.lastReadCards != null ){
+				String cardStatus = "";
+				if( mMainActivity.lastReadCards.isEmpty() ){
+					cardStatus = "No cards read yet";
+				}
+				else{
+					//Itterate the last backwards to print the most recently added card first
+					for( int cardStatusPos = mMainActivity.lastReadCards.size()-1; cardStatusPos >= 0; cardStatusPos--){
+						cardStatus += mMainActivity.lastReadCards.get(cardStatusPos);
+					}
+				}
+				statusTextView.setText( cardStatus );
+				
 			}
 		}
 	}

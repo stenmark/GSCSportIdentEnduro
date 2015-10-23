@@ -119,7 +119,7 @@ public class CompetitionTest {
 		assertEquals(2079749,stage4Result.getStageResult().get(0).getCardNumber() );
 	}
 	
-//	@Test
+	@Test
 	public void testFullCompetition() {
 		final String COMP_CLASS_TO_TEST = "";
 		final int EXPECTED_NUM_COMPETITORS = 6;
