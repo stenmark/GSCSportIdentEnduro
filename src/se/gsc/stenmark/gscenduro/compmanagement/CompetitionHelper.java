@@ -1,12 +1,12 @@
 package se.gsc.stenmark.gscenduro.compmanagement;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -32,7 +32,8 @@ import android.widget.Toast;
  * 
  */
 public abstract class CompetitionHelper {
-
+	private static final String DEBUG_FILENAME = "debugData.txt";
+	
 	/**
 	 * Generate an RGB value for a transition from Red to Green.
 	 * @return RGB coded color
@@ -41,6 +42,9 @@ public abstract class CompetitionHelper {
 		if (rank == Competition.RANK_DNF) {
 			return Color.WHITE;
 		} else {
+			if( competitorStageTime > slowestTimeOnStage){
+				competitorStageTime = slowestTimeOnStage;
+			}
 			float myTimeDiff = competitorStageTime - fastestTimeOnStage;
 			float stageTimeDiff = slowestTimeOnStage - fastestTimeOnStage;
 			float transition;
@@ -328,5 +332,31 @@ public abstract class CompetitionHelper {
 		return bigbitmap;
 	}
 	
-
+	public static void dumpDebugDatToFile( String debugData ){
+		BufferedWriter bw = null;
+		try{
+			File sdCard = Environment.getExternalStorageDirectory();
+	    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+			File file = new File(dir, DEBUG_FILENAME );
+			FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+			bw = new BufferedWriter(fw);
+			bw.write(debugData);
+    	}
+    	catch( Exception e){
+    		//Do nothing
+    	}
+    	finally {
+			if( bw != null){
+				try {
+					bw.close();
+				} catch (Exception e) {
+					//Do nothing
+				}
+			}
+		}
+	}
+	
 }

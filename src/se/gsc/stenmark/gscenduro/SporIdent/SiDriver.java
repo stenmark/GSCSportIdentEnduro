@@ -322,7 +322,7 @@ public class SiDriver {
 				if (!dir.exists()) {
 					dir.mkdirs();
 				}
-				File file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString() + ".dat");
+				File file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString() + ".card");
 				FileWriter fw = new FileWriter(file.getAbsoluteFile());
 				bw = new BufferedWriter(fw);
 				bw.write("#Testdata for readDleByte method. First line is raw data read at 128 bytes chunks from the card. The second line is the expected output after performing readBytesDle\n");

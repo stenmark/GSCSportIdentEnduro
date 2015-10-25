@@ -1,6 +1,7 @@
 package se.gsc.stenmark.gscenduro;
 
 import se.gsc.stenmark.gscenduro.R;
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -63,7 +64,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 		mResultLandscapeStartNumber = (TextView) mCompoundView.findViewById(R.id.result_landscape_start_number);
 		mResultLandscapeTeam = (TextView) mCompoundView.findViewById(R.id.result_landscape_team);
 		
-		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVART_VIT_TYPE) {		
+		if (((MainActivity) mContext).competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {		
 			mResultLandscapeCompetitorClass.setVisibility(View.GONE);
 			mResultLandscapeStartNumber.setVisibility(View.GONE);
 			mResultLandscapeTeam.setVisibility(View.GONE);

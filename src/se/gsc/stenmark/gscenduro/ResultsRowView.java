@@ -1,6 +1,7 @@
 package se.gsc.stenmark.gscenduro;
 
 import se.gsc.stenmark.gscenduro.R;
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +34,7 @@ public class ResultsRowView extends LinearLayout {
 		mResultStartNumber = (TextView) mCompoundView.findViewById(R.id.result_start_number);
 		mResultTeam = (TextView) mCompoundView.findViewById(R.id.result_team);
 		
-		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVART_VIT_TYPE) {
+		if (((MainActivity) mContext).competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {
 			mResultStartNumberTitle.setVisibility(View.GONE);
 			mResultTeamTitle.setVisibility(View.GONE);
 			mResultStartNumber.setVisibility(View.GONE);

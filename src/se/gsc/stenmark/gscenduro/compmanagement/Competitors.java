@@ -168,7 +168,6 @@ public class Competitors implements Serializable {
 	public Long getFastestOnStage(String competitorClass, int stageNumber) {
 		Long fastestTimeOnStage = Competition.NO_TIME_FOR_STAGE;
 		for(Competitor competitor : mCompetitors) {
-			
 			if (competitorClass.equals(competitor.getCompetitorClass())) {						
 				try{
 					fastestTimeOnStage = Math.min(fastestTimeOnStage, competitor.getStageTimes().getTimesOfStage(stageNumber - 1));
@@ -199,6 +198,50 @@ public class Competitors implements Serializable {
 			return Competition.NO_TIME_FOR_STAGE;
 		}
 		return slowestTimeOnStage;
+	}
+	
+	/**
+	 * Get slowest stage time with maximum deviation from median time.
+	 * Calculates the median time difference between all adjacent competitors and then return the slowest stage time
+	 * with maximum two times deviation from  median time difference. The idea is to exclude very slow times from the calculation
+	 * @param competitorClass
+	 * @param stageNumber
+	 * @param resultsList
+	 * @return
+	 */
+	public Long getSlowestOnStage(String competitorClass, int stageNumber, ResultList<Results> resultsList) {
+		if( resultsList.size() == 0){
+			return getSlowestOnStage(competitorClass, stageNumber);
+		}
+		List<Long>timeDeltaList = new ArrayList<Long>();
+		Results stageResultForAllCompetitors = resultsList.get(stageNumber);
+		for( int currentCompetitorNumber = 0; currentCompetitorNumber < (stageResultForAllCompetitors.getStageResult().size()-1); currentCompetitorNumber++ ){
+			int nextCompetitorNumber = currentCompetitorNumber+1;
+			Long currentCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(currentCompetitorNumber).getStageTime();
+			Long nextCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(nextCompetitorNumber).getStageTime();
+			if( currentCompetitorStageTime != Competition.NO_TIME_FOR_STAGE && nextCompetitorStageTime != Competition.NO_TIME_FOR_STAGE ){
+				timeDeltaList.add(nextCompetitorStageTime - currentCompetitorStageTime);
+			}
+		}	
+		Collections.sort(timeDeltaList);
+		Long medianTimeDelta = timeDeltaList.get(timeDeltaList.size()/2);
+		//If the competitors are very close on the stage (low median time delta) we set a minimum medianTimeDelta of 5 to prevent early cutoff
+		if( medianTimeDelta < 5){
+			medianTimeDelta = 5L;
+		}
+		
+		for( int currentCompetitorNumber = 0; currentCompetitorNumber < (stageResultForAllCompetitors.getStageResult().size()-1); currentCompetitorNumber++ ){
+			int nextCompetitorNumber = currentCompetitorNumber+1;
+			Long currentCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(currentCompetitorNumber).getStageTime();
+			Long nextCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(nextCompetitorNumber).getStageTime();
+			Long timeDelta = nextCompetitorStageTime - currentCompetitorStageTime;
+			//Filter out competitors that are a lot slower than most competitors. 
+			//only filter out competitors that are from the lower half of the competitor list (Use timeDelta list since it already contains only competitors with stage times set
+			if( (timeDelta > medianTimeDelta*3) && (currentCompetitorNumber > (timeDeltaList.size()/2)) ){
+				return currentCompetitorStageTime;
+			}
+		}
+		return stageResultForAllCompetitors.getStageResult().get( stageResultForAllCompetitors.getStageResult().size()-1 ).getStageTime();
 	}	
 	
 	
@@ -246,7 +289,7 @@ public class Competitors implements Serializable {
 						new Comparator<Punch>() {
 							@Override
 							public int compare(Punch s1, Punch s2) {
-								return new Long(s1.getTime()).compareTo(s2.getTime());
+								return Long.valueOf(s1.getTime()).compareTo(s2.getTime());
 							}
 						});
 

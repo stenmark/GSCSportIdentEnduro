@@ -1,6 +1,7 @@
 package se.gsc.stenmark.gscenduro;
 
 import se.gsc.stenmark.gscenduro.R;
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -40,7 +41,7 @@ public class CompetitorsRowView extends LinearLayout {
 		LinearLayout mCompoundView = (LinearLayout) inflater.inflate(R.layout.competitor_row, this);			
 		final LinearLayout competitorRowEssLayout = (LinearLayout) mCompoundView.findViewById(R.id.competitor_row_ess_layout);
 		
-		if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVART_VIT_TYPE)	{
+		if (((MainActivity) mContext).competition.getCompetitionType() == Competition.SVART_VIT_TYPE)	{
 			competitorRowEssLayout.setVisibility(View.GONE);
 		} else {
 			competitorRowEssLayout.setVisibility(View.VISIBLE);		
@@ -148,13 +149,13 @@ public class CompetitorsRowView extends LinearLayout {
 			
 			final LinearLayout modifyCompetitorEssLayout = (LinearLayout) promptsView.findViewById(R.id.modify_competitor_ess_layout);
 			
-			if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.SVART_VIT_TYPE) {				
+			if (((MainActivity) mContext).competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {				
 				modifyCompetitorEssLayout.setVisibility(View.GONE);	
 			} else {
 				modifyCompetitorEssLayout.setVisibility(View.VISIBLE);	
 			}
 				
-			if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) {
+			if (((MainActivity) mContext).competition.getCompetitionType() == Competition.ESS_TYPE) {
 				mTeamInput = (EditText) promptsView.findViewById(R.id.team_input);	
 				mTeamInput.setText(mTeam.getText());
 				
@@ -188,7 +189,7 @@ public class CompetitorsRowView extends LinearLayout {
 	            	if ((mNameInput.length() == 0) || (mCardNumberInput.length() == 0)) {
 	            		Toast.makeText((MainActivity) mContext, "All data must be entered", Toast.LENGTH_LONG).show();
 	                    return;
-	        		} else if ((((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) &&
+	        		} else if ((((MainActivity) mContext).competition.getCompetitionType() == Competition.ESS_TYPE) &&
 	       	     		 	  ((mTeamInput.length() == 0) || (mCompetitorClassInput.length() == 0) || (mStartNumberInput.length() == 0) || (mStartGroupInput.length() == 0))) {
 	        			Toast.makeText((MainActivity) mContext, "All data must be entered", Toast.LENGTH_LONG).show();
 	        			return;
@@ -200,7 +201,7 @@ public class CompetitorsRowView extends LinearLayout {
 							  (((MainActivity) mContext).competition.getCompetitors().checkIfCardNumberExists(Integer.parseInt(mCardNumberInput.getText().toString())))) {							
 						Toast.makeText((MainActivity) mContext, "Card number already exists", Toast.LENGTH_LONG).show();
 						return;
-					} else if ((((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) && 
+					} else if ((((MainActivity) mContext).competition.getCompetitionType() == Competition.ESS_TYPE) && 
 							(!mStartNumber.getText().toString().equalsIgnoreCase(mStartNumberInput.getText().toString()) &&
 							((MainActivity) mContext).competition.getCompetitors().checkIfStartNumberExists(Integer.parseInt(mStartNumberInput.getText().toString())))) {
 						Toast.makeText((MainActivity) mContext, "Start number already exists", Toast.LENGTH_LONG).show();
@@ -211,7 +212,7 @@ public class CompetitorsRowView extends LinearLayout {
 					mName.setText(mNameInput.getText());
 					mCardNumber.setText(mCardNumberInput.getText());	
 					
-					if (((MainActivity) mContext).competition.getCompetitionType() == ((MainActivity) mContext).competition.ESS_TYPE) {
+					if (((MainActivity) mContext).competition.getCompetitionType() == Competition.ESS_TYPE) {
 						mTeam.setText(mTeamInput.getText());	
 						mCompetitorClass.setText(mCompetitorClassInput.getText());
 						mStartNumber.setText(mStartNumberInput.getText());

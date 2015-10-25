@@ -4,7 +4,6 @@ import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.AndroidIndependantCompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
-import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.ResultList;
 import se.gsc.stenmark.gscenduro.compmanagement.Results;
 import android.content.Context;

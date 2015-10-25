@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections4.queue.CircularFifoQueue;
+
 import se.gsc.stenmark.gscenduro.MainApplication;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import android.app.Activity;
@@ -40,6 +42,9 @@ public class Competition implements Serializable {
 	public static final long NO_TIME_FOR_STAGE = 10000000L;
 	public static final long NO_TIME_FOR_COMPETITION = 20000000L;
 	public static final int RANK_DNF = 30000000;
+	
+	//Circular buffer to hold the 6 most recently read cards
+	public CircularFifoQueue<String> lastReadCards = new CircularFifoQueue<String>(6);
 	
 	private static final String CURRENT_COMPETITION = "current_competition";
 	private Stages mStages = null;

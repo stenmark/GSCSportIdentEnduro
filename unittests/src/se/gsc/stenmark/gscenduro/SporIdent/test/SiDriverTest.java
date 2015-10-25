@@ -3,13 +3,10 @@ package se.gsc.stenmark.gscenduro.SporIdent.test;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.junit.Test;

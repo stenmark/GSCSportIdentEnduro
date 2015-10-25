@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 
 public class DialogAddCompetitor {
 	
@@ -108,7 +109,7 @@ public class DialogAddCompetitor {
 		      }
 		});			
 		
-		if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVART_VIT_TYPE) {				
+		if (mMainActivity.competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {				
 			addCompetitorEssLayout.setVisibility(View.GONE);
 			cardNumberCheckBox.setVisibility(View.VISIBLE);
 			cardNumberInput.setVisibility(View.GONE);
@@ -142,7 +143,7 @@ public class DialogAddCompetitor {
             public void onClick(View v) {                	                    
             	String status = "";
             	String cardNumber = "";
-				if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE) {					
+				if (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) {					
 					
 					String errorText = mMainActivity.competition.getCompetitors().checkData(nameInput.getText().toString(), 
 																				  cardNumberInput.getText().toString(), 

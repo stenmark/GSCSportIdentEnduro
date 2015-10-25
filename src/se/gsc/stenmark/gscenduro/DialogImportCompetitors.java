@@ -8,6 +8,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 
 public class DialogImportCompetitors {
 	
@@ -24,7 +25,7 @@ public class DialogImportCompetitors {
 		final EditText importCompetitorsInput = (EditText) promptsView.findViewById(R.id.import_competitors_input);
 		TextView importCompetitorsInfo = (TextView) promptsView.findViewById(R.id.import_competitors_info);
 		
-		if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE) {			
+		if (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) {			
 			importCompetitorsInfo.setText("Enter competitors in the following way:\n\nName,CardNumber,Team,CompetitorClass,StartNumber,StartGroup\nName,CardNumber,Team,CompetitorClass,StartNumber,StartGroup\nName,CardNumber,Team,CompetitorClass,StartNumber,StartGroup\n");			
 		} else {
 			importCompetitorsInfo.setText("Enter competitors in the following way:\n\nName,CardNumber\nName,CardNumber\nName,CardNumber");

@@ -21,7 +21,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 
 	public ResultsListLandscapeAdapter(Context context, List<Results> Items) {
 		mContext = context;
-		mResultLandscape = Items;		
+		mResultLandscape = Items;			
 	}		
 	
 	@Override
@@ -51,6 +51,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {		
 		ResultsLandscapeRowView resultLandscapeRowV = null;	
+		Competition competition = ((MainActivity) mContext).competition;
 		
 		if (convertView == null) {
 			resultLandscapeRowV = new ResultsLandscapeRowView(mContext);
@@ -60,13 +61,13 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 
 		resultLandscapeRowV.clearTitle();
 		resultLandscapeRowV.clearTimes();
-		resultLandscapeRowV.setTimes(((MainActivity) mContext).competition.getStages().size());
+		resultLandscapeRowV.setTimes(competition.getStages().size());
 		if (position == 0) {
-			resultLandscapeRowV.setTitle(((MainActivity) mContext).competition.getStages().size());
+			resultLandscapeRowV.setTitle(competition.getStages().size());
 			resultLandscapeRowV.setResultLandscapeCompetitorClass(mResultLandscape.get(position).getTitle());
 		} else {
 			if (mResultLandscape.get(position).getTitle() != mResultLandscape.get(position - 1).getTitle()) {
-				resultLandscapeRowV.setTitle(((MainActivity) mContext).competition.getStages().size());	
+				resultLandscapeRowV.setTitle(competition.getStages().size());	
 				resultLandscapeRowV.setResultLandscapeCompetitorClass(mResultLandscape.get(position).getTitle());
 			}
 		}
@@ -83,13 +84,13 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			name += rank + ". ";
 		}
 		
-		name += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(cardNumber).getName();
+		name += competition.getCompetitors().getByCardNumber(cardNumber).getName();
 		resultLandscapeRowV.setResultLandscapeName(name);
 		
-		String startNumber = String.valueOf(((MainActivity) mContext).competition.getCompetitors().getByCardNumber(cardNumber).getStartNumber());	
+		String startNumber = String.valueOf(competition.getCompetitors().getByCardNumber(cardNumber).getStartNumber());	
 		resultLandscapeRowV.setResultLandscapeStartNumber(startNumber);			
 		
-		String team = ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(cardNumber).getTeam();	
+		String team = competition.getCompetitors().getByCardNumber(cardNumber).getTeam();	
 		resultLandscapeRowV.setResultLandscapeTeam(team);
 		
 		long totalTime = totalTimeResult.getStageTime();			
@@ -100,23 +101,28 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			resultLandscapeRowV.setResultLandscapeStageTime(stageNumber, "", Color.WHITE);
 		}
 		
-		for(int stageNumber = 1; stageNumber < mResultLandscape.get(position).getStageResult().size(); stageNumber++) {
-			
-			Long fastestTimeOnStage = ((MainActivity) mContext).competition.getCompetitors().getFastestOnStage(mResultLandscape.get(position).getTitle(), stageNumber); 
-			Long slowestTimeOnStage = ((MainActivity) mContext).competition.getCompetitors().getSlowestOnStage(mResultLandscape.get(position).getTitle(), stageNumber);
-			String StageTime = AndroidIndependantCompetitionHelper.secToMinSec(mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime());
-			Long competitorStageTime = mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime();				
-			rank = mResultLandscape.get(position).getStageResult().get(stageNumber).getRank();
-			
-			int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
-			if (rank == Competition.RANK_DNF) {
-				StageTime = "";
-			} else {
-				StageTime += "\n(" + String.valueOf(rank) + ")";											
-			}			
-			
-			resultLandscapeRowV.setResultLandscapeStageTime(stageNumber, StageTime, color);
-		}			
+		try{
+			for(int stageNumber = 1; stageNumber < mResultLandscape.get(position).getStageResult().size(); stageNumber++) {
+				Long fastestTimeOnStage = competition.getCompetitors().getFastestOnStage(mResultLandscape.get(position).getTitle(), stageNumber); 
+				Long slowestTimeOnStage = competition.getCompetitors().getSlowestOnStage(mResultLandscape.get(position).getTitle(), stageNumber, ((MainActivity) mContext).competition.getResults());
+				String StageTime = AndroidIndependantCompetitionHelper.secToMinSec(mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime());
+				Long competitorStageTime = mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime();				
+				rank = mResultLandscape.get(position).getStageResult().get(stageNumber).getRank();
+				
+				int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
+				if (rank == Competition.RANK_DNF) {
+					StageTime = "";
+				} else {
+					StageTime += "\n(" + String.valueOf(rank) + ")";											
+				}			
+				
+				resultLandscapeRowV.setResultLandscapeStageTime(stageNumber, StageTime, color);
+			}	
+		}
+		catch( Exception  e){
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			dialog.show( ((MainActivity) mContext).getSupportFragmentManager(), "popUp");
+		}
 		
 		resultLandscapeRowV.setPosition(position);
 		

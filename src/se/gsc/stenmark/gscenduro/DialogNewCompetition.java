@@ -66,7 +66,7 @@ public class DialogNewCompetition {
         spinner.setAdapter(LTRadapter);			
         spinner.setSelection(mMainActivity.competition.getStages().size() - 1);			
 	
-		if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVART_VIT_TYPE){
+		if (mMainActivity.competition.getCompetitionType() == Competition.SVART_VIT_TYPE){
 			keepCompetitorsCheckBox.setVisibility(View.VISIBLE);							
 		} else {					
 			keepCompetitorsCheckBox.setVisibility(View.GONE);
@@ -79,8 +79,8 @@ public class DialogNewCompetition {
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				if ((mMainActivity.competition.getCompetitors().size() > 0) && 
-				   (((checkedId == R.id.radio_type_ess) && (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE) && (mMainActivity.competition.getCompetitors().size() > 0)) ||
-				   ((checkedId == R.id.radio_type_svartvitt) && (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVART_VIT_TYPE)))) {
+				   (((checkedId == R.id.radio_type_ess) && (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) && (mMainActivity.competition.getCompetitors().size() > 0)) ||
+				   ((checkedId == R.id.radio_type_svartvitt) && (mMainActivity.competition.getCompetitionType() == Competition.SVART_VIT_TYPE)))) {
 					keepCompetitorsCheckBox.setVisibility(View.VISIBLE);							
 				} else {					
 					keepCompetitorsCheckBox.setVisibility(View.GONE);
@@ -143,12 +143,12 @@ public class DialogNewCompetition {
 				mMainActivity.competition.setCompetitionDate(dateCompetitionInput.getText().toString());
 				
 				if (radioTypeEss.isChecked()) {
-					mMainActivity.competition.setCompetitionType(mMainActivity.competition.ESS_TYPE);
+					mMainActivity.competition.setCompetitionType(Competition.ESS_TYPE);
 				} else {
-					mMainActivity.competition.setCompetitionType(mMainActivity.competition.SVART_VIT_TYPE);
+					mMainActivity.competition.setCompetitionType(Competition.SVART_VIT_TYPE);
 				}										
 				
-				if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.ESS_TYPE) {										
+				if (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) {										
 					mMainActivity.competition.getStages().importStages(addStagesManuallyInput.getText().toString());
 				} else {
 					SharedPreferences settings = mMainActivity.getSharedPreferences(MainActivity.PREF_NAME, 0);

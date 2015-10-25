@@ -1,10 +1,6 @@
 package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.collections4.iterators.ReverseListIterator;
 
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
@@ -21,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 
 public class StatusFragment extends Fragment {
 	
@@ -85,7 +82,7 @@ public class StatusFragment extends Fragment {
 				final EditText stagesInput = (EditText) promptsView.findViewById(R.id.modify_stages_manually_input);	
 				stagesInput.setText(((MainActivity) mMainActivity).competition.getStages().exportStagesCsvString());
 				
-				if (((MainActivity) mMainActivity).competition.getCompetitionType() == ((MainActivity) mMainActivity).competition.SVART_VIT_TYPE) {
+				if (((MainActivity) mMainActivity).competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {
 					layoutModifyStageSpinner.setVisibility(View.VISIBLE);
 					layoutModifyStageManually.setVisibility(View.GONE);
 				} else {
@@ -126,7 +123,7 @@ public class StatusFragment extends Fragment {
 		                    return;                	
 		                }		            	
 		            			
-		            	if (((MainActivity) mMainActivity).competition.getCompetitionType() == ((MainActivity) mMainActivity).competition.SVART_VIT_TYPE) {
+		            	if (((MainActivity) mMainActivity).competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {
 							SharedPreferences settings = mMainActivity.getSharedPreferences(MainActivity.PREF_NAME, 0);
 							int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
 							int finishStationNumner = Integer.parseInt(settings.getString("FINISH_STATION_NUMBER", "72"));
@@ -216,7 +213,7 @@ public class StatusFragment extends Fragment {
 			}
 			
 			statusTextView = (TextView) getView().findViewById(R.id.competition_type);				
-			if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVART_VIT_TYPE) {
+			if (mMainActivity.competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {
 				statusTextView.setText("SvartVitt");	
 			} else {
 				statusTextView.setText("Enduro Sweden Series");
@@ -233,7 +230,7 @@ public class StatusFragment extends Fragment {
 			}
 			
 			statusTextView = (TextView) getView().findViewById(R.id.competitor_status);	
-			if (mMainActivity.competition.getCompetitionType() == mMainActivity.competition.SVART_VIT_TYPE) {
+			if (mMainActivity.competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {
 				if (mMainActivity.competition.getCompetitors() != null) {
 					statusTextView.setText("Total: " + mMainActivity.competition.getCompetitors().size());
 				}
@@ -254,15 +251,15 @@ public class StatusFragment extends Fragment {
 			}
 			
 			statusTextView = (TextView) getView().findViewById(R.id.card_status);	
-			if( mMainActivity.lastReadCards != null ){
+			if( mMainActivity.competition.lastReadCards != null ){
 				String cardStatus = "";
-				if( mMainActivity.lastReadCards.isEmpty() ){
+				if( mMainActivity.competition.lastReadCards.isEmpty() ){
 					cardStatus = "No cards read yet";
 				}
 				else{
 					//Itterate the last backwards to print the most recently added card first
-					for( int cardStatusPos = mMainActivity.lastReadCards.size()-1; cardStatusPos >= 0; cardStatusPos--){
-						cardStatus += mMainActivity.lastReadCards.get(cardStatusPos);
+					for( int cardStatusPos = mMainActivity.competition.lastReadCards.size()-1; cardStatusPos >= 0; cardStatusPos--){
+						cardStatus += mMainActivity.competition.lastReadCards.get(cardStatusPos);
 					}
 				}
 				statusTextView.setText( cardStatus );
