@@ -218,17 +218,17 @@ public class CompetitorsRowView extends LinearLayout {
 						mStartNumber.setText(mStartNumberInput.getText());
 						mStartGroup.setText(mStartGroupInput.getText());
 						
-						status = ((MainActivity) mContext).competition.getCompetitors().update(mPosition, 
+						status = ((MainActivity) mContext).competition.getCompetitors().update( 
 																				  		 	   mName.getText().toString(), 
-																				  		 	   mCardNumber.getText().toString(), 
+																				  		 	   Integer.parseInt(mCardNumber.getText().toString()), 
 																				  		 	   mTeam.getText().toString(), 
 																				  		 	   mCompetitorClass.getText().toString(), 
 																				  		 	   mStartNumber.getText().toString(), 
 																				  		 	   mStartGroup.getText().toString());
 					} else {
-						status = ((MainActivity) mContext).competition.getCompetitors().update(mPosition, 
+						status = ((MainActivity) mContext).competition.getCompetitors().update( 
 																			   		  		   mName.getText().toString(),
-																			   		  		   mCardNumber.getText().toString(),
+																			   		  		   Integer.parseInt(mCardNumber.getText().toString()),
 																			   		  		   "",
 																			   		  		   "",
 																			   		  		   "-1",

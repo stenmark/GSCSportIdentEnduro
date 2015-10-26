@@ -7,7 +7,10 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
@@ -16,17 +19,24 @@ public class Competitors implements Serializable {
 
 	private static final long serialVersionUID = 44L;
 	private String mErrorText = "";
-	private List<Competitor> mCompetitors = null;
+	private LinkedHashMap<Integer,Competitor> mCompetitors = null;
 	
 	public Competitors() {
-		mCompetitors = new ArrayList<Competitor>();
+		mCompetitors = new LinkedHashMap<Integer,Competitor>();
 	}
 
+	/**
+	 * DONT USE THIS METHOD, slow indexed access to the internal hashmap
+	 * @param index
+	 * @return
+	 */
+	@Deprecated 
 	public Competitor get(int index) {
-		return mCompetitors.get(index);
+		List<Competitor> listRepresentationOfLinkedHashMap = new ArrayList<Competitor>(mCompetitors.values());
+		return listRepresentationOfLinkedHashMap.get(index);
 	}			
 	
-	public List<Competitor> getCompetitors() {
+	public LinkedHashMap<Integer,Competitor> getCompetitors() {
 		return mCompetitors;
 	}	
 	
@@ -39,12 +49,12 @@ public class Competitors implements Serializable {
 	}		
 	
 	public void clearPunches() {
-		for (int i = 0; i < mCompetitors.size(); i++) {
-			mCompetitors.get(i).clearCard();
+		for (Entry<Integer,Competitor> currentCompetitor : mCompetitors.entrySet()) {
+			currentCompetitor.getValue().clearCard();
 		}
 	}	
 	
-	public String checkData(String name, String cardNumber, String team, String competitorClass, String startNumber, String startGroup, int type, Boolean checkAgainstCurrent, ArrayList<Competitor> competitors) {
+	public String checkData(String name, String cardNumber, String team, String competitorClass, String startNumber, String startGroup, int type, Boolean checkAgainstCurrent, LinkedHashMap<Integer,Competitor> competitors) {
 		mErrorText = "";
 		
 		if(name.length() == 0) {
@@ -84,35 +94,35 @@ public class Competitors implements Serializable {
 		return mErrorText;
 	}
 	
-	public void add(String name, String cardNumber, String team, String competitorClass, String startNumber, String startGroup, int type) {				
+	public void add(String name, int cardNumber, String team, String competitorClass, String startNumber, String startGroup, int type) {				
 		name = name.replaceFirst("\\s+$", "");
-		Competitor competitor = new Competitor(name, Integer.parseInt(cardNumber), team, competitorClass, Integer.parseInt(startNumber), Integer.parseInt(startGroup));
-		mCompetitors.add(competitor);
+		Competitor competitor = new Competitor(name, cardNumber, team, competitorClass, Integer.parseInt(startNumber), Integer.parseInt(startGroup));
+		mCompetitors.put(cardNumber,competitor);
 
 		sort();
 	}	
 	
 	public void removeByName(String nameToDelete) {
-		for (Competitor competitor : mCompetitors) {
+		for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.entrySet() ) {
+			Competitor competitor = currentCompetitorEntry.getValue();
 			if (competitor.getName().equals(nameToDelete)) {
-				mCompetitors.remove(competitor);
+				mCompetitors.remove(currentCompetitorEntry.getKey());
 				break;
 			}
 		}
 	}	
 	
-	public String update(int index, String name, String cardNumber, String team, String competitorClass, String startNumber, String startGroup) {
+	public String update(String name, int cardNumber, String team, String competitorClass, String startNumber, String startGroup) {
 		Competitor newCompetitor = null;
-		cardNumber = cardNumber.replace(" ", "");
 
-		newCompetitor = mCompetitors.get(index);
+		newCompetitor = mCompetitors.get(cardNumber);
 		newCompetitor.setName(name);
-		newCompetitor.setCardNumber(Integer.parseInt(cardNumber));
+		newCompetitor.setCardNumber(cardNumber);
 		newCompetitor.setTeam(team);
 		newCompetitor.setCompetitorClass(competitorClass);
 		newCompetitor.setStartNumber(Integer.parseInt(startNumber));
 		newCompetitor.setStartGroup(Integer.parseInt(startGroup));
-		mCompetitors.set(index, newCompetitor);		
+		mCompetitors.put(cardNumber, newCompetitor);		
 
 		sort();
 		
@@ -123,18 +133,34 @@ public class Competitors implements Serializable {
 		
 	}
 	
+	/**
+	 * Sort the competitor list
+	 * A bit inefficient, need to copy the internal LinkedHashMap, sort the list and then put it back in the LinkedHashMap
+	 * But the sorting is less frequent than the getByCard, so fast lookup by cardNumber is more important to have fast access.
+	 */
 	public void sort() {
-		Collections.sort(mCompetitors, new Comparator<Competitor>() {
+		//Read all the values from the LinkedHashMap into a temporary list
+        List<Map.Entry<Integer, Competitor>> entries = new ArrayList<Entry<Integer, Competitor>>(mCompetitors.entrySet());
+        
+        //Sort the temporary list
+		Collections.sort(entries, new Comparator<Map.Entry<Integer, Competitor>>() {
 			@Override
-			public int compare(Competitor s1, Competitor s2) {
-				return s1.getName().compareToIgnoreCase(s2.getName());
+			public int compare(Map.Entry<Integer, Competitor> s1, Map.Entry<Integer, Competitor> s2) {
+				return s1.getValue().getName().compareToIgnoreCase(s2.getValue().getName());
 			}
 		});
+		
+		//Put the sorted values of the list back in the LinkedHashMap
+	    mCompetitors.clear();
+	    for(Map.Entry<Integer, Competitor> e : entries) {
+	    	mCompetitors.put(e.getKey(), e.getValue());
+	    }
 	}		
 	
 	public int sizeByClass(String competitorClass) {
 		int count = 0;
-		for (Competitor competitor : mCompetitors) {
+		for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.entrySet() ) {
+			Competitor competitor = currentCompetitorEntry.getValue();
 			if (competitorClass.equals(competitor.getCompetitorClass())) {
 				count++;
 			}
@@ -143,10 +169,8 @@ public class Competitors implements Serializable {
 	}
 	
 	public Competitor getByCardNumber(int cardNumber) {		
-		for (Competitor competitor : mCompetitors) {
-			if (competitor.getCardNumber() == cardNumber) {
-				return competitor;
-			}
+		if( mCompetitors.containsKey( cardNumber) ){
+			return mCompetitors.get(cardNumber );
 		}
 		
 		return null;
@@ -154,7 +178,8 @@ public class Competitors implements Serializable {
 	
 	public List<String> getCompetitorClasses() {		
 		List<String> competitorClasses = new ArrayList<String>();		
-		for (Competitor competitor : mCompetitors) {
+		for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.entrySet() ) {
+			Competitor competitor = currentCompetitorEntry.getValue();
 			String competitorClass = competitor.getCompetitorClass();
 			if (competitorClasses.contains(competitorClass)) {
 				//Already in list
@@ -164,92 +189,13 @@ public class Competitors implements Serializable {
 		}
 		return competitorClasses;
 	}	
-	
-	public Long getFastestOnStage(String competitorClass, int stageNumber) {
-		Long fastestTimeOnStage = Competition.NO_TIME_FOR_STAGE;
-		for(Competitor competitor : mCompetitors) {
-			if (competitorClass.equals(competitor.getCompetitorClass())) {						
-				try{
-					fastestTimeOnStage = Math.min(fastestTimeOnStage, competitor.getStageTimes().getTimesOfStage(stageNumber - 1));
-				}
-				catch(IndexOutOfBoundsException e){	
-				}
-			}
-		}
-		return fastestTimeOnStage;
-	}	
-	
-	public Long getSlowestOnStage(String competitorClass, int stageNumber) {
-		Long slowestTimeOnStage = (long) 0;
-		for(Competitor competitor : mCompetitors){
-			if (competitorClass.equals(competitor.getCompetitorClass())) {
-				try{
-					if (competitor.getStageTimes().getTimesOfStage(stageNumber - 1) != Competition.NO_TIME_FOR_STAGE) {
-						slowestTimeOnStage = Math.max(slowestTimeOnStage, competitor.getStageTimes().getTimesOfStage(stageNumber - 1));
-					}
-				}
-				catch(IndexOutOfBoundsException e){
-					return Competition.NO_TIME_FOR_STAGE;
-				}
-			}
-		}
-		
-		if (slowestTimeOnStage == 0) {
-			return Competition.NO_TIME_FOR_STAGE;
-		}
-		return slowestTimeOnStage;
-	}
-	
-	/**
-	 * Get slowest stage time with maximum deviation from median time.
-	 * Calculates the median time difference between all adjacent competitors and then return the slowest stage time
-	 * with maximum two times deviation from  median time difference. The idea is to exclude very slow times from the calculation
-	 * @param competitorClass
-	 * @param stageNumber
-	 * @param resultsList
-	 * @return
-	 */
-	public Long getSlowestOnStage(String competitorClass, int stageNumber, ResultList<Results> resultsList) {
-		if( resultsList.size() == 0){
-			return getSlowestOnStage(competitorClass, stageNumber);
-		}
-		List<Long>timeDeltaList = new ArrayList<Long>();
-		Results stageResultForAllCompetitors = resultsList.get(stageNumber);
-		for( int currentCompetitorNumber = 0; currentCompetitorNumber < (stageResultForAllCompetitors.getStageResult().size()-1); currentCompetitorNumber++ ){
-			int nextCompetitorNumber = currentCompetitorNumber+1;
-			Long currentCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(currentCompetitorNumber).getStageTime();
-			Long nextCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(nextCompetitorNumber).getStageTime();
-			if( currentCompetitorStageTime != Competition.NO_TIME_FOR_STAGE && nextCompetitorStageTime != Competition.NO_TIME_FOR_STAGE ){
-				timeDeltaList.add(nextCompetitorStageTime - currentCompetitorStageTime);
-			}
-		}	
-		Collections.sort(timeDeltaList);
-		Long medianTimeDelta = timeDeltaList.get(timeDeltaList.size()/2);
-		//If the competitors are very close on the stage (low median time delta) we set a minimum medianTimeDelta of 5 to prevent early cutoff
-		if( medianTimeDelta < 5){
-			medianTimeDelta = 5L;
-		}
-		
-		for( int currentCompetitorNumber = 0; currentCompetitorNumber < (stageResultForAllCompetitors.getStageResult().size()-1); currentCompetitorNumber++ ){
-			int nextCompetitorNumber = currentCompetitorNumber+1;
-			Long currentCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(currentCompetitorNumber).getStageTime();
-			Long nextCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(nextCompetitorNumber).getStageTime();
-			Long timeDelta = nextCompetitorStageTime - currentCompetitorStageTime;
-			//Filter out competitors that are a lot slower than most competitors. 
-			//only filter out competitors that are from the lower half of the competitor list (Use timeDelta list since it already contains only competitors with stage times set
-			if( (timeDelta > medianTimeDelta*3) && (currentCompetitorNumber > (timeDeltaList.size()/2)) ){
-				return currentCompetitorStageTime;
-			}
-		}
-		return stageResultForAllCompetitors.getStageResult().get( stageResultForAllCompetitors.getStageResult().size()-1 ).getStageTime();
-	}	
-	
-	
+			
 	public String exportCsvString(int type) {
 		String competitorsAsCsv = "";
 
 		if (mCompetitors != null && !mCompetitors.isEmpty()) {
-			for (Competitor competitor : mCompetitors) {			
+			for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.entrySet() ) {	
+				Competitor competitor = currentCompetitorEntry.getValue();
 				if (type == 1) { //ESS_TYPE
 					competitorsAsCsv += competitor.getName() + "," + 
 									  	competitor.getCardNumber() + "," + 
@@ -267,19 +213,16 @@ public class Competitors implements Serializable {
 	}	
 	
 	public Competitor findByCard(Card cardToMatch) {
-		for (Competitor competitor : mCompetitors) {
-			if (competitor.getCardNumber() == cardToMatch.getCardNumber()) {
-				return competitor;
-			}
-		}
-		return null;
+		return getByCardNumber(cardToMatch.getCardNumber());
 	}
 		
 	public String exportPunchesCsvString() {
 		String punchesAsCsv = "";
 
 		if (mCompetitors != null && !mCompetitors.isEmpty()) {
-			for (Competitor competitor : mCompetitors) {
+			for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.entrySet() ) {	
+				Competitor competitor = currentCompetitorEntry.getValue();
+				
 				Card card = new Card();
 
 				card = competitor.getCard();
@@ -309,11 +252,11 @@ public class Competitors implements Serializable {
 		return punchesAsCsv;
 	}	
 	
-	public Boolean checkIfNameExists(String name, List<Competitor> competitors) {
+	public Boolean checkIfNameExists(String name, LinkedHashMap<Integer,Competitor> competitors) {
 		name = name.replaceFirst("\\s+$", "");
 		
-		for (int i = 0; i < competitors.size(); i++) {
-			if (name.equalsIgnoreCase(competitors.get(i).getName())) {
+		for (Entry<Integer,Competitor> currentCompetitorEntry : competitors.entrySet()) {
+			if (name.equalsIgnoreCase(currentCompetitorEntry.getValue().getName())) {
 				return true;
 			}
 		}
@@ -324,21 +267,15 @@ public class Competitors implements Serializable {
 		return checkIfNameExists(name, mCompetitors);
 	}		
 	
-	public Boolean checkIfCardNumberExists(int cardNumber, List<Competitor> competitors) {
-
-		for (int i = 0; i < competitors.size(); i++) {
-			if (cardNumber == competitors.get(i).getCardNumber()) {
-				return true;
-			}
-		}
-		return false;
+	public Boolean checkIfCardNumberExists(int cardNumber, LinkedHashMap<Integer,Competitor> competitors) {
+		return competitors.containsKey(cardNumber);
 	}	
 	
 	public Boolean checkIfCardNumberExists(int cardNumber) {
-		return checkIfCardNumberExists(cardNumber, mCompetitors);
+		return mCompetitors.containsKey(cardNumber);
 	}
 	
-	public Boolean checkIfStartNumberExists(int startNumber, List<Competitor> competitors) {
+	public Boolean checkIfStartNumberExists(int startNumber, LinkedHashMap<Integer,Competitor> competitors) {
 
 		for (int i = 0; i < competitors.size(); i++) {
 			if (startNumber == competitors.get(i).getStartNumber()) {
@@ -353,7 +290,7 @@ public class Competitors implements Serializable {
 	}	
 	
 	public String checkImportCompetitors(String competitorsInput, Boolean checkAgainstCurrent, int type) {	
-		ArrayList<Competitor> newCompetitors = new ArrayList<Competitor>();
+		LinkedHashMap<Integer,Competitor> newCompetitors = new LinkedHashMap<Integer,Competitor>();
 		
 		String status = "";
 		String name = "";
@@ -424,7 +361,7 @@ public class Competitors implements Serializable {
 							status += name + ", " + cardNumber + ", " + team + ", " + competitorClass + ", " + startNumber + ", " + startGroup + ". " + errorText;
 						} else {
 							Competitor competitor = new Competitor(name, Integer.parseInt(cardNumber.replaceAll("[^\\d]", "")), team, competitorClass, Integer.parseInt(startNumber.replaceAll("[^\\d]", "")), Integer.parseInt(startGroup.replaceAll("[^\\d]", "")));
-							newCompetitors.add(competitor);
+							newCompetitors.put(Integer.parseInt(cardNumber),competitor);
 						}
 					}	
 				} else {				
@@ -450,7 +387,7 @@ public class Competitors implements Serializable {
 							status += name + ", " + cardNumber + ". " + errorText;
 						} else {
 							Competitor competitor = new Competitor(name, Integer.parseInt(cardNumber.replaceAll("[^\\d]", "")));
-							newCompetitors.add(competitor);
+							newCompetitors.put(Integer.parseInt(cardNumber),competitor);
 						}
 					}			
 				}					
@@ -508,8 +445,9 @@ public class Competitors implements Serializable {
 				start = end + 1;
 				end = line.indexOf(",", start);
 				startGroup = line.substring(start, line.length());
+				cardNumber = cardNumber.replaceAll("[^\\d]", "");
 				
-				add(name, cardNumber.replaceAll("[^\\d]", ""), team, competitorClass, startNumber.replaceAll("[^\\d]", ""), startGroup.replaceAll("[^\\d]", ""), 1);				
+				add(name, Integer.parseInt(cardNumber), team, competitorClass, startNumber.replaceAll("[^\\d]", ""), startGroup.replaceAll("[^\\d]", ""), 1);				
 			} else {				
 				/*
 				name,cardNumber
@@ -520,17 +458,14 @@ public class Competitors implements Serializable {
 				int pos = line.indexOf(",", 0);
 				name = line.substring(0, pos);
 				cardNumber = line.substring(pos + 1, line.length());
-
-				add(name, cardNumber.replaceAll("[^\\d]", ""), "", "", "-1", "-1", 0);					
+				
+				cardNumber = cardNumber.replaceAll("[^\\d]", "");
+				add(name, Integer.parseInt(cardNumber), "", "", "-1", "-1", 0);					
 			}					
 		}
 	}	
 	
-	public void importPunches(String punches, Stages stages, int type) throws IOException {
-		//cardNumber,control,time,control,time..
-		//cardNumber,control,time,control,time..
-		//cardNumber,control,time,control,time..
-		
+	public void importPunches(String punches, Stages stages, int type) throws IOException {		
 		BufferedReader bufReader = new BufferedReader(new StringReader(punches));
 		String line = null;
 		while ((line = bufReader.readLine()) != null) {	
@@ -543,32 +478,30 @@ public class Competitors implements Serializable {
 			String cardNumber = line.substring(start, end);
 			start = end + 1;
 	
-			for (int i = 0; i < mCompetitors.size(); i++) {
-				if (mCompetitors.get(i).getCardNumber() == Integer.parseInt(cardNumber)) {
-					cardObject.setCardNumber(mCompetitors.get(i).getCardNumber());
-					while (start < line.length()) {
-						end = line.indexOf(",", start);
-						String control = line.substring(start, end);
-						start = end + 1;								
-						
-						end = line.indexOf(",", start);
-						String time;
-						if (end == -1) {
-							time = line.substring(start, line.length());
-							start = line.length() + 1;
-						} else {											
-							time = line.substring(start, end);
-							start = end + 1;
-						}				
-						
-						Punch punchObject = new Punch(Long.valueOf(time), Integer.valueOf(control));
-						cardObject.getPunches().add(punchObject);
-					}
+			Competitor competiorMatchingNewCardnumber = getByCardNumber(Integer.parseInt(cardNumber));
+			if (competiorMatchingNewCardnumber != null) {
+				cardObject.setCardNumber(competiorMatchingNewCardnumber.getCardNumber());
+				while (start < line.length()) {
+					end = line.indexOf(",", start);
+					String control = line.substring(start, end);
+					start = end + 1;								
 					
-					mCompetitors.get(i).processCard(cardObject, stages, type);	
-					break;						
+					end = line.indexOf(",", start);
+					String time;
+					if (end == -1) {
+						time = line.substring(start, line.length());
+						start = line.length() + 1;
+					} else {											
+						time = line.substring(start, end);
+						start = end + 1;
+					}				
+					
+					Punch punchObject = new Punch(Long.valueOf(time), Integer.valueOf(control));
+					cardObject.getPunches().add(punchObject);
 				}
-			}					
+				
+				competiorMatchingNewCardnumber.processCard(cardObject, stages, type);					
+			}			
 		}
 	}	
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.AndroidIndependantCompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import se.gsc.stenmark.gscenduro.compmanagement.ResultList;
 import se.gsc.stenmark.gscenduro.compmanagement.Results;
 import android.content.Context;
@@ -69,10 +70,11 @@ public class ResultsListAdapter extends BaseAdapter {
 				name += "-. ";
 			} else {
 				name += rank + ". ";
-			}			
-			name += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getName() + "\n";
-			startNumber += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getStartNumber() + "\n";
-			team += ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber()).getTeam() + "\n";
+			}		
+			Competitor currentCompetitor = ((MainActivity)        mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber());
+			name += currentCompetitor.getName() + "\n";
+			startNumber += currentCompetitor.getStartNumber() + "\n";
+			team += currentCompetitor.getTeam() + "\n";
 					
 			time += AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTime()) + "\n";
 			timeBack += AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTimesBack()) + "\n";			

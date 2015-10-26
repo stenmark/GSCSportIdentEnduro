@@ -2,7 +2,6 @@ package se.gsc.stenmark.gscenduro.SporIdent.test.driverStubs;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;

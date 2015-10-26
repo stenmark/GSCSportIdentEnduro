@@ -11,8 +11,13 @@ import java.io.Serializable;
 import java.io.StreamCorruptedException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
@@ -54,6 +59,7 @@ public class Competition implements Serializable {
 	private String mCompetitionName;
 	private String mCompetitionDate = "";
 	private int mCompetitionType = SVART_VIT_TYPE;
+	private Map<String,List<Long>> slowestOnStagePerClass = new HashMap<String,List<Long>>();
 	
 	public Competition() {
 		mStages = new Stages();
@@ -71,6 +77,27 @@ public class Competition implements Serializable {
 		} catch (Exception e1) {
 			Log.d("Competition", "Error = " + e1);
 		}
+	}
+	
+	/**
+	 * Return the slowest competitor on the stage in the requested Class and stagenumnber
+	 * @param competitionClass
+	 * @param stageNumber stagenumber (SS1 = 1, SS2 = 2 etc) i.e. NOT 0-indexed
+	 * @return
+	 */
+	public Long getSlowestonStage( String competitionClass, int stageNumber){
+		if( slowestOnStagePerClass.containsKey(competitionClass)){
+			List<Long> slowOnStageList = slowestOnStagePerClass.get(competitionClass);
+			return slowOnStageList.get(stageNumber-1);
+		}
+		return 0L;
+	}
+	
+	public Long getFastestOnStage(String competitorClass, int stageNumber) {
+		if( !mResults.getStageResult(stageNumber, competitorClass).getStageResult().isEmpty() ){
+			return mResults.getStageResult(stageNumber, competitorClass).getStageResult().get(0).getStageTime();
+		}
+		return 0L;
 	}
 	
 	public Stages getStages() {
@@ -255,6 +282,66 @@ public class Competition implements Serializable {
 		CompetitionHelper.exportString(activity, competitionList, "competition", mCompetitionName, "csv");
 	}
 	
+	/**
+	 * Get slowest stage time with maximum deviation from median time.
+	 * Calculates the median time difference between all adjacent competitors and then return the slowest stage time
+	 * with maximum two times deviation from  median time difference. The idea is to exclude very slow times from the calculation
+	 * @param competitorClass
+	 * @param stageNumber
+	 * @param resultsList
+	 * @return
+	 */
+	public Long calculateSlowestOnStage(String competitorClass, int stageNumber) {
+		List<Long>timeDeltaList = new ArrayList<Long>();
+		Results stageResultForAllCompetitors = mResults.get(stageNumber);
+		for( int currentCompetitorNumber = 0; currentCompetitorNumber < (stageResultForAllCompetitors.getStageResult().size()-1); currentCompetitorNumber++ ){
+			int nextCompetitorNumber = currentCompetitorNumber+1;
+			Long currentCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(currentCompetitorNumber).getStageTime();
+			Long nextCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(nextCompetitorNumber).getStageTime();
+			if( currentCompetitorStageTime != Competition.NO_TIME_FOR_STAGE && nextCompetitorStageTime != Competition.NO_TIME_FOR_STAGE ){
+				timeDeltaList.add(nextCompetitorStageTime - currentCompetitorStageTime);
+			}
+		}	
+		Collections.sort(timeDeltaList);
+		
+		Long medianTimeDelta = 0L;
+		if( !timeDeltaList.isEmpty() ){
+			medianTimeDelta = timeDeltaList.get(timeDeltaList.size()/2);
+			//If the competitors are very close on the stage (low median time delta) we set a minimum medianTimeDelta of 5 to prevent early cutoff
+			if( medianTimeDelta < 5){
+				medianTimeDelta = 5L;
+			}
+		}
+
+		
+		for( int currentCompetitorNumber = 0; currentCompetitorNumber < (stageResultForAllCompetitors.getStageResult().size()-1); currentCompetitorNumber++ ){
+			int nextCompetitorNumber = currentCompetitorNumber+1;
+			Long currentCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(currentCompetitorNumber).getStageTime();
+			Long nextCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(nextCompetitorNumber).getStageTime();
+			Long timeDelta = nextCompetitorStageTime - currentCompetitorStageTime;
+			//Filter out competitors that are a lot slower than most competitors. 
+			//only filter out competitors that are from the lower half of the competitor list (Use timeDelta list since it already contains only competitors with stage times set
+			if( (timeDelta > medianTimeDelta*3) && (currentCompetitorNumber > (timeDeltaList.size()/2)) ){
+				return currentCompetitorStageTime;
+			}
+		}
+		return stageResultForAllCompetitors.getStageResult().get( stageResultForAllCompetitors.getStageResult().size()-1 ).getStageTime();
+	}	
+	
+//	public Long calculateFastestOnStage(String competitorClass, int stageNumber) {
+//		Long fastestTimeOnStage = Competition.NO_TIME_FOR_STAGE;
+//		for(Competitor competitor : mCompetitors) {
+//			if (competitorClass.equals(competitor.getCompetitorClass())) {						
+//				try{
+//					fastestTimeOnStage = Math.min(fastestTimeOnStage, competitor.getStageTimes().getTimesOfStage(stageNumber - 1));
+//				}
+//				catch(IndexOutOfBoundsException e){	
+//				}
+//			}
+//		}
+//		return fastestTimeOnStage;
+//	}
+	
 	public void calculateResults() {
 		mResults.clear();			
 		mResultLandscapeList.clear();
@@ -287,8 +374,9 @@ public class Competition implements Serializable {
 			}
 			mResults.addAllStageResults( tmpResultList, competitorClass );
 	
-			// Add total times			
-			for (Competitor currentCompetitor : mCompetitors.getCompetitors() ) {
+			// Add total times		
+			for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.getCompetitors().entrySet() ) {
+				Competitor currentCompetitor = currentCompetitorEntry.getValue();
 				StageResult totalTimeResult;
 				if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {
 					if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() == 0) ) {
@@ -309,7 +397,8 @@ public class Competition implements Serializable {
 			StageResult stageResult;
 			// Add stage times
 			for (int stageNumber = 1; stageNumber <= mResults.getAllStageResults(competitorClass).size(); stageNumber++) {
-				for (Competitor currentCompetitor : mCompetitors.getCompetitors() ) {
+				for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.getCompetitors().entrySet() ) {
+					Competitor currentCompetitor = currentCompetitorEntry.getValue();
 					if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {			
 
 						Long stageTime = NO_TIME_FOR_STAGE;
@@ -367,6 +456,13 @@ public class Competition implements Serializable {
 					mResultLandscapeList.add(resultLandscapeObject);
 				}
 			}
+			
+			List<Long> slowestPerStageList = new ArrayList<Long>();
+			for (int stageNumber = 1; stageNumber <= mResults.getAllStageResults(competitorClass).size(); stageNumber++) {
+				Long slowestOnStage = calculateSlowestOnStage(competitorClass, stageNumber);
+				slowestPerStageList.add(slowestOnStage);
+			}
+			slowestOnStagePerClass.put(competitorClass, slowestPerStageList);
 		}
 		try {
 			saveSessionData(null);

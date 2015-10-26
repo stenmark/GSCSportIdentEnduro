@@ -1,11 +1,8 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.LinkedHashMap;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
-
-
+import se.gsc.stenmark.gscenduro.compmanagement.Competitors;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,29 +11,29 @@ import android.widget.BaseAdapter;
 public class CompetitorsListAdapter extends BaseAdapter {
 	
 	private Context mContext;
-	private List<Competitor> mCompetitor = new ArrayList<Competitor>();
+	private Competitors mCompetitors = null;
 
-	public CompetitorsListAdapter(Context context, List<Competitor> Items) {
+	public CompetitorsListAdapter(Context context, Competitors Items) {
 		mContext = context;
-		mCompetitor = Items;
+		mCompetitors = Items;
 	}		
 	
 	@Override
 	public int getCount() {
-		return mCompetitor.size();
+		return mCompetitors.size();
 	}
 
 	@Override
 	public Competitor getItem(int position) {
-		return mCompetitor.get(position);
+		return mCompetitors.get(position);
 	}
 
-	public List<Competitor> getData() {
-	    return mCompetitor;
+	public Competitors getData() {
+	    return mCompetitors;
 	}
 	
 	public void updateCompetitors () {
-		mCompetitor = ((MainActivity) mContext).competition.getCompetitors().getCompetitors();
+		mCompetitors = ((MainActivity) mContext).competition.getCompetitors();
 		this.notifyDataSetChanged();	
 	}
 	
@@ -55,13 +52,14 @@ public class CompetitorsListAdapter extends BaseAdapter {
 			competitorRowV = (CompetitorsRowView) convertView;
 		}
 		
+		Competitor competitor = mCompetitors.get(position);
 		competitorRowV.setPosition(position);
-		competitorRowV.setStartNumber(String.valueOf(mCompetitor.get(position).getStartNumber()));
-		competitorRowV.setName(mCompetitor.get(position).getName());
-		competitorRowV.setCardNumber(String.valueOf(mCompetitor.get(position).getCardNumber()));
-		competitorRowV.setTeam(mCompetitor.get(position).getTeam());
-		competitorRowV.setCompetitorClass(mCompetitor.get(position).getCompetitorClass());				
-		competitorRowV.setStartGroup(String.valueOf(mCompetitor.get(position).getStartGroup()));
+		competitorRowV.setStartNumber(String.valueOf(competitor.getStartNumber()));
+		competitorRowV.setName(competitor.getName());
+		competitorRowV.setCardNumber(String.valueOf(competitor.getCardNumber()));
+		competitorRowV.setTeam(competitor.getTeam());
+		competitorRowV.setCompetitorClass(competitor.getCompetitorClass());				
+		competitorRowV.setStartGroup(String.valueOf(competitor.getStartGroup()));
 
 		return competitorRowV;
 	}

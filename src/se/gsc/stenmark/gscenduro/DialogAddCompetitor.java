@@ -17,69 +17,38 @@ import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 public class DialogAddCompetitor {
 	
 	private MainActivity mMainActivity;	
-	private static final String[] mCardNumbers = {
-	"2065302",
-	"2065307",
-	"2065315",
-	"2065317",
-	"2065325",
-	"2065339",
-	"2065349",
-	"2065381",
-	"2065387",
-	"2065396",
-	"2077287",
-	"2078034",
-	"2078036",
-	"2078040",
-	"2078056",
-	"2078064",
-	"2078082",
-	"2078087",
-	"2079711",
-	"2079713",
-	"2079723",
-	"2079732",
-	"2079737",
-	"2079747",
-	"2079749",
-	"2079752",
-	"2079768",
-	"2079774",
-	"2079775",
-	"2079797"};
-	
-	
-	
-	
-	
-	
-	
-		
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	private static final Integer[] mCardNumbers = {
+	2065302,
+	2065307,
+	2065315,
+	2065317,
+	2065325,
+	2065339,
+	2065349,
+	2065381,
+	2065387,
+	2065396,
+	2077287,
+	2078034,
+	2078036,
+	2078040,
+	2078056,
+	2078064,
+	2078082,
+	2078087,
+	2079711,
+	2079713,
+	2079723,
+	2079732,
+	2079737,
+	2079747,
+	2079749,
+	2079752,
+	2079768,
+	2079774,
+	2079775,
+	2079797};
 
-	
 	public DialogAddCompetitor(MainActivity MainActivity) {
 		mMainActivity = MainActivity;
 	}
@@ -115,14 +84,14 @@ public class DialogAddCompetitor {
 			cardNumberInput.setVisibility(View.GONE);
 			cardNumberSpinner.setVisibility(View.VISIBLE);
 						
-	        List<String> cardNumberList = new ArrayList<String>();
+	        List<Integer> cardNumberList = new ArrayList<Integer>();
 	        for (int i = 0; i < mCardNumbers.length; i++) {
-	        	if (!mMainActivity.competition.getCompetitors().checkIfCardNumberExists(Integer.parseInt(mCardNumbers[i]))) {
+	        	if (!mMainActivity.competition.getCompetitors().checkIfCardNumberExists(mCardNumbers[i])) {
 	        		cardNumberList.add(mCardNumbers[i]);
 	        	}
 	        }	      
 				
-	        ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_spinner_item, cardNumberList);
+	        ArrayAdapter<Integer> LTRadapter = new ArrayAdapter<Integer>(mMainActivity, android.R.layout.simple_spinner_item, cardNumberList);
 	        LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
 	        cardNumberSpinner.setAdapter(LTRadapter);			
 	        cardNumberSpinner.setSelection(0);					        			
@@ -140,55 +109,60 @@ public class DialogAddCompetitor {
 		addCompetitorAlertDialog.show();		
 		addCompetitorAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {                	                    
-            	String status = "";
-            	String cardNumber = "";
-				if (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) {					
-					
-					String errorText = mMainActivity.competition.getCompetitors().checkData(nameInput.getText().toString(), 
-																				  cardNumberInput.getText().toString(), 
-																				  teamInput.getText().toString(), 
-																				  competitorClassInput.getText().toString(), 
-																				  startNumberInput.getText().toString(), 
-																				  startGroupInput.getText().toString(),
-																				  mMainActivity.competition.getCompetitionType(),
-																				  true,
-																				  null);					
-	            	if (errorText.length() != 0) {
-	            		Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
-	                    return;
-	            	} 
-					
-					mMainActivity.competition.getCompetitors().add(nameInput.getText().toString(), 
-																   cardNumberInput.getText().toString(), 
-																   teamInput.getText().toString(), 
-																   competitorClassInput.getText().toString(), 
-																   startNumberInput.getText().toString(), 
-																   startGroupInput.getText().toString(),
-			   		   											   mMainActivity.competition.getCompetitionType());
-					cardNumber = cardNumberInput.getText().toString();
-				} else {					
-					if (cardNumberCheckBox.isChecked()) {						 
+            public void onClick(View v) {       
+            	try{
+	            	String status = "";
+	            	String cardNumber = "";
+					if (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) {							
+						String errorText = mMainActivity.competition.getCompetitors().checkData(nameInput.getText().toString(), 
+																					  cardNumberInput.getText().toString(), 
+																					  teamInput.getText().toString(), 
+																					  competitorClassInput.getText().toString(), 
+																					  startNumberInput.getText().toString(), 
+																					  startGroupInput.getText().toString(),
+																					  mMainActivity.competition.getCompetitionType(),
+																					  true,
+																					  null);					
+		            	if (errorText.length() != 0) {
+		            		Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
+		                    return;
+		            	} 
+						
+						mMainActivity.competition.getCompetitors().add(nameInput.getText().toString(), 
+																	   Integer.parseInt(cardNumberInput.getText().toString()), 
+																	   teamInput.getText().toString(), 
+																	   competitorClassInput.getText().toString(), 
+																	   startNumberInput.getText().toString(), 
+																	   startGroupInput.getText().toString(),
+				   		   											   mMainActivity.competition.getCompetitionType());
 						cardNumber = cardNumberInput.getText().toString();
-					} else {
-						cardNumber = cardNumberSpinner.getSelectedItem().toString();
-					}		
+					} else {					
+						if (cardNumberCheckBox.isChecked()) {						 
+							cardNumber = cardNumberInput.getText().toString();
+						} else {
+							cardNumber = cardNumberSpinner.getSelectedItem().toString();
+						}		
+						
+						String errorText = mMainActivity.competition.getCompetitors().checkData(nameInput.getText().toString(), cardNumber, "", "", "-1", "-1", mMainActivity.competition.getCompetitionType(), true, null);					
+		            	if (errorText.length() != 0) {
+		            		Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
+		                    return;
+		            	} 
+		            	
+						mMainActivity.competition.getCompetitors().add(nameInput.getText().toString(), Integer.parseInt(cardNumber), "", "", "-1", "-1", mMainActivity.competition.getCompetitionType());
+					}			
 					
-					String errorText = mMainActivity.competition.getCompetitors().checkData(nameInput.getText().toString(), cardNumber, "", "", "-1", "-1", mMainActivity.competition.getCompetitionType(), true, null);					
-	            	if (errorText.length() != 0) {
-	            		Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
-	                    return;
-	            	} 
-	            	
-					mMainActivity.competition.getCompetitors().add(nameInput.getText().toString(), cardNumber, "", "", "-1", "-1", mMainActivity.competition.getCompetitionType());
-				}			
-				
-				status = nameInput.getText().toString() + ", " + cardNumber + ". Added";
-				mMainActivity.competition.calculateResults();
-				mMainActivity.updateFragments();
-				
-				Toast.makeText(mMainActivity, status, Toast.LENGTH_LONG).show();    	
-				addCompetitorAlertDialog.dismiss();
+					status = nameInput.getText().toString() + ", " + cardNumber + ". Added";
+					mMainActivity.competition.calculateResults();
+					mMainActivity.updateFragments();
+					
+					Toast.makeText(mMainActivity, status, Toast.LENGTH_LONG).show();    	
+					addCompetitorAlertDialog.dismiss();
+	            }
+                catch( Exception e){
+        			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+        			dialog.show( mMainActivity.getSupportFragmentManager(), "popUp");
+                }
             }
         });    	
     }    	

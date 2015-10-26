@@ -20,7 +20,7 @@ public class CompetitorsFragment extends ListFragment {
 			getListView().addHeaderView(listView);
 		}
 				
-		mCompetitorAdapter = new CompetitorsListAdapter(mMainActivity, mMainActivity.competition.getCompetitors().getCompetitors());
+		mCompetitorAdapter = new CompetitorsListAdapter(mMainActivity, mMainActivity.competition.getCompetitors());
 		setListAdapter(mCompetitorAdapter);							
 							
 		super.onActivityCreated(savedInstanceState);

@@ -1,6 +1,7 @@
 package se.gsc.stenmark.gscenduro;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
@@ -18,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 
 public class StatusFragment extends Fragment {
 	
@@ -158,10 +160,10 @@ public class StatusFragment extends Fragment {
 								mMainActivity.competition.getStages().importStages(stageString);
 								if (processCards) {
 									String status = "Number of stages has changed so all cards have been processed again.\n\n";
-									for (int i = 0; i < mMainActivity.competition.getCompetitors().size(); i++) {		
-										if ((mMainActivity.competition.getCompetitors().get(i).getCard() != null) &&(mMainActivity.competition.getCompetitors().get(i).getCard().getPunches().size() > 0)) {
-											if (mMainActivity.competition.getCompetitors().get(i).getCard().getCardNumber() != 0) {
-												status += mMainActivity.competition.processNewCard(mMainActivity.competition.getCompetitors().get(i).getCard(), false);
+									for( Entry<Integer,Competitor> currentCompetitor: mMainActivity.competition.getCompetitors().getCompetitors().entrySet() ) {		
+										if ((currentCompetitor.getValue().getCard() != null) &&(currentCompetitor.getValue().getCard().getPunches().size() > 0)) {
+											if (currentCompetitor.getValue().getCard().getCardNumber() != 0) {
+												status += mMainActivity.competition.processNewCard(currentCompetitor.getValue().getCard(), false);
 											}
 										}
 									}	

@@ -59,7 +59,7 @@ public abstract class CompetitionHelper {
 		}			
 	}	
 	
-	public static String getResultsAsHtmlString(String name, String date, Stages stage, List<Results> results, Competitors competitors, int type) {
+	public static String getResultsAsHtmlString(String name, String date, Stages stage, List<Results> results, Competitors competitors, int type, Competition competition) {
 		String resultData = "<!DOCTYPE html>\n<html>\n<body>\n";		
 		resultData += "<style>\ntable, th, td {\nborder: 1px solid black;\nborder-collapse: collapse;\n}\nth, td {\npadding: 5px;\n}\n</style>\n";		
 		resultData += "<h1>" + name + ", " + date + "</h1>\n";
@@ -121,8 +121,8 @@ public abstract class CompetitionHelper {
 			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {			
 				
 				if (results.get(index).getStageResult().get(stageNumber).getRank() != Competition.RANK_DNF) {								
-					Long fastestTimeOnStage = competitors.getFastestOnStage(results.get(index).getTitle(), stageNumber); 
-					Long slowestTimeOnStage = competitors.getSlowestOnStage(results.get(index).getTitle(), stageNumber);
+					Long fastestTimeOnStage = competition.getFastestOnStage(results.get(index).getTitle(), stageNumber); 
+					Long slowestTimeOnStage = competition.calculateSlowestOnStage(results.get(index).getTitle(), stageNumber);
 					Long competitorStageTime = results.get(index).getStageResult().get(stageNumber).getStageTime();
 					
 					int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
