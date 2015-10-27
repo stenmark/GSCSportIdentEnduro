@@ -9,7 +9,7 @@ public class CompetiotnStub extends Competition {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	public CompetiotnStub() {
 		// TODO Auto-generated constructor stub

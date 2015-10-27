@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ResultList<E> extends ArrayList<E> {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	
 	Map<String,CompetitionStartStopMarker> competitionClassStartStopMarkers = new HashMap<String, ResultList<E>.CompetitionStartStopMarker>(); 
 	
@@ -86,7 +86,7 @@ public class ResultList<E> extends ArrayList<E> {
 //	}
 	
 	private class CompetitionStartStopMarker implements Serializable{
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 2L;
 		private int startMarker;
 		private int stopMarker;
 		private CompetitionStartStopMarker( int startMarker, int stopMarker){

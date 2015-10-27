@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 public class Punch implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	private long mTime;
 	private int mControl;
 

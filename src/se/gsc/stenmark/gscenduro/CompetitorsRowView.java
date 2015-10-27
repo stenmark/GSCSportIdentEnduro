@@ -248,7 +248,7 @@ public class CompetitorsRowView extends LinearLayout {
 	private OnClickListener mOnPunchClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			((MainActivity)mContext).listPunches(mPosition);
+			((MainActivity)mContext).listPunches(Integer.parseInt(mCardNumber.getText().toString()));
 		}
 	};
 }

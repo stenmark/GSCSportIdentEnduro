@@ -1,6 +1,5 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.LinkedHashMap;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitors;
 import android.content.Context;

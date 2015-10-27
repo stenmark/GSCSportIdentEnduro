@@ -71,7 +71,7 @@ public class ResultsListAdapter extends BaseAdapter {
 			} else {
 				name += rank + ". ";
 			}		
-			Competitor currentCompetitor = ((MainActivity)        mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber());
+			Competitor currentCompetitor = ((MainActivity)mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber());
 			name += currentCompetitor.getName() + "\n";
 			startNumber += currentCompetitor.getStartNumber() + "\n";
 			team += currentCompetitor.getTeam() + "\n";

@@ -1,5 +1,6 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.io.InvalidClassException;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.MainActivity.CompetitionOnClickListener;
@@ -47,8 +48,21 @@ public class DialogSelectCompetition {
 					mMainActivity.competition = Competition.loadSessionData(selectedItem);
 					mMainActivity.competition.calculateResults();
 					mMainActivity.updateFragments();	
-				} catch (Exception e) {
-					Log.d("action_load", "Error = " + e);
+				}
+				catch( InvalidClassException e1){
+					PopupMessage errorDialog = new PopupMessage("This version of GSCEnduro is not compatible with the version of the competition that you tried to load");
+					errorDialog.show( mMainActivity.getSupportFragmentManager(), "popUp");
+					mMainActivity.competition = new Competition();
+					mMainActivity.competition.calculateResults();
+					mMainActivity.updateFragments();	
+				}
+		    	catch (Exception e2) {
+					PopupMessage errorDialog = new PopupMessage(MainActivity.generateErrorMessage(e2));
+					errorDialog.show( mMainActivity.getSupportFragmentManager(), "popUp");
+					Log.d("action_load", "Error = " + e2);
+					mMainActivity.competition = new Competition();
+					mMainActivity.competition.calculateResults();
+					mMainActivity.updateFragments();	
 				}					
 		    }});
 		builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {

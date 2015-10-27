@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 public class StageControls implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	private int mStart;
 	private int mFinish;
 

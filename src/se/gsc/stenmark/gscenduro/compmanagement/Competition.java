@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -15,12 +16,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
 import org.apache.commons.collections4.queue.CircularFifoQueue;
-
 import se.gsc.stenmark.gscenduro.MainApplication;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import android.app.Activity;
@@ -38,7 +37,7 @@ import android.util.Log;
  */
 public class Competition implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	
 	public static final int SVART_VIT_TYPE = 0;
 	public static final int ESS_TYPE = 1;	
@@ -68,7 +67,7 @@ public class Competition implements Serializable {
 		mResultLandscapeList = new ArrayList<Results>();
 		setCompetitionName("New");
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd", new Locale("swedish", "sweden"));
 		String currentDateandTime = sdf.format(new Date());
 		setCompetitionDate(currentDateandTime);
 		
@@ -188,7 +187,7 @@ public class Competition implements Serializable {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static Competition loadSessionData(String competionName) throws StreamCorruptedException, IOException, ClassNotFoundException {
+	public static Competition loadSessionData(String competionName) throws StreamCorruptedException, IOException, ClassNotFoundException, InvalidClassException {
 		FileInputStream fileInputComp = null;
 
 		if (competionName == null || competionName.isEmpty()) {
@@ -209,8 +208,9 @@ public class Competition implements Serializable {
 			File file = new File(dir, competionName + ".dat");
 			fileInputComp = new FileInputStream(file);
 		}
+		Competition loadCompetition = null;
 		ObjectInputStream objStreamInComp = new ObjectInputStream(fileInputComp);
-		Competition loadCompetition = (Competition) objStreamInComp.readObject();
+		loadCompetition = (Competition) objStreamInComp.readObject();
 		objStreamInComp.close();
 
 		return loadCompetition;

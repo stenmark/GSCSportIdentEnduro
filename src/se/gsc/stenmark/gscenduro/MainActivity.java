@@ -2,6 +2,7 @@ package se.gsc.stenmark.gscenduro;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.util.List;
 import java.util.Locale;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
@@ -60,19 +61,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		return connectionStatus;
 	}	
 	
-	public void listPunches(int position) {		
+	public void listPunches(int cardNumber) {		
 		try{
 			Intent punchListIntent = new Intent();		
 			punchListIntent.setClass(this, PunchActivity.class);		
 			
-			if (this.competition.getCompetitors().get(position).getCard() == null) {
-				this.competition.getCompetitors().get(position).processCard(new Card(), this.competition.getStages(), this.competition.getCompetitionType());				
+			if (competition.getCompetitors().getByCardNumber(cardNumber).getCard() == null) {
+				competition.getCompetitors().getByCardNumber(cardNumber).processCard(new Card(), this.competition.getStages(), this.competition.getCompetitionType());				
 			}			
 
 			Stages stages = new Stages(this.competition.getStages().getStages());
 			
 			Bundle bundle = new Bundle();
-			bundle.putSerializable("Card", this.competition.getCompetitors().get(position).getCard());
+			bundle.putSerializable("Card", competition.getCompetitors().getByCardNumber(cardNumber).getCard());
 			bundle.putSerializable("Stages", stages);
 			punchListIntent.putExtras(bundle);
 			
@@ -163,11 +164,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 			try {
 				competition = Competition.loadSessionData(null);				
-			} catch (Exception e) {
+			} 
+			//Version missmatch, dont warn the user. Just create a new empty Competition and continue.
+			catch( InvalidClassException e1){
 				competition = new Competition();
-				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
+			}
+			catch (Exception e2) {
+				competition = new Competition();
+				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e2));
 				dialog.show(getSupportFragmentManager(), "popUp");
-				return;
 			}		
 						
 			// Set up the action bar.

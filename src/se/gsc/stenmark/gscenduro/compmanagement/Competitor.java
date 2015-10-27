@@ -13,7 +13,7 @@ import se.gsc.stenmark.gscenduro.SporIdent.Card;
  */
 public class Competitor implements Serializable {
 	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	private String mName;
 	private int mCardNumber;
 	private Card mCard;	
