@@ -10,18 +10,17 @@ import android.widget.TextView;
 
 public class ResultsRowView extends LinearLayout {
 	
-	Context mContext;
-	TextView mTitle;
-	TextView mResultName;
-	TextView mResultStartNumberTitle;
-	TextView mResultTeamTitle;
+	private Context mContext;
+	private TextView mTitle;
+	private TextView mResultName;
+	private TextView mResultStartNumberTitle;
+	private TextView mResultTeamTitle;
 	
-	TextView mResultStartNumber;
-	TextView mResultTeam;
-	TextView mResultTime;
-	TextView mResultTimeBack;
-	int mPosition;
-	LinearLayout mCompoundView;
+	private TextView mResultStartNumber;
+	private TextView mResultTeam;
+	private TextView mResultTime;
+	private TextView mResultTimeBack;
+	private LinearLayout mCompoundView;
 
 	protected void Init(Context context) {
 		mContext = context;
@@ -61,10 +60,6 @@ public class ResultsRowView extends LinearLayout {
 		if (mTitle != null) {
 			mTitle.setText(Title);
 		}
-	}
-
-	public void setPosition(int Position) {
-		mPosition = Position;
 	}
 		
 	public void setResultName(String ResultName) {

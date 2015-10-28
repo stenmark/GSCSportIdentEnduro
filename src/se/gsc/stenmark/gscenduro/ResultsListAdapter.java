@@ -58,36 +58,37 @@ public class ResultsListAdapter extends BaseAdapter {
 		
 		resultRowV.setTitle(mResult.get(position).getTitle());
 		
-		String name = "";
-		String startNumber = "";
-		String team = "";
-		String time = "";
-		String timeBack = "";
+		int numberOfCompetitorsOnStage = mResult.get(position).getStageResult().size();
+		//Use stringbuilder for more efficient string concatenation
+		//Init the string builder for each string to a multiple of the number of competitors. Estimate how many characters each competitor need.
+		StringBuilder name = new StringBuilder(  mResult.get(position).getStageResult().size()*20 ); 
+		StringBuilder startNumber = new StringBuilder(  mResult.get(position).getStageResult().size()*5 ); 
+		StringBuilder team = new StringBuilder(  mResult.get(position).getStageResult().size()*15 ); 
+		StringBuilder time = new StringBuilder(  mResult.get(position).getStageResult().size()*10 ); 
+		StringBuilder timeBack = new StringBuilder(  mResult.get(position).getStageResult().size()*10 ); 
 		
-		for(int i = 0; i < mResult.get(position).getStageResult().size(); i++) {
+		for(int i = 0; i < numberOfCompetitorsOnStage; i++) {
 			int rank = mResult.get(position).getStageResult().get(i).getRank();			
 			if (rank == Competition.RANK_DNF) {			
-				name += "-. ";
+				name.append("-. ");
 			} else {
-				name += rank + ". ";
+				name.append( rank + ". " );
 			}		
 			Competitor currentCompetitor = ((MainActivity)mContext).competition.getCompetitors().getByCardNumber(mResult.get(position).getStageResult().get(i).getCardNumber());
-			name += currentCompetitor.getName() + "\n";
-			startNumber += currentCompetitor.getStartNumber() + "\n";
-			team += currentCompetitor.getTeam() + "\n";
+			name.append(  currentCompetitor.getName() + "\n");
+			startNumber.append( currentCompetitor.getStartNumber() + "\n");
+			team.append( currentCompetitor.getTeam() + "\n" );
 					
-			time += AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTime()) + "\n";
-			timeBack += AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTimesBack()) + "\n";			
+			time.append( AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTime()) + "\n" );
+			timeBack.append( AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTimesBack()) + "\n" );			
 		}
 				
-		resultRowV.setResultName(name);
-		resultRowV.setResultStartNumber(startNumber);
-		resultRowV.setResultTeam(team);
-		resultRowV.setResultTime(time);
-		resultRowV.setResultTimeBack(timeBack);	
+		resultRowV.setResultName(name.toString());
+		resultRowV.setResultStartNumber(startNumber.toString());
+		resultRowV.setResultTeam(team.toString());
+		resultRowV.setResultTime(time.toString());
+		resultRowV.setResultTimeBack(timeBack.toString());	
 		
-		resultRowV.setPosition(position);
-
 		return resultRowV;
 	}
 }

@@ -43,10 +43,16 @@ public abstract class CompetitionHelper {
 			return Color.WHITE;
 		} else {
 			if( competitorStageTime > slowestTimeOnStage){
-				competitorStageTime = slowestTimeOnStage;
+				//If this is the slowest competitor, or slower (slower is possible due to filtering out very slow users from "sloesttime")
+				//Then return  a very sharp red
+				return android.graphics.Color.HSVToColor(new float[]{0f,1f,1f});
 			}
-			float myTimeDiff = competitorStageTime - fastestTimeOnStage;
-			float stageTimeDiff = slowestTimeOnStage - fastestTimeOnStage;
+			if( competitorStageTime == fastestTimeOnStage){
+				//If this is the fastest competitor on stage, return a very sharp green
+				return android.graphics.Color.HSVToColor(new float[]{110f,1f,1f});
+			}
+			float myTimeDiff = competitorStageTime - fastestTimeOnStage; 
+			float stageTimeDiff = slowestTimeOnStage - fastestTimeOnStage; 
 			float transition;
 			if (stageTimeDiff != 0) {
 				transition = 1f - (myTimeDiff / stageTimeDiff);				
@@ -54,7 +60,7 @@ public abstract class CompetitionHelper {
 				transition = 1f;
 			}
 			
-			float hue = 20f + (transition*70f);  //the full red and full green are very close to each other for the eye. So dont use full red and full green
+			float hue = 10f + (transition*70f);  //the full red and full green are very close to each other for the eye. So dont use full red and full green
 		    return android.graphics.Color.HSVToColor(new float[]{hue,1f,1f});
 		}			
 	}	
