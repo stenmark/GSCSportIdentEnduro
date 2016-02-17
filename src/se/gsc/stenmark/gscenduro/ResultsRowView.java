@@ -12,6 +12,8 @@ public class ResultsRowView extends LinearLayout {
 	
 	private Context mContext;
 	private TextView mTitle;
+	private LinearLayout mHeader;
+	
 	private TextView mResultName;
 	private TextView mResultStartNumberTitle;
 	private TextView mResultTeamTitle;
@@ -46,6 +48,7 @@ public class ResultsRowView extends LinearLayout {
 		}
 			
 		mTitle = (TextView) mCompoundView.findViewById(R.id.result_title);
+		mHeader = (LinearLayout) mCompoundView.findViewById(R.id.result_header);
 		mResultName = (TextView) mCompoundView.findViewById(R.id.result_name);
 		mResultTime = (TextView) mCompoundView.findViewById(R.id.result_time);
 		mResultTimeBack = (TextView) mCompoundView.findViewById(R.id.result_time_back);
@@ -56,10 +59,13 @@ public class ResultsRowView extends LinearLayout {
 		Init(context);
 	}
 
-	public void setTitle(String Title) {
+	public void setTitle(String Title, int visibility) {
 		if (mTitle != null) {
 			mTitle.setText(Title);
 		}
+
+		mHeader.setVisibility(visibility);
+		mTitle.setVisibility(visibility);
 	}
 		
 	public void setResultName(String ResultName) {

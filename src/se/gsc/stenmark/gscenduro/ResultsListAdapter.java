@@ -24,7 +24,14 @@ public class ResultsListAdapter extends BaseAdapter {
 	
 	@Override
 	public int getCount() {
-		return mResult.size();
+		int size = 0;
+		
+		for (int stage = 0; stage < mResult.size(); stage++)
+		{
+			size += mResult.get(stage).getStageResult().size();
+		}
+		
+		return size;
 	}
 
 	@Override
@@ -55,7 +62,7 @@ public class ResultsListAdapter extends BaseAdapter {
 		} else {
 			resultRowV = (ResultsRowView) convertView;
 		}
-		
+		/*
 		resultRowV.setTitle(mResult.get(position).getTitle());
 		
 		int numberOfCompetitorsOnStage = mResult.get(position).getStageResult().size();
@@ -81,13 +88,48 @@ public class ResultsListAdapter extends BaseAdapter {
 					
 			time.append( AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTime()) + "\n" );
 			timeBack.append( AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(position).getStageResult().get(i).getStageTimesBack()) + "\n" );			
-		}
+		}		
+		*/
+		
+		int index = 0;
+		int stage = 0;
+		for (; stage < mResult.size(); stage++)
+		{
+			if (index + mResult.get(stage).getStageResult().size() > position)
+			{
+				index = position - index;
+				break;
+			}	
 				
-		resultRowV.setResultName(name.toString());
-		resultRowV.setResultStartNumber(startNumber.toString());
-		resultRowV.setResultTeam(team.toString());
-		resultRowV.setResultTime(time.toString());
-		resultRowV.setResultTimeBack(timeBack.toString());	
+			index += mResult.get(stage).getStageResult().size();
+		}
+		
+		String name; 
+
+		int rank = mResult.get(stage).getStageResult().get(index).getRank();			
+		if (rank == Competition.RANK_DNF) {			
+			name = "-. ";
+		} else {
+			name = rank + ". ";
+		}		
+		Competitor currentCompetitor = ((MainActivity)mContext).competition.getCompetitors().getByCardNumber(mResult.get(stage).getStageResult().get(index).getCardNumber());
+		name += currentCompetitor.getName();
+		String startNumber = String.valueOf(currentCompetitor.getStartNumber());
+		String team = currentCompetitor.getTeam();
+		String time = AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(stage).getStageResult().get(index).getStageTime());
+		String timeBack = AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(stage).getStageResult().get(index).getStageTimesBack());			
+		
+		resultRowV.setResultName(name);
+		resultRowV.setResultStartNumber(startNumber);
+		resultRowV.setResultTeam(team);
+		resultRowV.setResultTime(time);
+		resultRowV.setResultTimeBack(timeBack);	
+		
+		if (index == 0) {
+			resultRowV.setTitle(mResult.get(stage).getTitle(), View.VISIBLE);			
+		} else {
+			resultRowV.setTitle("", View.GONE);
+		}
 		
 		return resultRowV;
 	}

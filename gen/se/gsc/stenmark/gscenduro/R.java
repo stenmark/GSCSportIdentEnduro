@@ -99,6 +99,7 @@ public final class R {
         public static final int radio_type_ess=0x7f0a000e;
         public static final int radio_type_of_competition=0x7f0a000c;
         public static final int radio_type_svartvitt=0x7f0a000d;
+        public static final int result_header=0x7f0a0054;
         public static final int result_landscape_comp=0x7f0a0044;
         public static final int result_landscape_competitor_class=0x7f0a0037;
         public static final int result_landscape_name=0x7f0a0045;
@@ -142,7 +143,6 @@ public final class R {
         public static final int start_number_input=0x7f0a001c;
         public static final int status_screen_fragment=0x7f0a005c;
         public static final int status_text=0x7f0a005d;
-        public static final int tableLayout1=0x7f0a0054;
         public static final int team_input=0x7f0a001a;
         public static final int time_input=0x7f0a002e;
     }
