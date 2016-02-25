@@ -4,8 +4,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import se.gsc.stenmark.gscenduro.MainActivity;
 import se.gsc.stenmark.gscenduro.SporIdent.CRCCalculator;
@@ -235,6 +237,23 @@ public class SiDriver {
     	
     }
     
+    private Card parseSiacCard( List<Byte> siacCardData, int series, int numberOfPunches ){
+    	Card card = new Card();
+    	int cardNoHiWord = makeIntFromBytes( siacCardData.get(27), siacCardData.get(26) );
+    	int cardNoLoWord = makeIntFromBytes( siacCardData.get(25), (byte)0 );
+    	card.setCardNumber(cardNoLoWord + (cardNoHiWord*0xFFFF)); 
+    	card.setNumberOfPunches(numberOfPunches);
+    	
+    	if( series == 15 ){
+    		for( int i = 0; i < numberOfPunches; i++){
+    			Punch punch = analysePunch(siacCardData, 128 + 4*i);
+    			card.getPunches().add(punch);
+    		}
+    	}
+    	
+    	return card;
+    }
+    
     private Card parseCard6( byte[] card6Data ){
     	Card card = new Card();;
     	int dataPos = 0;
@@ -310,6 +329,70 @@ public class SiDriver {
 		
 		return null;
     	
+    }
+    
+    public Card getSiacCardData( boolean verbose ){
+    	int nrOfReadLoops = 1;
+    	int series = -1;
+    	int numberOfPunches = -1;
+    	
+    	List<Byte> allData = new ArrayList<Byte>();
+    	BufferedWriter bw  = null;
+    	try{
+    		if( verbose ){
+		    	File sdCard = Environment.getExternalStorageDirectory();
+		    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}
+				File file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString() + ".card");
+				FileWriter fw = new FileWriter(file.getAbsoluteFile());
+				bw = new BufferedWriter(fw);
+				bw.write("#Testdata for readDleByte method. First line is raw data read at 128 bytes chunks from the card. The second line is the expected output after performing readBytesDle\n");
+    		}
+			byte[] rawData = readSiMessage(512, 1000, verbose, bw);
+			MessageBuffer messageBuffer = new MessageBuffer(rawData);
+			
+			byte[] initialReadBytes = messageBuffer.readBytes(128+9);
+			if( initialReadBytes.length > 128 + 6 ){
+				if( initialReadBytes[0] == SiMessage.STX && initialReadBytes[1] == 0xEF ){
+					//memcpy(b+k*128, bf+6, 128);
+					for( int i = 0; i < 128; i++ ){
+						allData.add( initialReadBytes[i+6]);
+					}
+					
+					series = allData.get(24) & 15;
+					if( series == 15 ){
+						numberOfPunches = Math.min( (allData.get(22) ), 128);
+						//Second loop read_sicard_10_plus_b4
+						nrOfReadLoops = 1 + (numberOfPunches+31) / 32;
+					}
+					else{
+						bw.write("Only SIAC cards currently supported for SICARD 8 and newer");
+						return new Card();
+					}
+					
+				}
+				else{
+					bw.write("Tried to read SIAC card but failed. Expected STX(0x02) + 0xEF but got " + initialReadBytes[0] + " + " + initialReadBytes[1]);
+					return new Card();
+				}
+			}
+			else{
+				bw.write("Wanted to read 128+6 bytes, could only read " + initialReadBytes.length  + " byes");
+				return new Card();
+			}
+    	}
+		catch( Exception e){
+			try {
+				if( bw != null){
+					bw.close();
+	    		}
+			} 
+	    	catch (IOException e1) {}
+	    }	
+    		
+    	return parseSiacCard( allData, series, numberOfPunches );
     }
     
     public Card getCard6Data( boolean verbose){
@@ -406,6 +489,14 @@ public class SiDriver {
     	}
     	
     	return new Punch(time, control);
+    }
+    
+    private Punch analysePunch( List<Byte> data, int pos){
+    	byte[] dataArray = new byte[ data.size() ];
+    	for( int i = 0; i < data.size(); i++){
+    		dataArray[i] = data.get(i);
+    	}
+    	return analysePunch(dataArray, pos);
     }
     
     private Punch analysePunch( byte[] data, int pos){
