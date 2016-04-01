@@ -239,9 +239,9 @@ public class SiDriver {
     
     private Card parseSiacCard( List<Byte> siacCardData, int series, int numberOfPunches ){
     	Card card = new Card();
-    	int cardNoHiWord = makeIntFromBytes( siacCardData.get(27), siacCardData.get(26) );
-    	int cardNoLoWord = makeIntFromBytes( siacCardData.get(25), (byte)0 );
-    	card.setCardNumber(cardNoLoWord + (cardNoHiWord*0xFFFF)); 
+    	int cardNoLoWord = makeIntFromBytes( siacCardData.get(27), siacCardData.get(26) );
+    	int cardNoHiWord = makeIntFromBytes( siacCardData.get(25), (byte)0 );
+    	card.setCardNumber(cardNoLoWord + (cardNoHiWord*65536)); 
     	card.setNumberOfPunches(numberOfPunches);
     	
     	if( series == 15 ){
@@ -331,7 +331,7 @@ public class SiDriver {
     	
     }
     
-    public Card getSiacCardData( boolean verbose ){
+    public Card getSiacCardData( boolean verbose ) throws Exception{
     	int nrOfReadLoops = 1;
     	int series = -1;
     	int numberOfPunches = -1;
@@ -348,54 +348,81 @@ public class SiDriver {
 				File file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString() + ".card");
 				FileWriter fw = new FileWriter(file.getAbsoluteFile());
 				bw = new BufferedWriter(fw);
-				bw.write("#Testdata for readDleByte method. First line is raw data read at 128 bytes chunks from the card. The second line is the expected output after performing readBytesDle\n");
+				bw.write("#Testdata for SIAC card read\n");
     		}
-			byte[] rawData = readSiMessage(512, 1000, verbose, bw);
-			MessageBuffer messageBuffer = new MessageBuffer(rawData);
-			
-			byte[] initialReadBytes = messageBuffer.readBytes(128+9);
-			if( initialReadBytes.length > 128 + 6 ){
-				if( initialReadBytes[0] == SiMessage.STX && initialReadBytes[1] == 0xEF ){
-					//memcpy(b+k*128, bf+6, 128);
-					for( int i = 0; i < 128; i++ ){
-						allData.add( initialReadBytes[i+6]);
-					}
-					
-					series = allData.get(24) & 15;
-					if( series == 15 ){
-						numberOfPunches = Math.min( (allData.get(22) ), 128);
-						//Second loop read_sicard_10_plus_b4
-						nrOfReadLoops = 1 + (numberOfPunches+31) / 32;
+    		for( int currentReadLoop = 0; currentReadLoop < nrOfReadLoops; currentReadLoop++){
+    			if( currentReadLoop == 0){
+    				if(verbose){
+    					bw.write("First read loop, send read_sicard_8_plus_b0 \n");
+    				}
+    				sendSiMessage(SiMessage.read_sicard_8_plus_b0.sequence());
+    			}
+    			else{
+    				sendSiMessage(SiMessage.read_sicard_10_plus_b4.sequence());
+    				if(verbose){
+    					bw.write("Second read loop, send read_sicard_10_plus_b4 \n");
+    				}
+    			}
+    			
+				byte[] rawData = readSiMessage(512, 1000, verbose, bw);
+				MessageBuffer messageBuffer = new MessageBuffer(rawData);
+				
+				if( verbose ){
+					bw.write("Number of bytes read: " + rawData.length + "\n");
+				}
+				
+				byte[] initialReadBytes = messageBuffer.readBytes(128+9);
+				if( initialReadBytes.length > 128 + 6 ){ 
+					if( initialReadBytes[0] == SiMessage.STX && (initialReadBytes[1]& 0xFF) == 0xEF ){
+						//memcpy(b+k*128, bf+6, 128);
+						for( int i = 0; i < 128; i++ ){
+							allData.add( initialReadBytes[i+6]);
+						}
+						
+						series = allData.get(24) & 15;
+						if( series == 15 ){
+							numberOfPunches = Math.min( (allData.get(22) ), 128);
+							nrOfReadLoops = 1 + (numberOfPunches+31) / 32;
+						}
+						else{
+							if(verbose){
+								bw.write("Only SIAC cards currently supported for SICARD 8 and newer\n");
+							}
+							return new Card();
+						}
+						
 					}
 					else{
-						bw.write("Only SIAC cards currently supported for SICARD 8 and newer");
+						if(verbose){
+							bw.write("Tried to read SIAC card but failed. Expected STX(0x02) + 0xEF but got " + initialReadBytes[0] + " + " + initialReadBytes[1] + "\n");
+						}
 						return new Card();
 					}
-					
 				}
 				else{
-					bw.write("Tried to read SIAC card but failed. Expected STX(0x02) + 0xEF but got " + initialReadBytes[0] + " + " + initialReadBytes[1]);
+					if(verbose){
+						bw.write("Wanted to read 128+6 bytes, could only read " + initialReadBytes.length  + " byes\n");
+					}
 					return new Card();
 				}
-			}
-			else{
-				bw.write("Wanted to read 128+6 bytes, could only read " + initialReadBytes.length  + " byes");
-				return new Card();
-			}
-    	}
-		catch( Exception e){
+    		}
+    	}	
+    	finally{
 			try {
 				if( bw != null){
 					bw.close();
 	    		}
 			} 
-	    	catch (IOException e1) {}
-	    }	
-    		
+	    	catch (IOException e1) { return null; }	
+    	}
+    	
+    	sendSiMessage(SiMessage.ack_sequence.sequence());
     	return parseSiacCard( allData, series, numberOfPunches );
     }
     
     public Card getCard6Data( boolean verbose){
+    	sendSiMessage(SiMessage.request_si_card6.sequence());
+    	
     	byte[] allData = new byte[128*3];
     	BufferedWriter bw  = null;
     	try{
@@ -472,6 +499,8 @@ public class SiDriver {
     		catch (IOException e1) {
 			}
     	}
+    	
+    	sendSiMessage(SiMessage.ack_sequence.sequence());
 		return parseCard6( allData );
     	
     }

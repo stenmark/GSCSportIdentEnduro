@@ -44,12 +44,10 @@ public class UsbDriverStub extends UsbSerialDriver {
 
 	}
 
-
-
 	@Override
 	public int write(byte[] src, int timeoutMillis) throws IOException {
-		fail("Not implemented in UsbDriverStub");
-		return 0;
+		System.out.println("Wrote " + src.length + " byte to USB from Stub");
+		return src.length;
 	}
 
 	@Override

@@ -548,14 +548,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		 */
 		protected Card doInBackground(SiDriver... siDriver) {
 			try {
-				Card cardData = new Card();
 				while (true) {
 					byte[] readSiMessage = siDriver[0].readSiMessage(100, 2000, false, null);
 
 					if(disconected){
 						//Log.d("SiCardListener", "Was disconnected");
 						siDriver[0].closeDriver();
-						return cardData;
+						return new Card();
 					}
 					
 					//We got something and it was the STX (Start Transmistion) symbol.
@@ -563,29 +562,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 						
 						//Check if the Magic byte 0x66 was received -> SiCard6 was read
 						if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x66) {
-							siDriver[0].sendSiMessage(SiMessage.request_si_card6.sequence());
-							cardData = siDriver[0].getCard6Data( false );
-							siDriver[0].sendSiMessage(SiMessage.ack_sequence.sequence());
-							return cardData;
+							return siDriver[0].getCard6Data( false );
 							
 						//Check if the Magic byte 0xE8 was received -> SiCard9 (SIAC) was read
 						} else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8) {
-							siDriver[0].sendSiMessage(SiMessage.read_sicard_8_plus_b0.sequence());
-							cardData = siDriver[0].getSiacCardData( false );
-							siDriver[0].sendSiMessage(SiMessage.ack_sequence.sequence());
-							return cardData;
+							return siDriver[0].getSiacCardData( true );
+						
 						//Check if the Magic byte 0x46 was received -> SiCard5 was read, seems to be 0x46 also for card pulled out event
 						} else if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x46) {
 							
 							//If the next bytes are 0xFF and =x4F it seems like this is magic bytes for card pulled out event, return an Empty Card
 							if (readSiMessage.length >= 3 && (readSiMessage[2] & 0xFF) == 0x4f) {
 								//Log.d("SiCardListener", "Card pulled out");
-								return cardData;
+								return new Card();
 							}
 
 							//If it was not card pulled out it was an SiCard5
 							siDriver[0].sendSiMessage(SiMessage.request_si_card5.sequence());
-							cardData = siDriver[0].getCard5Data( competition );
+							Card cardData = siDriver[0].getCard5Data( competition );
 							if (cardData == null) {
 								cardData = new Card();
 							}
@@ -594,7 +588,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							return cardData;
 						} else {
 							//Log.d("SiCardListener", "not card6");
-							return cardData;
+							return new Card();
 						}
 
 					} else {
@@ -612,7 +606,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 						}
 						MainActivity.lastCalltime = System.currentTimeMillis();
 						//Log.d("SiCardListener", "not STX or timeout");
-						return cardData;
+						return new Card();
 					}
 				}
 			} catch (Exception e) {
