@@ -7,10 +7,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 import org.junit.Test;
-
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.MessageBuffer;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
@@ -124,7 +123,7 @@ public class SiDriverTest {
 		}
 	}
 	
-//	@Test
+	@Test
 	public void testReadBytesDle() {
 		siDriver = new SiDriver();
 		List<String> cardsToTest = new ArrayList<>();
@@ -147,7 +146,7 @@ public class SiDriverTest {
 			
 	}
 	
-//	@Test
+	@Test
 	public void testGetCard6Data() {
 		System.out.println("Testing Card6 parsing");
 		siDriver = new SiDriver();
@@ -201,8 +200,18 @@ public class SiDriverTest {
 		siDriver = new SiDriver();
 		UsbDriverStub stubUsbDriver = new UsbDriverStub();
 		siDriver.setUsbDriver(stubUsbDriver);
+		
+		testSpecificCard("test_SIAC_8633680_4punches.card", 8633680, Arrays.asList(70045L,70052L,70067L,70073L), stubUsbDriver);
+		testSpecificCard("test_SIAC_8633676_6punches.card", 8633676, Arrays.asList(83485L,83504L,83530L,83583L,83609L,83664L), stubUsbDriver);
+		testSpecificCard("test_SIAC_8633672_8punches.card", 8633672, Arrays.asList(83483L,83509L,83529L,83584L,83606L,83667L,83700L,83856L), stubUsbDriver);
+		testSpecificCard("test_SIAC_8633683_10punches.card", 8633683, Arrays.asList(83479L,83507L,83528L,83581L,83604L,83670L,83698L,83849L,83870L,83934L), stubUsbDriver);
+		testSpecificCard("test_SIAC_8633698_12punches.card", 8633698, Arrays.asList(83480L,83510L,83526L,83589L,83603L,83666L,83689L,83852L,83874L,83938L,83957L,83999L), stubUsbDriver);
+//		testSpecificCard("test_SIAC_8633691_14punches.card", 8633691, Arrays.asList(83482L,83503L,83523L,83586L,83607L,83671L,83692L,83851L,83872L,83936L,83955L,83997L,84019L,84048L,84076L), stubUsbDriver);
+	}
 	
-		List<byte[]> inData = this.readSiacTestDataFromFile("test_SIAC.card");
+	private void testSpecificCard( String cardIndataFile, int cardNumber, List<Long> punchTimes, UsbDriverStub stubUsbDriver) throws Exception{
+		System.out.println("Testing SIAC card: " + cardIndataFile);
+		List<byte[]> inData = this.readSiacTestDataFromFile(cardIndataFile);
 		stubUsbDriver.setStubUsbData(inData);
 		
 		Card siacCard = siDriver.getSiacCardData(false);
@@ -210,19 +219,21 @@ public class SiDriverTest {
 		assertNotNull("SIAC card data was null", siacCard);
 		System.out.println("SIAC data: " + siacCard.toString());
 		
-		assertEquals(4, siacCard.getNumberOfPunches());
+		assertEquals(punchTimes.size(), siacCard.getNumberOfPunches());
 		assertEquals(siacCard.getNumberOfPunches(), siacCard.getPunches().size());
-		assertEquals(8633680, siacCard.getCardNumber());
+		assertEquals(cardNumber, siacCard.getCardNumber());
+				
+		for(int i = 0; i < punchTimes.size(); i++){
+			//Every other punch should be either 71 or 72. I.e. punches are 71,72,71,72 etc.
+			if( i%2 == 0){
+				assertEquals(71, siacCard.getPunches().get(i).getControl());
+			}
+			else{
+				assertEquals(72, siacCard.getPunches().get(i).getControl());	
+			}
+			assertEquals((Long)punchTimes.get(i), (Long)siacCard.getPunches().get(i).getTime());
+		}
 		
-		assertEquals(71, siacCard.getPunches().get(0).getControl());
-		assertEquals(72, siacCard.getPunches().get(1).getControl());
-		assertEquals(71, siacCard.getPunches().get(2).getControl());
-		assertEquals(72, siacCard.getPunches().get(3).getControl());
-		
-		assertEquals(70045, siacCard.getPunches().get(0).getTime());
-		assertEquals(70052, siacCard.getPunches().get(1).getTime());
-		assertEquals(70067, siacCard.getPunches().get(2).getTime());
-		assertEquals(70073, siacCard.getPunches().get(3).getTime());
 	}
 
 }
