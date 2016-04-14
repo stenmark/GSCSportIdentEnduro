@@ -2,6 +2,10 @@ package se.gsc.stenmark.gscenduro.compmanagement.test;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,14 +13,69 @@ import org.junit.Test;
 
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
+import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
+import se.gsc.stenmark.gscenduro.SporIdent.test.SiDriverTest;
+import se.gsc.stenmark.gscenduro.SporIdent.test.driverStubs.UsbDriverStub;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import se.gsc.stenmark.gscenduro.compmanagement.ResultList;
 import se.gsc.stenmark.gscenduro.compmanagement.Results;
 import se.gsc.stenmark.gscenduro.compmanagement.StageResult;
 
-
 public class CompetitionTest {
+
+	@Test 
+	public void testCompetitionFromRealCardData() throws Exception{
+		System.out.println("START");
+		final String COMP_CLASS_TO_TEST = "";
+		
+		Competition competition = new CompetiotnStub();
+		competition.getStages().importStages("71,72,71,72,71,72,71,72,71,72,71,72");
+		competition.setCompetitionDate("2016-04-10");
+		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
+		competition.setCompetitionName("Competition SvartVitt real test");
+		readCompetitorsFromFile(COMP_CLASS_TO_TEST, competition);
+		
+		List<Card> cardList = readCardsFromFiles();
+		int tmp = 0;
+		for( Card card : cardList){
+			System.out.println(tmp++);
+			Competitor currentCompetitor = competition.getCompetitors().getByCardNumber(card.getCardNumber());
+			assertNotNull("Coudl not get competitor for cardnumber "+ card.getCardNumber(), currentCompetitor);
+			currentCompetitor.processCard(card, competition.getStages(), Competition.SVART_VIT_TYPE);
+		}
+		
+		competition.calculateResults();
+		List<Results> resultList = competition.getResultLandscape();
+		List<String> expectedResultsData = readExpectedCompResults();
+		for( int competitorRank = 0; competitorRank < competition.getCompetitors().size(); competitorRank++){
+			int cardNumber = resultList.get(competitorRank).getStageResult().get(0).getCardNumber();
+			String name = competition.getCompetitors().getByCardNumber(cardNumber).getName();
+			System.out.println(name + "  " + cardNumber);
+				
+			long totalTime = resultList.get(competitorRank).getStageResult().get(0).getStageTime();
+			long stage1Time = resultList.get(competitorRank).getStageResult().get(1).getStageTime();
+			long stage2Time = resultList.get(competitorRank).getStageResult().get(2).getStageTime();
+			long stage3Time = resultList.get(competitorRank).getStageResult().get(3).getStageTime();
+			long stage4Time = resultList.get(competitorRank).getStageResult().get(4).getStageTime();
+			long stage5Time = resultList.get(competitorRank).getStageResult().get(5).getStageTime();
+			long stage6Time = resultList.get(competitorRank).getStageResult().get(6).getStageTime();
+			
+			String resultAsString = name + "," + cardNumber + "," + totalTime + "," + stage1Time + "," + stage2Time + "," + stage3Time + "," + stage4Time + "," +stage5Time + "," +stage6Time;
+			String expectedResults = expectedResultsData.get(competitorRank);
+			System.out.println("Calculated Data: " + resultAsString);
+			System.out.println("Expected Data:   " + expectedResults);
+			assertEquals(expectedResults, resultAsString);
+			if( stage1Time+stage2Time+stage3Time+stage4Time+stage5Time+stage6Time > 40000){
+				assertEquals(totalTime, 5000000);
+			}
+			else{
+				assertEquals(totalTime, stage1Time+stage2Time+stage3Time+stage4Time+stage5Time+stage6Time);
+			}
+
+		}	
+	}
+	
 	@Test
 	public void testSlowestAndFastestTimeOnStage() {
 		final String COMP_CLASS_TO_TEST = "";
@@ -982,5 +1041,98 @@ public class CompetitionTest {
 		assertEquals((Integer)Competition.RANK_DNF, sixthStage3Result.getRank() );
 		
 	}
+	
+	private List<Card> readCardsFromFiles() throws Exception{
+		SiDriver siDriver = new SiDriver();
+		UsbDriverStub stubUsbDriver = new UsbDriverStub();
+		siDriver.setUsbDriver(stubUsbDriver);	
+		String workingDir = System.getProperty("user.dir");
+		File folder = new File(workingDir  + File.separator + "testData" + File.separator + "lackareback_cardData");
+		
+		List<Card> cardList = new ArrayList<>();
+
+		for( File fileName : folder.listFiles()){
+			List<byte[]> cardRawData = SiDriverTest.readSiacTestDataFromFile(File.separator + "lackareback_cardData" + File.separator + fileName.getName());
+			stubUsbDriver.setStubUsbData(cardRawData);
+			cardList.add( siDriver.getSiacCardData(false) );
+		}	
+		
+		return cardList;
+	}
+	
+	private void readCompetitorsFromFile( final String COMP_CLASS_TO_TEST, Competition competition) throws IOException{
+		BufferedReader competitorsFileBuffer = null;
+		String workingDir = System.getProperty("user.dir");
+		try{
+			File competitorsFile = new File( workingDir + File.separator + "testData" + File.separator + "lackareback_competitionData" + File.separator + "competitors.csv");
+			competitorsFileBuffer = new BufferedReader(new FileReader(competitorsFile.getAbsoluteFile()));
+			String line;
+			while ((line = competitorsFileBuffer.readLine()) != null) {
+				String[] parsedLine = line.split(",");			
+				assertEquals(2, parsedLine.length);
+				String name = parsedLine[0];
+				int number = Integer.parseInt( parsedLine[1] );
+				competition.getCompetitors().add(name, number , "", COMP_CLASS_TO_TEST, "0", "0", 0);	
+			}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		finally{
+			competitorsFileBuffer.close();
+		}	
+	}
+	
+	private int pasrseTime(String time){
+		try{
+			if(time.contains("DNF") ){
+				return 5000000;
+			}
+			if(time.contains("no result") ){
+				return 10000000;
+			}
+			String[] parsed = time.split(":");
+			int minute = Integer.parseInt(parsed[0]);
+			int second = Integer.parseInt(parsed[1]);
+			return (minute*60)+second;
+			}
+		catch(NumberFormatException e){
+			e.printStackTrace();
+			System.out.println("Could not parse: " + time);
+		}
+		return 60000;
+	}
+	
+	private List<String> readExpectedCompResults() throws IOException{
+		List<String> readData = new ArrayList<>();
+		BufferedReader expectedDataFileBuffer = null;
+		String workingDir = System.getProperty("user.dir");
+		try{
+			File expectedResultsFile = new File( workingDir + File.separator + "testData" + File.separator + "lackareback_competitionData" + File.separator + "expectedData.csv");
+			expectedDataFileBuffer = new BufferedReader(new FileReader(expectedResultsFile.getAbsoluteFile()));
+			String line;
+			while ((line = expectedDataFileBuffer.readLine()) != null) {
+				String[] parsedLine = line.split(",");
+				String name = parsedLine[0];
+				String number = parsedLine[1];
+				int totalTime = pasrseTime( parsedLine[2]);
+				int stage1 = pasrseTime( parsedLine[3]);
+				int stage2 = pasrseTime( parsedLine[4]);
+				int stage3 = pasrseTime( parsedLine[5]);
+				int stage4 = pasrseTime( parsedLine[6]);
+				int stage5 = pasrseTime( parsedLine[7]);
+				int stage6 = pasrseTime( parsedLine[8]);
+				readData.add(name+","+number+","+totalTime+","+stage1+","+stage2+","+stage3+","+stage4+","+stage5+","+stage6);
+			}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		finally{
+			expectedDataFileBuffer.close();
+		}		
+		return readData;
+	}
+	
 
 }

@@ -338,38 +338,29 @@ public class SiDriver {
     	
     	List<Byte> allData = new ArrayList<Byte>();
     	BufferedWriter bw  = null;
+    	File file = null;
     	try{
     		if( verbose ){
 		    	File sdCard = Environment.getExternalStorageDirectory();
-		    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+		    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro/siacdata");
 				if (!dir.exists()) {
 					dir.mkdirs();
 				}
-				File file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString() + ".card");
+				file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "") + ".card");
 				FileWriter fw = new FileWriter(file.getAbsoluteFile());
 				bw = new BufferedWriter(fw);
 				bw.write("#Testdata for SIAC card read\n");
     		}
     		for( int currentReadLoop = 0; currentReadLoop < nrOfReadLoops; currentReadLoop++){
     			if( currentReadLoop == 0){
-    				if(verbose){
-    					bw.write("First read loop, send read_sicard_8_plus_b0 \n");
-    				}
     				sendSiMessage(SiMessage.read_sicard_8_plus_b0.sequence());
     			}
     			else{
     				sendSiMessage(SiMessage.read_sicard_10_plus_b4.sequence());
-    				if(verbose){
-    					bw.write("Second read loop, send read_sicard_10_plus_b4 \n");
-    				}
     			}
     			
 				byte[] rawData = readSiMessage(512, 1000, verbose, bw);
 				MessageBuffer messageBuffer = new MessageBuffer(rawData);
-				
-				if( verbose ){
-					bw.write("Number of bytes read: " + rawData.length + "\n");
-				}
 				
 				byte[] initialReadBytes = messageBuffer.readBytes(128+9);
 				if( initialReadBytes.length > 128 + 6 ){ 
@@ -417,7 +408,11 @@ public class SiDriver {
     	}
     	
     	sendSiMessage(SiMessage.ack_sequence.sequence());
-    	return parseSiacCard( allData, series, numberOfPunches );
+    	Card siacCard = parseSiacCard( allData, series, numberOfPunches );
+    	if( verbose){
+    		file.renameTo(new File(file.getAbsolutePath().replace(".card", siacCard.getCardNumber() + ".card")));
+    	}
+    	return siacCard;
     }
     
     public Card getCard6Data( boolean verbose){

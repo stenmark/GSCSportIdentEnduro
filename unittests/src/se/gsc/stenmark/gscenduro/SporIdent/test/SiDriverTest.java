@@ -27,7 +27,7 @@ public class SiDriverTest {
 	 * @param inData
 	 * @param expectedData
 	 */
-	private void readTestDataFromFile( String fileName, List<byte[]> inData, List<byte[]> expectedData){
+	public static void readTestDataFromFile( String fileName, List<byte[]> inData, List<byte[]> expectedData){
 		System.out.println("Reading testdata from: " + fileName);
 		BufferedReader fileBuffer = null;
 		try{
@@ -86,7 +86,7 @@ public class SiDriverTest {
 	 * The SIAC data does not contain any expected data, only indata. 
 	 * So this method just ueses the old method and then merges the two lists and returns it
 	 */
-	private List<byte[]> readSiacTestDataFromFile( String fileName){
+	public static List<byte[]> readSiacTestDataFromFile( String fileName){
 		List<byte[]> i1 = new ArrayList<>();
 		List<byte[]> i2 = new ArrayList<>();
 		readTestDataFromFile(fileName, i1, i2);
