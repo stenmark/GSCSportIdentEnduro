@@ -379,7 +379,7 @@ public class SiDriver {
 						series = allData.get(24) & 15;
 						if( series == 15 ){
 							numberOfPunches = Math.min( (allData.get(22) ), 128);
-							nrOfReadLoops = 1 + (numberOfPunches+31) / 32;
+							nrOfReadLoops = 2 + (numberOfPunches+31) / 32;
 						}
 						else{
 							if(verbose){

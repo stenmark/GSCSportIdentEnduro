@@ -27,7 +27,7 @@ public class SiDriverTest {
 	 * @param inData
 	 * @param expectedData
 	 */
-	public static void readTestDataFromFile( String fileName, List<byte[]> inData, List<byte[]> expectedData){
+	public static void readTestDataFromFile( String fileName, List<byte[]> inData, List<byte[]> expectedData, boolean isSiacData){
 		System.out.println("Reading testdata from: " + fileName);
 		BufferedReader fileBuffer = null;
 		try{
@@ -50,18 +50,20 @@ public class SiDriverTest {
 				}
 				inData.add(tmpIndataBytes);
 				
-				String currentLineExpectedData = fileBuffer.readLine();
-				parsedInts = new ArrayList<>();
-				for( String hexString : currentLineExpectedData.replaceAll("0x", "").split(",")){
-					if(!hexString.isEmpty()){
-						parsedInts.add( Integer.parseInt(hexString, 16) );
+				if(!isSiacData){
+					String currentLineExpectedData = fileBuffer.readLine();
+					parsedInts = new ArrayList<>();
+					for( String hexString : currentLineExpectedData.replaceAll("0x", "").split(",")){
+						if(!hexString.isEmpty()){
+							parsedInts.add( Integer.parseInt(hexString, 16) );
+						}
 					}
+					byte[] tmpExpectedBytes = new byte[parsedInts.size()];
+					for( int i = 0; i < parsedInts.size(); i++ ){
+						tmpExpectedBytes[i] = parsedInts.get(i).byteValue();
+					}
+					expectedData.add(tmpExpectedBytes);
 				}
-				byte[] tmpExpectedBytes = new byte[parsedInts.size()];
-				for( int i = 0; i < parsedInts.size(); i++ ){
-					tmpExpectedBytes[i] = parsedInts.get(i).byteValue();
-				}
-				expectedData.add(tmpExpectedBytes);
 				
 			}
 		}
@@ -89,10 +91,10 @@ public class SiDriverTest {
 	public static List<byte[]> readSiacTestDataFromFile( String fileName){
 		List<byte[]> i1 = new ArrayList<>();
 		List<byte[]> i2 = new ArrayList<>();
-		readTestDataFromFile(fileName, i1, i2);
+		readTestDataFromFile(fileName, i1, i2, true);
 		List<byte[]> inData = new ArrayList<>();
 		inData.addAll(i1);
-		inData.addAll(i2);
+		//inData.addAll(i2);
 		
 		return inData;
 	}
@@ -100,7 +102,7 @@ public class SiDriverTest {
 	private void testCard6( String cardname ){		
 		List<byte[]> inData = new ArrayList<>();
 		List<byte[]> expectedData = new ArrayList<>();
-		readTestDataFromFile(cardname, inData, expectedData);		
+		readTestDataFromFile(cardname, inData, expectedData, false);		
 		
 		assertEquals("Testdata read failuer, the testfile " + cardname + " Does not contain the same number of inData rows as ExpectedData rows",
 					  inData.size(), 
@@ -155,7 +157,7 @@ public class SiDriverTest {
 		
 		List<byte[]> inData = new ArrayList<>();
 		List<byte[]> expectedData = new ArrayList<>();
-		readTestDataFromFile("testCard6_2065381_12punches.card", inData, expectedData);
+		readTestDataFromFile("testCard6_2065381_12punches.card", inData, expectedData, false);
 		stubUsbDriver.setStubUsbData(inData);
 		
 		Card card6Data = siDriver.getCard6Data(false);
