@@ -1,7 +1,11 @@
 package se.gsc.stenmark.gscenduro.compmanagement;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
+import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
 /**
  * Represents a Competitor with a competitor name, an SI-card connected to the
@@ -78,6 +82,25 @@ public class Competitor implements Serializable {
 		mCard = card;
 		mCard.setCardNumber(mCardNumber);
 		setStageTimes(new StageTimes());
+		
+		//For SvartVitt, remove all accidental FinishPunches that are before the first StartPunch
+		boolean firstFinishPunchFound = false;
+		List<Punch> punchesToRemove = new ArrayList<Punch>();
+		int firstStartStationNr = stages.getStages().get(0).getStart();
+		int firstFinishStationNr = stages.getStages().get(0).getFinish();
+		if (type == Competition.SVART_VIT_TYPE) {
+			for( Punch punch : card.getPunches()){
+				if(punch.getControl() == firstStartStationNr){
+					firstFinishPunchFound = true;
+				}
+				if( !firstFinishPunchFound ){
+					if(punch.getControl() == firstFinishStationNr){
+						punchesToRemove.add(punch);
+					}
+				}
+			}
+			card.getPunches().removeAll(punchesToRemove);
+		}
 		
 		for (int i = 0; i < stages.size(); i++) {
 			long stageTime;

@@ -24,9 +24,74 @@ import se.gsc.stenmark.gscenduro.compmanagement.StageResult;
 
 public class CompetitionTest {
 
+	@Test
+	/**
+	 * Test with reasl SIAC data from Stenungsund race. 
+	 * Some competitors went into the Goal antenna before the start punch,
+	 * which lead to negative time and punches needed to be removed manually.
+	 * This test uses these real SIAC card readout to verify that the app can remove such punches automatically
+	 * @throws Exception
+	 */
+	public void testCompetitorWithGoalAsFirstPunch() throws Exception{
+		System.out.println("START testCompetitorWithGoalAsFirstPunch");
+		final String COMP_CLASS_TO_TEST = "";
+		
+		Competition competition = new CompetiotnStub();
+		competition.getStages().importStages("71,72,71,72,71,72,71,72,71,72,71,72");
+		competition.setCompetitionDate("2016-05-14");
+		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
+		competition.setCompetitionName("Competition SvartVitt real test");
+		readCompetitorsFromFile( "stenungsund_card_with_goal_as_first", COMP_CLASS_TO_TEST, competition);
+		
+		List<Card> cardList = readCardsFromFiles( "stenungsund_card_with_goal_as_first");
+		for( Card card : cardList){
+			Competitor currentCompetitor = competition.getCompetitors().getByCardNumber(card.getCardNumber());
+			assertNotNull("Could not get competitor for cardnumber "+ card.getCardNumber(), currentCompetitor);
+			currentCompetitor.processCard(card, competition.getStages(), Competition.SVART_VIT_TYPE);
+		}
+		
+		competition.calculateResults();
+		List<Results> resultList = competition.getResultLandscape();
+		
+		for( int competitorRank = 0; competitorRank < competition.getCompetitors().size(); competitorRank++){
+			int cardNumber = resultList.get(competitorRank).getStageResult().get(0).getCardNumber();
+			String name = competition.getCompetitors().getByCardNumber(cardNumber).getName();
+			System.out.println(name + "  " + cardNumber);
+				
+			long totalTime = resultList.get(competitorRank).getStageResult().get(0).getStageTime();
+			long stage1Time = resultList.get(competitorRank).getStageResult().get(1).getStageTime();
+			long stage2Time = resultList.get(competitorRank).getStageResult().get(2).getStageTime();
+			long stage3Time = resultList.get(competitorRank).getStageResult().get(3).getStageTime();
+			long stage4Time = resultList.get(competitorRank).getStageResult().get(4).getStageTime();
+			long stage5Time = resultList.get(competitorRank).getStageResult().get(5).getStageTime();
+			long stage6Time = resultList.get(competitorRank).getStageResult().get(6).getStageTime();
+			
+			String resultAsString = name + "," + cardNumber + "," + totalTime + "," + stage1Time + "," + stage2Time + "," + stage3Time + "," + stage4Time + "," +stage5Time + "," +stage6Time;
+			System.out.println(resultAsString);
+			//Hardcode the check for the two cardnumbers
+			if( cardNumber == 8633682){
+				assertEquals("Fassberg,8633682,5000000,98,10000000,10000000,10000000,10000000,10000000", resultAsString);
+			}
+			else if( cardNumber == 8633672){
+				assertEquals("EvilAs,8633672,544,123,45,71,135,88,82", resultAsString);
+			}
+			else{
+				fail("Unknown cardnumber");
+			}
+			
+			if( stage1Time+stage2Time+stage3Time+stage4Time+stage5Time+stage6Time > 40000){
+				assertEquals(totalTime, 5000000);
+			}
+			else{
+				assertEquals(totalTime, stage1Time+stage2Time+stage3Time+stage4Time+stage5Time+stage6Time);
+			}
+		}
+
+	}
+	
 	@Test 
 	public void testCompetitionFromRealCardData() throws Exception{
-		System.out.println("START");
+		System.out.println("START testCompetitionFromRealCardData");
 		final String COMP_CLASS_TO_TEST = "";
 		
 		Competition competition = new CompetiotnStub();
@@ -34,14 +99,12 @@ public class CompetitionTest {
 		competition.setCompetitionDate("2016-04-10");
 		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
 		competition.setCompetitionName("Competition SvartVitt real test");
-		readCompetitorsFromFile(COMP_CLASS_TO_TEST, competition);
+		readCompetitorsFromFile("lackareback_competitionData",COMP_CLASS_TO_TEST, competition);
 		
-		List<Card> cardList = readCardsFromFiles();
-		int tmp = 0;
+		List<Card> cardList = readCardsFromFiles( "lackareback_cardData");
 		for( Card card : cardList){
-			System.out.println(tmp++);
 			Competitor currentCompetitor = competition.getCompetitors().getByCardNumber(card.getCardNumber());
-			assertNotNull("Coudl not get competitor for cardnumber "+ card.getCardNumber(), currentCompetitor);
+			assertNotNull("Could not get competitor for cardnumber "+ card.getCardNumber(), currentCompetitor);
 			currentCompetitor.processCard(card, competition.getStages(), Competition.SVART_VIT_TYPE);
 		}
 		
@@ -1042,29 +1105,31 @@ public class CompetitionTest {
 		
 	}
 	
-	private List<Card> readCardsFromFiles() throws Exception{
+	private List<Card> readCardsFromFiles( String subFolder ) throws Exception{
 		SiDriver siDriver = new SiDriver();
 		UsbDriverStub stubUsbDriver = new UsbDriverStub();
 		siDriver.setUsbDriver(stubUsbDriver);	
 		String workingDir = System.getProperty("user.dir");
-		File folder = new File(workingDir  + File.separator + "testData" + File.separator + "lackareback_cardData");
+		File folder = new File(workingDir  + File.separator + "testData" + File.separator + subFolder);
 		
 		List<Card> cardList = new ArrayList<>();
 
 		for( File fileName : folder.listFiles()){
-			List<byte[]> cardRawData = SiDriverTest.readSiacTestDataFromFile(File.separator + "lackareback_cardData" + File.separator + fileName.getName());
-			stubUsbDriver.setStubUsbData(cardRawData);
-			cardList.add( siDriver.getSiacCardData(false) );
+			if( fileName.getName().contains(".card")){
+				List<byte[]> cardRawData = SiDriverTest.readSiacTestDataFromFile(File.separator + subFolder + File.separator + fileName.getName());
+				stubUsbDriver.setStubUsbData(cardRawData);
+				cardList.add( siDriver.getSiacCardData(false) );
+			}
 		}	
 		
 		return cardList;
 	}
 	
-	private void readCompetitorsFromFile( final String COMP_CLASS_TO_TEST, Competition competition) throws IOException{
+	private void readCompetitorsFromFile( final String subFolder, final String COMP_CLASS_TO_TEST, Competition competition) throws IOException{
 		BufferedReader competitorsFileBuffer = null;
 		String workingDir = System.getProperty("user.dir");
 		try{
-			File competitorsFile = new File( workingDir + File.separator + "testData" + File.separator + "lackareback_competitionData" + File.separator + "competitors.csv");
+			File competitorsFile = new File( workingDir + File.separator + "testData" + File.separator + subFolder + File.separator + "competitors.csv");
 			competitorsFileBuffer = new BufferedReader(new FileReader(competitorsFile.getAbsoluteFile()));
 			String line;
 			while ((line = competitorsFileBuffer.readLine()) != null) {

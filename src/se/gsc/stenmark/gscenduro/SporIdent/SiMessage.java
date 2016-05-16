@@ -121,6 +121,10 @@ public class SiMessage {
 
 	public static final SiMessage read_sicard_10_plus_b0 = read_sicard_8_plus_b0;
 
+	public static final SiMessage read_sicard_10_plus_b1 = new SiMessage(new byte[] {
+			STX, GET_SI_CARD_8_PLUS_BN, 0x01, 0x01, (byte) 0xE3, 0x09, ETX
+		});
+	
 	public static final SiMessage read_sicard_10_plus_b4 = new SiMessage(new byte[] {
 		STX, GET_SI_CARD_8_PLUS_BN, 0x01, 0x04, (byte) 0xE6, 0x09, ETX
 	});

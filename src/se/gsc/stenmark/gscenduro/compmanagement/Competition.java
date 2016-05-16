@@ -328,20 +328,6 @@ public class Competition implements Serializable {
 		return stageResultForAllCompetitors.getStageResult().get( stageResultForAllCompetitors.getStageResult().size()-1 ).getStageTime();
 	}	
 	
-//	public Long calculateFastestOnStage(String competitorClass, int stageNumber) {
-//		Long fastestTimeOnStage = Competition.NO_TIME_FOR_STAGE;
-//		for(Competitor competitor : mCompetitors) {
-//			if (competitorClass.equals(competitor.getCompetitorClass())) {						
-//				try{
-//					fastestTimeOnStage = Math.min(fastestTimeOnStage, competitor.getStageTimes().getTimesOfStage(stageNumber - 1));
-//				}
-//				catch(IndexOutOfBoundsException e){	
-//				}
-//			}
-//		}
-//		return fastestTimeOnStage;
-//	}
-	
 	public void calculateResults() {
 		mResults.clear();			
 		mResultLandscapeList.clear();

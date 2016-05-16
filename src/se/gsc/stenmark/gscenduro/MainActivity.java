@@ -566,7 +566,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							
 						//Check if the Magic byte 0xE8 was received -> SiCard9 (SIAC) was read
 						} else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8) {
-							return siDriver[0].getSiacCardData( false );
+							return siDriver[0].getSiacCardData( true );
 						
 						//Check if the Magic byte 0x46 was received -> SiCard5 was read, seems to be 0x46 also for card pulled out event
 						} else if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x46) {

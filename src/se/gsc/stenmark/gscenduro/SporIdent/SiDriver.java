@@ -246,7 +246,7 @@ public class SiDriver {
     	
     	if( series == 15 ){
     		for( int i = 0; i < numberOfPunches; i++){
-    			Punch punch = analysePunch(siacCardData, 128 + 4*i);
+    			Punch punch = analysePunch(siacCardData, 256 + 4*i);
     			card.getPunches().add(punch);
     		}
     	}
@@ -332,7 +332,7 @@ public class SiDriver {
     }
     
     public Card getSiacCardData( boolean verbose ) throws Exception{
-    	int nrOfReadLoops = 1;
+    	int nrOfReadLoops = 2;
     	int series = -1;
     	int numberOfPunches = -1;
     	
@@ -351,9 +351,15 @@ public class SiDriver {
 				bw = new BufferedWriter(fw);
 				bw.write("#Testdata for SIAC card read\n");
     		}
+    		
+    		sendSiMessage(SiMessage.read_sicard_8_plus_b1.sequence());
+    		
     		for( int currentReadLoop = 0; currentReadLoop < nrOfReadLoops; currentReadLoop++){
     			if( currentReadLoop == 0){
     				sendSiMessage(SiMessage.read_sicard_8_plus_b0.sequence());
+    			}
+    			else if( currentReadLoop == 1){
+    				sendSiMessage(SiMessage.read_sicard_8_plus_b1.sequence());
     			}
     			else{
     				sendSiMessage(SiMessage.read_sicard_10_plus_b4.sequence());
