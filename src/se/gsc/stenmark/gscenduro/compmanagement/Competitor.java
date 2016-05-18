@@ -95,7 +95,8 @@ public class Competitor implements Serializable {
 				}
 				if( !firstFinishPunchFound ){
 					if(punch.getControl() == firstFinishStationNr){
-						punchesToRemove.add(punch);
+						//punchesToRemove.add(punch);
+						punch.setIsFinishPunchBeforeStart(true);
 					}
 				}
 			}

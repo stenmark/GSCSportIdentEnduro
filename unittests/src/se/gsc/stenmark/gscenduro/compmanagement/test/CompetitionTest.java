@@ -65,7 +65,7 @@ public class CompetitionTest {
 			long stage4Time = resultList.get(competitorRank).getStageResult().get(4).getStageTime();
 			long stage5Time = resultList.get(competitorRank).getStageResult().get(5).getStageTime();
 			long stage6Time = resultList.get(competitorRank).getStageResult().get(6).getStageTime();
-			
+						
 			String resultAsString = name + "," + cardNumber + "," + totalTime + "," + stage1Time + "," + stage2Time + "," + stage3Time + "," + stage4Time + "," +stage5Time + "," +stage6Time;
 			System.out.println(resultAsString);
 			//Hardcode the check for the two cardnumbers

@@ -237,6 +237,30 @@ public class SiDriver {
     	
     }
     
+    private List<Integer>  getMilliSecondTimeStamps(List<Byte> siacCardData){
+    	final int MSS_TIMING_PAGE_START_POS = 128;
+    	final int FIRST_MSS_TIMESTAMP_ON_PAGE_POS = 48;
+    	
+		int dataPosPtr = MSS_TIMING_PAGE_START_POS+FIRST_MSS_TIMESTAMP_ON_PAGE_POS;
+		List<Integer> milliSecondList = new ArrayList<Integer>();
+		for(int i = 0; i < 124; i++){
+			int statusCode = siacCardData.get(dataPosPtr) & 0xFF;
+			if( statusCode == 18 ){
+    			int milliSeond = siacCardData.get(dataPosPtr+1) & 0xFF;
+    			milliSeond = milliSeond*1000/256;
+    			milliSecondList.add( milliSeond );
+			}
+			if( statusCode == 2 ){
+				milliSecondList.add( 0 );
+			}
+			if( statusCode == 7 ){
+				break;
+			}
+			dataPosPtr += 2;
+		}
+		return milliSecondList;	
+    }
+    
     private Card parseSiacCard( List<Byte> siacCardData, int series, int numberOfPunches ){
     	Card card = new Card();
     	int cardNoLoWord = makeIntFromBytes( siacCardData.get(27), siacCardData.get(26) );
@@ -245,9 +269,26 @@ public class SiDriver {
     	card.setNumberOfPunches(numberOfPunches);
     	
     	if( series == 15 ){
+    		List<Integer> milliSecondTimeStamps = new ArrayList<Integer>();
+    		if( siacCardData.size() > 255){
+    			milliSecondTimeStamps = getMilliSecondTimeStamps(siacCardData);
+    		}
+    		
     		for( int i = 0; i < numberOfPunches; i++){
-    			Punch punch = analysePunch(siacCardData, 256 + 4*i);
-    			card.getPunches().add(punch);
+    			if( siacCardData.size() > 383){
+    				Punch punch = analysePunch(siacCardData, 256 + 4*i);
+    				card.getPunches().add(punch);
+    			}
+    		}
+    		
+    		if( !milliSecondTimeStamps.isEmpty() ){
+    			int i = 0;
+	    		for( Punch punch : card.getPunches()){
+    				if( i < milliSecondTimeStamps.size()){
+    					punch.setMillis(milliSecondTimeStamps.get(i));
+    					i++;
+    				}
+	    		}
     		}
     	}
     	

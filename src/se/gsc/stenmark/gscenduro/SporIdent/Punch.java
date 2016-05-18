@@ -13,7 +13,9 @@ public class Punch implements Serializable {
 
 	private static final long serialVersionUID = 2L;
 	private long mTime;
+	private int milliSeconds = 0;
 	private int mControl;
+	private boolean isFinishPunchBeforeStart = false;
 
 	public Punch(long time, int control) {
 		setTime(time);
@@ -23,6 +25,22 @@ public class Punch implements Serializable {
 	@Override
 	public String toString() {
 		return "Control=" + mControl + "  Time=" + mTime;
+	}
+	
+	public boolean getIsFinishPunchBeforeStart() {
+		return isFinishPunchBeforeStart;
+	}
+
+	public void setIsFinishPunchBeforeStart(boolean isFinishPunchBeforeStart) {
+		this.isFinishPunchBeforeStart = isFinishPunchBeforeStart;
+	}
+	
+	public int getMillis() {
+		return milliSeconds;
+	}
+
+	public void setMillis(int milliSeconds) {
+		this.milliSeconds = milliSeconds;
 	}
 
 	public long getTime() {

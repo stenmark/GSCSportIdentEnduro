@@ -143,36 +143,21 @@ public class Card implements Serializable {
 		
 		for (int i = 0; i < mPunches.size(); i++) {
 			//Found one punch with that control
-			if (mPunches.get(i).getControl() == control) {				
-				if (startControl) {
-					if (mPunches.get(i).getTime() > time) {
-						time = mPunches.get(i).getTime();
-					}
-				} else {
-					if (mPunches.get(i).getTime() < time) {
-						time = mPunches.get(i).getTime();
-					}
-				}	
-				
-				//Is there more punches made?
-				if ((i + 1) == mPunches.size()) {
-					//No more punches
-					if (stageNumber == currentStage) {
-						//Correct stage
-						return time;
+			if( !mPunches.get(i).getIsFinishPunchBeforeStart()){
+				if (mPunches.get(i).getControl() == control) {				
+					if (startControl) {
+						if (mPunches.get(i).getTime() > time) {
+							time = mPunches.get(i).getTime();
+						}
 					} else {
-						//Not correct stage, continue search, reset time
-						if (startControl) {
-							time = 0;
-						} else {
-							time = (long) Integer.MAX_VALUE;
-						}	
-						currentStage++;
-					}
-				} else {	
-					//Yes there are more punches
-					if (mPunches.get(i).getControl() != mPunches.get(i + 1).getControl()) {				
-						//Next punch is a different control 						
+						if (mPunches.get(i).getTime() < time) {
+							time = mPunches.get(i).getTime();
+						}
+					}	
+					
+					//Is there more punches made?
+					if ((i + 1) == mPunches.size()) {
+						//No more punches
 						if (stageNumber == currentStage) {
 							//Correct stage
 							return time;
@@ -184,6 +169,23 @@ public class Card implements Serializable {
 								time = (long) Integer.MAX_VALUE;
 							}	
 							currentStage++;
+						}
+					} else {	
+						//Yes there are more punches
+						if (mPunches.get(i).getControl() != mPunches.get(i + 1).getControl()) {				
+							//Next punch is a different control 						
+							if (stageNumber == currentStage) {
+								//Correct stage
+								return time;
+							} else {
+								//Not correct stage, continue search, reset time
+								if (startControl) {
+									time = 0;
+								} else {
+									time = (long) Integer.MAX_VALUE;
+								}	
+								currentStage++;
+							}
 						}
 					}
 				}

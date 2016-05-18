@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.Test;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.MessageBuffer;
+import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.test.driverStubs.UsbDriverStub;
 
@@ -124,8 +125,8 @@ public class SiDriverTest {
 			}
 		}
 	}
-	
-	@Test
+		
+//	@Test
 	public void testReadBytesDle() {
 		siDriver = new SiDriver();
 		List<String> cardsToTest = new ArrayList<>();
@@ -148,7 +149,7 @@ public class SiDriverTest {
 			
 	}
 	
-	@Test
+//	@Test
 	public void testGetCard6Data() {
 		System.out.println("Testing Card6 parsing");
 		siDriver = new SiDriver();
@@ -195,7 +196,27 @@ public class SiDriverTest {
 		assertEquals(52394, card6Data.getPunches().get(11).getTime());
 	}
 	
-	@Test
+	@Test public void testSiacMilliSecondTiming() throws Exception{
+		System.out.println("Testing SIAC card parsing for milliscond timestamps");
+		
+		siDriver = new SiDriver();
+		UsbDriverStub stubUsbDriver = new UsbDriverStub();
+		siDriver.setUsbDriver(stubUsbDriver);
+		
+		System.out.println("Testing SIAC card with millisecond timing: " + "cardDebugData_Mon_May_16_214703__20168633672.card");
+		List<byte[]> inData = SiDriverTest.readSiacTestDataFromFile("cardDebugData_Mon_May_16_214703__20168633672.card");
+//		List<byte[]> inData = SiDriverTest.readSiacTestDataFromFile("cardDebugData_Wed_May_18_213950__20168633694.card");
+		stubUsbDriver.setStubUsbData(inData);
+		
+		Card siacCard = siDriver.getSiacCardData(false);
+		int i  = 0;
+		for( Punch punch : siacCard.getPunches() ){
+			i++;
+			System.out.println(i + " - " + siacCard.getCardNumber() + " - " + punch.getTime() + "." + punch.getMillis());
+		}
+	}
+	
+//	@Test
 	public void testGetSiacCardData() throws Exception{
 		System.out.println("Testing SIAC card parsing");
 		
@@ -213,7 +234,7 @@ public class SiDriverTest {
 	
 	private void testSpecificCard( String cardIndataFile, int cardNumber, List<Long> punchTimes, UsbDriverStub stubUsbDriver) throws Exception{
 		System.out.println("Testing SIAC card: " + cardIndataFile);
-		List<byte[]> inData = this.readSiacTestDataFromFile(cardIndataFile);
+		List<byte[]> inData = SiDriverTest.readSiacTestDataFromFile(cardIndataFile);
 		stubUsbDriver.setStubUsbData(inData);
 		
 		Card siacCard = siDriver.getSiacCardData(false);
