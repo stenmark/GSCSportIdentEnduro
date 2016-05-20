@@ -286,6 +286,8 @@ public class SiDriver {
 	    		for( Punch punch : card.getPunches()){
     				if( i < milliSecondTimeStamps.size()){
     					punch.setMillis(milliSecondTimeStamps.get(i));
+    					long tmpTime = punch.getTime();
+    					punch.setTime(tmpTime + punch.getMillis());
     					i++;
     				}
 	    		}
@@ -588,7 +590,7 @@ public class SiDriver {
     		time = 0;
     	}
     	
-    	return new Punch(time, control);
+    	return new Punch(time*1000, control);
     }
     
 	public boolean connectDriver(UsbManager manager) {

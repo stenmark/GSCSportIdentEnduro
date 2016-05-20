@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.junit.Test;
+
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.MessageBuffer;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
@@ -126,7 +128,7 @@ public class SiDriverTest {
 		}
 	}
 		
-//	@Test
+	@Test
 	public void testReadBytesDle() {
 		siDriver = new SiDriver();
 		List<String> cardsToTest = new ArrayList<>();
@@ -149,7 +151,7 @@ public class SiDriverTest {
 			
 	}
 	
-//	@Test
+	@Test
 	public void testGetCard6Data() {
 		System.out.println("Testing Card6 parsing");
 		siDriver = new SiDriver();
@@ -182,41 +184,49 @@ public class SiDriverTest {
 		assertEquals(71, card6Data.getPunches().get(10).getControl());
 		assertEquals(72, card6Data.getPunches().get(11).getControl());
 
-		assertEquals(39152, card6Data.getPunches().get(0).getTime());
-		assertEquals(39257, card6Data.getPunches().get(1).getTime());
-		assertEquals(41200, card6Data.getPunches().get(2).getTime());
-		assertEquals(41351, card6Data.getPunches().get(3).getTime());
-		assertEquals(42727, card6Data.getPunches().get(4).getTime());
-		assertEquals(42819, card6Data.getPunches().get(5).getTime());
-		assertEquals(47462, card6Data.getPunches().get(6).getTime());
-		assertEquals(47581, card6Data.getPunches().get(7).getTime());
-		assertEquals(48957, card6Data.getPunches().get(8).getTime());
-		assertEquals(49064, card6Data.getPunches().get(9).getTime());
-		assertEquals(52272, card6Data.getPunches().get(10).getTime());
-		assertEquals(52394, card6Data.getPunches().get(11).getTime());
+		assertEquals(39152000, card6Data.getPunches().get(0).getTime());
+		assertEquals(39257000, card6Data.getPunches().get(1).getTime());
+		assertEquals(41200000, card6Data.getPunches().get(2).getTime());
+		assertEquals(41351000, card6Data.getPunches().get(3).getTime());
+		assertEquals(42727000, card6Data.getPunches().get(4).getTime());
+		assertEquals(42819000, card6Data.getPunches().get(5).getTime());
+		assertEquals(47462000, card6Data.getPunches().get(6).getTime());
+		assertEquals(47581000, card6Data.getPunches().get(7).getTime());
+		assertEquals(48957000, card6Data.getPunches().get(8).getTime());
+		assertEquals(49064000, card6Data.getPunches().get(9).getTime());
+		assertEquals(52272000, card6Data.getPunches().get(10).getTime());
+		assertEquals(52394000, card6Data.getPunches().get(11).getTime());
 	}
 	
-	@Test public void testSiacMilliSecondTiming() throws Exception{
+	@Test 
+	public void testSiacMilliSecondTiming() throws Exception{
 		System.out.println("Testing SIAC card parsing for milliscond timestamps");
 		
 		siDriver = new SiDriver();
 		UsbDriverStub stubUsbDriver = new UsbDriverStub();
 		siDriver.setUsbDriver(stubUsbDriver);
 		
+		checkMilliSecondCard("cardDebugData_Mon_May_16_214703__20168633672.card", stubUsbDriver, Arrays.asList(37728601L,38494000L,38617382L,40099000L,40144304L,41613000L,41684703L,43458000L,43593656L,45042000L,45130476L,46834000L,46916687L));
+		checkMilliSecondCard("cardDebugData_Wed_May_18_213950__20168633694.card", stubUsbDriver, Arrays.asList(77582000L,77604984L,77625785L,77618000L,77626000L,77721253L,77734000L,77742937L));
+
+	}
+	
+	private void checkMilliSecondCard( String cardDatFile,UsbDriverStub stubUsbDriver,List<Long> expectedTimeStamps) throws Exception{
 		System.out.println("Testing SIAC card with millisecond timing: " + "cardDebugData_Mon_May_16_214703__20168633672.card");
-		List<byte[]> inData = SiDriverTest.readSiacTestDataFromFile("cardDebugData_Mon_May_16_214703__20168633672.card");
-//		List<byte[]> inData = SiDriverTest.readSiacTestDataFromFile("cardDebugData_Wed_May_18_213950__20168633694.card");
+		List<byte[]> inData = SiDriverTest.readSiacTestDataFromFile(cardDatFile);
 		stubUsbDriver.setStubUsbData(inData);
 		
 		Card siacCard = siDriver.getSiacCardData(false);
 		int i  = 0;
 		for( Punch punch : siacCard.getPunches() ){
+			assertEquals(expectedTimeStamps.get(i), (Long)punch.getTime());
 			i++;
-			System.out.println(i + " - " + siacCard.getCardNumber() + " - " + punch.getTime() + "." + punch.getMillis());
+			System.out.println(i + " - " + siacCard.getCardNumber() + " - " + punch.getTime() );
+			
 		}
 	}
 	
-//	@Test
+	@Test
 	public void testGetSiacCardData() throws Exception{
 		System.out.println("Testing SIAC card parsing");
 		
@@ -224,11 +234,11 @@ public class SiDriverTest {
 		UsbDriverStub stubUsbDriver = new UsbDriverStub();
 		siDriver.setUsbDriver(stubUsbDriver);
 		
-		testSpecificCard("test_SIAC_8633680_4punches.card", 8633680, Arrays.asList(70045L,70052L,70067L,70073L), stubUsbDriver);
-		testSpecificCard("test_SIAC_8633676_6punches.card", 8633676, Arrays.asList(83485L,83504L,83530L,83583L,83609L,83664L), stubUsbDriver);
-		testSpecificCard("test_SIAC_8633672_8punches.card", 8633672, Arrays.asList(83483L,83509L,83529L,83584L,83606L,83667L,83700L,83856L), stubUsbDriver);
-		testSpecificCard("test_SIAC_8633683_10punches.card", 8633683, Arrays.asList(83479L,83507L,83528L,83581L,83604L,83670L,83698L,83849L,83870L,83934L), stubUsbDriver);
-		testSpecificCard("test_SIAC_8633698_12punches.card", 8633698, Arrays.asList(83480L,83510L,83526L,83589L,83603L,83666L,83689L,83852L,83874L,83938L,83957L,83999L), stubUsbDriver);
+		testSpecificCard("test_SIAC_8633680_4punches.card", 8633680, Arrays.asList(70045546L,70052816L,70067429L,70073359L), stubUsbDriver);
+		testSpecificCard("test_SIAC_8633676_6punches.card", 8633676, Arrays.asList(83485546L,83504816L,83530429L,83583359L,83609750L,83664703L), stubUsbDriver);
+		testSpecificCard("test_SIAC_8633672_8punches.card", 8633672, Arrays.asList(83483546L,83509816L,83529429L,83584359L,83606750L,83667703L,83700523L,83856000L), stubUsbDriver);
+		testSpecificCard("test_SIAC_8633683_10punches.card", 8633683, Arrays.asList(83479546L,83507816L,83528429L,83581359L,83604750L,83670703L,83698523L,83849000L,83870210L,83934000L), stubUsbDriver);
+		testSpecificCard("test_SIAC_8633698_12punches.card", 8633698, Arrays.asList(83480546L,83510816L,83526429L,83589359L,83603750L,83666703L,83689523L,83852000L,83874210L,83938000L,83957000L,83999000L), stubUsbDriver);
 //		testSpecificCard("test_SIAC_8633691_14punches.card", 8633691, Arrays.asList(83482L,83503L,83523L,83586L,83607L,83671L,83692L,83851L,83872L,83936L,83955L,83997L,84019L,84048L,84076L), stubUsbDriver);
 	}
 	
