@@ -116,8 +116,8 @@ public class ResultsListAdapter extends BaseAdapter {
 		name += currentCompetitor.getName();
 		String startNumber = String.valueOf(currentCompetitor.getStartNumber());
 		String team = currentCompetitor.getTeam();
-		String time = AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(stage).getStageResult().get(index).getStageTime());
-		String timeBack = AndroidIndependantCompetitionHelper.secToMinSec(mResult.get(stage).getStageResult().get(index).getStageTimesBack());			
+		String time = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(mResult.get(stage).getStageResult().get(index).getStageTime());
+		String timeBack = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(mResult.get(stage).getStageResult().get(index).getStageTimesBack());			
 		
 		resultRowV.setResultName(name);
 		resultRowV.setResultStartNumber(startNumber);

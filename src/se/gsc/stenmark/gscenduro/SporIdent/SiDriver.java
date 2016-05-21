@@ -243,7 +243,7 @@ public class SiDriver {
     	
 		int dataPosPtr = MSS_TIMING_PAGE_START_POS+FIRST_MSS_TIMESTAMP_ON_PAGE_POS;
 		List<Integer> milliSecondList = new ArrayList<Integer>();
-		for(int i = 0; i < 124; i++){
+		for(int i = 0; i < 123; i++){
 			int statusCode = siacCardData.get(dataPosPtr) & 0xFF;
 			if( statusCode == 18 ){
     			int milliSeond = siacCardData.get(dataPosPtr+1) & 0xFF;
@@ -257,6 +257,9 @@ public class SiDriver {
 				break;
 			}
 			dataPosPtr += 2;
+			if( dataPosPtr > 255){
+				break;
+			}
 		}
 		return milliSecondList;	
     }
@@ -285,9 +288,8 @@ public class SiDriver {
     			int i = 0;
 	    		for( Punch punch : card.getPunches()){
     				if( i < milliSecondTimeStamps.size()){
-    					punch.setMillis(milliSecondTimeStamps.get(i));
     					long tmpTime = punch.getTime();
-    					punch.setTime(tmpTime + punch.getMillis());
+    					punch.setTime(tmpTime + milliSecondTimeStamps.get(i));
     					i++;
     				}
 	    		}

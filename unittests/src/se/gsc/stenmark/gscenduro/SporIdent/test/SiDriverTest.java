@@ -208,7 +208,7 @@ public class SiDriverTest {
 		
 		checkMilliSecondCard("cardDebugData_Mon_May_16_214703__20168633672.card", stubUsbDriver, Arrays.asList(37728601L,38494000L,38617382L,40099000L,40144304L,41613000L,41684703L,43458000L,43593656L,45042000L,45130476L,46834000L,46916687L));
 		checkMilliSecondCard("cardDebugData_Wed_May_18_213950__20168633694.card", stubUsbDriver, Arrays.asList(77582000L,77604984L,77625785L,77618000L,77626000L,77721253L,77734000L,77742937L));
-
+		checkMilliSecondCard("cardDebugData_Sat_May_21_212726__20168633676.card", stubUsbDriver, Arrays.asList(38429000L,38567976L,39985000L,40067921L,41464000L,41547000L,43318000L,43544296L,46849265L,47301097L));	
 	}
 	
 	private void checkMilliSecondCard( String cardDatFile,UsbDriverStub stubUsbDriver,List<Long> expectedTimeStamps) throws Exception{

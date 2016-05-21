@@ -11,9 +11,8 @@ import java.io.Serializable;
  */
 public class Punch implements Serializable {
 
-	private static final long serialVersionUID = 2L;
-	private long mTime;
-	private int milliSeconds = 0;
+	private static final long serialVersionUID = 3L;
+	private long mTime;  //Time in miliseconds
 	private int mControl;
 	private boolean isFinishPunchBeforeStart = false;
 
@@ -35,14 +34,6 @@ public class Punch implements Serializable {
 		this.isFinishPunchBeforeStart = isFinishPunchBeforeStart;
 	}
 	
-	public int getMillis() {
-		return milliSeconds;
-	}
-
-	public void setMillis(int milliSeconds) {
-		this.milliSeconds = milliSeconds;
-	}
-
 	public long getTime() {
 		return mTime;
 	}

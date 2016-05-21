@@ -122,7 +122,7 @@ public abstract class CompetitionHelper {
 				resultData += "<td>" + AndroidIndependantCompetitionHelper.convertToHtmlChars(competitors.getByCardNumber(cardNumber).getTeam()) + "</td>";					
 				resultData += "<td><center>" + String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + "</center></td>";
 			}
-			resultData += "<td><center>" + AndroidIndependantCompetitionHelper.secToMinSec(results.get(index).getStageResult().get(0).getStageTime()) + "</center></td>";	
+			resultData += "<td><center>" + AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(0).getStageTime()) + "</center></td>";	
 						
 			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {			
 				
@@ -134,9 +134,9 @@ public abstract class CompetitionHelper {
 					int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
 	
 					color -= 0xff000000;
-					resultData += "<td bgcolor=\"#" + Integer.toHexString(color) + "\"><center>" + AndroidIndependantCompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + "</center></td>";
+					resultData += "<td bgcolor=\"#" + Integer.toHexString(color) + "\"><center>" + AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + "</center></td>";
 					resultData += "<td><center>" + results.get(index).getStageResult().get(stageNumber).getRank() + "</center></td>";
-					resultData += "<td><center>" + AndroidIndependantCompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + "</center></td>";
+					resultData += "<td><center>" + AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + "</center></td>";
 				} else {
 					resultData += "<td><center>-</center></td>";
 					resultData += "<td><center>-</center></td>";

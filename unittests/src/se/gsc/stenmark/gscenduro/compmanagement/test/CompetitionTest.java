@@ -16,6 +16,7 @@ import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.test.SiDriverTest;
 import se.gsc.stenmark.gscenduro.SporIdent.test.driverStubs.UsbDriverStub;
+import se.gsc.stenmark.gscenduro.compmanagement.AndroidIndependantCompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import se.gsc.stenmark.gscenduro.compmanagement.ResultList;
@@ -26,7 +27,7 @@ public class CompetitionTest {
 
 	@Test
 	/**
-	 * Test with reasl SIAC data from Stenungsund race. 
+	 * Test with real SIAC data from Stenungsund race. 
 	 * Some competitors went into the Goal antenna before the start punch,
 	 * which lead to negative time and punches needed to be removed manually.
 	 * This test uses these real SIAC card readout to verify that the app can remove such punches automatically
@@ -70,16 +71,16 @@ public class CompetitionTest {
 			System.out.println(resultAsString);
 			//Hardcode the check for the two cardnumbers
 			if( cardNumber == 8633682){
-				assertEquals("Fassberg,8633682,5000000,98,10000000,10000000,10000000,10000000,10000000", resultAsString);
+				assertEquals("Fassberg,8633682,5000000,98210,10000000,10000000,10000000,10000000,10000000", resultAsString);
 			}
 			else if( cardNumber == 8633672){
-				assertEquals("EvilAs,8633672,544,123,45,71,135,88,82", resultAsString);
+				assertEquals("EvilAs,8633672,547208,123382,45304,71703,135656,88476,82687", resultAsString);
 			}
 			else{
 				fail("Unknown cardnumber");
 			}
 			
-			if( stage1Time+stage2Time+stage3Time+stage4Time+stage5Time+stage6Time > 40000){
+			if( stage1Time+stage2Time+stage3Time+stage4Time+stage5Time+stage6Time > 1800000){
 				assertEquals(totalTime, 5000000);
 			}
 			else{
@@ -129,7 +130,7 @@ public class CompetitionTest {
 			System.out.println("Calculated Data: " + resultAsString);
 			System.out.println("Expected Data:   " + expectedResults);
 			assertEquals(expectedResults, resultAsString);
-			if( stage1Time+stage2Time+stage3Time+stage4Time+stage5Time+stage6Time > 40000){
+			if( stage1Time+stage2Time+stage3Time+stage4Time+stage5Time+stage6Time > 1800000){
 				assertEquals(totalTime, 5000000);
 			}
 			else{
@@ -1159,13 +1160,13 @@ public class CompetitionTest {
 			String[] parsed = time.split(":");
 			int minute = Integer.parseInt(parsed[0]);
 			int second = Integer.parseInt(parsed[1]);
-			return (minute*60)+second;
+			return ((minute*60)+second)*1000;
 			}
 		catch(NumberFormatException e){
 			e.printStackTrace();
 			System.out.println("Could not parse: " + time);
 		}
-		return 60000;
+		return 1900000;
 	}
 	
 	private List<String> readExpectedCompResults() throws IOException{
@@ -1199,5 +1200,51 @@ public class CompetitionTest {
 		return readData;
 	}
 	
+	@Test
+	public void testTimeConverter(){
+		String timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(45123L);
+		System.out.println("Time in=" +45123L + "  Time out="+ timeString);
+		assertEquals("00:45.1", timeString);
+		
+		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(59999L);
+		System.out.println("Time in=" +59999L + "  Time out="+ timeString);
+		assertEquals("01:00.0", timeString);
+		
+		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(60000L);
+		System.out.println("Time in=" +60000L + "  Time out="+ timeString);
+		assertEquals("01:00.0", timeString);
+		
+		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(60001L);
+		System.out.println("Time in=" +60001L + "  Time out="+ timeString);
+		assertEquals("01:00.0", timeString);
+		
+		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(656349L);
+		System.out.println("Time in=" +656349L + "  Time out="+ timeString);
+		assertEquals("10:56.3", timeString);
+		
+		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(656350L);
+		System.out.println("Time in=" +656350L + "  Time out="+ timeString);
+		assertEquals("10:56.4", timeString);
+		
+		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(3599999L);
+		System.out.println("Time in=" +3599999L + "  Time out="+ timeString);
+		assertEquals("60:00.0", timeString);
+		
+		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(3599994L);
+		System.out.println("Time in=" +3599994L + "  Time out="+ timeString);
+		assertEquals("60:00.0", timeString);
+		
+		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(3599995L);
+		System.out.println("Time in=" +3599995L + "  Time out="+ timeString);
+		assertEquals("60:00.0", timeString);
+		
+		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(3599996L);
+		System.out.println("Time in=" +3599996L + "  Time out="+ timeString);
+		assertEquals("60:00.0", timeString);
+		
+		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(3600000L);
+		System.out.println("Time in=" +3600000L + "  Time out="+ timeString);
+		assertEquals("60:00.0", timeString);
+	}
 
 }

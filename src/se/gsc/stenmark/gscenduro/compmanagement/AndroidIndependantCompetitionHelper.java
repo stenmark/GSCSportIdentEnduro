@@ -16,24 +16,31 @@ import java.util.List;
  */
 public abstract class AndroidIndependantCompetitionHelper {
 
-	public static String secToMinSec(Long sec) {
-		if (sec == Competition.NO_TIME_FOR_STAGE) {
+	public static String milliSecToMinSecMilliSec(Long milliSec) {
+		if (milliSec == Competition.NO_TIME_FOR_STAGE) {
 			return "no result";
 		}
 		
-		if (sec == Competition.NO_TIME_FOR_COMPETITION) {
+		if (milliSec == Competition.NO_TIME_FOR_COMPETITION) {
 			return "no time";
 		}
 		
-		if (sec == Competition.COMPETITION_DNF) {
+		if (milliSec == Competition.COMPETITION_DNF) {
 			return "DNF";
 		}
 			
-		Long totalTime_sec = sec;
-		Long toltalTime_min = sec / 60;
+		Long totalTimeMilliSec = milliSec;
+		Long totalTime_sec = totalTimeMilliSec/1000;
+		Long toltalTime_min = totalTime_sec / 60;
+		totalTimeMilliSec -=   (totalTime_sec*1000);
+		double totalTimeMilliSecAsDouble = totalTimeMilliSec;
+		double totalTimeTenthSecond = totalTimeMilliSecAsDouble/100;
+		long totalTimeTenthSecondLong = Math.round(totalTimeTenthSecond);
 		totalTime_sec -= toltalTime_min * 60;
-
-		return String.format("%02d:%02d", toltalTime_min, totalTime_sec);
+		if( totalTimeTenthSecondLong == 10){
+			return milliSecToMinSecMilliSec(milliSec+49);
+		}
+		return String.format("%02d:%02d.%01d", toltalTime_min, totalTime_sec, totalTimeTenthSecondLong);
 
 	}
 
@@ -74,12 +81,12 @@ public abstract class AndroidIndependantCompetitionHelper {
 				resultData += competitors.getByCardNumber(cardNumber).getTeam() + ",";					
 				resultData += String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + ",";
 			}
-			resultData += AndroidIndependantCompetitionHelper.secToMinSec(results.get(index).getStageResult().get(0).getStageTime()) + ",";	
+			resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(0).getStageTime()) + ",";	
 									
 			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {										
-				resultData += AndroidIndependantCompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + ",";
+				resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + ",";
 				resultData += results.get(index).getStageResult().get(stageNumber).getRank() + ",";
-				resultData += AndroidIndependantCompetitionHelper.secToMinSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + ",";
+				resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + ",";
 			}			
 			resultData += "\n";
 		}
