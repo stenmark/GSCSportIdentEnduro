@@ -375,6 +375,23 @@ public class SiDriver {
 		return null;
     	
     }
+   
+    private byte[] sendAndExtractSiacPage( byte[] sequence, boolean verbose, BufferedWriter bw){
+    	final int MAX_NUM_READ_ATTEMPTS = 5;
+    	byte[] initialReadBytes = new byte[0];
+    	for( int i = 0; i < MAX_NUM_READ_ATTEMPTS; i++){
+	    	sendSiMessage(sequence);
+	
+			byte[] rawData = readSiMessage(512, 1000, verbose, bw);
+			MessageBuffer messageBuffer = new MessageBuffer(rawData);
+			
+			initialReadBytes = messageBuffer.readBytes(128+9);	
+			if( initialReadBytes.length > 128 + 6 ){ 
+				return initialReadBytes;
+			}
+    	}
+    	return initialReadBytes;
+    }
     
     public Card getSiacCardData( boolean verbose ) throws Exception{
     	int nrOfReadLoops = 2;
@@ -396,24 +413,19 @@ public class SiDriver {
 				bw = new BufferedWriter(fw);
 				bw.write("#Testdata for SIAC card read\n");
     		}
-    		
-    		sendSiMessage(SiMessage.read_sicard_8_plus_b1.sequence());
-    		
+    		    		
     		for( int currentReadLoop = 0; currentReadLoop < nrOfReadLoops; currentReadLoop++){
+    			byte[] initialReadBytes = new byte[0];
     			if( currentReadLoop == 0){
-    				sendSiMessage(SiMessage.read_sicard_8_plus_b0.sequence());
-    			}
+    				initialReadBytes = sendAndExtractSiacPage(SiMessage.read_sicard_8_plus_b0.sequence(), verbose, bw);
+     			}
     			else if( currentReadLoop == 1){
-    				sendSiMessage(SiMessage.read_sicard_8_plus_b1.sequence());
+    				initialReadBytes = sendAndExtractSiacPage(SiMessage.read_sicard_8_plus_b1.sequence(), verbose, bw);
     			}
     			else{
-    				sendSiMessage(SiMessage.read_sicard_10_plus_b4.sequence());
+    				initialReadBytes = sendAndExtractSiacPage(SiMessage.read_sicard_10_plus_b4.sequence(), verbose, bw);
     			}
-    			
-				byte[] rawData = readSiMessage(512, 1000, verbose, bw);
-				MessageBuffer messageBuffer = new MessageBuffer(rawData);
-				
-				byte[] initialReadBytes = messageBuffer.readBytes(128+9);
+
 				if( initialReadBytes.length > 128 + 6 ){ 
 					if( initialReadBytes[0] == SiMessage.STX && (initialReadBytes[1]& 0xFF) == 0xEF ){
 						//memcpy(b+k*128, bf+6, 128);
@@ -455,7 +467,7 @@ public class SiDriver {
 					bw.close();
 	    		}
 			} 
-	    	catch (IOException e1) { return null; }	
+	    	catch (IOException e1) { return new Card(); }	
     	}
     	
     	sendSiMessage(SiMessage.ack_sequence.sequence());
