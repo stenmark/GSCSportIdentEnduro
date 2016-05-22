@@ -237,13 +237,13 @@ public class SiDriver {
     	
     }
     
-    private List<Integer>  getMilliSecondTimeStamps(List<Byte> siacCardData){
+    private List<Integer>  getMilliSecondTimeStamps(List<Byte> siacCardData, int nrOfPunches){
     	final int MSS_TIMING_PAGE_START_POS = 128;
     	final int FIRST_MSS_TIMESTAMP_ON_PAGE_POS = 48;
     	
 		int dataPosPtr = MSS_TIMING_PAGE_START_POS+FIRST_MSS_TIMESTAMP_ON_PAGE_POS;
 		List<Integer> milliSecondList = new ArrayList<Integer>();
-		for(int i = 0; i < 123; i++){
+		for(int i = 0; i < nrOfPunches; i++){
 			int statusCode = siacCardData.get(dataPosPtr) & 0xFF;
 			if( statusCode == 18 ){
     			int milliSeond = siacCardData.get(dataPosPtr+1) & 0xFF;
@@ -274,7 +274,7 @@ public class SiDriver {
     	if( series == 15 ){
     		List<Integer> milliSecondTimeStamps = new ArrayList<Integer>();
     		if( siacCardData.size() > 255){
-    			milliSecondTimeStamps = getMilliSecondTimeStamps(siacCardData);
+    			milliSecondTimeStamps = getMilliSecondTimeStamps(siacCardData, numberOfPunches);
     		}
     		
     		for( int i = 0; i < numberOfPunches; i++){

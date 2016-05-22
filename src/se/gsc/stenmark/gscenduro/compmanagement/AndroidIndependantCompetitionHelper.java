@@ -28,19 +28,16 @@ public abstract class AndroidIndependantCompetitionHelper {
 		if (milliSec == Competition.COMPETITION_DNF) {
 			return "DNF";
 		}
-			
-		Long totalTimeMilliSec = milliSec;
-		Long totalTime_sec = totalTimeMilliSec/1000;
-		Long toltalTime_min = totalTime_sec / 60;
-		totalTimeMilliSec -=   (totalTime_sec*1000);
-		double totalTimeMilliSecAsDouble = totalTimeMilliSec;
-		double totalTimeTenthSecond = totalTimeMilliSecAsDouble/100;
-		long totalTimeTenthSecondLong = Math.round(totalTimeTenthSecond);
-		totalTime_sec -= toltalTime_min * 60;
-		if( totalTimeTenthSecondLong == 10){
-			return milliSecToMinSecMilliSec(milliSec+49);
-		}
-		return String.format("%02d:%02d.%01d", toltalTime_min, totalTime_sec, totalTimeTenthSecondLong);
+		
+		double milliSecAsDouble = milliSec;
+		double tentSecAsDouble = milliSecAsDouble/100D;
+		long totalTimeTenth = Math.round(tentSecAsDouble);
+		long totalTimeSec = totalTimeTenth/10;
+		long totalTimeMin = totalTimeSec/60;
+		totalTimeTenth -= totalTimeSec*10;
+		totalTimeSec -= (totalTimeMin*60);
+		
+		return String.format("%02d:%02d.%01d", totalTimeMin, totalTimeSec, totalTimeTenth);
 
 	}
 
