@@ -308,8 +308,8 @@ public class Competition implements Serializable {
 		if( !timeDeltaList.isEmpty() ){
 			medianTimeDelta = timeDeltaList.get(timeDeltaList.size()/2);
 			//If the competitors are very close on the stage (low median time delta) we set a minimum medianTimeDelta of 5 to prevent early cutoff
-			if( medianTimeDelta < 5){
-				medianTimeDelta = 5L;
+			if( medianTimeDelta < 7){
+				medianTimeDelta = 7L;
 			}
 		}
 
@@ -321,7 +321,7 @@ public class Competition implements Serializable {
 			Long timeDelta = nextCompetitorStageTime - currentCompetitorStageTime;
 			//Filter out competitors that are a lot slower than most competitors. 
 			//only filter out competitors that are from the lower half of the competitor list (Use timeDelta list since it already contains only competitors with stage times set
-			if( (timeDelta > medianTimeDelta*3) && (currentCompetitorNumber > (timeDeltaList.size()/2)) ){
+			if( (timeDelta > medianTimeDelta*4) && (currentCompetitorNumber > (timeDeltaList.size()/2)) ){
 				return currentCompetitorStageTime;
 			}
 		}
