@@ -1,8 +1,11 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InvalidClassException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
@@ -22,10 +25,12 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.transition.SidePropagation;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -538,6 +543,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 *
 	 */
 	private class SiCardListener extends AsyncTask<SiDriver, Void, Card> {
+		private static final boolean VERBOSE_LOGGING = true;
+
 		/**
 		 * The system calls this to perform work in a worker thread and delivers
 		 * it the parameters given to AsyncTask.execute()
@@ -559,14 +566,50 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					
 					//We got something and it was the STX (Start Transmistion) symbol.
 					if (readSiMessage.length >= 1 && readSiMessage[0] == SiMessage.STX) {
+						if( VERBOSE_LOGGING ){
+					    	BufferedWriter bw  = null;
+					    	File file = null;
+					    	try{
+						    	File sdCard = Environment.getExternalStorageDirectory();
+						    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro/cardInserted");
+								if (!dir.exists()) {
+									dir.mkdirs();
+								}
+								file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "") + ".card");
+								FileWriter fw = new FileWriter(file.getAbsoluteFile());
+								bw = new BufferedWriter(fw);
+								bw.write("Debug data for inserted card\n");
+								for(int i = 0; i < readSiMessage.length; i++){
+									bw.write( "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", " );
+								}
+								bw.write("\n");
+	
+					    	}
+					    	finally{
+								try {
+									if( bw != null){
+										bw.close();
+						    		}
+								} 
+						    	catch (IOException e1) { return new Card(); }	
+					    	}
+						}
 						
 						//Check if the Magic byte 0x66 was received -> SiCard6 was read
 						if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x66) {
-							return siDriver[0].getCard6Data( false );
+							return siDriver[0].getCard6Data( VERBOSE_LOGGING );
 							
 						//Check if the Magic byte 0xE8 was received -> SiCard9 (SIAC) was read
 						} else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8) {
-							return siDriver[0].getSiacCardData( true );
+							try{
+								return siDriver[0].getSiacCardData( VERBOSE_LOGGING );
+							}
+							//Some special case handling. 
+							//Seems like sometimes (maybe due to updated SI-MASTER) the SI-MASTER responds with 0xE8 also for SICARD6.
+							//The SIAC readout will throw an exception if that is the case and then we blindly try a CARD6 decode instead
+							catch( RuntimeException e){
+								return siDriver[0].getCard6Data( VERBOSE_LOGGING );
+							}
 						
 						//Check if the Magic byte 0x46 was received -> SiCard5 was read, seems to be 0x46 also for card pulled out event
 						} else if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x46) {
@@ -579,7 +622,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 							//If it was not card pulled out it was an SiCard5
 							siDriver[0].sendSiMessage(SiMessage.request_si_card5.sequence());
-							Card cardData = siDriver[0].getCard5Data( competition );
+							Card cardData = siDriver[0].getCard5Data( competition, VERBOSE_LOGGING );
 							if (cardData == null) {
 								cardData = new Card();
 							}
@@ -587,7 +630,35 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							siDriver[0].sendSiMessage(SiMessage.ack_sequence.sequence());
 							return cardData;
 						} else {
-							//Log.d("SiCardListener", "not card6");
+							if( VERBOSE_LOGGING ){
+							    BufferedWriter bw  = null;
+							    File file = null;
+						    	try{
+							    	File sdCard = Environment.getExternalStorageDirectory();
+							    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro/unknownCard");
+									if (!dir.exists()) {
+										dir.mkdirs();
+									}
+									file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "") + ".card");
+									FileWriter fw = new FileWriter(file.getAbsoluteFile());
+									bw = new BufferedWriter(fw);
+									bw.write("Unkown Card detected\n");
+									for(int i = 0; i < readSiMessage.length; i++){
+										bw.write( "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", " );
+									}
+									bw.write("\n");
+	
+						    	}
+						    	finally{
+									try {
+										if( bw != null){
+											bw.close();
+							    		}
+									} 
+							    	catch (IOException e1) { return new Card(); }	
+						    	}
+							}
+					    	
 							return new Card();
 						}
 

@@ -335,44 +335,80 @@ public class SiDriver {
     	
     }
     
-    public Card getCard5Data( Competition comp){
-//    	String msg = "";
-    	byte[] allData = new byte[256];
-    	byte[] rawData = readSiMessage(256, 1000, false, null);
-    	MessageBuffer messageBuffer = new MessageBuffer(rawData);
-    	byte[] dleOutputPre = new byte[10];
+    public Card getCard5Data( Competition comp, boolean verbose) throws IOException{
+    	BufferedWriter bw  = null;
+    	File file = null;
+    	try{
+			if( verbose ){
+		    	File sdCard = Environment.getExternalStorageDirectory();
+		    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro/card5data");
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}
+				file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "") + ".card");
+				FileWriter fw = new FileWriter(file.getAbsoluteFile());
+				bw = new BufferedWriter(fw);
+				bw.write("#Testdata for Card5 read\n");
+			}
     	
-//    	Card card = new Card();
-//    	msg += "Raw data ";
-//    	int k = 0;
-//    	for( byte readbyte: rawData){
-//    		msg +=  k+ "=0x" + byteToHex(readbyte) + ", ";
-//    		k++;
-//    	}
-    	
-    	if( rawData.length < 2){
-    		return null;
+	    	String msg = "";
+	    	byte[] allData = new byte[256];
+	    	byte[] rawData = readSiMessage(256, 1000, false, null);
+	    	MessageBuffer messageBuffer = new MessageBuffer(rawData);
+	    	byte[] dleOutputPre = new byte[10];
+	    	
+	    	msg += "Raw data\n";
+	    	int k = 0;
+	    	for( byte readbyte: rawData){
+	    		msg +=  k+ "=0x" + byteToHex(readbyte) + ", ";
+	    		k++;
+	    	}
+	    	msg += "\n";
+	    	
+	    	if( rawData.length < 2){
+	    		if( verbose){
+	    			bw.write("rawDataLength less than 2\n");
+	    			bw.write(msg);
+	    		}
+	    		return null;
+	    	}
+	    	
+	    	int numberOfBytesRead = readBytesDle(messageBuffer, dleOutputPre, 3);
+	    	if( numberOfBytesRead < 2){
+	    		return null;
+	    	}
+	    	if( dleOutputPre[0] == SiMessage.STX && (dleOutputPre[1] & 0xFF)  == 0x31 ){
+	    		readBytesDle(messageBuffer, allData, 128);
+	    		msg += "Parse card5\n";
+	    		int i = 0;
+	        	for( byte readbyte: allData){
+	        		msg +=  i + "=0x" + byteToHex(readbyte) + ", ";
+	        		i++;
+	        	}
+	        	msg += "\n";
+	    		if( verbose){
+	    			bw.write("Card5 parsed OK\n");
+	    			bw.write(msg);
+	    		}
+	    		Card card = parseCard5Alt( allData, rawData, comp );
+	    		return card;
+	    		
+	    	}
+	    	
+    		if( verbose){
+    			bw.write("Did not find correct Card5 markers\n");
+    			bw.write(msg);
+    		}
+			return null;
     	}
-    	
-    	int numberOfBytesRead = readBytesDle(messageBuffer, dleOutputPre, 3);
-    	if( numberOfBytesRead < 2){
-    		return null;
+    	finally{
+			try {
+				if( bw != null){
+					bw.close();
+	    		}
+			} 
+	    	catch (IOException e1) { return new Card(); }	
     	}
-    	if( dleOutputPre[0] == SiMessage.STX && (dleOutputPre[1] & 0xFF)  == 0x31 ){
-    		readBytesDle(messageBuffer, allData, 128);
-//    		msg += "Parse card\n";
-//    		int i = 0;
-//        	for( byte readbyte: allData){
-//        		msg +=  i + "=0x" + byteToHex(readbyte) + ", ";
-//        		i++;
-//        	}
-    		Card card = parseCard5Alt( allData, rawData, comp );
-    		//Log.d("getCard5Data", "\n" + msg);
-    		return card;
-    		
-    	}
-		
-		return null;
     	
     }
    
@@ -442,7 +478,7 @@ public class SiDriver {
 							if(verbose){
 								bw.write("Only SIAC cards currently supported for SICARD 8 and newer\n");
 							}
-							return new Card();
+							throw new RuntimeException("NOT SUPPORTED CARD");
 						}
 						
 					}
@@ -486,17 +522,17 @@ public class SiDriver {
     	try{
     		if( verbose ){
 		    	File sdCard = Environment.getExternalStorageDirectory();
-		    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+		    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro/card6data");
 				if (!dir.exists()) {
 					dir.mkdirs();
 				}
-				File file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString() + ".card");
+				File file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "") + ".card");
 				FileWriter fw = new FileWriter(file.getAbsoluteFile());
 				bw = new BufferedWriter(fw);
 				bw.write("#Testdata for readDleByte method. First line is raw data read at 128 bytes chunks from the card. The second line is the expected output after performing readBytesDle\n");
     		}
 			
-	//    	boolean compact = false;
+	//    	boolean cnompact = false;
 			for(int blockNumber = 0; blockNumber < 3 ; blockNumber++){
 				byte[] rawData = readSiMessage(256, 1000, verbose, bw);
 				MessageBuffer messageBuffer = new MessageBuffer(rawData);
