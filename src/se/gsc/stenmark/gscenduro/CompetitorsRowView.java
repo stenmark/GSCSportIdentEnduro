@@ -209,9 +209,7 @@ public class CompetitorsRowView extends LinearLayout {
 					}		            	 
 	            	
 	            	String status = "";
-					mName.setText(mNameInput.getText());
-					mCardNumber.setText(mCardNumberInput.getText());	
-					
+
 					if (((MainActivity) mContext).competition.getCompetitionType() == Competition.ESS_TYPE) {
 						mTeam.setText(mTeamInput.getText());	
 						mCompetitorClass.setText(mCompetitorClassInput.getText());
@@ -219,28 +217,33 @@ public class CompetitorsRowView extends LinearLayout {
 						mStartGroup.setText(mStartGroupInput.getText());
 						
 						status = ((MainActivity) mContext).competition.getCompetitors().update( 
-																				  		 	   mName.getText().toString(), 
-																				  		 	   Integer.parseInt(mCardNumber.getText().toString()), 
+																							   mNameInput.getText().toString(), 
+																				  		 	   Integer.parseInt(mCardNumber.getText().toString()),
+																				  		 	   Integer.parseInt(mCardNumberInput.getText().toString()), 
 																				  		 	   mTeam.getText().toString(), 
 																				  		 	   mCompetitorClass.getText().toString(), 
 																				  		 	   mStartNumber.getText().toString(), 
 																				  		 	   mStartGroup.getText().toString());
 					} else {
 						status = ((MainActivity) mContext).competition.getCompetitors().update( 
-																			   		  		   mName.getText().toString(),
-																			   		  		   Integer.parseInt(mCardNumber.getText().toString()),
+																							   mNameInput.getText().toString(),
+																							   Integer.parseInt(mCardNumber.getText().toString()),
+																			   		  		   Integer.parseInt(mCardNumberInput.getText().toString()),
 																			   		  		   "",
 																			   		  		   "",
 																			   		  		   "-1",
 																			   		  		   "-1");	
-					}					
+					}
+					mName.setText(mNameInput.getText());
+					mCardNumber.setText(mCardNumberInput.getText());	
 					((MainActivity) mContext).competition.calculateResults();
 					((MainActivity) mContext).updateFragments();
 	            
 					Toast.makeText((MainActivity) mContext, status, Toast.LENGTH_LONG).show();
-					
+			
 					alertDialog.dismiss();
 	            }
+	            
 			});		            		           
 		}
 	};

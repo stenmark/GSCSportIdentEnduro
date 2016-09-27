@@ -112,21 +112,24 @@ public class Competitors implements Serializable {
 		}
 	}	
 	
-	public String update(String name, int cardNumber, String team, String competitorClass, String startNumber, String startGroup) {
+	public String update(String name, int oldCardNumber, int newCardNumber, String team, String competitorClass, String startNumber, String startGroup) {
 		Competitor newCompetitor = null;
 
-		newCompetitor = mCompetitors.get(cardNumber);
+		newCompetitor = mCompetitors.get(oldCardNumber);
 		newCompetitor.setName(name);
-		newCompetitor.setCardNumber(cardNumber);
+		newCompetitor.setCardNumber(newCardNumber);
 		newCompetitor.setTeam(team);
 		newCompetitor.setCompetitorClass(competitorClass);
 		newCompetitor.setStartNumber(Integer.parseInt(startNumber));
 		newCompetitor.setStartGroup(Integer.parseInt(startGroup));
-		mCompetitors.put(cardNumber, newCompetitor);		
+		mCompetitors.put(newCardNumber, newCompetitor);
+		if( oldCardNumber != newCardNumber){
+			mCompetitors.remove(oldCardNumber);
+		}
 
 		sort();
 		
-		return name + ", " + cardNumber + " updated\n";
+		return name + ", " + newCardNumber + " updated\n";
 	}	
 	
 	public void updateEss(int index, String name, String cardNumber, String team, String competitorClass, String startNumber, String startGroup) {

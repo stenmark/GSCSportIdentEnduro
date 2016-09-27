@@ -205,7 +205,7 @@ public class CompetitionTest {
 		sverkerPunches.add( new Punch(STAGE4_START_TIME, 71));
 		sverkerPunches.add( new Punch(STAGE4_START_TIME+295, 72));
 		sverkerPunches.add( new Punch(STAGE5_START_TIME, 71));
-		sverkerPunches.add( new Punch(STAGE5_START_TIME+150, 72));
+		sverkerPunches.add( new Punch(STAGE5_START_TIME+160, 72));
 		cardSverker.setPunches(sverkerPunches);
 		competitorSverker.processCard(cardSverker, competition.getStages(), Competition.SVART_VIT_TYPE);
 
@@ -224,7 +224,7 @@ public class CompetitionTest {
 		sledgeHammerPunches.add( new Punch(STAGE4_START_TIME, 71));
 		sledgeHammerPunches.add( new Punch(STAGE4_START_TIME+145, 72));
 		sledgeHammerPunches.add( new Punch(STAGE5_START_TIME, 71));
-		sledgeHammerPunches.add( new Punch(STAGE5_START_TIME+127, 72));
+		sledgeHammerPunches.add( new Punch(STAGE5_START_TIME+129, 72));
 		cardSledgeHammer.setPunches(sledgeHammerPunches);
 		competitorSledgeHammer.processCard(cardSledgeHammer, competition.getStages(), Competition.SVART_VIT_TYPE);
 		
@@ -330,7 +330,7 @@ public class CompetitionTest {
 		assertEquals((Long)55L, fastestOnStage4);
 		
 		//Stage5 set all competitors within a very small timedelta (Seems common in "real" races). Make sure that timedelta cutoff works in filter.
-		assertEquals((Long)127L, slowestOnStage5Filter);
+		assertEquals((Long)129L, slowestOnStage5Filter);
 		assertEquals((Long)119L, fastestOnStage5);
 	}
 
