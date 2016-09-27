@@ -1,19 +1,15 @@
 package se.gsc.stenmark.gscenduro.SporIdent;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
+import se.gsc.stenmark.gscenduro.LogFileWriter;
 import se.gsc.stenmark.gscenduro.MainActivity;
 import se.gsc.stenmark.gscenduro.SporIdent.CRCCalculator;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import android.hardware.usb.UsbManager;
-import android.os.Environment;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
@@ -42,7 +38,7 @@ public class SiDriver {
     	else{
     		if( performHandShake(false) ){
     	    	//Flush buffer
-    	    	readSiMessage(16, 500, false, null);
+    	    	readSiMessage(16, 500, new StringBuffer());
     	    	return true;
     		}
     		return false;
@@ -59,11 +55,11 @@ public class SiDriver {
     	if( withStartup ){
 			sendSiMessage(SiMessage.startup_sequence.sequence());
 			sleep(700);
-			startupResponse = readSiMessage(16, 500, false, null);
+			startupResponse = readSiMessage(16, 500, new StringBuffer());
 		}
 		if( (startupResponse.length >= 1 && startupResponse[0]== SiMessage.STX ) || (withStartup == false)) {
 			sendMessage( appendMarkesAndCrcToMessage(SiMessage.read_system_data.sequence() ));
-			byte[] systemData = readSiMessage(32, 8000, false, null);
+			byte[] systemData = readSiMessage(32, 8000, new StringBuffer());
 			if( (systemData[0] == SiMessage.STX) &&  
 				(systemData.length > 14) ){
 				stationId = makeIntFromBytes( systemData[4], systemData[3] );
@@ -336,89 +332,65 @@ public class SiDriver {
     }
     
     public Card getCard5Data( Competition comp, boolean verbose) throws IOException{
-    	BufferedWriter bw  = null;
-    	File file = null;
-    	try{
-			if( verbose ){
-		    	File sdCard = Environment.getExternalStorageDirectory();
-		    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro/card5data");
-				if (!dir.exists()) {
-					dir.mkdirs();
-				}
-				file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "") + ".card");
-				FileWriter fw = new FileWriter(file.getAbsoluteFile());
-				bw = new BufferedWriter(fw);
-				bw.write("#Testdata for Card5 read\n");
-			}
+    	StringBuffer message = new StringBuffer("#Testdata for Card5 read\n");
+    		
+    	byte[] allData = new byte[256];
+    	byte[] rawData = readSiMessage(256, 1000, new StringBuffer() );
+    	MessageBuffer messageBuffer = new MessageBuffer(rawData);
+    	byte[] dleOutputPre = new byte[10];
     	
-	    	String msg = "";
-	    	byte[] allData = new byte[256];
-	    	byte[] rawData = readSiMessage(256, 1000, false, null);
-	    	MessageBuffer messageBuffer = new MessageBuffer(rawData);
-	    	byte[] dleOutputPre = new byte[10];
-	    	
-	    	msg += "Raw data\n";
-	    	int k = 0;
-	    	for( byte readbyte: rawData){
-	    		msg +=  k+ "=0x" + byteToHex(readbyte) + ", ";
-	    		k++;
-	    	}
-	    	msg += "\n";
-	    	
-	    	if( rawData.length < 2){
-	    		if( verbose){
-	    			bw.write("rawDataLength less than 2\n");
-	    			bw.write(msg);
-	    		}
-	    		return null;
-	    	}
-	    	
-	    	int numberOfBytesRead = readBytesDle(messageBuffer, dleOutputPre, 3);
-	    	if( numberOfBytesRead < 2){
-	    		return null;
-	    	}
-	    	if( dleOutputPre[0] == SiMessage.STX && (dleOutputPre[1] & 0xFF)  == 0x31 ){
-	    		readBytesDle(messageBuffer, allData, 128);
-	    		msg += "Parse card5\n";
-	    		int i = 0;
-	        	for( byte readbyte: allData){
-	        		msg +=  i + "=0x" + byteToHex(readbyte) + ", ";
-	        		i++;
-	        	}
-	        	msg += "\n";
-	    		if( verbose){
-	    			bw.write("Card5 parsed OK\n");
-	    			bw.write(msg);
-	    		}
-	    		Card card = parseCard5Alt( allData, rawData, comp );
-	    		return card;
-	    		
-	    	}
-	    	
-    		if( verbose){
-    			bw.write("Did not find correct Card5 markers\n");
-    			bw.write(msg);
+    	message.append("Raw data\n");
+    	int k = 0;
+    	for( byte readbyte: rawData){
+    		message.append(k+ "=0x" + byteToHex(readbyte) + ", ");
+    		k++;
+    	}
+    	message.append( "\n");
+    	
+    	if( rawData.length < 2){
+    		message.append("rawDataLength less than 2\n");
+    		LogFileWriter.writeLog("debugLog", message.toString());
+    		return new Card();
+    	}
+    	
+    	int numberOfBytesRead = readBytesDle(messageBuffer, dleOutputPre, 3);
+    	if( numberOfBytesRead < 2){
+    		message.append("Too few bytes on card5");
+    		LogFileWriter.writeLog("debugLog", message.toString());
+    		return new Card();
+    	}
+    	if( dleOutputPre[0] == SiMessage.STX && (dleOutputPre[1] & 0xFF)  == 0x31 ){
+    		readBytesDle(messageBuffer, allData, 128);
+    		message.append("Parse card5\n");
+    		int i = 0;
+        	for( byte readbyte: allData){
+        		message.append(i + "=0x" + byteToHex(readbyte) + ", ");
+        		i++;
+        	}
+        	message.append("\n");
+    		message.append("Card5 parsed OK\n");
+    		
+    		Card card = parseCard5Alt( allData, rawData, comp );
+    		if(verbose){
+    			LogFileWriter.writeLog("card5data", message.toString());
     		}
-			return null;
+    		return card;
+    		
     	}
-    	finally{
-			try {
-				if( bw != null){
-					bw.close();
-	    		}
-			} 
-	    	catch (IOException e1) { return new Card(); }	
-    	}
+    	
+		message.append("Did not find correct Card5 markers\n");
+		LogFileWriter.writeLog("debugLog", message.toString());
+		return new Card();
     	
     }
    
-    private byte[] sendAndExtractSiacPage( byte[] sequence, boolean verbose, BufferedWriter bw){
+    private byte[] sendAndExtractSiacPage( byte[] sequence, StringBuffer message){
     	final int MAX_NUM_READ_ATTEMPTS = 5;
     	byte[] initialReadBytes = new byte[0];
     	for( int i = 0; i < MAX_NUM_READ_ATTEMPTS; i++){
 	    	sendSiMessage(sequence);
 	
-			byte[] rawData = readSiMessage(512, 1000, verbose, bw);
+			byte[] rawData = readSiMessage(512, 1000, message);
 			MessageBuffer messageBuffer = new MessageBuffer(rawData);
 			
 			initialReadBytes = messageBuffer.readBytes(128+9);	
@@ -433,167 +405,115 @@ public class SiDriver {
     	int nrOfReadLoops = 2;
     	int series = -1;
     	int numberOfPunches = -1;
+    	StringBuffer message = new StringBuffer( "#Testdata for SIAC card read\n");
     	
-    	List<Byte> allData = new ArrayList<Byte>();
-    	BufferedWriter bw  = null;
-    	File file = null;
-    	try{
-    		if( verbose ){
-		    	File sdCard = Environment.getExternalStorageDirectory();
-		    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro/siacdata");
-				if (!dir.exists()) {
-					dir.mkdirs();
-				}
-				file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "") + ".card");
-				FileWriter fw = new FileWriter(file.getAbsoluteFile());
-				bw = new BufferedWriter(fw);
-				bw.write("#Testdata for SIAC card read\n");
-    		}
-    		    		
-    		for( int currentReadLoop = 0; currentReadLoop < nrOfReadLoops; currentReadLoop++){
-    			byte[] initialReadBytes = new byte[0];
-    			if( currentReadLoop == 0){
-    				initialReadBytes = sendAndExtractSiacPage(SiMessage.read_sicard_8_plus_b0.sequence(), verbose, bw);
-     			}
-    			else if( currentReadLoop == 1){
-    				initialReadBytes = sendAndExtractSiacPage(SiMessage.read_sicard_8_plus_b1.sequence(), verbose, bw);
-    			}
-    			else{
-    				initialReadBytes = sendAndExtractSiacPage(SiMessage.read_sicard_10_plus_b4.sequence(), verbose, bw);
-    			}
+    	List<Byte> allData = new ArrayList<Byte>();		
+		for( int currentReadLoop = 0; currentReadLoop < nrOfReadLoops; currentReadLoop++){
+			byte[] initialReadBytes = new byte[0];
+			if( currentReadLoop == 0){
+				initialReadBytes = sendAndExtractSiacPage(SiMessage.read_sicard_8_plus_b0.sequence(), message);
+ 			}
+			else if( currentReadLoop == 1){
+				initialReadBytes = sendAndExtractSiacPage(SiMessage.read_sicard_8_plus_b1.sequence(), message);
+			}
+			else{
+				initialReadBytes = sendAndExtractSiacPage(SiMessage.read_sicard_10_plus_b4.sequence(), message);
+			}
 
-				if( initialReadBytes.length > 128 + 6 ){ 
-					if( initialReadBytes[0] == SiMessage.STX && (initialReadBytes[1]& 0xFF) == 0xEF ){
-						//memcpy(b+k*128, bf+6, 128);
-						for( int i = 0; i < 128; i++ ){
-							allData.add( initialReadBytes[i+6]);
-						}
-						
-						series = allData.get(24) & 15;
-						if( series == 15 ){
-							numberOfPunches = Math.min( (allData.get(22) ), 128);
-							nrOfReadLoops = 2 + (numberOfPunches+31) / 32;
-						}
-						else{
-							if(verbose){
-								bw.write("Only SIAC cards currently supported for SICARD 8 and newer\n");
-							}
-							throw new RuntimeException("NOT SUPPORTED CARD");
-						}
-						
+			if( initialReadBytes.length > 128 + 6 ){ 
+				if( initialReadBytes[0] == SiMessage.STX && (initialReadBytes[1]& 0xFF) == 0xEF ){
+					//memcpy(b+k*128, bf+6, 128);
+					for( int i = 0; i < 128; i++ ){
+						allData.add( initialReadBytes[i+6]);
+					}
+					
+					series = allData.get(24) & 15;
+					if( series == 15 ){
+						numberOfPunches = Math.min( (allData.get(22) ), 128);
+						nrOfReadLoops = 2 + (numberOfPunches+31) / 32;
 					}
 					else{
-						if(verbose){
-							bw.write("Tried to read SIAC card but failed. Expected STX(0x02) + 0xEF but got " + initialReadBytes[0] + " + " + initialReadBytes[1] + "\n");
-						}
-						return new Card();
+						LogFileWriter.writeLog("debugLog", "Only SIAC cards currently supported for SICARD 8 and newer\n" + message);
+						throw new RuntimeException("NOT SUPPORTED CARD");
 					}
+					
 				}
 				else{
-					if(verbose){
-						bw.write("Wanted to read 128+6 bytes, could only read " + initialReadBytes.length  + " byes\n");
-					}
+					LogFileWriter.writeLog("debugLog", "Tried to read SIAC card but failed. Expected STX(0x02) + 0xEF but got " + initialReadBytes[0] + " + " + initialReadBytes[1] + "\n" + message);
 					return new Card();
 				}
-    		}
-    	}	
-    	finally{
-			try {
-				if( bw != null){
-					bw.close();
-	    		}
-			} 
-	    	catch (IOException e1) { return new Card(); }	
-    	}
+			}
+			else{
+				LogFileWriter.writeLog("debugLog", "Wanted to read 128+6 bytes, could only read " + initialReadBytes.length  + " byes\n" + message);
+				return new Card();
+			}
+		}
     	
+		if(verbose){
+			LogFileWriter.writeLog("siacdata", message.toString());
+		}
     	sendSiMessage(SiMessage.ack_sequence.sequence());
     	Card siacCard = parseSiacCard( allData, series, numberOfPunches );
-    	if( verbose){
-    		file.renameTo(new File(file.getAbsolutePath().replace(".card", siacCard.getCardNumber() + ".card")));
-    	}
     	return siacCard;
     }
     
     public Card getCard6Data( boolean verbose){
+    	StringBuffer message = new StringBuffer("#Testdata for readDleByte method. First line is raw data read at 128 bytes chunks from the card. The second line is the expected output after performing readBytesDle\n");
+
     	sendSiMessage(SiMessage.request_si_card6.sequence());
-    	
     	byte[] allData = new byte[128*3];
-    	BufferedWriter bw  = null;
-    	try{
-    		if( verbose ){
-		    	File sdCard = Environment.getExternalStorageDirectory();
-		    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro/card6data");
-				if (!dir.exists()) {
-					dir.mkdirs();
-				}
-				File file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "") + ".card");
-				FileWriter fw = new FileWriter(file.getAbsoluteFile());
-				bw = new BufferedWriter(fw);
-				bw.write("#Testdata for readDleByte method. First line is raw data read at 128 bytes chunks from the card. The second line is the expected output after performing readBytesDle\n");
-    		}
+
+    	//    	boolean cnompact = false;
+		for(int blockNumber = 0; blockNumber < 3 ; blockNumber++){
+			byte[] rawData = readSiMessage(256, 1000,  message);
+			MessageBuffer messageBuffer = new MessageBuffer(rawData);
+			byte[] dleOutputPre = new byte[10];
+			readBytesDle(messageBuffer, dleOutputPre, 4);
+			byte[] dleOutput = new byte[150];
+			int bytesRead = readBytesDle(messageBuffer, dleOutput, 128);
 			
-	//    	boolean cnompact = false;
-			for(int blockNumber = 0; blockNumber < 3 ; blockNumber++){
-				byte[] rawData = readSiMessage(256, 1000, verbose, bw);
-				MessageBuffer messageBuffer = new MessageBuffer(rawData);
-				byte[] dleOutputPre = new byte[10];
-				readBytesDle(messageBuffer, dleOutputPre, 4);
-				byte[] dleOutput = new byte[150];
-				int bytesRead = readBytesDle(messageBuffer, dleOutput, 128);
-				
-				byte[] dleBytesCorrectSize = new byte[bytesRead];
-				for( int i = 0; i < dleBytesCorrectSize.length; i++){
-					dleBytesCorrectSize[i] = dleOutput[i];
-				}
-				
-				if( verbose ){
-					for(int i = 0; i < dleOutput.length; i++){
-						bw.write("0x" + byteToHex(dleOutput[i]) + ",");
-					}
-					bw.write( "\n" );	
-				}
-	
-				for(int i = 0; i < dleBytesCorrectSize.length; i++){
-					allData[(blockNumber*128)+i] = dleBytesCorrectSize[i];
-				}
-				
-				
-	//			msg += "Card6 block:  ";
-	//			for(int i = 0; i < card6Block.blockData.length; i++){
-	//				msg += "[" + i + "]=" + byteToHex(card6Block.blockData[i]) + ", ";
-	//			}
-	//			msg+= "\n";
-	//			if( !card6Block.readSuccesful ){
-	//				if( blockNumber <= 2 ){
-	//					msg += "Reading card6 block failed, less than 2 blocks\n";
-	//					return;
-	//				}
-	//				else{
-	//					msg += "Break from block read loop\n";
-	//					break;
-	//				}
-	//			}
-	//			
-	//			if( blockNumber > 2){
-	//				msg += "Compact is true\n";
-	//				compact = true;
-	//			}
-				
+			byte[] dleBytesCorrectSize = new byte[bytesRead];
+			for( int i = 0; i < dleBytesCorrectSize.length; i++){
+				dleBytesCorrectSize[i] = dleOutput[i];
 			}
-			if( bw != null ){
-				bw.close();
+			
+
+			for(int i = 0; i < dleOutput.length; i++){
+				message.append("0x" + byteToHex(dleOutput[i]) + ",");
 			}
-    	}
-    	catch( Exception e){
-    		try {
-    			if( bw != null){
-    				bw.close();
-    			}
-			} 
-    		catch (IOException e1) {
+			message.append( "\n" );	
+
+			for(int i = 0; i < dleBytesCorrectSize.length; i++){
+				allData[(blockNumber*128)+i] = dleBytesCorrectSize[i];
 			}
-    	}
+			
+			
+//			msg += "Card6 block:  ";
+//			for(int i = 0; i < card6Block.blockData.length; i++){
+//				msg += "[" + i + "]=" + byteToHex(card6Block.blockData[i]) + ", ";
+//			}
+//			msg+= "\n";
+//			if( !card6Block.readSuccesful ){
+//				if( blockNumber <= 2 ){
+//					msg += "Reading card6 block failed, less than 2 blocks\n";
+//					return;
+//				}
+//				else{
+//					msg += "Break from block read loop\n";
+//					break;
+//				}
+//			}
+//			
+//			if( blockNumber > 2){
+//				msg += "Compact is true\n";
+//				compact = true;
+//			}
+			
+		}
     	
+		if(verbose){
+			LogFileWriter.writeLog("card6data", message.toString());
+		}
     	sendSiMessage(SiMessage.ack_sequence.sequence());
 		return parseCard6( allData );
     	
@@ -680,7 +600,7 @@ public class SiDriver {
 		}
 	}
 	
-    public byte[] readSiMessage( int size, int timeout, boolean verbose, BufferedWriter bw){
+    public byte[] readSiMessage( int size, int timeout, StringBuffer message){
 	    byte buffer[] = new byte[size];
 	    int numBytesRead = -2;
 		try {
@@ -690,21 +610,14 @@ public class SiDriver {
 			}
 		} catch (IOException e) {
 //			androidActivity.msg += "Exceptiion when reading " + e.getMessage();
-		}
-	    		
-		if (verbose) {
-			try{
-				for (int i = 0; i < numBytesRead; i++) {
-					bw.write("0x" + byteToHex(buffer[i]) + ",");
-				}
-				bw.write( "\n" );
-			}
-			catch( Exception e ){
-				
-			}
+		}		
 
+		for (int i = 0; i < numBytesRead; i++) {
+			message.append("0x" + byteToHex(buffer[i]) + ",");
 		}
-	   
+		message.append( "\n" );
+
+
 		byte[] result = Arrays.copyOfRange(buffer, 0, numBytesRead);
 	    return result;
     }

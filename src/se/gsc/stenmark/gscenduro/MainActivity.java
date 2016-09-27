@@ -1,13 +1,11 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InvalidClassException;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
@@ -25,12 +23,10 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.transition.SidePropagation;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -556,7 +552,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		protected Card doInBackground(SiDriver... siDriver) {
 			try {
 				while (true) {
-					byte[] readSiMessage = siDriver[0].readSiMessage(100, 2000, false, null);
+					byte[] readSiMessage = siDriver[0].readSiMessage(100, 2000, new StringBuffer());
 
 					if(disconected){
 						//Log.d("SiCardListener", "Was disconnected");
@@ -564,50 +560,39 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 						return new Card();
 					}
 					
-					//We got something and it was the STX (Start Transmistion) symbol.
+					//We got something and it was the STX (Start Transmission) symbol.
 					if (readSiMessage.length >= 1 && readSiMessage[0] == SiMessage.STX) {
 						if( VERBOSE_LOGGING ){
-					    	BufferedWriter bw  = null;
-					    	File file = null;
-					    	try{
-						    	File sdCard = Environment.getExternalStorageDirectory();
-						    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro/cardInserted");
-								if (!dir.exists()) {
-									dir.mkdirs();
-								}
-								file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "") + ".card");
-								FileWriter fw = new FileWriter(file.getAbsoluteFile());
-								bw = new BufferedWriter(fw);
-								bw.write("Debug data for inserted card\n");
-								for(int i = 0; i < readSiMessage.length; i++){
-									bw.write( "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", " );
-								}
-								bw.write("\n");
-	
-					    	}
-					    	finally{
-								try {
-									if( bw != null){
-										bw.close();
-						    		}
-								} 
-						    	catch (IOException e1) { return new Card(); }	
-					    	}
+							String message = "";
+							message += "Debug data for inserted card\n";
+							for(int i = 0; i < readSiMessage.length; i++){
+								message += "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", ";
+							}
+							message += "\n";
+							LogFileWriter.writeLog("cardInserted", message);
 						}
 						
 						//Check if the Magic byte 0x66 was received -> SiCard6 was read
 						if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x66) {
+							LogFileWriter.writeLog("debugLog", "Detected SiCard6 with 0X66 byte\n");
 							return siDriver[0].getCard6Data( VERBOSE_LOGGING );
-							
+						}
+						//Backup detection for SiCard6. Seems like sometimes byte 1 is 0xE8, just like SIAC. But byte5 is 0x02 for Sicard6 (0x0F for SIAC)
+						else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8 && (readSiMessage[5] & 0xFF) == 0x02){
+							LogFileWriter.writeLog("debugLog", "Detected SiCard6 with 0XE8 byte and 0x02 byte on position 5\n");
+							return siDriver[0].getCard6Data( VERBOSE_LOGGING );
+						}
 						//Check if the Magic byte 0xE8 was received -> SiCard9 (SIAC) was read
-						} else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8) {
+						else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8) {
 							try{
+								LogFileWriter.writeLog("debugLog", "Detected SIAC card with byte 0xE8\n");
 								return siDriver[0].getSiacCardData( VERBOSE_LOGGING );
 							}
 							//Some special case handling. 
 							//Seems like sometimes (maybe due to updated SI-MASTER) the SI-MASTER responds with 0xE8 also for SICARD6.
 							//The SIAC readout will throw an exception if that is the case and then we blindly try a CARD6 decode instead
 							catch( RuntimeException e){
+								LogFileWriter.writeLog("debugLog", "Detected SiCard6 with unexpected exception from SIAC decode\n");
 								return siDriver[0].getCard6Data( VERBOSE_LOGGING );
 							}
 						
@@ -631,32 +616,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							return cardData;
 						} else {
 							if( VERBOSE_LOGGING ){
-							    BufferedWriter bw  = null;
-							    File file = null;
-						    	try{
-							    	File sdCard = Environment.getExternalStorageDirectory();
-							    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro/unknownCard");
-									if (!dir.exists()) {
-										dir.mkdirs();
-									}
-									file = new File(dir, "cardDebugData_" + Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "") + ".card");
-									FileWriter fw = new FileWriter(file.getAbsoluteFile());
-									bw = new BufferedWriter(fw);
-									bw.write("Unkown Card detected\n");
-									for(int i = 0; i < readSiMessage.length; i++){
-										bw.write( "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", " );
-									}
-									bw.write("\n");
-	
-						    	}
-						    	finally{
-									try {
-										if( bw != null){
-											bw.close();
-							    		}
-									} 
-							    	catch (IOException e1) { return new Card(); }	
-						    	}
+								String message = "";
+								message += "Unkown Card detected\n";
+								for(int i = 0; i < readSiMessage.length; i++){
+									message += "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", ";
+								}
+								message += "\n";
+								LogFileWriter.writeLog("unknownCard", message);
+								if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) != 0xE7) {
+									LogFileWriter.writeLog("debugLog", "Unknown card that did not contain 0XE7\n"+message);
+								}
 							}
 					    	
 							return new Card();
