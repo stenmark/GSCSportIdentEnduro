@@ -54,14 +54,11 @@ public class DialogImportCompetitors {
 				}
 
 				String errorText = "";
-				errorText = mMainActivity.competition.getCompetitors().checkImportCompetitors(importCompetitorsInput.getText().toString(), keepCheckBox.isChecked(), mMainActivity.competition.getCompetitionType());
-				if (errorText.length() != 0) {
-					Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
-					return;
-				}
-
 				try {
-					mMainActivity.competition.getCompetitors().importCompetitors(importCompetitorsInput.getText().toString(), keepCheckBox.isChecked(), mMainActivity.competition.getCompetitionType());
+					errorText = mMainActivity.competition.getCompetitors().importCompetitors(importCompetitorsInput.getText().toString(), keepCheckBox.isChecked(), mMainActivity.competition.getCompetitionType(), false);
+					if (!errorText.isEmpty()) {
+						Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
+					}
 				} catch (Exception e) {
 					errorText = MainActivity.generateErrorMessage(e);
 
