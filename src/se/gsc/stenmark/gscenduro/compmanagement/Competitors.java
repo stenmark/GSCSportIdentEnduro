@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,74 +54,34 @@ public class Competitors implements Serializable {
 			currentCompetitor.getValue().clearCard();
 		}
 	}	
-	
-	public String checkData(String name, String cardNumber, String team, String competitorClass, String startNumber, String startGroup, int type, Boolean checkAgainstCurrent, LinkedHashMap<Integer,Competitor> competitors) {
-		errorText = "";
 		
-		if(name.length() == 0) {
-			errorText = "Incorrect name\n";
-		}else if(cardNumber.length() == 0) {
-			errorText = "Incorrect card number\n";			
-		} else if ((type == 1) && (team.length() == 0)) { //ESS
-			errorText = "Incorrect team\n";		
-		} else if ((type == 1) && (competitorClass.length() == 0)) { //ESS
-			errorText = "Incorrect competitor class\n";	
-		} else if ((type == 1) && (startNumber.length() == 0) || (startGroup.length() == 0)) { //ESS
-			errorText = "Incorrect startnumber\n";	
-		} else if ((type == 1) && (startGroup.length() == 0)) { //ESS
-			errorText = "Incorrect start group\n";				
-		} else if (checkAgainstCurrent && checkIfNameExists(name)) {
-			errorText = "Name already exists\n";		
-		} else if (!cardNumber.matches("\\d+")) {
-			errorText = "Card number not a number\n";
-		} else if (checkAgainstCurrent && checkIfCardNumberExists(Integer.parseInt(cardNumber))) {
-			errorText = "Card number already exists\n";       
-		} else if ((type == 1) && (!startNumber.matches("\\d+"))) {
-			errorText = "Start number not a number\n";			
-		} else if (checkAgainstCurrent && (type == 1) && (checkIfStartNumberExists(Integer.parseInt(startNumber)))) {
-			errorText = "Start number already exists\n";	              
-		} else if ((type == 1) && (!startGroup.matches("\\d+"))) {
-			errorText = "Start group not a number\n";
+	public String checkData(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup, int type, Boolean checkAgainstCurrent, LinkedHashMap<Integer,Competitor> competitors) {
+		errorText = "";
+
+		if(name.isEmpty()) {
+			errorText += "Could not import competeitor with card number " + cardNumber + " the name is empty\n";				
+		} else if (checkAgainstCurrent && checkIfCardNumberExists(cardNumber)) {
+			errorText += "Could not import competitor " + name + " Card number " + cardNumber + " already exists\n";              
 		} else if(competitors != null) {
-			if (checkIfNameExists(name, competitors)) {
-				errorText = "Name already exists\n";	
-			} else if (checkIfCardNumberExists(Integer.parseInt(cardNumber), competitors)) {
-				errorText = "Card number already exists\n";  
-			} else if ((type == 1) && (checkIfStartNumberExists(Integer.parseInt(startNumber), competitors))) {
-				errorText = "Start number already exists\n";	
-			}
+			if (checkIfCardNumberExists(cardNumber, competitors)) {
+				errorText += "Could not import competitor " + name + " Card number " + cardNumber + " already exists\n";   
+			} 
 		}
 		
-		return errorText;
-	}
-	
-	public String checkData2(String name, String cardNumber, String team, String competitorClass, int startNumber, int startGroup, int type, Boolean checkAgainstCurrent, LinkedHashMap<Integer,Competitor> competitors) {
-		errorText = "";
-		
-		if(name.length() == 0) {
-			errorText = "Incorrect name\n";
-		}else if(cardNumber.length() == 0) {
-			errorText = "Incorrect card number\n";			
-		} else if ((type == 1) && (team.length() == 0)) { //ESS
-			errorText = "Incorrect team\n";		
-		} else if ((type == 1) && (competitorClass.length() == 0)) { //ESS
-			errorText = "Incorrect competitor class\n";				
-		} else if (checkAgainstCurrent && checkIfNameExists(name)) {
-			errorText = "Name already exists\n";		
-		} else if (!cardNumber.matches("\\d+")) {
-			errorText = "Card number not a number\n";
-		} else if (checkAgainstCurrent && checkIfCardNumberExists(Integer.parseInt(cardNumber))) {
-			errorText = "Card number already exists\n";       		
-		} else if (checkAgainstCurrent && (type == 1) && (checkIfStartNumberExists(startNumber))) {
-			errorText = "Start number already exists\n";	              
-		} else if(competitors != null) {
-			if (checkIfNameExists(name, competitors)) {
-				errorText = "Name already exists\n";	
-			} else if (checkIfCardNumberExists(Integer.parseInt(cardNumber), competitors)) {
-				errorText = "Card number already exists\n";  
-			} 
-			else if ((type == 1) && (checkIfStartNumberExists(startNumber, competitors))) {
-				errorText = "Start number already exists\n";	
+		if( type == Competition.ESS_TYPE){
+			if( competitorClass.isEmpty() ){
+				errorText += "Incorrect competitor class\n";		
+			}
+			if( team.isEmpty()){
+				errorText += "Incorrect team\n";
+			}
+			if(checkIfStartNumberExists(startNumber)){
+				errorText += "Start number already exists\n";	 
+			}
+			if(competitors != null) {
+				if( checkIfStartNumberExists(startNumber, competitors) ){
+					errorText += "Start number already exists\n";	
+				}
 			}
 		}
 		
@@ -326,7 +287,7 @@ public class Competitors implements Serializable {
 	}	
 
 	public String importCompetitors(String newCompetitors, Boolean keep, int type, boolean onlyCheckDontAdd) throws NumberFormatException, IOException {	
-		String errorMessage = "";
+		StringBuffer errorMessage = new StringBuffer("");
 		String name = "";
 		String cardNumberAsString = "";
 		String team = "";
@@ -355,7 +316,7 @@ public class Competitors implements Serializable {
 				else{
 					//Ignore empty lines (Dont print error message)
 					if( !(line.replace(" ", "").isEmpty())){
-						errorMessage += "Could not import " + line + ". Wrong format. Expected \"name,cardNumber,Team,CompetitorClass,StartNumber,StartGroup\". Found " + parsedLine.length + " Comma(,) signs. Expected just 5\n";
+						errorMessage.append( "Could not import " + line + ". Wrong format. Expected \"name,cardNumber,Team,CompetitorClass,StartNumber,StartGroup\". Found " + (parsedLine.length-1) + " Comma(,) signs. Expected 5\n");
 					}
 					continue;
 				}
@@ -367,55 +328,75 @@ public class Competitors implements Serializable {
 				else{
 					//Ignore empty lines (Dont print error message)
 					if( !(line.replace(" ", "").isEmpty())){
-						errorMessage += "Could not import " + line + ". Wrong format. Expected \"name,cardNumber\". Found " + parsedLine.length + " Comma(,) signs. Expected just 1\n";
+						errorMessage.append( "Could not import " + line + ". Wrong format. Expected \"name,cardNumber\". Found " + (parsedLine.length-1) + " Comma(,) signs. Expected 1\n" );
 					}
 					continue;
 				}
 			}	
 			
-			//Remove all none digits
-			cardNumberAsString = cardNumberAsString.replaceAll("[^\\d]", ""); 
-			startNumberAsString = startNumberAsString.replaceAll("[^\\d]", ""); 
-			startGroupAsString = startGroupAsString.replaceAll("[^\\d]", "");
-			int cardNumber = -1;
-			int startNumber = -1;
-			int startGroup = -1;
-			try{
-				cardNumber = Integer.parseInt(cardNumberAsString);
-			}
-			catch( NumberFormatException e){
-				errorMessage += "Could not import " + line + ". Could not interpret cardNumber" + cardNumberAsString + "\n ";
-				parsingError = true;
-			}
-			
-			try{
-				startNumber = Integer.parseInt(startNumberAsString);
-			}
-			catch( NumberFormatException e){
-				errorMessage += "Could not import " + line + ". Could not interpret startNumber" + startNumberAsString + "\n ";
-				parsingError = true;
-			}
-			
-			try{
-				startGroup = Integer.parseInt(startGroupAsString);
-			}
-			catch( NumberFormatException e){
-				errorMessage += "Could not import " + line + ". Could not interpret startGroup" + startGroupAsString + "\n ";
-				parsingError = true;
-			}
+			Integer cardNumber = -1;
+			Integer startNumber = -1;
+			Integer startGroup = -1;
+			Map<String,Integer> parsingResults = new HashMap<String, Integer>();
+			parsingError = parseCompetitor(line, cardNumberAsString, startNumberAsString, startGroupAsString, errorMessage, parsingResults);
+			cardNumber = parsingResults.get("cardNumber");
+			startNumber = parsingResults.get("startNumber");
+			startGroup = parsingResults.get("startGroup");
 			
 			if( !parsingError ){
-				String checkDataResp = checkData2(name, cardNumberAsString, team, competitorClass, startNumber, startGroup, type, keep, getCompetitors());
-				errorMessage += checkDataResp;
+				String checkDataResp = checkData(name, cardNumber, team, competitorClass, startNumber, startGroup, type, keep, getCompetitors());
+				errorMessage.append( checkDataResp );
 				if( checkDataResp.isEmpty()){
 					if( !onlyCheckDontAdd){
-						add(name, cardNumber, team, competitorClass, startNumberAsString,startGroupAsString , type);
+						add(name, cardNumber, team, competitorClass, Integer.toString(startNumber),Integer.toString(startGroup) , type);
 					}
 				}	
 			}
 		}
-		return errorMessage;
+		return errorMessage.toString();
 	}	
+	
+	public boolean parseCompetitor(String lineToParse, String cardNumberAsString, String startNumberAsString, String startGroupAsString, StringBuffer errorMessage, Map<String,Integer> results){
+		boolean parsingError = false;
+		 int cardNumber = -1;
+		 int startNumber = -1;
+		 int startGroup = -1;
+		
+		//Remove all none digits
+		cardNumberAsString = cardNumberAsString.replaceAll("[^\\d]", ""); 
+		startNumberAsString = startNumberAsString.replaceAll("[^\\d]", ""); 
+		startGroupAsString = startGroupAsString.replaceAll("[^\\d]", "");
+
+		try{
+			cardNumber = Integer.parseInt(cardNumberAsString);
+		}
+		catch( NumberFormatException e){
+			errorMessage.append( "Could not import " + lineToParse + ". Could not interpret cardNumber" + cardNumberAsString + "\n");
+			parsingError = true;
+		}
+		
+		try{
+			startNumber = Integer.parseInt(startNumberAsString);
+		}
+		catch( NumberFormatException e){
+			errorMessage.append( "Could not import " + lineToParse + ". Could not interpret startNumber" + startNumberAsString + "\n");
+			parsingError = true;
+		}
+		
+		try{
+			startGroup = Integer.parseInt(startGroupAsString);
+		}
+		catch( NumberFormatException e){
+			errorMessage.append( "Could not import " + lineToParse + ". Could not interpret startGroup" + startGroupAsString + "\n");
+			parsingError = true;
+		}
+		
+		results.clear();
+		results.put("cardNumber", cardNumber);
+		results.put("startNumber", startNumber);
+		results.put("startGroup", startGroup);
+		return parsingError;
+	}
 	
 	public void importPunches(String punches, Stages stages, int type) throws IOException {		
 		BufferedReader bufReader = new BufferedReader(new StringReader(punches));

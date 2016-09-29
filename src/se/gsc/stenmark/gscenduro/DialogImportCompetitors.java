@@ -59,6 +59,9 @@ public class DialogImportCompetitors {
 					if (!errorText.isEmpty()) {
 						Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
 					}
+					
+					mMainActivity.competition.calculateResults();
+					mMainActivity.updateFragments();
 				} catch (Exception e) {
 					errorText = MainActivity.generateErrorMessage(e);
 
@@ -72,12 +75,13 @@ public class DialogImportCompetitors {
 					alert.show();
 				}
 
-				mMainActivity.competition.calculateResults();
-				mMainActivity.updateFragments();
-
 				AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 				builder.setIcon(android.R.drawable.ic_dialog_alert);
-				builder.setMessage("Competitors added").setTitle("Import competitor status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				String statusMessage = "All competitors added succesfully";
+				if( !errorText.isEmpty() ){
+					statusMessage = "Failed to import some competitors\n"+errorText;
+				}
+				builder.setMessage(statusMessage).setTitle("Import competitor status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 					}
 				});

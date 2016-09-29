@@ -1,7 +1,9 @@
 package se.gsc.stenmark.gscenduro;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -113,16 +115,20 @@ public class DialogAddCompetitor {
             	try{
 	            	String status = "";
 	            	String cardNumber = "";
-					if (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) {							
+					if (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) {	
+						Map<String,Integer> parsingResults = new HashMap<String, Integer>();
+						StringBuffer errorMessage = new StringBuffer("");
+						mMainActivity.competition.getCompetitors().parseCompetitor("", cardNumber, startNumberInput.getText().toString(), startGroupInput.getText().toString(), errorMessage, parsingResults);	
 						String errorText = mMainActivity.competition.getCompetitors().checkData(nameInput.getText().toString(), 
-																					  cardNumberInput.getText().toString(), 
+																					  parsingResults.get("cardNumber"),
 																					  teamInput.getText().toString(), 
 																					  competitorClassInput.getText().toString(), 
-																					  startNumberInput.getText().toString(), 
-																					  startGroupInput.getText().toString(),
+																					  parsingResults.get("startNumber"),
+																					  parsingResults.get("startGroup"),
 																					  mMainActivity.competition.getCompetitionType(),
 																					  true,
-																					  null);					
+																					  null);	
+						errorText += errorMessage.toString();
 		            	if (errorText.length() != 0) {
 		            		Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
 		                    return;
@@ -142,9 +148,12 @@ public class DialogAddCompetitor {
 						} else {
 							cardNumber = cardNumberSpinner.getSelectedItem().toString();
 						}		
-						
-						String errorText = mMainActivity.competition.getCompetitors().checkData(nameInput.getText().toString(), cardNumber, "", "", "-1", "-1", mMainActivity.competition.getCompetitionType(), true, null);					
-		            	if (errorText.length() != 0) {
+						Map<String,Integer> parsingResults = new HashMap<String, Integer>();
+						StringBuffer errorMessage = new StringBuffer("");
+						mMainActivity.competition.getCompetitors().parseCompetitor("", cardNumber, "-1", "-1", errorMessage, parsingResults);		
+						String errorText = mMainActivity.competition.getCompetitors().checkData(nameInput.getText().toString(), parsingResults.get("cardNumber"), "", "", -1, -1, mMainActivity.competition.getCompetitionType(), true, null);					
+						errorText += errorMessage.toString();
+						if (errorText.length() != 0) {
 		            		Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
 		                    return;
 		            	} 

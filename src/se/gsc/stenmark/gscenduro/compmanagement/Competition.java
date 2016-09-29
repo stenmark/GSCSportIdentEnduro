@@ -292,6 +292,9 @@ public class Competition implements Serializable {
 	 * @return
 	 */
 	public Long calculateSlowestOnStage(String competitorClass, int stageNumber) {
+		if( getCompetitors().size() == 0){
+			return 0L;
+		}
 		List<Long>timeDeltaList = new ArrayList<Long>();
 		Results stageResultForAllCompetitors = mResults.get(stageNumber);
 		for( int currentCompetitorNumber = 0; currentCompetitorNumber < (stageResultForAllCompetitors.getStageResult().size()-1); currentCompetitorNumber++ ){
