@@ -88,9 +88,9 @@ public class Competitors implements Serializable {
 		return errorText;
 	}
 	
-	public void add(String name, int cardNumber, String team, String competitorClass, String startNumber, String startGroup, int type) {				
+	public void add(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup, int type) {				
 		name = name.replaceFirst("\\s+$", "");
-		Competitor competitor = new Competitor(name, cardNumber, team, competitorClass, Integer.parseInt(startNumber), Integer.parseInt(startGroup));
+		Competitor competitor = new Competitor(name, cardNumber, team, competitorClass, startNumber, startGroup);
 		mCompetitors.put(cardNumber,competitor);
 
 		sort();
@@ -348,7 +348,7 @@ public class Competitors implements Serializable {
 				errorMessage.append( checkDataResp );
 				if( checkDataResp.isEmpty()){
 					if( !onlyCheckDontAdd){
-						add(name, cardNumber, team, competitorClass, Integer.toString(startNumber),Integer.toString(startGroup) , type);
+						add(name, cardNumber, team, competitorClass, startNumber,startGroup , type);
 					}
 				}	
 			}

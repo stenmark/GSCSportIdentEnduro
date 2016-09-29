@@ -73,6 +73,7 @@ public class Competition implements Serializable {
 		
 		try {
 			saveSessionData(null);
+			saveSessionData(mCompetitionName);
 		} catch (Exception e1) {
 			Log.d("Competition", "Error = " + e1);
 		}
@@ -455,6 +456,7 @@ public class Competition implements Serializable {
 		}
 		try {
 			saveSessionData(null);
+			saveSessionData(mCompetitionName);
 		} catch (Exception e1) {
 			Log.d("Competition", "Error = " + e1);
 		}

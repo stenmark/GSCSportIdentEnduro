@@ -153,12 +153,12 @@ public class CompetitionTest {
 		//Init Competition with test parameters
 		Competition competition = new CompetiotnStub();
 		competition.getStages().importStages("71,72,71,72,71,72,71,72,71,72");
-		competition.getCompetitors().add("Andreas S", 2079749, "", COMP_CLASS_TO_TEST, "0", "0", 0);
-		competition.getCompetitors().add("Peter B", 2065396, "", COMP_CLASS_TO_TEST, "0", "0", 0);
-		competition.getCompetitors().add("Sverker G", 2078056, "", COMP_CLASS_TO_TEST, "0", "0", 0);
-		competition.getCompetitors().add("Ingemar G", 2079747, "", COMP_CLASS_TO_TEST, "0", "0", 0);
-		competition.getCompetitors().add("Släggan", 2078082, "", COMP_CLASS_TO_TEST, "0", "0", 0);
-		competition.getCompetitors().add("Fruttberg", 2078040, "", COMP_CLASS_TO_TEST, "0", "0", 0);
+		competition.getCompetitors().add("Andreas S", 2079749, "", COMP_CLASS_TO_TEST, 0, 0, 0);
+		competition.getCompetitors().add("Peter B", 2065396, "", COMP_CLASS_TO_TEST, 0, 0, 0);
+		competition.getCompetitors().add("Sverker G", 2078056, "", COMP_CLASS_TO_TEST, 0, 0, 0);
+		competition.getCompetitors().add("Ingemar G", 2079747, "", COMP_CLASS_TO_TEST, 0, 0, 0);
+		competition.getCompetitors().add("Släggan", 2078082, "", COMP_CLASS_TO_TEST, 0, 0, 0);
+		competition.getCompetitors().add("Fruttberg", 2078040, "", COMP_CLASS_TO_TEST, 0, 0, 0);
 		competition.setCompetitionDate("2015-09-12");
 		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
 		competition.setCompetitionName("Competition test name");
@@ -345,7 +345,7 @@ public class CompetitionTest {
 		//Init Competition with test parameters
 		Competition competition = new CompetiotnStub();
 		competition.getStages().importStages("71,72,71,72,71,72,71,72");
-		competition.getCompetitors().add("Andreas S", 2079749, COMP_CLASS_TO_TEST, "", "0", "0", 0);
+		competition.getCompetitors().add("Andreas S", 2079749, COMP_CLASS_TO_TEST, "", 0, 0, 0);
 		competition.setCompetitionDate("2015-09-12");
 		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
 		competition.setCompetitionName("Competition test name");
@@ -447,12 +447,12 @@ public class CompetitionTest {
 		//Init Competition with test parameters
 		Competition competition = new CompetiotnStub();
 		competition.getStages().importStages("71,72,71,72,71,72");
-		competition.getCompetitors().add("Andreas S", 2079749, "", COMP_CLASS_TO_TEST, "0", "0", 0);
-		competition.getCompetitors().add("Peter B", 2065396, "", COMP_CLASS_TO_TEST, "0", "0", 0);
-		competition.getCompetitors().add("Sverker G", 2078056, "", COMP_CLASS_TO_TEST, "0", "0", 0);
-		competition.getCompetitors().add("Ingemar G", 2079747, "", COMP_CLASS_TO_TEST, "0", "0", 0);
-		competition.getCompetitors().add("Släggan", 2078082, "", COMP_CLASS_TO_TEST, "0", "0", 0);
-		competition.getCompetitors().add("Fruttberg", 2078040, "", COMP_CLASS_TO_TEST, "0", "0", 0);
+		competition.getCompetitors().add("Andreas S", 2079749, "", COMP_CLASS_TO_TEST, 0, 0, 0);
+		competition.getCompetitors().add("Peter B", 2065396, "", COMP_CLASS_TO_TEST, 0, 0, 0);
+		competition.getCompetitors().add("Sverker G", 2078056, "", COMP_CLASS_TO_TEST, 0, 0, 0);
+		competition.getCompetitors().add("Ingemar G", 2079747, "", COMP_CLASS_TO_TEST, 0, 0, 0);
+		competition.getCompetitors().add("Släggan", 2078082, "", COMP_CLASS_TO_TEST, 0, 0, 0);
+		competition.getCompetitors().add("Fruttberg", 2078040, "", COMP_CLASS_TO_TEST, 0, 0, 0);
 		competition.setCompetitionDate("2015-09-12");
 		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
 		competition.setCompetitionName("Competition test name");
@@ -1138,7 +1138,7 @@ public class CompetitionTest {
 				assertEquals(2, parsedLine.length);
 				String name = parsedLine[0];
 				int number = Integer.parseInt( parsedLine[1] );
-				competition.getCompetitors().add(name, number , "", COMP_CLASS_TO_TEST, "0", "0", 0);	
+				competition.getCompetitors().add(name, number , "", COMP_CLASS_TO_TEST, 0, 0, 0);	
 			}
 		}
 		catch(Exception e){

@@ -135,11 +135,11 @@ public class DialogAddCompetitor {
 		            	} 
 						
 						mMainActivity.competition.getCompetitors().add(nameInput.getText().toString(), 
-																	   Integer.parseInt(cardNumberInput.getText().toString()), 
+																	   parsingResults.get("cardNumber"), 
 																	   teamInput.getText().toString(), 
 																	   competitorClassInput.getText().toString(), 
-																	   startNumberInput.getText().toString(), 
-																	   startGroupInput.getText().toString(),
+																	   parsingResults.get("startNumber"), 
+																	   parsingResults.get("startGroup"),
 				   		   											   mMainActivity.competition.getCompetitionType());
 						cardNumber = cardNumberInput.getText().toString();
 					} else {					
@@ -158,7 +158,7 @@ public class DialogAddCompetitor {
 		                    return;
 		            	} 
 		            	
-						mMainActivity.competition.getCompetitors().add(nameInput.getText().toString(), Integer.parseInt(cardNumber), "", "", "-1", "-1", mMainActivity.competition.getCompetitionType());
+						mMainActivity.competition.getCompetitors().add(nameInput.getText().toString(), Integer.parseInt(cardNumber), "", "", -1, -1, mMainActivity.competition.getCompetitionType());
 					}			
 					
 					status = nameInput.getText().toString() + ", " + cardNumber + ". Added";

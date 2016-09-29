@@ -139,6 +139,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		try {
 			super.onPause();
 			disconected = true;
+			if( competition != null){
+				competition.saveSessionData(null);
+			}
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e1));
 			dialog.show(getSupportFragmentManager(), "popUp");
