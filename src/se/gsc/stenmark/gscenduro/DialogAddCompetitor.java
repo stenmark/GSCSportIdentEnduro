@@ -115,51 +115,54 @@ public class DialogAddCompetitor {
             	try{
 	            	String status = "";
 	            	String cardNumber = "";
+					String team = "";
+					String compClass = "";
+					String startNumber = "-1";
+					String startGroup = "-1";
+					
 					if (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) {	
-						Map<String,Integer> parsingResults = new HashMap<String, Integer>();
-						StringBuffer errorMessage = new StringBuffer("");
-						mMainActivity.competition.getCompetitors().parseCompetitor("", cardNumber, startNumberInput.getText().toString(), startGroupInput.getText().toString(), errorMessage, parsingResults);	
-						String errorText = mMainActivity.competition.getCompetitors().checkData(nameInput.getText().toString(), 
-																					  parsingResults.get("cardNumber"),
-																					  teamInput.getText().toString(), 
-																					  competitorClassInput.getText().toString(), 
-																					  parsingResults.get("startNumber"),
-																					  parsingResults.get("startGroup"),
-																					  mMainActivity.competition.getCompetitionType(),
-																					  true,
-																					  null);	
-						errorText += errorMessage.toString();
-		            	if (errorText.length() != 0) {
-		            		Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
-		                    return;
-		            	} 
-						
-						mMainActivity.competition.getCompetitors().add(nameInput.getText().toString(), 
-																	   parsingResults.get("cardNumber"), 
-																	   teamInput.getText().toString(), 
-																	   competitorClassInput.getText().toString(), 
-																	   parsingResults.get("startNumber"), 
-																	   parsingResults.get("startGroup"),
-				   		   											   mMainActivity.competition.getCompetitionType());
-						cardNumber = cardNumberInput.getText().toString();
-					} else {					
+						team = teamInput.getText().toString();
+						compClass = competitorClassInput.getText().toString();
+						startNumber = startNumberInput.getText().toString();
+						startGroup = startGroupInput.getText().toString();
+					}
+					else{
 						if (cardNumberCheckBox.isChecked()) {						 
 							cardNumber = cardNumberInput.getText().toString();
 						} else {
 							cardNumber = cardNumberSpinner.getSelectedItem().toString();
-						}		
-						Map<String,Integer> parsingResults = new HashMap<String, Integer>();
-						StringBuffer errorMessage = new StringBuffer("");
-						mMainActivity.competition.getCompetitors().parseCompetitor("", cardNumber, "-1", "-1", errorMessage, parsingResults);		
-						String errorText = mMainActivity.competition.getCompetitors().checkData(nameInput.getText().toString(), parsingResults.get("cardNumber"), "", "", -1, -1, mMainActivity.competition.getCompetitionType(), true, null);					
-						errorText += errorMessage.toString();
-						if (errorText.length() != 0) {
-		            		Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
-		                    return;
-		            	} 
-		            	
-						mMainActivity.competition.getCompetitors().add(nameInput.getText().toString(), Integer.parseInt(cardNumber), "", "", -1, -1, mMainActivity.competition.getCompetitionType());
-					}			
+						}	
+					}
+					
+					Map<String,Integer> parsingResults = new HashMap<String, Integer>();
+					StringBuffer errorMessage = new StringBuffer("");
+					boolean parsingError = mMainActivity.competition.getCompetitors().parseCompetitor("", 
+																								  nameInput.getText().toString(),
+																								  team, 
+																								  compClass, 
+																								  cardNumber, 
+																								  startNumber, 
+																								  startGroup, 
+																								  mMainActivity.competition.getCompetitionType(),
+																								  true,
+																								  errorMessage, 
+																								  parsingResults);	
+	            	if ( parsingError ) {
+	            		Toast.makeText(mMainActivity, errorMessage, Toast.LENGTH_LONG).show();
+	        			PopupMessage dialog = new PopupMessage( errorMessage.toString() );
+	        			dialog.show( mMainActivity.getSupportFragmentManager(), "popUp");
+	                    return;
+	            	} 
+					
+					mMainActivity.competition.getCompetitors().add(nameInput.getText().toString(), 
+																   parsingResults.get("cardNumber"), 
+																   teamInput.getText().toString(), 
+																   competitorClassInput.getText().toString(), 
+																   parsingResults.get("startNumber"), 
+																   parsingResults.get("startGroup"),
+			   		   											   mMainActivity.competition.getCompetitionType());
+					cardNumber = cardNumberInput.getText().toString();
+				
 					
 					status = nameInput.getText().toString() + ", " + cardNumber + ". Added";
 					mMainActivity.competition.calculateResults();

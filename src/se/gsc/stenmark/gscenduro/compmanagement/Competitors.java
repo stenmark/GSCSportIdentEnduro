@@ -55,15 +55,15 @@ public class Competitors implements Serializable {
 		}
 	}	
 		
-	public String checkData(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup, int type, Boolean checkAgainstCurrent, LinkedHashMap<Integer,Competitor> competitors) {
+	private String checkData(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup, int type, Boolean checkAgainstCurrent) {
 		errorText = "";
 
 		if(name.isEmpty()) {
 			errorText += "Could not import competeitor with card number " + cardNumber + " the name is empty\n";				
 		} else if (checkAgainstCurrent && checkIfCardNumberExists(cardNumber)) {
 			errorText += "Could not import competitor " + name + " Card number " + cardNumber + " already exists\n";              
-		} else if(competitors != null) {
-			if (checkIfCardNumberExists(cardNumber, competitors)) {
+		} else if(getCompetitors() != null) {
+			if (checkIfCardNumberExists(cardNumber, getCompetitors())) {
 				errorText += "Could not import competitor " + name + " Card number " + cardNumber + " already exists\n";   
 			} 
 		}
@@ -78,8 +78,8 @@ public class Competitors implements Serializable {
 			if(checkIfStartNumberExists(startNumber)){
 				errorText += "Start number already exists\n";	 
 			}
-			if(competitors != null) {
-				if( checkIfStartNumberExists(startNumber, competitors) ){
+			if(getCompetitors() != null) {
+				if( checkIfStartNumberExists(startNumber, getCompetitors()) ){
 					errorText += "Start number already exists\n";	
 				}
 			}
@@ -338,25 +338,31 @@ public class Competitors implements Serializable {
 			Integer startNumber = -1;
 			Integer startGroup = -1;
 			Map<String,Integer> parsingResults = new HashMap<String, Integer>();
-			parsingError = parseCompetitor(line, cardNumberAsString, startNumberAsString, startGroupAsString, errorMessage, parsingResults);
+			parsingError = parseCompetitor(line,name, team, competitorClass, cardNumberAsString, startNumberAsString, startGroupAsString, type, keep,errorMessage, parsingResults);
 			cardNumber = parsingResults.get("cardNumber");
 			startNumber = parsingResults.get("startNumber");
 			startGroup = parsingResults.get("startGroup");
 			
 			if( !parsingError ){
-				String checkDataResp = checkData(name, cardNumber, team, competitorClass, startNumber, startGroup, type, keep, getCompetitors());
-				errorMessage.append( checkDataResp );
-				if( checkDataResp.isEmpty()){
-					if( !onlyCheckDontAdd){
-						add(name, cardNumber, team, competitorClass, startNumber,startGroup , type);
-					}
-				}	
+				if( !onlyCheckDontAdd){
+					add(name, cardNumber, team, competitorClass, startNumber,startGroup , type);
+				}
 			}
 		}
 		return errorMessage.toString();
 	}	
 	
-	public boolean parseCompetitor(String lineToParse, String cardNumberAsString, String startNumberAsString, String startGroupAsString, StringBuffer errorMessage, Map<String,Integer> results){
+	public boolean parseCompetitor( String lineToParse, 
+									String name,
+									String team,
+									String competitorClass,
+									String cardNumberAsString, 
+									String startNumberAsString, 
+									String startGroupAsString, 
+									int type,
+									boolean checkCurrentCompetitors,
+									StringBuffer errorMessage, 
+									Map<String,Integer> results){
 		boolean parsingError = false;
 		 int cardNumber = -1;
 		 int startNumber = -1;
@@ -395,6 +401,13 @@ public class Competitors implements Serializable {
 		results.put("cardNumber", cardNumber);
 		results.put("startNumber", startNumber);
 		results.put("startGroup", startGroup);
+		
+		String checkDataResp = checkData(name, cardNumber, team, competitorClass, startNumber, startGroup, type, checkCurrentCompetitors);
+		if( !checkDataResp.isEmpty()){
+			parsingError = true;
+			errorMessage.append(checkDataResp);
+		}
+		
 		return parsingError;
 	}
 	

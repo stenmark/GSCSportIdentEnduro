@@ -64,15 +64,6 @@ public class DialogImportCompetitors {
 					mMainActivity.updateFragments();
 				} catch (Exception e) {
 					errorText = MainActivity.generateErrorMessage(e);
-
-					AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
-					builder.setIcon(android.R.drawable.ic_dialog_alert);
-					builder.setMessage(errorText).setTitle("Error importing competitors").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-						}
-					});
-					AlertDialog alert = builder.create();
-					alert.show();
 				}
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);

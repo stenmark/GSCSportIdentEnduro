@@ -1,7 +1,10 @@
 package se.gsc.stenmark.gscenduro;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.InvalidClassException;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +18,7 @@ import se.gsc.stenmark.gscenduro.compmanagement.Stages;
 import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -86,7 +90,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 		}
 	}
-	
+		
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -101,7 +105,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    		Toast.makeText(this, "Card updated", Toast.LENGTH_LONG).show();
 	    	}   		    
 		}
-		
+
 		updateFragments();
 	}
 	
@@ -148,6 +152,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 	
+	@Override
+	protected void onResume(){
+		super.onResume();
+
+	}
 	/**
 	 * A lot of template code to get the sectorPager going. Created automagically by eclipse.
 	 * Creates an empty competion object, later to be populated by onResume()
@@ -211,8 +220,38 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				// when this tab is selected.
 				actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
 			}				
-			
-			updateFragments();
+				
+			Uri data = getIntent().getData();
+			if(data!=null) {
+				String importResult = "";
+				if(ContentResolver.SCHEME_CONTENT.equals(data.getScheme())) {
+
+					ContentResolver resolver = getContentResolver();
+				    InputStream input = resolver.openInputStream(data);
+				    if(input != null){
+				        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+				        String line = "";
+				        String inputData = "";
+				        while ((line = reader.readLine()) != null) {	
+				        	inputData += line +"\n";
+				        }
+				        importResult = competition.getCompetitors().importCompetitors(inputData, true, competition.getCompetitionType(), false);
+				        competition.calculateResults();
+				    }
+				}
+				updateFragments();
+				
+				if( importResult.isEmpty() ){
+					PopupMessage dialog = new PopupMessage("Imported competitors from .gsc file succesfully!");
+					dialog.show(getSupportFragmentManager(), "popUp");
+				}
+				else{
+					PopupMessage dialog = new PopupMessage("Importing competitors from .gsc file failed\n" + importResult );
+					dialog.show(getSupportFragmentManager(), "popUp");
+				}
+				
+			}
+				
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e1));
 			dialog.show(getSupportFragmentManager(), "popUp");
