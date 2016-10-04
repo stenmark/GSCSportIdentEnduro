@@ -7,27 +7,31 @@ import java.util.List;
 public class Stages implements Serializable {
 
 	private static final long serialVersionUID = 2L;
-	private List<StageControls> mStages = new ArrayList<StageControls>();
+	private List<Stage> mStages = new ArrayList<Stage>();
 	private ArrayList<String> mControls = null;
 
 	public Stages() {
 	}
-	
-	public Stages(List<StageControls> stages) {
-		mStages = stages;
+		
+	public Stages( Stages stages) {
+		mStages = stages.mStages;
 		mControls = addControls();		
 	}
 
-	public StageControls get(int index) {
+	public Stage get(int index) {
 		return mStages.get(index);
 	}
 
 	public void clear() {
 		mStages.clear();
 	}
+		
+	public int getStageStartStation( int stageNumber ){
+		return mStages.get(stageNumber).start;
+	}
 	
-	public List<StageControls> getStages() {
-		return mStages;
+	public int getStageFinishStation( int stageNumber ){
+		return mStages.get(stageNumber).finish;
 	}
 	
 	public ArrayList<String> getControls() {
@@ -44,12 +48,12 @@ public class Stages implements Serializable {
 	public ArrayList<String> addControls() {
 		ArrayList<String> controls = new ArrayList<String>();
 		if (!mStages.isEmpty() && mStages != null) {
-			for (StageControls stageControls : mStages) {
-				if (!controls.contains(Integer.toString(stageControls.getStart()))) {
-					controls.add(Integer.toString(stageControls.getStart()));
+			for (Stage stageControls : mStages) {
+				if (!controls.contains(Integer.toString(stageControls.start))) {
+					controls.add(Integer.toString(stageControls.start));
 				}
-				if (!controls.contains(Integer.toString(stageControls.getFinish()))) {
-					controls.add(Integer.toString(stageControls.getFinish()));
+				if (!controls.contains(Integer.toString(stageControls.finish))) {
+					controls.add(Integer.toString(stageControls.finish));
 				}				
 			}
 		}
@@ -60,12 +64,12 @@ public class Stages implements Serializable {
 		String stagesAsString = "";
 		if (!mStages.isEmpty() && mStages != null) {
 			int i = 0;
-			for (StageControls stageControls : mStages) {
+			for (Stage stageControls : mStages) {
 				i++;
 				if (i != 1) {
 					stagesAsString += "\n";
 				}
-				stagesAsString += "Stage " + i + ": " + stageControls.getStart() + "->" + stageControls.getFinish();
+				stagesAsString += "Stage " + i + ": " + stageControls.start + "->" + stageControls.finish;
 			}
 		} else {
 			stagesAsString += " No stages loaded";
@@ -76,11 +80,11 @@ public class Stages implements Serializable {
 	public String exportStagesCsvString() {
 		String exportString = "";
 		int i = 0;
-		for (StageControls stageControls : mStages) {
+		for (Stage stageControls : mStages) {
 			if (i != 0) {
 				exportString += ",";
 			}
-			exportString += stageControls.getStart() + "," + stageControls.getFinish();
+			exportString += stageControls.start + "," + stageControls.finish;
 			i++;
 		}
 		return exportString;
@@ -144,17 +148,17 @@ public class Stages implements Serializable {
 			int finishControl = 0;
 			startControl = Integer.parseInt(stageControls[i]);
 			finishControl = Integer.parseInt(stageControls[i + 1]);
-			mStages.add(new StageControls(startControl, finishControl));
+			mStages.add(new Stage(startControl, finishControl));
 		}
 	}	
 	
 	public boolean validStageControl(int control) {
-		for (StageControls stageControls : mStages) {
-			if (control == stageControls.getStart()) {
+		for (Stage stageControls : mStages) {
+			if (control == stageControls.start) {
 				return true;
 			}			
 			
-			if (control == stageControls.getFinish()) {
+			if (control == stageControls.finish) {
 				return true;
 			}			
 		}

@@ -18,33 +18,26 @@ import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 public class Competitor implements Serializable {
 	
 	private static final long serialVersionUID = 2L;
-	private String mName;
-	private int mCardNumber;
-	private Card mCard;	
+	private String name;
+	private int cardNumber;
+	private Card card;	
 	private StageTimes mStageTimes;
 	private String mTeam;
 	private String mCompetitorClass;
 	private int mStartNumber;
 	private int mStartGroup;
 
-	public Competitor(String name) {
-		setName(name);
-		setCardNumber(-1);
-		mCard = null;
-		setStageTimes(new StageTimes());
-	}
-
 	Competitor(String name, int cardNumber) {
-		setName(name);
-		setCardNumber(cardNumber);
-		mCard = null;
+		this.name = name;
+		this.cardNumber=cardNumber;
+		card = null;
 		setStageTimes(new StageTimes());
 	}
 
 	Competitor(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup) {
-		setName(name);
-		setCardNumber(cardNumber);
-		mCard = null;
+		this.name = name;
+		this.cardNumber=cardNumber;
+		card = null;
 		setStageTimes(new StageTimes());
 		setTeam(team);
 		setCompetitorClass(competitorClass);
@@ -53,41 +46,41 @@ public class Competitor implements Serializable {
 	}
 
 	public String getName() {
-		return mName;
+		return name;
 	}
 
 	public void setName(String name) {
-		mName = name;
+		this.name = name;
 	}
 
 	public int getCardNumber() {
-		return mCardNumber;
+		return cardNumber;
 	}
 
 	public void setCardNumber(int cardNumber) {
-		mCardNumber = cardNumber;
+		this.cardNumber=cardNumber;
 	}
 
 	public Card getCard() {
-		return mCard;
+		return card;
 	}
 
 	public void clearCard() {
-		mCard = null;
+		card = null;
 		setStageTimes(null);
 	}
 	
 	public String processCard(Card card, Stages stages, int type) {
 		boolean containsAllPunches = true;
-		mCard = card;
-		mCard.setCardNumber(mCardNumber);
+		this.card = card;
+		card.setCardNumber(cardNumber);
 		setStageTimes(new StageTimes());
 		
 		//For SvartVitt, remove all accidental FinishPunches that are before the first StartPunch
 		boolean firstFinishPunchFound = false;
 		List<Punch> punchesToRemove = new ArrayList<Punch>();
-		int firstStartStationNr = stages.getStages().get(0).getStart();
-		int firstFinishStationNr = stages.getStages().get(0).getFinish();
+		int firstStartStationNr = stages.getStageStartStation(0);
+		int firstFinishStationNr = stages.getStageFinishStation(0);
 		if (type == Competition.SVART_VIT_TYPE) {
 			for( Punch punch : card.getPunches()){
 				if(punch.getControl() == firstStartStationNr){
@@ -103,32 +96,32 @@ public class Competitor implements Serializable {
 			card.getPunches().removeAll(punchesToRemove);
 		}
 		
-		for (int i = 0; i < stages.size(); i++) {
+		for (int stageNumber = 0; stageNumber < stages.size(); stageNumber++) {
 			long stageTime;
 						
 			if (type == Competition.ESS_TYPE) {
-				stageTime = mCard.getStageTimeEss(stages.getStages().get(i).getStart(), stages.getStages().get(i).getFinish());
+				stageTime = card.getStageTimeEss(stages.getStageStartStation(stageNumber), stages.getStageFinishStation(stageNumber));
 			} else {
-				stageTime = mCard.getStageTimeSvartVitt(stages.getStages().get(i).getStart(), stages.getStages().get(i).getFinish(), i + 1);
+				stageTime = card.getStageTimeSvartVitt(stages.getStageStartStation(stageNumber), stages.getStageFinishStation(stageNumber), stageNumber + 1);
 				if( stageTime == Competition.NO_TIME_FOR_STAGE ){
 					containsAllPunches = false;
 				}
 			}
 			
-			mStageTimes.setTimesOfStage(i, stageTime);
+			mStageTimes.setTimesOfStage(stageNumber, stageTime);
 		}		
 		
 		if( containsAllPunches){
-			return "Added card: " + mCardNumber + "  Competitor:  " + mName + "\n";
+			return "Added card: " + cardNumber + "  Competitor:  " + name + "\n";
 		}
 		else{
-			return "WARNING! " + mName + " has not completed all stages. Cardnumber: " + mCardNumber + "\n";
+			return "WARNING! " + name + " has not completed all stages. Cardnumber: " + cardNumber + "\n";
 		}
 		
 	}
 	
 	public boolean hasResult() {
-		return mCard != null;
+		return card != null;
 	}
 
 	public StageTimes getStageTimes() {

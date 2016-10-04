@@ -7,8 +7,8 @@ public class StageResult implements Serializable {
 	private static final long serialVersionUID = 201111020011L; 
 	private int mCardNumber;
 	private int mRank;
-	private Long mStageTimes;
-	private Long mStageTimesBack;
+	private Long mStageTime;
+	private Long mStageTimeBack;
 	
 	public StageResult(int cardNumber, Long stageTimes) {
 		setCardNumber(cardNumber);
@@ -25,26 +25,19 @@ public class StageResult implements Serializable {
 	}	
 	
 	public Long getStageTime() {
-	    return mStageTimes;
+	    return mStageTime;
 	}
 	
-//	public Long getStageTimeForSorting() {
-//		if( getDnf() ){
-//			return Competition.NO_TIME_FOR_STAGE;
-//		}
-//	    return mStageTimes;
-//	}
-	
 	public void setStageTimes(Long stageTimes) {
-		mStageTimes = stageTimes;
+		mStageTime = stageTimes;
 	}
 	
 	public Long getStageTimesBack() {
-	    return mStageTimesBack;
+	    return mStageTimeBack;
 	}
 	
 	public void setStageTimesBack(Long stageTimesBack) {
-	    mStageTimesBack = stageTimesBack;
+	    mStageTimeBack = stageTimesBack;
 	}
 	
 	public Integer getRank() {
@@ -57,6 +50,6 @@ public class StageResult implements Serializable {
 	
 	@Override
 	public String toString(){
-		return "CardNumber: " +mCardNumber + " Rank: " + mRank + " StageTime: " + mStageTimes + " time back " + mStageTimesBack;
+		return "CardNumber: " +mCardNumber + " Rank: " + mRank + " StageTime: " + mStageTime + " time back " + mStageTimeBack;
 	}
 }

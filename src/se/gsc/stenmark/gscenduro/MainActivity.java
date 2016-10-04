@@ -75,7 +75,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				competition.getCompetitors().getByCardNumber(cardNumber).processCard(new Card(), this.competition.getStages(), this.competition.getCompetitionType());				
 			}			
 
-			Stages stages = new Stages(this.competition.getStages().getStages());
+			Stages stages = new Stages( competition.getStages() );
 			
 			Bundle bundle = new Bundle();
 			bundle.putSerializable("Card", competition.getCompetitors().getByCardNumber(cardNumber).getCard());

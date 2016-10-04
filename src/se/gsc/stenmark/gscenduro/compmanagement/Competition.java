@@ -58,7 +58,6 @@ public class Competition implements Serializable {
 	private String mCompetitionName;
 	private String mCompetitionDate = "";
 	private int mCompetitionType = SVART_VIT_TYPE;
-	private Map<String,List<Long>> slowestOnStagePerClass = new HashMap<String,List<Long>>();
 	
 	public Competition() {
 		mStages = new Stages();
@@ -78,21 +77,7 @@ public class Competition implements Serializable {
 			Log.d("Competition", "Error = " + e1);
 		}
 	}
-	
-	/**
-	 * Return the slowest competitor on the stage in the requested Class and stagenumnber
-	 * @param competitionClass
-	 * @param stageNumber stagenumber (SS1 = 1, SS2 = 2 etc) i.e. NOT 0-indexed
-	 * @return
-	 */
-	public Long getSlowestonStage( String competitionClass, int stageNumber){
-		if( slowestOnStagePerClass.containsKey(competitionClass)){
-			List<Long> slowOnStageList = slowestOnStagePerClass.get(competitionClass);
-			return slowOnStageList.get(stageNumber-1);
-		}
-		return 0L;
-	}
-	
+
 	public Long getFastestOnStage(String competitorClass, int stageNumber) {
 		if( !mResults.getStageResult(stageNumber, competitorClass).getStageResult().isEmpty() ){
 			return mResults.getStageResult(stageNumber, competitorClass).getStageResult().get(0).getStageTime();
@@ -371,7 +356,7 @@ public class Competition implements Serializable {
 				if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {
 					if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() == 0) ) {
 						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(),NO_TIME_FOR_COMPETITION);
-					} else if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < mStages.getStages().size())) {
+					} else if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < mStages.size() )) {
 						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), COMPETITION_DNF);
 					} 
 					else {
@@ -423,7 +408,7 @@ public class Competition implements Serializable {
 			if (mResults != null && !mResults.isEmpty()) {
 				for (StageResult totalTimeResultForCompetitor : mResults.getTotalResult(competitorClass).getTotalTimeResult()) {							
 					int cardNumber = totalTimeResultForCompetitor.getCardNumber();				
-					Results resultLandscapeObject = new Results();	
+					Results resultLandscapeObject = new Results("");	
 					//We need to create a true copy of the totalTimeResult for each competitor, otherwise we will overwrite in the original List
 					resultLandscapeObject.addTotalTimeResult((StageResult) AndroidIndependantCompetitionHelper.deepClone(totalTimeResultForCompetitor));					
 					for (int stage = 1; stage <= mResults.getAllStageResults(competitorClass).size(); stage++) {										
@@ -447,12 +432,7 @@ public class Competition implements Serializable {
 				}
 			}
 			
-			List<Long> slowestPerStageList = new ArrayList<Long>();
-			for (int stageNumber = 1; stageNumber <= mResults.getAllStageResults(competitorClass).size(); stageNumber++) {
-				Long slowestOnStage = calculateSlowestOnStage(competitorClass, stageNumber);
-				slowestPerStageList.add(slowestOnStage);
-			}
-			slowestOnStagePerClass.put(competitorClass, slowestPerStageList);
+
 		}
 		try {
 			saveSessionData(null);

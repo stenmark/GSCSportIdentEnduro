@@ -165,10 +165,10 @@ public class CompetitionTest {
 		
 		//Assert some basic competition fields
 		assertEquals(EXPECTED_NUM_STAGES, competition.getStages().size() );
-		assertEquals( 71, competition.getStages().get(0).getStart() );
-		assertEquals( 72, competition.getStages().get(0).getFinish() );
-		assertEquals( 71, competition.getStages().get(1).getStart() );
-		assertEquals( 72, competition.getStages().get(1).getFinish() );
+		assertEquals( 71, competition.getStages().get(0).start );
+		assertEquals( 72, competition.getStages().get(0).finish );
+		assertEquals( 71, competition.getStages().get(1).start );
+		assertEquals( 72, competition.getStages().get(1).finish );
 
 		System.out.println("Add results for competitor 1: Andreas S - 2079749");
 		Competitor competitorAndreas = competition.getCompetitors().getByCardNumber(2079749);
@@ -352,14 +352,14 @@ public class CompetitionTest {
 		
 		//Assert some basic competition fields
 		assertEquals(EXPECTED_NUM_STAGES, competition.getStages().size() );
-		assertEquals( 71, competition.getStages().get(0).getStart() );
-		assertEquals( 72, competition.getStages().get(0).getFinish() );
-		assertEquals( 71, competition.getStages().get(1).getStart() );
-		assertEquals( 72, competition.getStages().get(1).getFinish() );
-		assertEquals( 71, competition.getStages().get(2).getStart() );
-		assertEquals( 72, competition.getStages().get(2).getFinish() );
-		assertEquals( 71, competition.getStages().get(3).getStart() );
-		assertEquals( 72, competition.getStages().get(3).getFinish() );
+		assertEquals( 71, competition.getStages().get(0).start );
+		assertEquals( 72, competition.getStages().get(0).finish );
+		assertEquals( 71, competition.getStages().get(1).start );
+		assertEquals( 72, competition.getStages().get(1).finish );
+		assertEquals( 71, competition.getStages().get(2).start );
+		assertEquals( 72, competition.getStages().get(2).finish );
+		assertEquals( 71, competition.getStages().get(3).start );
+		assertEquals( 72, competition.getStages().get(3).finish );
 
 		assertEquals(EXPECTED_NUM_COMPETITORS, competition.getCompetitors().getCompetitors().size() );
 		assertEquals(1, competition.getCompetitors().getCompetitorClasses().size());
@@ -459,12 +459,12 @@ public class CompetitionTest {
 		
 		//Assert some basic competition fields
 		assertEquals(EXPECTED_NUM_STAGES, competition.getStages().size() );
-		assertEquals( 71, competition.getStages().get(0).getStart() );
-		assertEquals( 72, competition.getStages().get(0).getFinish() );
-		assertEquals( 71, competition.getStages().get(1).getStart() );
-		assertEquals( 72, competition.getStages().get(1).getFinish() );
-		assertEquals( 71, competition.getStages().get(2).getStart() );
-		assertEquals( 72, competition.getStages().get(2).getFinish() );
+		assertEquals( 71, competition.getStages().get(0).start );
+		assertEquals( 72, competition.getStages().get(0).finish );
+		assertEquals( 71, competition.getStages().get(1).start );
+		assertEquals( 72, competition.getStages().get(1).finish );
+		assertEquals( 71, competition.getStages().get(2).start );
+		assertEquals( 72, competition.getStages().get(2).finish );
 
 		assertEquals(EXPECTED_NUM_COMPETITORS, competition.getCompetitors().getCompetitors().size() );
 		assertEquals(1, competition.getCompetitors().getCompetitorClasses().size());

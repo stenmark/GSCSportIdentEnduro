@@ -2,6 +2,7 @@ package se.gsc.stenmark.gscenduro.SporIdent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
@@ -141,22 +142,25 @@ public class Card implements Serializable {
 			time = (long) Integer.MAX_VALUE;
 		}			
 		
-		for (int i = 0; i < mPunches.size(); i++) {
+
+		for( int i = 0; i < mPunches.size(); i++){
+			Punch currentPunch = mPunches.get(i);
+			
 			//Found one punch with that control
-			if( !mPunches.get(i).getIsFinishPunchBeforeStart()){
-				if (mPunches.get(i).getControl() == control) {				
+			if( !currentPunch.getIsFinishPunchBeforeStart()){
+				if (currentPunch.getControl() == control) {				
 					if (startControl) {
-						if (mPunches.get(i).getTime() > time) {
-							time = mPunches.get(i).getTime();
+						if (currentPunch.getTime() > time) {
+							time = currentPunch.getTime();
 						}
 					} else {
-						if (mPunches.get(i).getTime() < time) {
-							time = mPunches.get(i).getTime();
+						if (currentPunch.getTime() < time) {
+							time = currentPunch.getTime();
 						}
 					}	
 					
-					//Is there more punches made?
-					if ((i + 1) == mPunches.size()) {
+					//Is this the last punch?
+					if( (i+1) == mPunches.size() ) {
 						//No more punches
 						if (stageNumber == currentStage) {
 							//Correct stage
@@ -172,7 +176,8 @@ public class Card implements Serializable {
 						}
 					} else {	
 						//Yes there are more punches
-						if (mPunches.get(i).getControl() != mPunches.get(i + 1).getControl()) {				
+						Punch nextPunch = mPunches.get(i+1);
+						if (currentPunch.getControl() != nextPunch.getControl()) {				
 							//Next punch is a different control 						
 							if (stageNumber == currentStage) {
 								//Correct stage
@@ -187,6 +192,7 @@ public class Card implements Serializable {
 								currentStage++;
 							}
 						}
+						currentPunch = nextPunch;
 					}
 				}
 			}

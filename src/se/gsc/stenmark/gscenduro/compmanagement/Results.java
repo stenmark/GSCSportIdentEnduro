@@ -14,14 +14,10 @@ import java.util.List;
  */
 public class Results implements Serializable {
 	
-	private static final long serialVersionUID = 201111020001L; 	
+	private static final long serialVersionUID = 5; 	
 	private String mTitle;	
 	private List<StageResult> mStageResult = new ArrayList<StageResult>();
-	
-	public Results() {
-		setTitle("");
-	}
-	
+		
 	public Results(String title) {
 		setTitle(title);
 	}
