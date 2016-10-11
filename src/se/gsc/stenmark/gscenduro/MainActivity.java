@@ -404,7 +404,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return true;			
 
 		case R.id.action_export_as_html:
-			String resultList = CompetitionHelper.getResultsAsHtmlString(this.competition.getCompetitionName(), this.competition.getCompetitionDate(), this.competition.getStages(), this.competition.getResultLandscape(), this.competition.getCompetitors(), this.competition.getCompetitionType(), competition);
+			String resultList = CompetitionHelper.getResultsAsHtmlString(this.competition.getCompetitionName(), this.competition.getCompetitionDate(), this.competition.getStages(), this.competition.getCompetitors(), this.competition.getCompetitionType(), competition);
 			try {
 				CompetitionHelper.exportString(this, resultList, "results", this.competition.getCompetitionName(), "htm");
 			} catch (IOException e) {

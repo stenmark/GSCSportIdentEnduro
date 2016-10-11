@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.List;
 
 /**
  * Stateless helper class that can perform various operations on a competition.
@@ -41,31 +40,78 @@ public abstract class AndroidIndependantCompetitionHelper {
 
 	}
 
-	public static String getResultsAsCsvString(Stages stage, List<Results> results, Competitors competitors, int type) {
+	//OLD VERSION
+//	public static String getResultsAsCsvString(Stages stage, Stage totalResults, Competitors competitors, int type) {
+//		String resultData = "";
+//		
+//		if (type == 1)  {
+//			resultData = "Rank,Name,Card Number,Team,Start Number,Total Time,";
+//		} else {
+//			resultData = "Rank,Name,Card Number,Total Time,";
+//		}
+//			
+//		for (int i = 0; i < stage.size(); i++) {
+//			resultData += "Stage " + (i + 1) + ",Rank,Time Back,";
+//		}
+//		resultData += "\n";
+//
+//		for (int index = 0; index < results.size(); index++) {
+//			if (type == Competition.ESS_TYPE)  {
+//				if (index == 0) {
+//					resultData += results.get(index).getTitle() + "\n";
+//				} else if (results.get(index).getTitle() != results.get(index - 1).getTitle()) {
+//					resultData += results.get(index).getTitle() + "\n";
+//				}
+//			}				
+//			
+//			int cardNumber = results.get(index).getStageResult().get(0).getCardNumber();					
+//			int rank = results.get(index).getStageResult().get(0).getRank();					
+//			if (rank == Competition.RANK_DNF) {			
+//				resultData += "-,";
+//			} else {
+//				resultData += rank + ",";
+//			}
+//			
+//			resultData += competitors.getByCardNumber(cardNumber).getName() + ",";
+//			resultData += cardNumber + ",";
+//			if (type == 1)  {
+//				resultData += competitors.getByCardNumber(cardNumber).getTeam() + ",";					
+//				resultData += String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + ",";
+//			}
+//			resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(0).getStageTime()) + ",";	
+//									
+//			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {										
+//				resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + ",";
+//				resultData += results.get(index).getStageResult().get(stageNumber).getRank() + ",";
+//				resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + ",";
+//			}			
+//			resultData += "\n";
+//		}
+//		
+//		return resultData;
+//	}
+
+	public static String getResultsAsCsvString(Stages stages, Stage totalResults, Competitors competitors, int type) {
 		String resultData = "";
 		
-		if (type == 1)  {
+		if (type == Competition.ESS_TYPE)  {
 			resultData = "Rank,Name,Card Number,Team,Start Number,Total Time,";
 		} else {
 			resultData = "Rank,Name,Card Number,Total Time,";
 		}
 			
-		for (int i = 0; i < stage.size(); i++) {
+		for (int i = 0; i < stages.size(); i++) {
 			resultData += "Stage " + (i + 1) + ",Rank,Time Back,";
 		}
 		resultData += "\n";
 
-		for (int index = 0; index < results.size(); index++) {
-			if (type == 1)  {
-				if (index == 0) {
-					resultData += results.get(index).getTitle() + "\n";
-				} else if (results.get(index).getTitle() != results.get(index - 1).getTitle()) {
-					resultData += results.get(index).getTitle() + "\n";
-				}
+		for( int i  = 0; i < totalResults.numberOfCompetitors(); i++ ){
+			if (type == Competition.ESS_TYPE)  {
+				resultData += totalResults.title+ "\n";
 			}				
 			
-			int cardNumber = results.get(index).getStageResult().get(0).getCardNumber();					
-			int rank = results.get(index).getStageResult().get(0).getRank();					
+			int cardNumber = totalResults.getCompetitorResults().get(i).getCardNumber();				
+			int rank = totalResults.getCompetitorResults().get(i).getRank();				
 			if (rank == Competition.RANK_DNF) {			
 				resultData += "-,";
 			} else {
@@ -74,16 +120,22 @@ public abstract class AndroidIndependantCompetitionHelper {
 			
 			resultData += competitors.getByCardNumber(cardNumber).getName() + ",";
 			resultData += cardNumber + ",";
-			if (type == 1)  {
+			if (type == Competition.ESS_TYPE)  {
 				resultData += competitors.getByCardNumber(cardNumber).getTeam() + ",";					
 				resultData += String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + ",";
 			}
-			resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(0).getStageTime()) + ",";	
-									
-			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {										
-				resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + ",";
-				resultData += results.get(index).getStageResult().get(stageNumber).getRank() + ",";
-				resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + ",";
+			resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec( totalResults.getCompetitorResults().get(i).getStageTime() ) + ",";	
+						
+			for(int stageNumber = 0; stageNumber < stages.size(); stageNumber++) {	
+				StageResult stageResult = stages.get(stageNumber).getStageResultByCardnumber(cardNumber);
+				if( stageResult != null){
+					resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTime() ) + ",";
+					resultData += stageResult.getRank() + ",";
+					resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTimesBack() ) + ",";
+				}
+				else{
+					resultData += "-1,-1,-1";
+				}
 			}			
 			resultData += "\n";
 		}

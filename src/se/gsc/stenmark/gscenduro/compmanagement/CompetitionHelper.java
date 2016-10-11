@@ -65,91 +65,95 @@ public abstract class CompetitionHelper {
 		}			
 	}	
 	
-	public static String getResultsAsHtmlString(String name, String date, Stages stage, List<Results> results, Competitors competitors, int type, Competition competition) {
-		String resultData = "<!DOCTYPE html>\n<html>\n<body>\n";		
-		resultData += "<style>\ntable, th, td {\nborder: 1px solid black;\nborder-collapse: collapse;\n}\nth, td {\npadding: 5px;\n}\n</style>\n";		
-		resultData += "<h1>" + name + ", " + date + "</h1>\n";
-		
-		for (int index = 0; index < results.size(); index++) {
-			
-			if (type == 1)  {				
-				if (index == 0) {
-					resultData += "<h1>" + results.get(index).getTitle() + "</h1>\n";
-					resultData += "<table style=\"width:100%\">\n";
-					resultData += "<tr>\n<th><center>Rank</center></th><th>Name</th><th>Card Number</th><th>Team</th><th>Start Number</th><th>Total Time</th>";
-					for (int i = 0; i < stage.size(); i++) {
-						resultData += "<th>Stage " + (i + 1) + "</th><th>Rank</th><th>Time Back</th>";
-					}
-					resultData += "</tr>\n";							
-				} else if (results.get(index).getTitle() != results.get(index - 1).getTitle()) {
-					resultData += "</table>\n";
-					resultData += "<h1>" + results.get(index).getTitle() + "</h1>\n";
-					resultData += "<table style=\"width:100%\">\n";
-					resultData += "<tr>\n<th><center>Rank</center></th><th>Name</th><th>Card Number</th><th>Team</th><th>Start Number</th><th>Total Time</th>";
-					for (int i = 0; i < stage.size(); i++) {
-						resultData += "<th>Stage " + (i + 1) + "</th><th>Rank</th><th>Time Back</th>";
-					}
-					resultData += "</tr>\n";		
-				}				
-			} else if (index == 0) {
-				resultData += "<table style=\"width:100%\">\n";
-				resultData += "<tr><th><center>Rank</center></th><th>Name</th><th>Card Number</th><th>Total Time</th>";
-				
-				for (int i = 0; i < stage.size(); i++) {
-					resultData += "<th>Stage " + (i + 1) + "</th><th>Rank</th><th>Time Back</th>";
-				}
-				resultData += "</tr>\n";
-			}			
-			
-			resultData += "<tr>\n";								
-			int rank = results.get(index).getStageResult().get(0).getRank();
-			resultData += "<td><center>";
-			if (rank == Competition.RANK_DNF) {			
-				resultData += "-";
-			} else {
-				resultData += rank;
-			}
-			resultData += "</center></td>";
-			
-			int cardNumber = results.get(index).getStageResult().get(0).getCardNumber();
-			resultData += "<td>" + AndroidIndependantCompetitionHelper.convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()) + "</td>";			
-			resultData += "<td><center>" + cardNumber + "</center></td>";
-			
-			Log.d("html", "convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()) = " + AndroidIndependantCompetitionHelper.convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()));
-			Log.d("html", "competitors.getByCardNumber(cardNumber).getName() = " + competitors.getByCardNumber(cardNumber).getName());
-			
-			if (type == 1)  {
-				resultData += "<td>" + AndroidIndependantCompetitionHelper.convertToHtmlChars(competitors.getByCardNumber(cardNumber).getTeam()) + "</td>";					
-				resultData += "<td><center>" + String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + "</center></td>";
-			}
-			resultData += "<td><center>" + AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(0).getStageTime()) + "</center></td>";	
-						
-			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {			
-				
-				if (results.get(index).getStageResult().get(stageNumber).getRank() != Competition.RANK_DNF) {								
-					Long fastestTimeOnStage = competition.getFastestOnStage(results.get(index).getTitle(), stageNumber); 
-					Long slowestTimeOnStage = competition.calculateSlowestOnStage(results.get(index).getTitle(), stageNumber);
-					Long competitorStageTime = results.get(index).getStageResult().get(stageNumber).getStageTime();
-					
-					int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
-	
-					color -= 0xff000000;
-					resultData += "<td bgcolor=\"#" + Integer.toHexString(color) + "\"><center>" + AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + "</center></td>";
-					resultData += "<td><center>" + results.get(index).getStageResult().get(stageNumber).getRank() + "</center></td>";
-					resultData += "<td><center>" + AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + "</center></td>";
-				} else {
-					resultData += "<td><center>-</center></td>";
-					resultData += "<td><center>-</center></td>";
-					resultData += "<td><center>-</center></td>";
-				}
-			}			
-			resultData += "</tr>\n";
-		}		
-		
-		resultData += "</table>\n</body>\n</html>\n";
-		
-		return resultData;
+	//OLD VERSION
+	public static String getResultsAsHtmlString(String name, String date, Stages stage, Competitors competitors, int type, Competition competition) {
+		return "Not done yet";
 	}
+//	public static String getResultsAsHtmlString(String name, String date, Stages stage, List<Results> results, Competitors competitors, int type, Competition competition) {
+//		String resultData = "<!DOCTYPE html>\n<html>\n<body>\n";		
+//		resultData += "<style>\ntable, th, td {\nborder: 1px solid black;\nborder-collapse: collapse;\n}\nth, td {\npadding: 5px;\n}\n</style>\n";		
+//		resultData += "<h1>" + name + ", " + date + "</h1>\n";
+//		
+//		for (int index = 0; index < results.size(); index++) {
+//			
+//			if (type == 1)  {				
+//				if (index == 0) {
+//					resultData += "<h1>" + results.get(index).getTitle() + "</h1>\n";
+//					resultData += "<table style=\"width:100%\">\n";
+//					resultData += "<tr>\n<th><center>Rank</center></th><th>Name</th><th>Card Number</th><th>Team</th><th>Start Number</th><th>Total Time</th>";
+//					for (int i = 0; i < stage.size(); i++) {
+//						resultData += "<th>Stage " + (i + 1) + "</th><th>Rank</th><th>Time Back</th>";
+//					}
+//					resultData += "</tr>\n";							
+//				} else if (results.get(index).getTitle() != results.get(index - 1).getTitle()) {
+//					resultData += "</table>\n";
+//					resultData += "<h1>" + results.get(index).getTitle() + "</h1>\n";
+//					resultData += "<table style=\"width:100%\">\n";
+//					resultData += "<tr>\n<th><center>Rank</center></th><th>Name</th><th>Card Number</th><th>Team</th><th>Start Number</th><th>Total Time</th>";
+//					for (int i = 0; i < stage.size(); i++) {
+//						resultData += "<th>Stage " + (i + 1) + "</th><th>Rank</th><th>Time Back</th>";
+//					}
+//					resultData += "</tr>\n";		
+//				}				
+//			} else if (index == 0) {
+//				resultData += "<table style=\"width:100%\">\n";
+//				resultData += "<tr><th><center>Rank</center></th><th>Name</th><th>Card Number</th><th>Total Time</th>";
+//				
+//				for (int i = 0; i < stage.size(); i++) {
+//					resultData += "<th>Stage " + (i + 1) + "</th><th>Rank</th><th>Time Back</th>";
+//				}
+//				resultData += "</tr>\n";
+//			}			
+//			
+//			resultData += "<tr>\n";								
+//			int rank = results.get(index).getStageResult().get(0).getRank();
+//			resultData += "<td><center>";
+//			if (rank == Competition.RANK_DNF) {			
+//				resultData += "-";
+//			} else {
+//				resultData += rank;
+//			}
+//			resultData += "</center></td>";
+//			
+//			int cardNumber = results.get(index).getStageResult().get(0).getCardNumber();
+//			resultData += "<td>" + AndroidIndependantCompetitionHelper.convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()) + "</td>";			
+//			resultData += "<td><center>" + cardNumber + "</center></td>";
+//			
+//			Log.d("html", "convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()) = " + AndroidIndependantCompetitionHelper.convertToHtmlChars(competitors.getByCardNumber(cardNumber).getName()));
+//			Log.d("html", "competitors.getByCardNumber(cardNumber).getName() = " + competitors.getByCardNumber(cardNumber).getName());
+//			
+//			if (type == 1)  {
+//				resultData += "<td>" + AndroidIndependantCompetitionHelper.convertToHtmlChars(competitors.getByCardNumber(cardNumber).getTeam()) + "</td>";					
+//				resultData += "<td><center>" + String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + "</center></td>";
+//			}
+//			resultData += "<td><center>" + AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(0).getStageTime()) + "</center></td>";	
+//						
+//			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {			
+//				
+//				if (results.get(index).getStageResult().get(stageNumber).getRank() != Competition.RANK_DNF) {								
+//					Long fastestTimeOnStage = competition.getFastestOnStage(results.get(index).getTitle(), stageNumber); 
+//					Long slowestTimeOnStage = competition.calculateSlowestOnStage(results.get(index).getTitle(), stageNumber);
+//					Long competitorStageTime = results.get(index).getStageResult().get(stageNumber).getStageTime();
+//					
+//					int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
+//	
+//					color -= 0xff000000;
+//					resultData += "<td bgcolor=\"#" + Integer.toHexString(color) + "\"><center>" + AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + "</center></td>";
+//					resultData += "<td><center>" + results.get(index).getStageResult().get(stageNumber).getRank() + "</center></td>";
+//					resultData += "<td><center>" + AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + "</center></td>";
+//				} else {
+//					resultData += "<td><center>-</center></td>";
+//					resultData += "<td><center>-</center></td>";
+//					resultData += "<td><center>-</center></td>";
+//				}
+//			}			
+//			resultData += "</tr>\n";
+//		}		
+//		
+//		resultData += "</table>\n</body>\n</html>\n";
+//		
+//		return resultData;
+//	}
 	
 	/**
 	 * Searched the Android file system for saved competitions and returns a

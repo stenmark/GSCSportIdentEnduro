@@ -6,7 +6,8 @@ import java.util.List;
 import se.gsc.stenmark.gscenduro.compmanagement.AndroidIndependantCompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
-import se.gsc.stenmark.gscenduro.compmanagement.Results;
+import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
+import se.gsc.stenmark.gscenduro.compmanagement.Competitors;
 import se.gsc.stenmark.gscenduro.compmanagement.StageResult;
 import android.content.Context;
 import android.graphics.Color;
@@ -17,29 +18,29 @@ import android.widget.BaseAdapter;
 public class ResultsListLandscapeAdapter extends BaseAdapter {
 	
 	private Context mContext;
-	private List<Results> mResultLandscape = new ArrayList<Results>();
+	private Competition competition;
 
-	public ResultsListLandscapeAdapter(Context context, List<Results> Items) {
+	public ResultsListLandscapeAdapter(Context context, Competition Item) {
 		mContext = context;
-		mResultLandscape = Items;			
+		competition = Item;			
 	}		
 	
 	@Override
 	public int getCount() {
-		return mResultLandscape.size();
+		return competition.getCompetitors().size();
 	}
 	
 	@Override
-	public Results getItem(int position) {
-		return mResultLandscape.get(position);
+	public Competitor getItem(int position) {
+		return competition.getCompetitors().get(position);
 	}
 
-	public List<Results> getData() {
-	    return mResultLandscape;
+	public Competitors getData() {
+	    return competition.getCompetitors();
 	}	
 	
 	public void updateResultLandscape () {
-		mResultLandscape = ((MainActivity) mContext).competition.getResultLandscape();
+		competition = ((MainActivity) mContext).competition;
 		this.notifyDataSetChanged();	
 	}		
 	
@@ -51,7 +52,8 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {		
 		ResultsLandscapeRowView resultLandscapeRowV = null;	
-		Competition competition = ((MainActivity) mContext).competition;
+		//OLD VERSION
+//		Competition competition = ((MainActivity) mContext).competition;
 		
 		if (convertView == null) {
 			resultLandscapeRowV = new ResultsLandscapeRowView(mContext);
@@ -64,16 +66,23 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 		resultLandscapeRowV.setTimes(competition.getStages().size());
 		if (position == 0) {
 			resultLandscapeRowV.setTitle(competition.getStages().size());
-			resultLandscapeRowV.setResultLandscapeCompetitorClass(mResultLandscape.get(position).getTitle());
-		} else {
-			if (mResultLandscape.get(position).getTitle() != mResultLandscape.get(position - 1).getTitle()) {
-				resultLandscapeRowV.setTitle(competition.getStages().size());	
-				resultLandscapeRowV.setResultLandscapeCompetitorClass(mResultLandscape.get(position).getTitle());
-			}
+			//OLD VERSION
+//			resultLandscapeRowV.setResultLandscapeCompetitorClass(mResultLandscape.get(position).getTitle());
+			resultLandscapeRowV.setResultLandscapeCompetitorClass( competition.getTotalResults().title );
 		}
+		//OLD VERSION
+//		else {
+			
+//			if (mResultLandscape.get(position).getTitle() != mResultLandscape.get(position - 1).getTitle()) {
+//				resultLandscapeRowV.setTitle(competition.getStages().size());	
+//				resultLandscapeRowV.setResultLandscapeCompetitorClass(mResultLandscape.get(position).getTitle());
+//			}
+//		}
 			
 		resultLandscapeRowV.setComp();
-		StageResult totalTimeResult = mResultLandscape.get(position).getStageResult().get(0);
+		//OLD VERSION
+//		StageResult totalTimeResult = mResultLandscape.get(position).getStageResult().get(0);
+		StageResult totalTimeResult = competition.getTotalResults().getCompetitorResults().get(position);
 		int cardNumber = totalTimeResult.getCardNumber();
 		
 		int rank = totalTimeResult.getRank();
@@ -102,12 +111,21 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 		}
 		
 		try{
-			for(int stageNumber = 1; stageNumber < mResultLandscape.get(position).getStageResult().size(); stageNumber++) {
-				Long fastestTimeOnStage = competition.getFastestOnStage(mResultLandscape.get(position).getTitle(), stageNumber); 
-				Long slowestTimeOnStage = competition.calculateSlowestOnStage(mResultLandscape.get(position).getTitle(), stageNumber);
-				String StageTime = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime());
-				Long competitorStageTime = mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime();				
-				rank = mResultLandscape.get(position).getStageResult().get(stageNumber).getRank();
+			//OLD VERSION
+//			for(int stageNumber = 1; stageNumber < mResultLandscape.get(position).getStageResult().size(); stageNumber++) {
+//				Long fastestTimeOnStage = competition.getFastestOnStage(mResultLandscape.get(position).getTitle(), stageNumber); 
+//				Long slowestTimeOnStage = competition.calculateSlowestOnStage(mResultLandscape.get(position).getTitle(), stageNumber);
+//				String StageTime = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime());
+//				Long competitorStageTime = mResultLandscape.get(position).getStageResult().get(stageNumber).getStageTime();				
+//				rank = mResultLandscape.get(position).getStageResult().get(stageNumber).getRank();
+				
+			
+				for(int stageNumber = 0; stageNumber < competition.getStages().size(); stageNumber++) {
+					Long fastestTimeOnStage = competition.getFastestOnStage(competition.getTotalResults().title, stageNumber); 
+					Long slowestTimeOnStage = competition.calculateSlowestOnStage(competition.getTotalResults().title, stageNumber);
+					Long competitorStageTime = competition.getStages().get(stageNumber).getStageResultByCardnumber(cardNumber).getStageTime();			
+					String StageTime = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(competitorStageTime);
+					rank = competition.getStages().get(stageNumber).getStageResultByCardnumber(cardNumber).getRank();
 				
 				int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
 				if (rank == Competition.RANK_DNF) {

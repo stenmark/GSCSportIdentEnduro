@@ -132,8 +132,7 @@ public class DialogNewCompetition {
 				if (keepCompetitorsCheckBox.isChecked()) {
 					//Keep competitors, clear all other data
 					mMainActivity.competition.getStages().clear();
-					mMainActivity.competition.getResults().clear();
-					mMainActivity.competition.getResultLandscape().clear();
+					mMainActivity.competition.getStages().clearResults();
 					mMainActivity.competition.getCompetitors().clearPunches();									
 				} else {
 					//Create a new competition

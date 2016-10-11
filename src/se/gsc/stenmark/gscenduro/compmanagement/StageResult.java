@@ -2,7 +2,7 @@ package se.gsc.stenmark.gscenduro.compmanagement;
 
 import java.io.Serializable;
 
-public class StageResult implements Serializable {
+public class StageResult implements Serializable, Comparable<StageResult> {
 	
 	private static final long serialVersionUID = 201111020011L; 
 	private int mCardNumber;
@@ -51,5 +51,10 @@ public class StageResult implements Serializable {
 	@Override
 	public String toString(){
 		return "CardNumber: " +mCardNumber + " Rank: " + mRank + " StageTime: " + mStageTime + " time back " + mStageTimeBack;
+	}
+
+	@Override
+	public int compareTo(StageResult another) {
+		return getStageTime().compareTo(another.getStageTime());
 	}
 }

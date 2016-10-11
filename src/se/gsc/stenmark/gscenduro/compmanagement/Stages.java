@@ -25,6 +25,12 @@ public class Stages implements Serializable {
 	public void clear() {
 		mStages.clear();
 	}
+	
+	public void clearResults(){
+		for( Stage stage : mStages){
+			stage.clearResult();
+		}
+	}
 		
 	public int getStageStartStation( int stageNumber ){
 		return mStages.get(stageNumber).start;
