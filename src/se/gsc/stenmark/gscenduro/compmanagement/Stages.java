@@ -13,6 +13,9 @@ public class Stages implements Serializable {
 	public Stages() {
 	}
 		
+	public List<Stage>getAllStages(){
+		return mStages;
+	}
 	public Stages( Stages stages) {
 		mStages = stages.mStages;
 		mControls = addControls();		

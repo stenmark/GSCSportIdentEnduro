@@ -1,8 +1,4 @@
 package se.gsc.stenmark.gscenduro;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import se.gsc.stenmark.gscenduro.compmanagement.AndroidIndependantCompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;

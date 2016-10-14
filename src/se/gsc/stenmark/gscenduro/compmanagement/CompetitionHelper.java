@@ -16,7 +16,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.widget.ListAdapter;

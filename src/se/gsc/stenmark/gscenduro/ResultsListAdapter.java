@@ -1,11 +1,8 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.List;
-
 import se.gsc.stenmark.gscenduro.compmanagement.AndroidIndependantCompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
-import se.gsc.stenmark.gscenduro.compmanagement.ResultList;
 import se.gsc.stenmark.gscenduro.compmanagement.Stage;
 import se.gsc.stenmark.gscenduro.compmanagement.Stages;
 import android.content.Context;

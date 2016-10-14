@@ -424,26 +424,9 @@ public class Competition implements Serializable {
 			}
 
 			//Calculate time back
-			//OLD VERSION  need to also calculate for totaltime
-//			for (Results currentResult : mResults.getAllResults(competitorClass)) {
-			for ( int stageNumber = 0; stageNumber < mStages.size(); stageNumber++) {
-				Stage currentStage = mStages.get(stageNumber);
-				//OLD VERSION
-//				for (StageResult currentStageResult : currentResult.getStageResult() ) {
-				for (StageResult currentStageResult : currentStage.getCompetitorResults() ) {
-					Long stageTimeBack = NO_TIME_FOR_STAGE;
-					Long currentStageTime = currentStageResult.getStageTime();
-					if (currentStageTime != NO_TIME_FOR_STAGE && currentStageTime != COMPETITION_DNF && currentStageTime != NO_TIME_FOR_COMPETITION ) {
-						//OLD VERSION
-//						if (currentResult.getStageResult().size() > 0) {
-//							stageTimeBack = currentStageTime - currentResult.getStageResult().get(0).getStageTime();
-//						}
-						if (currentStage.getCompetitorResults().size() > 0) {
-							stageTimeBack = currentStageTime - currentStage.getFastestTime();
-						}
-					}
-					currentStageResult.setStageTimesBack(stageTimeBack);
-				}
+			calculateTimeBack(totalResults);
+			for( Stage currentStage : mStages.getAllStages() ) {
+				calculateTimeBack(currentStage);
 			}
 					
 			//OLD VERSION
@@ -483,5 +466,25 @@ public class Competition implements Serializable {
 		} catch (Exception e1) {
 			Log.d("Competition", "Error = " + e1);
 		}
+	}
+	
+	private void calculateTimeBack( Stage stage){
+		//OLD VERSION
+//		for (StageResult currentStageResult : currentResult.getStageResult() ) {
+		for (StageResult currentStageResult : stage.getCompetitorResults() ) {
+			Long stageTimeBack = NO_TIME_FOR_STAGE;
+			Long currentStageTime = currentStageResult.getStageTime();
+			if (currentStageTime != NO_TIME_FOR_STAGE && currentStageTime != COMPETITION_DNF && currentStageTime != NO_TIME_FOR_COMPETITION ) {
+				//OLD VERSION
+//				if (currentResult.getStageResult().size() > 0) {
+//					stageTimeBack = currentStageTime - currentResult.getStageResult().get(0).getStageTime();
+//				}
+				if (stage.getCompetitorResults().size() > 0) {
+					stageTimeBack = currentStageTime - stage.getFastestTime();
+				}
+			}
+			currentStageResult.setStageTimesBack(stageTimeBack);
+		}
+	
 	}
 }
