@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
@@ -27,7 +28,7 @@ public class PunchParser implements Serializable {
 		return mCards;
 	}
 
-	public void parsePunches(String punches, LinkedHashMap<Integer,Competitor> competitors, Stages stages) throws IOException {
+	public void parsePunches(String punches, LinkedHashMap<Integer,Competitor> competitors, List<Stage> stages) throws IOException {
 		mCards = new ArrayList<Card>();
 		
 		//cardNumber,control,time,control,time..
@@ -95,7 +96,7 @@ public class PunchParser implements Serializable {
 								break;
 							}
 							
-							if (!stages.validStageControl(Integer.valueOf(control))) {
+							if (!CompetitionHelper.validStageControl(stages, Integer.valueOf(control) )) {
 								mStatus += line + ". Control is not in any of the stages\n";
 								error = true;
 								break;									

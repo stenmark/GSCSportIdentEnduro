@@ -80,7 +80,7 @@ public class DialogSelectExport {
 
 						// Stages
 						competitionList += "[Stages]\n";
-						competitionList += mMainActivity.competition.getStages().exportStagesCsvString() + "\n";
+						competitionList += CompetitionHelper.exportStagesCsvString(mMainActivity.competition.getStages()) + "\n";
 						competitionList += "[/Stages]\n";
 						
 						// Competitors

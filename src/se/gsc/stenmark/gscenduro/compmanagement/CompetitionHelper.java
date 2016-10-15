@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Stateless helper class that can perform various operations on a competition.
@@ -38,6 +40,79 @@ public abstract class CompetitionHelper {
 		
 		return String.format("%02d:%02d.%01d", totalTimeMin, totalTimeSec, totalTimeTenth);
 
+	}
+		
+	public static String exportStagesCsvString( List<Stage> stages) {
+		String exportString = "";
+		for (Stage stage : stages) {
+			exportString += "," + stage.start + "," + stage.finish;
+		}
+		exportString.replaceFirst(",", "");
+		return exportString;
+	}	
+	
+	public static boolean stringContainsItemFromList(String inputString, ArrayList<String> items) {
+	    for(int i = 0; i < items.size(); i++) {
+	        if(inputString.equals(items.get(i))) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}	
+	
+	public static boolean validStageControl(List<Stage> stages, int control) {
+		for (Stage stage : stages) {
+			if (control == stage.start) {
+				return true;
+			}			
+			
+			if (control == stage.finish) {
+				return true;
+			}			
+		}
+			
+		return false;
+	}
+	
+	public static String checkStagesData(String stages, int type) {
+		String[] controlsList = stages.split(",");				
+		if ((controlsList.length % 2) == 0) {	//Is even
+			//Check that all controls are digits only
+			for (int i = 0; i < controlsList.length; i++) {
+				if (!android.text.TextUtils.isDigitsOnly(controlsList[i])) {
+					return "Controls are not digits only\n";
+				}
+			}
+
+			ArrayList<String> checkedControlsList = new ArrayList<String>();		
+			checkedControlsList.add(controlsList[0]);
+			
+			if (type == 1) {
+				//Check that all controls are unique 
+				for (int i = 1; i < controlsList.length; i++) {
+					if (CompetitionHelper.stringContainsItemFromList(controlsList[i], checkedControlsList)) {
+						return "Not all controls are unique\n";
+					}				
+					checkedControlsList.add(controlsList[i]);
+				}
+			} else {
+				int startControl = Integer.parseInt(controlsList[0]);
+				int finishControl = Integer.parseInt(controlsList[1]);
+				for (int i = 2; i < controlsList.length; i += 2) {					
+					if (startControl != Integer.parseInt(controlsList[i])) {
+						return "More than two controls\n";		
+					}
+					
+					if (finishControl != Integer.parseInt(controlsList[i + 1])) {
+						return "More than two controls\n";		
+					}					
+				}
+				
+			}
+			return "";			
+		} else {	//Is odd
+			return "Not an even number of controls\n";
+		}		
 	}
 
 	//OLD VERSION
@@ -92,7 +167,7 @@ public abstract class CompetitionHelper {
 //	}
 
 	//OLD VERSION
-	public static String getResultsAsHtmlString(String name, String date, Stages stage, Competitors competitors, int type, Competition competition) {
+	public static String getResultsAsHtmlString(String name, String date, List<Stage> stages, Competitors competitors, int type, Competition competition) {
 		return "Not done yet";
 	}
 //	public static String getResultsAsHtmlString(String name, String date, Stages stage, List<Results> results, Competitors competitors, int type, Competition competition) {
@@ -181,7 +256,7 @@ public abstract class CompetitionHelper {
 //		return resultData;
 //	}
 	
-	public static String getResultsAsCsvString(Stages stages, Stage totalResults, Competitors competitors, int type) {
+	public static String getResultsAsCsvString(List<Stage> stages, Stage totalResults, Competitors competitors, int type) {
 		String resultData = "";
 		
 		if (type == Competition.ESS_TYPE)  {
@@ -190,8 +265,8 @@ public abstract class CompetitionHelper {
 			resultData = "Rank,Name,Card Number,Total Time,";
 		}
 			
-		for (int i = 0; i < stages.size(); i++) {
-			resultData += "Stage " + (i + 1) + ",Rank,Time Back,";
+		for (int stageNumber = 1;stageNumber <= stages.size(); stageNumber++) {
+			resultData += "Stage " + stageNumber + ",Rank,Time Back,";
 		}
 		resultData += "\n";
 		if( type == Competition.ESS_TYPE){
@@ -215,8 +290,8 @@ public abstract class CompetitionHelper {
 			}
 			resultData += CompetitionHelper.milliSecToMinSecMilliSec( totalResults.getCompetitorResults().get(i).getStageTime() ) + ",";	
 						
-			for(int stageNumber = 0; stageNumber < stages.size(); stageNumber++) {	
-				StageResult stageResult = stages.get(stageNumber).getStageResultByCardnumber(cardNumber);
+			for(Stage stage : stages) {	
+				StageResult stageResult = stage.getStageResultByCardnumber(cardNumber);
 				if( stageResult != null){
 					resultData += CompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTime() ) + ",";
 					resultData += stageResult.getRank() + ",";
@@ -230,6 +305,25 @@ public abstract class CompetitionHelper {
 		}
 		
 		return resultData;
+	}
+
+	public static String stageStatusAsString( List<Stage> stages){
+		String stagesAsString = "";
+		if (!stages.isEmpty() && stages != null) {
+			int i = 0;
+			for (Stage stageControls : stages) {
+				i++;
+				if (i != 1) {
+					stagesAsString += "\n";
+				}
+				stagesAsString += "Stage " + i + ": " + stageControls.start + "->" + stageControls.finish;
+			}
+		}
+		else{
+			stagesAsString += " No stages loaded";
+		}
+		
+		return stagesAsString;
 	}
 
 	public static String convertToHtmlChars(String text)
@@ -257,5 +351,6 @@ public abstract class CompetitionHelper {
 		     return null;
 		   }
 		 }
+	 
 	
 }

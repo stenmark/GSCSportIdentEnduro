@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
@@ -79,7 +80,7 @@ public class DialogImportCompetition {
 							}
 						} else if (line.equals("[/Stages]")) {
 							importType = "";
-							errorText += mMainActivity.competition.getStages().checkStagesData(importData, type);
+							errorText += CompetitionHelper.checkStagesData(importData, type);
 							stageAdded = true;
 						} else if (line.equals("[/Competitors]")) {
 							importType = "";
@@ -162,7 +163,7 @@ public class DialogImportCompetition {
 							mMainActivity.competition.setCompetitionType(Integer.parseInt(importData));
 						} else if (line.equals("[/Stages]")) {
 							importType = "";
-							mMainActivity.competition.getStages().importStages(importData);
+							mMainActivity.competition.importStages(importData);
 						} else if (line.equals("[/Competitors]")) {
 							importType = "";
 							mMainActivity.competition.getCompetitors().importCompetitors(importData, false, mMainActivity.competition.getCompetitionType(),false);

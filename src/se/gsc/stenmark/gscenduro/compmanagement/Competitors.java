@@ -411,7 +411,7 @@ public class Competitors implements Serializable {
 		return parsingError;
 	}
 	
-	public void importPunches(String punches, Stages stages, int type) throws IOException {		
+	public void importPunches(String punches, List<Stage> stages, int type) throws IOException {		
 		BufferedReader bufReader = new BufferedReader(new StringReader(punches));
 		String line = null;
 		while ((line = bufReader.readLine()) != null) {	

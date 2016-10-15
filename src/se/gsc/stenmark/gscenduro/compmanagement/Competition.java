@@ -35,9 +35,9 @@ public class Competition implements Serializable {
 	
 	//Circular buffer to hold the 6 most recently read cards
 	public CircularFifoQueue<String> lastReadCards = new CircularFifoQueue<String>(6);
-	private Stages mStages = null;
 	private Stage totalResults = null;
 	private Competitors mCompetitors = null;
+	private List<Stage> stages = new ArrayList<Stage>();
 	//OLD VERSION
 //	private ResultList<Results> mResults = null;
 //	private List<Results> mResultLandscapeList = null;
@@ -46,7 +46,6 @@ public class Competition implements Serializable {
 	private int mCompetitionType = SVART_VIT_TYPE;
 	
 	public Competition() {
-		mStages = new Stages();
 		totalResults = new Stage();
 		//OLD VERSION
 //		mResults = new ResultList<Results>();
@@ -58,7 +57,7 @@ public class Competition implements Serializable {
 		String currentDateandTime = sdf.format(new Date());
 		setCompetitionDate(currentDateandTime);
 	}
-	
+		
 	public Long getFastestOnStage(String competitorClass, int stageNumber) {
 		//OLD VERSION
 //		if( !mResults.getStageResult(stageNumber, competitorClass).getStageResult().isEmpty() ){
@@ -66,8 +65,8 @@ public class Competition implements Serializable {
 //		}
 		
 		stageNumber=stageNumber-1;  //Convert to 0 indexed
-		if( !mStages.get(stageNumber).getCompetitorResults().isEmpty()){
-			return mStages.get(stageNumber).getCompetitorResults().get(0).getStageTime();
+		if( !stages.get(stageNumber).getCompetitorResults().isEmpty()){
+			return stages.get(stageNumber).getCompetitorResults().get(0).getStageTime();
 		}
 		return 0L;
 	}
@@ -75,8 +74,12 @@ public class Competition implements Serializable {
 	public Stage getTotalResults(){
 		return totalResults;
 	}
-	public Stages getStages() {
-		return mStages;		
+	public List<Stage> getStages() {
+		return stages;	
+	}
+	
+	public int getNumberOfStages(){
+		return stages.size();
 	}
 
 	public Competitors getCompetitors() {
@@ -113,7 +116,7 @@ public class Competition implements Serializable {
 			return "WARNING! Could not find any competitor with card number: " + card.getCardNumber() + "\n";
 		}
 		
-		String status = foundCompetitor.processCard(card, mStages, mCompetitionType);
+		String status = foundCompetitor.processCard(card, stages, mCompetitionType);
 		
 		if (calculateResultsAfterAdd) {				
 			calculateResults();
@@ -138,7 +141,7 @@ public class Competition implements Serializable {
 		List<Long>timeDeltaList = new ArrayList<Long>();
 		//OLD VERSION
 //		Results stageResultForAllCompetitors = mResults.get(stageNumber);
-		List<StageResult> competitorResults = mStages.get(stageNumber-1).getCompetitorResults();
+		List<StageResult> competitorResults = stages.get(stageNumber-1).getCompetitorResults();
 		//OLD VERSION
 //		for( int currentCompetitorNumber = 0; currentCompetitorNumber < (stageResultForAllCompetitors.getStageResult().size()-1); currentCompetitorNumber++ ){
 		for( int currentCompetitorNumber = 0; currentCompetitorNumber < competitorResults.size()-1; currentCompetitorNumber++){
@@ -189,8 +192,7 @@ public class Competition implements Serializable {
 	public void calculateResults() {
 		//OLD VERSION
 //		mResults.clear();		
-		mStages.clearResults();
-		totalResults.clearResult();
+		clearResults();
 		
 		//Get Competitor Classes
 		List<String> competitorClasses;
@@ -222,8 +224,8 @@ public class Competition implements Serializable {
 //				tmpResultList.add(result);
 //			}
 //			mResults.addAllStageResults( tmpResultList, competitorClass );
-			for (int i = 0; i < mStages.size(); i++) {
-				mStages.get(i).title = classString + "Stage " + (i+1);
+			for (int i = 0; i < stages.size(); i++) {
+				stages.get(i).title = classString + "Stage " + (i+1);
 			}
 
 			// Add total times		
@@ -233,11 +235,11 @@ public class Competition implements Serializable {
 				if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {
 					if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() == 0) ) {
 						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(),NO_TIME_FOR_COMPETITION);
-					} else if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < mStages.size() )) {
+					} else if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < getNumberOfStages() )) {
 						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), COMPETITION_DNF);
 					} 
 					else {
-						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), currentCompetitor.getTotalTime(mStages.size()));							
+						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), currentCompetitor.getTotalTime( getNumberOfStages() ));							
 					}
 					//OLD VERSION
 //					mResults.getTotalResult(competitorClass).addTotalTimeResult(totalTimeResult);	
@@ -251,7 +253,7 @@ public class Competition implements Serializable {
 
 			StageResult stageResult;
 			// Add stage times
-			for (int stageNumber = 0; stageNumber < mStages.size(); stageNumber++) {
+			for (int stageNumber = 0; stageNumber <  getNumberOfStages(); stageNumber++) {
 				for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.getCompetitors().entrySet() ) {
 					Competitor currentCompetitor = currentCompetitorEntry.getValue();
 					if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {			
@@ -264,19 +266,19 @@ public class Competition implements Serializable {
 						stageResult = new StageResult(currentCompetitor.getCardNumber(), stageTime);
 						//OLD VERSION
 //						mResults.getStageResult(stageNumber,competitorClass).addStageResult(stageResult);
-						mStages.get(stageNumber).addCompetitorResult(stageResult);
+						stages.get(stageNumber).addCompetitorResult(stageResult);
 					}						
 				}
 	
 				//Sort stages times
 				//OLD VERSION
 //				mResults.getStageResult(stageNumber,competitorClass).sortStageResult( NO_TIME_FOR_STAGE );
-				mStages.get(stageNumber).sortStageResult(NO_TIME_FOR_STAGE);
+				stages.get(stageNumber).sortStageResult(NO_TIME_FOR_STAGE);
 			}
 
 			//Calculate time back
 			calculateTimeBack(totalResults);
-			for( Stage currentStage : mStages.getAllStages() ) {
+			for( Stage currentStage : stages ) {
 				calculateTimeBack(currentStage);
 			}
 					
@@ -332,4 +334,39 @@ public class Competition implements Serializable {
 		}
 	
 	}
+	
+	public void importStages(String stagesToImport) {
+		String[] stageControls = stagesToImport.split(",");				
+		stages.clear();
+		for (int i = 0; i < stageControls.length; i += 2) {
+			int startControl = 0;
+			int finishControl = 0;
+			startControl = Integer.parseInt(stageControls[i]);
+			finishControl = Integer.parseInt(stageControls[i + 1]);
+			stages.add(new Stage(startControl, finishControl));
+		}
+	}
+
+	public void clearResults() {
+		for( Stage stage : stages){
+			stage.clearResult();
+		}
+		totalResults.clearResult();
+	}
+	
+	public List<String> getControls() {
+		List<String> controls = new ArrayList<String>();
+		if (stages != null) {
+			for (Stage stage : stages) {
+				if (!controls.contains(Integer.toString(stage.start))) {
+					controls.add(Integer.toString(stage.start));
+				}
+				if (!controls.contains(Integer.toString(stage.finish))) {
+					controls.add(Integer.toString(stage.finish));
+				}
+			}
+		}
+		return controls;
+	}
+	
 }

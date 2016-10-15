@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -64,7 +65,7 @@ public class DialogNewCompetition {
         ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_spinner_item, numerOfStages);
         LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
         spinner.setAdapter(LTRadapter);			
-        spinner.setSelection(mMainActivity.competition.getStages().size() - 1);			
+        spinner.setSelection(mMainActivity.competition.getNumberOfStages() - 1);			
 	
 		if (mMainActivity.competition.getCompetitionType() == Competition.SVART_VIT_TYPE){
 			keepCompetitorsCheckBox.setVisibility(View.VISIBLE);							
@@ -122,7 +123,7 @@ public class DialogNewCompetition {
                 }
 
                 if (radioTypeEss.isChecked()) {
-                	String status = mMainActivity.competition.getStages().checkStagesData(addStagesManuallyInput.getText().toString(), 1);
+                	String status = CompetitionHelper.checkStagesData(addStagesManuallyInput.getText().toString(), 1);
                 	if (status.length() > 0) {
                 		Toast.makeText(mMainActivity, "Competition not created! " + status, Toast.LENGTH_LONG).show();                		
                 		return;
@@ -131,9 +132,7 @@ public class DialogNewCompetition {
                 
 				if (keepCompetitorsCheckBox.isChecked()) {
 					//Keep competitors, clear all other data
-					mMainActivity.competition.getStages().clear();
-					mMainActivity.competition.getStages().clearResults();
-					mMainActivity.competition.getCompetitors().clearPunches();									
+					mMainActivity.competition.clearResults();								
 				} else {
 					//Create a new competition
 					mMainActivity.competition = new Competition();
@@ -151,7 +150,7 @@ public class DialogNewCompetition {
 				}										
 				
 				if (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) {										
-					mMainActivity.competition.getStages().importStages(addStagesManuallyInput.getText().toString());
+					mMainActivity.competition.importStages(addStagesManuallyInput.getText().toString());
 				} else {
 					SharedPreferences settings = mMainActivity.getSharedPreferences(MainActivity.PREF_NAME, 0);
 					int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
@@ -178,7 +177,7 @@ public class DialogNewCompetition {
 						}
 						stageString = stageString.substring(0, stageString.length() - 1);   //remove last ","
 						
-						mMainActivity.competition.getStages().importStages(stageString);										
+						mMainActivity.competition.importStages(stageString);										
 					}					
 				}					
 				mMainActivity.updateFragments();                    

@@ -1,13 +1,13 @@
 package se.gsc.stenmark.gscenduro;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import se.gsc.stenmark.gscenduro.R;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
-import se.gsc.stenmark.gscenduro.compmanagement.Stages;
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
@@ -26,8 +26,8 @@ public class PunchActivity extends ListActivity {
 
 	private PunchAdapter mPunchAdapter;
 	private Card mUpdatedCard = null;
-	private Stages mStages;
-	private ArrayList<String> mControls;
+	private Competition competition;
+	private List<String> mControls;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);			
@@ -45,9 +45,9 @@ public class PunchActivity extends ListActivity {
         
 		try {				
 			mUpdatedCard = (Card) getIntent().getExtras().getSerializable("Card");
-			mStages = (Stages) getIntent().getExtras().getSerializable("Stages");
+			competition = (Competition) getIntent().getExtras().getSerializable("Competition");
 			
-			mControls = mStages.getControls();
+			mControls = competition.getControls();
 			
 			if (mUpdatedCard != null) {
 				mUpdatedCard.setNumberOfPunches(mUpdatedCard.getPunches().size());							
@@ -61,7 +61,7 @@ public class PunchActivity extends ListActivity {
 		}
 	}	
 	
-	public ArrayList<String> getControls() {
+	public List<String> getControls() {
 		return mControls;		
 	}	
 	

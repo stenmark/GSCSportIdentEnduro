@@ -70,7 +70,7 @@ public class Competitor implements Serializable {
 		setStageTimes(null);
 	}
 	
-	public String processCard(Card card, Stages stages, int type) {
+	public String processCard(Card card, List<Stage> stages, int type) {
 		boolean containsAllPunches = true;
 		this.card = card;
 		card.setCardNumber(cardNumber);
@@ -79,8 +79,8 @@ public class Competitor implements Serializable {
 		//For SvartVitt, remove all accidental FinishPunches that are before the first StartPunch
 		boolean firstFinishPunchFound = false;
 		List<Punch> punchesToRemove = new ArrayList<Punch>();
-		int firstStartStationNr = stages.getStageStartStation(0);
-		int firstFinishStationNr = stages.getStageFinishStation(0);
+		int firstStartStationNr = stages.get(0).start;
+		int firstFinishStationNr = stages.get(0).finish;
 		if (type == Competition.SVART_VIT_TYPE) {
 			for( Punch punch : card.getPunches()){
 				if(punch.getControl() == firstStartStationNr){
@@ -98,11 +98,12 @@ public class Competitor implements Serializable {
 		
 		for (int stageNumber = 0; stageNumber < stages.size(); stageNumber++) {
 			long stageTime;
-						
+			int stageStartStation = stages.get(stageNumber).start;
+			int stageFinishStation = stages.get(stageNumber).finish;
 			if (type == Competition.ESS_TYPE) {
-				stageTime = card.getStageTimeEss(stages.getStageStartStation(stageNumber), stages.getStageFinishStation(stageNumber));
+				stageTime = card.getStageTimeEss(stageStartStation, stageFinishStation);
 			} else {
-				stageTime = card.getStageTimeSvartVitt(stages.getStageStartStation(stageNumber), stages.getStageFinishStation(stageNumber), stageNumber + 1);
+				stageTime = card.getStageTimeSvartVitt(stageStartStation, stageFinishStation, stageNumber + 1);
 				if( stageTime == Competition.NO_TIME_FOR_STAGE ){
 					containsAllPunches = false;
 				}

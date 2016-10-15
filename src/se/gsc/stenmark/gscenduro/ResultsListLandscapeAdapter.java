@@ -58,9 +58,9 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 
 		resultLandscapeRowV.clearTitle();
 		resultLandscapeRowV.clearTimes();
-		resultLandscapeRowV.setTimes(competition.getStages().size());
+		resultLandscapeRowV.setTimes(competition.getNumberOfStages() );
 		if (position == 0) {
-			resultLandscapeRowV.setTitle(competition.getStages().size());
+			resultLandscapeRowV.setTitle( competition.getNumberOfStages() );
 			//OLD VERSION
 //			resultLandscapeRowV.setResultLandscapeCompetitorClass(mResultLandscape.get(position).getTitle());
 			resultLandscapeRowV.setResultLandscapeCompetitorClass( competition.getTotalResults().title );

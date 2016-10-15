@@ -36,7 +36,7 @@ public class CompetitionTest {
 		final String COMP_CLASS_TO_TEST = "";
 		
 		Competition competition = new Competition();
-		competition.getStages().importStages("71,72,71,72,71,72,71,72,71,72,71,72");
+		competition.importStages("71,72,71,72,71,72,71,72,71,72,71,72");
 		competition.setCompetitionDate("2016-05-14");
 		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
 		competition.setCompetitionName("Competition SvartVitt real test");
@@ -105,7 +105,7 @@ public class CompetitionTest {
 		final String COMP_CLASS_TO_TEST = "";
 		
 		Competition competition = new Competition();
-		competition.getStages().importStages("71,72,71,72,71,72,71,72,71,72,71,72");
+		competition.importStages("71,72,71,72,71,72,71,72,71,72,71,72");
 		competition.setCompetitionDate("2016-04-10");
 		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
 		competition.setCompetitionName("Competition SvartVitt real test");
@@ -189,7 +189,7 @@ public class CompetitionTest {
 	}
 	
 	
-//	@Test
+	@Test
 	public void testSlowestAndFastestTimeOnStage() {
 		final String COMP_CLASS_TO_TEST = "";
 		final int EXPECTED_NUM_STAGES = 5;
@@ -201,7 +201,7 @@ public class CompetitionTest {
 		
 		//Init Competition with test parameters
 		Competition competition = new Competition();
-		competition.getStages().importStages("71,72,71,72,71,72,71,72,71,72");
+		competition.importStages("71,72,71,72,71,72,71,72,71,72");
 		competition.getCompetitors().add("Andreas S", 2079749, "", COMP_CLASS_TO_TEST, 0, 0, 0);
 		competition.getCompetitors().add("Peter B", 2065396, "", COMP_CLASS_TO_TEST, 0, 0, 0);
 		competition.getCompetitors().add("Sverker G", 2078056, "", COMP_CLASS_TO_TEST, 0, 0, 0);
@@ -213,7 +213,7 @@ public class CompetitionTest {
 		competition.setCompetitionName("Competition test name");
 		
 		//Assert some basic competition fields
-		assertEquals(EXPECTED_NUM_STAGES, competition.getStages().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getNumberOfStages() );
 		assertEquals( 71, competition.getStages().get(0).start );
 		assertEquals( 72, competition.getStages().get(0).finish );
 		assertEquals( 71, competition.getStages().get(1).start );
@@ -393,14 +393,14 @@ public class CompetitionTest {
 		
 		//Init Competition with test parameters
 		Competition competition = new Competition();
-		competition.getStages().importStages("71,72,71,72,71,72,71,72");
+		competition.importStages("71,72,71,72,71,72,71,72");
 		competition.getCompetitors().add("Andreas S", 2079749, COMP_CLASS_TO_TEST, "", 0, 0, 0);
 		competition.setCompetitionDate("2015-09-12");
 		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
 		competition.setCompetitionName("Competition test name");
 		
 		//Assert some basic competition fields
-		assertEquals(EXPECTED_NUM_STAGES, competition.getStages().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getNumberOfStages() );
 		assertEquals( 71, competition.getStages().get(0).start );
 		assertEquals( 72, competition.getStages().get(0).finish );
 		assertEquals( 71, competition.getStages().get(1).start );
@@ -484,7 +484,7 @@ public class CompetitionTest {
 		
 		//Init Competition with test parameters
 		Competition competition = new Competition();
-		competition.getStages().importStages("71,72,71,72,71,72");
+		competition.importStages("71,72,71,72,71,72");
 		competition.getCompetitors().add("Andreas S", 2079749, "", COMP_CLASS_TO_TEST, 0, 0, 0);
 		competition.getCompetitors().add("Peter B", 2065396, "", COMP_CLASS_TO_TEST, 0, 0, 0);
 		competition.getCompetitors().add("Sverker G", 2078056, "", COMP_CLASS_TO_TEST, 0, 0, 0);
@@ -496,7 +496,7 @@ public class CompetitionTest {
 		competition.setCompetitionName("Competition test name");
 		
 		//Assert some basic competition fields
-		assertEquals(EXPECTED_NUM_STAGES, competition.getStages().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getNumberOfStages() );
 		assertEquals( 71, competition.getStages().get(0).start );
 		assertEquals( 72, competition.getStages().get(0).finish );
 		assertEquals( 71, competition.getStages().get(1).start );
@@ -517,7 +517,7 @@ public class CompetitionTest {
 		//and that each stage result is set to NO_TIME_FOR_STAGE
 		//and that rank is set to RANK_DNF
 		assertEquals(EXPECTED_NUM_COMPETITORS, competition.getTotalResults().getCompetitorResults().size() );
-		assertEquals(EXPECTED_NUM_STAGES, competition.getStages().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getNumberOfStages() );
 		for( StageResult currentTotalTimeResult : competition.getTotalResults().getCompetitorResults() ){
 			assertEquals( (Long)Competition.NO_TIME_FOR_COMPETITION, currentTotalTimeResult.getStageTime() );
 			assertEquals( (Integer)Competition.RANK_DNF, currentTotalTimeResult.getRank() );

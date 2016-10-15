@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 
 public class StatusFragment extends Fragment {
@@ -70,21 +71,22 @@ public class StatusFragment extends Fragment {
 			@Override
 			public void onClick(View v) {			
 				LayoutInflater li = LayoutInflater.from(mMainActivity);				
-				View promptsView = li.inflate(R.layout.competition_modify, null);						
+				View promptsView = li.inflate(R.layout.competition_modify, null);	
+				Competition competition = ((MainActivity) mMainActivity).competition;
 		       
 				final LinearLayout layoutModifyStageSpinner = (LinearLayout) promptsView.findViewById(R.id.modify_stage_spinner_layout);
 				final LinearLayout layoutModifyStageManually = (LinearLayout) promptsView.findViewById(R.id.modify_stage_manually_layout);
 				
 				final EditText nameInput = (EditText) promptsView.findViewById(R.id.name_input);	
-				nameInput.setText(((MainActivity) mMainActivity).competition.getCompetitionName());
+				nameInput.setText(competition.getCompetitionName());
 				
 				final EditText dateInput = (EditText) promptsView.findViewById(R.id.date_input);	
-				dateInput.setText(((MainActivity) mMainActivity).competition.getCompetitionDate());																		
+				dateInput.setText(competition.getCompetitionDate());																		
 				
 				final EditText stagesInput = (EditText) promptsView.findViewById(R.id.modify_stages_manually_input);	
-				stagesInput.setText(((MainActivity) mMainActivity).competition.getStages().exportStagesCsvString());
+				stagesInput.setText(CompetitionHelper.exportStagesCsvString(competition.getStages()));
 				
-				if (((MainActivity) mMainActivity).competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {
+				if (competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {
 					layoutModifyStageSpinner.setVisibility(View.VISIBLE);
 					layoutModifyStageManually.setVisibility(View.GONE);
 				} else {
@@ -104,7 +106,7 @@ public class StatusFragment extends Fragment {
 		        ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_spinner_item, numerOfStages);
 		        LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
 		        spinner.setAdapter(LTRadapter);			
-		        spinner.setSelection(mMainActivity.competition.getStages().size() - 1);						
+		        spinner.setSelection(competition.getStages().size() - 1);						
 				
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);	
 				alertDialogBuilder.setTitle("Modify competitor");
@@ -153,11 +155,11 @@ public class StatusFragment extends Fragment {
 								
 								Boolean processCards = false;
 								//Process all cards again if number of stages has changed								
-								if (numberOfSs != mMainActivity.competition.getStages().size()) {
+								if (numberOfSs != mMainActivity.competition.getNumberOfStages() ) {
 									processCards = true;
 								} 	
 								
-								mMainActivity.competition.getStages().importStages(stageString);
+								mMainActivity.competition.importStages(stageString);
 								if (processCards) {
 									String status = "Number of stages has changed so all cards have been processed again.\n\n";
 									for( Entry<Integer,Competitor> currentCompetitor: mMainActivity.competition.getCompetitors().getCompetitors().entrySet() ) {		
@@ -176,12 +178,12 @@ public class StatusFragment extends Fragment {
 								}
 							}											
 		            	} else {
-		                   	String status = mMainActivity.competition.getStages().checkStagesData(stagesInput.getText().toString(), 1);
+		                   	String status = CompetitionHelper.checkStagesData(stagesInput.getText().toString(), 1);
 		                	if (status.length() > 0) {
 		                		Toast.makeText(mMainActivity, status, Toast.LENGTH_LONG).show();                		
 		                		return;
 		                	}
-		                	mMainActivity.competition.getStages().importStages(stagesInput.getText().toString());		                	
+		                	mMainActivity.competition.importStages(stagesInput.getText().toString());		                	
 		            	}
 		            	mMainActivity.competition.setCompetitionName(nameInput.getText().toString());	
 						mMainActivity.competition.setCompetitionDate(dateInput.getText().toString());
@@ -229,8 +231,8 @@ public class StatusFragment extends Fragment {
 			}
 			
 			statusTextView = (TextView) getView().findViewById(R.id.stages_status);
-			if (mMainActivity.competition.getStages().toString() != null) {
-				statusTextView.setText(mMainActivity.competition.getStages().toString());
+			if ( CompetitionHelper.stageStatusAsString( mMainActivity.competition.getStages() ) != null) {
+				statusTextView.setText( CompetitionHelper.stageStatusAsString( mMainActivity.competition.getStages() ) );
 			}
 			
 			statusTextView = (TextView) getView().findViewById(R.id.competitor_status);	

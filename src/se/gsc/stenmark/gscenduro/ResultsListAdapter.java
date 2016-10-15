@@ -4,7 +4,8 @@ import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import se.gsc.stenmark.gscenduro.compmanagement.Stage;
-import se.gsc.stenmark.gscenduro.compmanagement.Stages;
+import java.util.List;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +16,14 @@ public class ResultsListAdapter extends BaseAdapter {
 	private Context mContext;
 	//OLD VERSION
 //	private ResultList<Results> mResult = new ResultList<Results>();
-	private Stages stages;
+	private List<Stage> stages;
 
 	//OLD VERSION
 //	public ResultsListAdapter(Context context, ResultList<Results> Items) {
 //		mContext = context;
 //		mResult = Items;		
 //	}	
-	public ResultsListAdapter(Context context, Stages Items) {
+	public ResultsListAdapter(Context context, List<Stage> Items) {
 		mContext = context;
 		stages = Items;		
 	}	
@@ -36,9 +37,9 @@ public class ResultsListAdapter extends BaseAdapter {
 //		{
 //			size += mResult.get(stage).getStageResult().size();
 //		}
-		for (int stage = 0; stage < stages.size(); stage++)
+		for( Stage stage : stages )
 		{
-			size += stages.get(stage).numberOfCompetitors();
+			size += stage.numberOfCompetitors();
 		}
 		
 		return size;
@@ -59,7 +60,7 @@ public class ResultsListAdapter extends BaseAdapter {
 		return stages.get(position);
 	}
 
-	public Stages getData() {
+	public List<Stage> getData() {
 	    return stages;
 	}
 	
@@ -114,14 +115,14 @@ public class ResultsListAdapter extends BaseAdapter {
 		*/
 		
 		int index = 0;
-		int stage = 0;
+		int stageNumber = 0;
 		//OLD VERSION
 //		for (; stage < mResult.size(); stage++)
-		for (; stage < stages.size(); stage++)
+		for ( Stage stage : stages)
 		{
 			//OLD VERSION
 //			if (index + mResult.get(stage).getStageResult().size() > position)
-			if (index + stages.get(stage).getCompetitorResults().size() > position)
+			if (index + stage.getCompetitorResults().size() > position)
 			{
 				index = position - index;
 				break;
@@ -129,13 +130,15 @@ public class ResultsListAdapter extends BaseAdapter {
 				
 			//OLD VERSION
 //			index += mResult.get(stage).getStageResult().size();
-			index += stages.get(stage).getCompetitorResults().size();
+			index += stage.getCompetitorResults().size();
+			stageNumber++;
 		}
 
+		Stage stage = stages.get(stageNumber);
 		String name; 
 		//OLD VERSION
 //		int rank = mResult.get(stage).getStageResult().get(index).getRank();		
-		int rank =stages.get(stage).getCompetitorResults().get(index).getRank();	
+		int rank =stage.getCompetitorResults().get(index).getRank();	
 		if (rank == Competition.RANK_DNF) {			
 			name = "-. ";
 		} else {
@@ -143,15 +146,15 @@ public class ResultsListAdapter extends BaseAdapter {
 		}		
 		//OLD VERSION
 //		Competitor currentCompetitor = ((MainActivity)mContext).competition.getCompetitors().getByCardNumber(mResult.get(stage).getStageResult().get(index).getCardNumber());
-		Competitor currentCompetitor = ((MainActivity)mContext).competition.getCompetitors().getByCardNumber(stages.get(stage).getCompetitorResults().get(index).getCardNumber());
+		Competitor currentCompetitor = ((MainActivity)mContext).competition.getCompetitors().getByCardNumber(stage.getCompetitorResults().get(index).getCardNumber());
 		name += currentCompetitor.getName();
 		String startNumber = String.valueOf(currentCompetitor.getStartNumber());
 		String team = currentCompetitor.getTeam();
 		//OLD VERSION
 //		String time = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(mResult.get(stage).getStageResult().get(index).getStageTime());
 //		String timeBack = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(mResult.get(stage).getStageResult().get(index).getStageTimesBack());			
-		String time = CompetitionHelper.milliSecToMinSecMilliSec(stages.get(stage).getCompetitorResults().get(index).getStageTime());
-		String timeBack = CompetitionHelper.milliSecToMinSecMilliSec(stages.get(stage).getCompetitorResults().get(index).getStageTimesBack());			
+		String time = CompetitionHelper.milliSecToMinSecMilliSec(stage.getCompetitorResults().get(index).getStageTime());
+		String timeBack = CompetitionHelper.milliSecToMinSecMilliSec(stage.getCompetitorResults().get(index).getStageTimesBack());			
 		
 		resultRowV.setResultName(name);
 		resultRowV.setResultStartNumber(startNumber);
@@ -162,7 +165,7 @@ public class ResultsListAdapter extends BaseAdapter {
 		if (index == 0) {
 			//OLD VERSION
 //			resultRowV.setTitle(mResult.get(stage).getTitle(), View.VISIBLE);	
-			resultRowV.setTitle(stages.get(stage).title, View.VISIBLE);
+			resultRowV.setTitle(stage.title, View.VISIBLE);
 		} else {
 			resultRowV.setTitle("", View.GONE);
 		}

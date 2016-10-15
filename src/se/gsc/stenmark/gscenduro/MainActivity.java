@@ -14,7 +14,6 @@ import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
-import se.gsc.stenmark.gscenduro.compmanagement.Stages;
 import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -72,14 +71,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			punchListIntent.setClass(this, PunchActivity.class);		
 			
 			if (competition.getCompetitors().getByCardNumber(cardNumber).getCard() == null) {
-				competition.getCompetitors().getByCardNumber(cardNumber).processCard(new Card(), this.competition.getStages(), this.competition.getCompetitionType());				
+				competition.getCompetitors().getByCardNumber(cardNumber).processCard(new Card(), competition.getStages(), this.competition.getCompetitionType());				
 			}			
-
-			Stages stages = new Stages( competition.getStages() );
 			
 			Bundle bundle = new Bundle();
 			bundle.putSerializable("Card", competition.getCompetitors().getByCardNumber(cardNumber).getCard());
-			bundle.putSerializable("Stages", stages);
+			bundle.putSerializable("Competition", competition);
 			punchListIntent.putExtras(bundle);
 			
 			startActivityForResult(punchListIntent, 2);		
