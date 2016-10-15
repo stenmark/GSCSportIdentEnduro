@@ -146,7 +146,7 @@ public class DialogImportCompetition {
 					String importType = "";
 					String importData = "";
 					mMainActivity.competition = new Competition();
-
+	
 					BufferedReader bufReader = new BufferedReader(new StringReader(importCompetitionInput.getText().toString()));
 					String line = null;
 					while ((line = bufReader.readLine()) != null) {
@@ -187,6 +187,8 @@ public class DialogImportCompetition {
 
 					mMainActivity.competition.calculateResults();
 					mMainActivity.updateFragments();
+					AndroidHelper.saveSessionData(null,mMainActivity.competition);
+					AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition);
 
 					AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 					builder.setIcon(android.R.drawable.ic_dialog_alert);

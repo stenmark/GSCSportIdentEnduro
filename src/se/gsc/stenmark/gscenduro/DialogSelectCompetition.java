@@ -53,7 +53,7 @@ public class DialogSelectCompetition {
 					mMainActivity.competition = new Competition();
 					mMainActivity.competition.calculateResults();
 					mMainActivity.updateFragments();	
-				}
+					}
 		    	catch (Exception e2) {
 					PopupMessage errorDialog = new PopupMessage(MainActivity.generateErrorMessage(e2));
 					errorDialog.show( mMainActivity.getSupportFragmentManager(), "popUp");
@@ -61,7 +61,9 @@ public class DialogSelectCompetition {
 					mMainActivity.competition = new Competition();
 					mMainActivity.competition.calculateResults();
 					mMainActivity.updateFragments();	
-				}					
+				}	
+				AndroidHelper.saveSessionData(null,mMainActivity.competition);
+				AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition);
 		    }});
 		builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
 		    @Override

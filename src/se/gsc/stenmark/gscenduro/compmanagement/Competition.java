@@ -1,6 +1,5 @@
 package se.gsc.stenmark.gscenduro.compmanagement;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
-import se.gsc.stenmark.gscenduro.AndroidHelper;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 
 
@@ -59,16 +57,6 @@ public class Competition implements Serializable {
 		SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd", new Locale("swedish", "sweden"));
 		String currentDateandTime = sdf.format(new Date());
 		setCompetitionDate(currentDateandTime);
-		
-		try {
-			saveSessionData(null);
-			saveSessionData(mCompetitionName);
-		} catch (Exception e1) {
-		}
-	}
-
-	public void saveSessionData(String compName) throws IOException {
-		AndroidHelper.saveSessionData(compName, this);	
 	}
 	
 	public Long getFastestOnStage(String competitorClass, int stageNumber) {
@@ -322,11 +310,6 @@ public class Competition implements Serializable {
 //			}
 			
 
-		}
-		try {
-			saveSessionData(null);
-			saveSessionData(mCompetitionName);
-		} catch (Exception e1) {
 		}
 	}
 	

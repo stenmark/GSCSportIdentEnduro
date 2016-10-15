@@ -83,28 +83,34 @@ public abstract class AndroidHelper {
 	 * @param competionName
 	 * @throws IOException
 	 */
-	public static void saveSessionData(String competionName, Competition competition) throws IOException {
-		if (AndroidHelper.isExternalStorageWritable()) {
-			FileOutputStream fileOutputComp;
-			if (competionName == null || competionName.isEmpty()) {
-				fileOutputComp = MainApplication.getAppContext().openFileOutput(Competition.CURRENT_COMPETITION, Context.MODE_PRIVATE);
-			} else {
-
-				File sdCard = Environment.getExternalStorageDirectory();
-				competionName = competionName.replace(" ", "_");
-				File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-				if (!dir.exists()) {
-					dir.mkdirs();
+	public static void saveSessionData(String competionName, Competition competition) {
+		try{
+			if (AndroidHelper.isExternalStorageWritable()) {
+				FileOutputStream fileOutputComp;
+				if (competionName == null || competionName.isEmpty()) {
+					fileOutputComp = MainApplication.getAppContext().openFileOutput(Competition.CURRENT_COMPETITION, Context.MODE_PRIVATE);
+				} else {
+	
+					File sdCard = Environment.getExternalStorageDirectory();
+					competionName = competionName.replace(" ", "_");
+					File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+					if (!dir.exists()) {
+						dir.mkdirs();
+					}
+					File file = new File(dir, competionName + ".dat");
+					fileOutputComp = new FileOutputStream(file);
 				}
-				File file = new File(dir, competionName + ".dat");
-				fileOutputComp = new FileOutputStream(file);
+	
+				ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);
+	
+				objStreamOutComp.writeObject(competition);
+				objStreamOutComp.close();
 			}
-
-			ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);
-
-			objStreamOutComp.writeObject(competition);
-			objStreamOutComp.close();
 		}
+		catch( Exception e){
+			
+		}
+			
 	}
 	
 	/**
@@ -129,7 +135,10 @@ public abstract class AndroidHelper {
 			} catch (FileNotFoundException e) {
 				// If this is the first time the app is started the file does
 				// not exist, handle it by returning an empty competition
-				return new Competition();
+				Competition competition = new Competition();
+				AndroidHelper.saveSessionData(null,competition);
+				AndroidHelper.saveSessionData(competition.getCompetitionName(),competition);
+				return competition;
 			}
 		} else {
 			File sdCard = Environment.getExternalStorageDirectory();

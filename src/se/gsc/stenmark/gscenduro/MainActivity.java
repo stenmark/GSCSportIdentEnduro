@@ -101,8 +101,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	updatedCard = (Card) data.getExtras().getSerializable("updateCard");
 	    		    	
 	    	if (updatedCard.getCardNumber() != 0) {	    		
-	    		this.competition.processNewCard(updatedCard, true);
+	    		competition.processNewCard(updatedCard, true);
 	    		Toast.makeText(this, "Card updated", Toast.LENGTH_LONG).show();
+				AndroidHelper.saveSessionData(null,competition);
+				AndroidHelper.saveSessionData(competition.getCompetitionName(),competition);
 	    	}   		    
 		}
 
@@ -181,6 +183,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			//Version missmatch, dont warn the user. Just create a new empty Competition and continue.
 			catch( InvalidClassException e1){
 				competition = new Competition();
+				AndroidHelper.saveSessionData(null,competition);
+				AndroidHelper.saveSessionData(competition.getCompetitionName(),competition);
+
 			}
 			catch (Exception e2) {
 				competition = new Competition();
@@ -237,6 +242,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				        }
 				        importResult = competition.getCompetitors().importCompetitors(inputData, true, competition.getCompetitionType(), false);
 				        competition.calculateResults();
+						AndroidHelper.saveSessionData(null,competition);
+						AndroidHelper.saveSessionData(competition.getCompetitionName(),competition);
 				    }
 				}
 				updateFragments();
@@ -346,6 +353,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 		updateFragments();
+		AndroidHelper.saveSessionData(null,competition);
+		AndroidHelper.saveSessionData(competition.getCompetitionName(),competition);
 	}
 	
 	@Override

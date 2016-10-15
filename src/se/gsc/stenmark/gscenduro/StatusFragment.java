@@ -170,7 +170,9 @@ public class StatusFragment extends Fragment {
 									Toast.makeText(mMainActivity, status, Toast.LENGTH_LONG).show();  
 									
 									mMainActivity.competition.calculateResults();									
-									mMainActivity.updateFragments();									
+									mMainActivity.updateFragments();		
+									AndroidHelper.saveSessionData(null,mMainActivity.competition);
+									AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition);
 								}
 							}											
 		            	} else {

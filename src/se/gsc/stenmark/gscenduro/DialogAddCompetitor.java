@@ -167,6 +167,9 @@ public class DialogAddCompetitor {
 					status = nameInput.getText().toString() + ", " + cardNumber + ". Added";
 					mMainActivity.competition.calculateResults();
 					mMainActivity.updateFragments();
+					AndroidHelper.saveSessionData(null,mMainActivity.competition);
+					AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition);
+
 					
 					Toast.makeText(mMainActivity, status, Toast.LENGTH_LONG).show();    	
 					addCompetitorAlertDialog.dismiss();

@@ -35,7 +35,7 @@ public class CompetitionTest {
 		System.out.println("START testCompetitorWithGoalAsFirstPunch");
 		final String COMP_CLASS_TO_TEST = "";
 		
-		Competition competition = new CompetiotnStub();
+		Competition competition = new Competition();
 		competition.getStages().importStages("71,72,71,72,71,72,71,72,71,72,71,72");
 		competition.setCompetitionDate("2016-05-14");
 		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
@@ -104,7 +104,7 @@ public class CompetitionTest {
 		System.out.println("START testCompetitionFromRealCardData");
 		final String COMP_CLASS_TO_TEST = "";
 		
-		Competition competition = new CompetiotnStub();
+		Competition competition = new Competition();
 		competition.getStages().importStages("71,72,71,72,71,72,71,72,71,72,71,72");
 		competition.setCompetitionDate("2016-04-10");
 		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
@@ -200,7 +200,7 @@ public class CompetitionTest {
 		final int STAGE5_START_TIME = 2000;
 		
 		//Init Competition with test parameters
-		Competition competition = new CompetiotnStub();
+		Competition competition = new Competition();
 		competition.getStages().importStages("71,72,71,72,71,72,71,72,71,72");
 		competition.getCompetitors().add("Andreas S", 2079749, "", COMP_CLASS_TO_TEST, 0, 0, 0);
 		competition.getCompetitors().add("Peter B", 2065396, "", COMP_CLASS_TO_TEST, 0, 0, 0);
@@ -392,7 +392,7 @@ public class CompetitionTest {
 		final String COMP_CLASS_TO_TEST = "";
 		
 		//Init Competition with test parameters
-		Competition competition = new CompetiotnStub();
+		Competition competition = new Competition();
 		competition.getStages().importStages("71,72,71,72,71,72,71,72");
 		competition.getCompetitors().add("Andreas S", 2079749, COMP_CLASS_TO_TEST, "", 0, 0, 0);
 		competition.setCompetitionDate("2015-09-12");
@@ -483,7 +483,7 @@ public class CompetitionTest {
 		final int EXPECTED_NUM_STAGES = 3;
 		
 		//Init Competition with test parameters
-		Competition competition = new CompetiotnStub();
+		Competition competition = new Competition();
 		competition.getStages().importStages("71,72,71,72,71,72");
 		competition.getCompetitors().add("Andreas S", 2079749, "", COMP_CLASS_TO_TEST, 0, 0, 0);
 		competition.getCompetitors().add("Peter B", 2065396, "", COMP_CLASS_TO_TEST, 0, 0, 0);

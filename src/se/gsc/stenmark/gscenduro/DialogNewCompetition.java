@@ -137,6 +137,9 @@ public class DialogNewCompetition {
 				} else {
 					//Create a new competition
 					mMainActivity.competition = new Competition();
+					AndroidHelper.saveSessionData(null,mMainActivity.competition);
+					AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition);
+
 				}									
 				mMainActivity.competition.setCompetitionName(newCompetitionInput.getText().toString());	
 				mMainActivity.competition.setCompetitionDate(dateCompetitionInput.getText().toString());

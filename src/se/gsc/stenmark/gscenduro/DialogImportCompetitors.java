@@ -62,6 +62,8 @@ public class DialogImportCompetitors {
 					
 					mMainActivity.competition.calculateResults();
 					mMainActivity.updateFragments();
+					AndroidHelper.saveSessionData(null,mMainActivity.competition);
+					AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition);
 				} catch (Exception e) {
 					errorText = MainActivity.generateErrorMessage(e);
 				}
