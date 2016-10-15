@@ -16,8 +16,8 @@ import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.test.SiDriverTest;
 import se.gsc.stenmark.gscenduro.SporIdent.test.driverStubs.UsbDriverStub;
-import se.gsc.stenmark.gscenduro.compmanagement.AndroidIndependantCompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import se.gsc.stenmark.gscenduro.compmanagement.StageResult;
 
@@ -155,9 +155,39 @@ public class CompetitionTest {
 			else{
 				assertEquals(totalTime, stage1Time+stage2Time+stage3Time+stage4Time+stage5Time+stage6Time);
 			}
-
 		}	
+		
+		String svartCsvResults = CompetitionHelper.getResultsAsCsvString(competition.getStages(),
+																  						   competition.getTotalResults(),
+																  						   competition.getCompetitors(),
+																  						   Competition.SVART_VIT_TYPE);
+		System.out.println("SvartVitt CSV results");
+		System.out.println(svartCsvResults);
+		String[] resultsAsList = svartCsvResults.split("\n");
+		List<String> expectedCsvData = readExpectedCsvData("testCompetitionFromRealCardDataSvartVitt.csv");
+		assertEquals(expectedCsvData.size(), resultsAsList.length);
+		int i = 0;
+		for( String expectedLine : expectedCsvData){
+			assertEquals(expectedLine,resultsAsList[i]);
+			i++;
+		}
+		
+		String essCsvResults = CompetitionHelper.getResultsAsCsvString(competition.getStages(),
+				   competition.getTotalResults(),
+				   competition.getCompetitors(),
+				   Competition.ESS_TYPE);
+		System.out.println("ESS CSV results");
+		System.out.println(essCsvResults);
+		resultsAsList = essCsvResults.split("\n");
+		expectedCsvData = readExpectedCsvData("testCompetitionFromRealCardDataEss.csv");
+		assertEquals(expectedCsvData.size(), resultsAsList.length);
+		i = 0;
+		for( String expectedLine : expectedCsvData){
+			assertEquals(expectedLine,resultsAsList[i]);
+			i++;
+		}
 	}
+	
 	
 //	@Test
 	public void testSlowestAndFastestTimeOnStage() {
@@ -933,49 +963,68 @@ public class CompetitionTest {
 	
 	@Test
 	public void testTimeConverter(){
-		String timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(45123L);
+		String timeString = CompetitionHelper.milliSecToMinSecMilliSec(45123L);
 		System.out.println("Time in=" +45123L + "  Time out="+ timeString);
 		assertEquals("00:45.1", timeString);
 		
-		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(59999L);
+		timeString = CompetitionHelper.milliSecToMinSecMilliSec(59999L);
 		System.out.println("Time in=" +59999L + "  Time out="+ timeString);
 		assertEquals("01:00.0", timeString);
 		
-		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(60000L);
+		timeString = CompetitionHelper.milliSecToMinSecMilliSec(60000L);
 		System.out.println("Time in=" +60000L + "  Time out="+ timeString);
 		assertEquals("01:00.0", timeString);
 		
-		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(60001L);
+		timeString = CompetitionHelper.milliSecToMinSecMilliSec(60001L);
 		System.out.println("Time in=" +60001L + "  Time out="+ timeString);
 		assertEquals("01:00.0", timeString);
 		
-		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(656349L);
+		timeString = CompetitionHelper.milliSecToMinSecMilliSec(656349L);
 		System.out.println("Time in=" +656349L + "  Time out="+ timeString);
 		assertEquals("10:56.3", timeString);
 		
-		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(656350L);
+		timeString = CompetitionHelper.milliSecToMinSecMilliSec(656350L);
 		System.out.println("Time in=" +656350L + "  Time out="+ timeString);
 		assertEquals("10:56.4", timeString);
 		
-		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(3599999L);
+		timeString = CompetitionHelper.milliSecToMinSecMilliSec(3599999L);
 		System.out.println("Time in=" +3599999L + "  Time out="+ timeString);
 		assertEquals("60:00.0", timeString);
 		
-		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(3599994L);
+		timeString = CompetitionHelper.milliSecToMinSecMilliSec(3599994L);
 		System.out.println("Time in=" +3599994L + "  Time out="+ timeString);
 		assertEquals("60:00.0", timeString);
 		
-		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(3599995L);
+		timeString = CompetitionHelper.milliSecToMinSecMilliSec(3599995L);
 		System.out.println("Time in=" +3599995L + "  Time out="+ timeString);
 		assertEquals("60:00.0", timeString);
 		
-		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(3599996L);
+		timeString = CompetitionHelper.milliSecToMinSecMilliSec(3599996L);
 		System.out.println("Time in=" +3599996L + "  Time out="+ timeString);
 		assertEquals("60:00.0", timeString);
 		
-		timeString = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(3600000L);
+		timeString = CompetitionHelper.milliSecToMinSecMilliSec(3600000L);
 		System.out.println("Time in=" +3600000L + "  Time out="+ timeString);
 		assertEquals("60:00.0", timeString);
+	}
+	
+	private List<String> readExpectedCsvData(String fileName){
+		String workingDir = System.getProperty("user.dir");
+		BufferedReader fileBuffer = null;
+		List<String> result = new ArrayList<>();
+		try {
+			System.out.println("Opeing file: " +workingDir  + File.separator + "testData" + File.separator + "csvData" + File.separator + fileName);
+			FileReader reader = new FileReader(workingDir  + File.separator + "testData" + File.separator + "csvData" + File.separator + fileName);
+			fileBuffer = new BufferedReader(reader);
+			String currentLine;
+			while ((currentLine = fileBuffer.readLine()) != null) {
+				result.add(currentLine);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail();
+		}
+		return result;
 	}
 
 }

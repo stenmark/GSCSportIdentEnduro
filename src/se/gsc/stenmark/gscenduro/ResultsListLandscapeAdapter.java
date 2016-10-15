@@ -1,7 +1,6 @@
 package se.gsc.stenmark.gscenduro;
-import se.gsc.stenmark.gscenduro.compmanagement.AndroidIndependantCompetitionHelper;
-import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitors;
 import se.gsc.stenmark.gscenduro.compmanagement.StageResult;
@@ -99,7 +98,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 		resultLandscapeRowV.setResultLandscapeTeam(team);
 		
 		long totalTime = totalTimeResult.getStageTime();			
-		resultLandscapeRowV.setResultLandscapeTotalTime(AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(totalTime));				
+		resultLandscapeRowV.setResultLandscapeTotalTime(CompetitionHelper.milliSecToMinSecMilliSec(totalTime));				
 		
 		//First clear all stages
 		for(int stageNumber = 1; stageNumber < 11; stageNumber++) {
@@ -120,10 +119,10 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 					Long fastestTimeOnStage = competition.getFastestOnStage(competition.getTotalResults().title, stageNumber); 
 					Long slowestTimeOnStage = competition.calculateSlowestOnStage(competition.getTotalResults().title, stageNumber);
 					Long competitorStageTime = competition.getStages().get(stageNumber).getStageResultByCardnumber(cardNumber).getStageTime();			
-					String StageTime = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(competitorStageTime);
+					String StageTime = CompetitionHelper.milliSecToMinSecMilliSec(competitorStageTime);
 					rank = competition.getStages().get(stageNumber).getStageResultByCardnumber(cardNumber).getRank();
 				
-				int color = CompetitionHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
+				int color = AndroidHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);
 				if (rank == Competition.RANK_DNF) {
 					StageTime = "";
 				} else {

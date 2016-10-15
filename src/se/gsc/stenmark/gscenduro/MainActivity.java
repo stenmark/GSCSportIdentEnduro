@@ -12,8 +12,8 @@ import java.util.Locale;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
 import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
-import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
+import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.Stages;
 import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;
@@ -144,7 +144,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			super.onPause();
 			disconected = true;
 			if( competition != null){
-				competition.saveSessionData(null);
+				AndroidHelper.saveSessionData(null,competition);
 			}
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e1));
@@ -176,7 +176,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			setContentView(R.layout.main_activity);
 
 			try {
-				competition = Competition.loadSessionData(null);				
+				competition = AndroidHelper.loadSessionData(null);				
 			} 
 			//Version missmatch, dont warn the user. Just create a new empty Competition and continue.
 			catch( InvalidClassException e1){
@@ -369,7 +369,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return true;
 			
 		case R.id.action_load:			
-			List<String> savedCompetitions = CompetitionHelper.getSavedCompetitionsAsList();
+			List<String> savedCompetitions = AndroidHelper.getSavedCompetitionsAsList();
 			CompetitionOnClickListener competitionOnClickListener = new CompetitionOnClickListener(savedCompetitions);
 			DialogSelectCompetition selectCompetitionDialog = new DialogSelectCompetition(savedCompetitions, competitionOnClickListener, this, competitionOnClickListener);
 			selectCompetitionDialog.createSelectCompetitionDialog();
@@ -406,7 +406,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		case R.id.action_export_as_html:
 			String resultList = CompetitionHelper.getResultsAsHtmlString(this.competition.getCompetitionName(), this.competition.getCompetitionDate(), this.competition.getStages(), this.competition.getCompetitors(), this.competition.getCompetitionType(), competition);
 			try {
-				CompetitionHelper.exportString(this, resultList, "results", this.competition.getCompetitionName(), "htm");
+				AndroidHelper.exportString(this, resultList, "results", this.competition.getCompetitionName(), "htm");
 			} catch (IOException e) {
 				Log.d("action_export_as_html", "Error = " + Log.getStackTraceString(e));
 			}						
@@ -418,8 +418,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		     	
 				ResultsFragment resultListFragment = (ResultsFragment)mAdapter.getRegisteredFragment(1);
 				if (resultListFragment != null){
-					Bitmap resultBitmap = CompetitionHelper.getWholeListViewItemsToBitmap(resultListFragment.getListView());
-					File imageFile = CompetitionHelper.writeImageToFile(competition.getCompetitionName() + "_results.png", resultBitmap);
+					Bitmap resultBitmap = AndroidHelper.getWholeListViewItemsToBitmap(resultListFragment.getListView());
+					File imageFile = AndroidHelper.writeImageToFile(competition.getCompetitionName() + "_results.png", resultBitmap);
 					
 					Intent mailIntent = new Intent(Intent.ACTION_SEND);
 					mailIntent.setType("text/plain");

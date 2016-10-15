@@ -5,8 +5,6 @@ import java.util.List;
 
 import se.gsc.stenmark.gscenduro.MainActivity.CompetitionOnClickListener;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
-import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
@@ -43,9 +41,9 @@ public class DialogSelectCompetition {
 		    @Override
 		    public void onClick(DialogInterface dialog, int item) {
 		    	try {
-		    		List<String> savedCompetitions = CompetitionHelper.getSavedCompetitionsAsList();
+		    		List<String> savedCompetitions = AndroidHelper.getSavedCompetitionsAsList();
 					String selectedItem = savedCompetitions.get(radioButtonListener.which);
-					mMainActivity.competition = Competition.loadSessionData(selectedItem);
+					mMainActivity.competition = AndroidHelper.loadSessionData(selectedItem);
 					mMainActivity.competition.calculateResults();
 					mMainActivity.updateFragments();	
 				}

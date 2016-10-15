@@ -1,26 +1,9 @@
 package se.gsc.stenmark.gscenduro.compmanagement;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Environment;
-import android.view.View;
-import android.view.View.MeasureSpec;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * Stateless helper class that can perform various operations on a competition.
@@ -31,39 +14,83 @@ import android.widget.Toast;
  * 
  */
 public abstract class CompetitionHelper {
-	private static final String DEBUG_FILENAME = "debugData.txt";
-	
-	/**
-	 * Generate an RGB value for a transition from Red to Green.
-	 * @return RGB coded color
-	 */
-	public static int generateRedToGreenColorTransition(Long fastestTimeOnStage, Long slowestTimeOnStage, Long competitorStageTime, int rank){		
-		if (rank == Competition.RANK_DNF) {
-			return Color.WHITE;
-		} else {
-			if( competitorStageTime > slowestTimeOnStage){
-				//If this is the slowest competitor, or slower (slower is possible due to filtering out very slow users from "sloesttime")
-				//Then return  a very sharp red
-				return android.graphics.Color.HSVToColor(new float[]{0f,1f,1f});
-			}
-			if( competitorStageTime == fastestTimeOnStage){
-				//If this is the fastest competitor on stage, return a very sharp green
-				return android.graphics.Color.HSVToColor(new float[]{110f,1f,1f});
-			}
-			float myTimeDiff = competitorStageTime - fastestTimeOnStage; 
-			float stageTimeDiff = slowestTimeOnStage - fastestTimeOnStage; 
-			float transition;
-			if (stageTimeDiff != 0) {
-				transition = 1f - (myTimeDiff / stageTimeDiff);				
-			} else {
-				transition = 1f;
-			}
-			
-			float hue = 10f + (transition*70f);  //the full red and full green are very close to each other for the eye. So dont use full red and full green
-		    return android.graphics.Color.HSVToColor(new float[]{hue,1f,1f});
-		}			
-	}	
-	
+
+	public static String milliSecToMinSecMilliSec(Long milliSec) {
+		if (milliSec == Competition.NO_TIME_FOR_STAGE) {
+			return "no result";
+		}
+		
+		if (milliSec == Competition.NO_TIME_FOR_COMPETITION) {
+			return "no time";
+		}
+		
+		if (milliSec == Competition.COMPETITION_DNF) {
+			return "DNF";
+		}
+		
+		double milliSecAsDouble = milliSec;
+		double tentSecAsDouble = milliSecAsDouble/100D;
+		long totalTimeTenth = Math.round(tentSecAsDouble);
+		long totalTimeSec = totalTimeTenth/10;
+		long totalTimeMin = totalTimeSec/60;
+		totalTimeTenth -= totalTimeSec*10;
+		totalTimeSec -= (totalTimeMin*60);
+		
+		return String.format("%02d:%02d.%01d", totalTimeMin, totalTimeSec, totalTimeTenth);
+
+	}
+
+	//OLD VERSION
+//	public static String getResultsAsCsvString(Stages stage, Stage totalResults, Competitors competitors, int type) {
+//		String resultData = "";
+//		
+//		if (type == 1)  {
+//			resultData = "Rank,Name,Card Number,Team,Start Number,Total Time,";
+//		} else {
+//			resultData = "Rank,Name,Card Number,Total Time,";
+//		}
+//			
+//		for (int i = 0; i < stage.size(); i++) {
+//			resultData += "Stage " + (i + 1) + ",Rank,Time Back,";
+//		}
+//		resultData += "\n";
+//
+//		for (int index = 0; index < results.size(); index++) {
+//			if (type == Competition.ESS_TYPE)  {
+//				if (index == 0) {
+//					resultData += results.get(index).getTitle() + "\n";
+//				} else if (results.get(index).getTitle() != results.get(index - 1).getTitle()) {
+//					resultData += results.get(index).getTitle() + "\n";
+//				}
+//			}				
+//			
+//			int cardNumber = results.get(index).getStageResult().get(0).getCardNumber();					
+//			int rank = results.get(index).getStageResult().get(0).getRank();					
+//			if (rank == Competition.RANK_DNF) {			
+//				resultData += "-,";
+//			} else {
+//				resultData += rank + ",";
+//			}
+//			
+//			resultData += competitors.getByCardNumber(cardNumber).getName() + ",";
+//			resultData += cardNumber + ",";
+//			if (type == 1)  {
+//				resultData += competitors.getByCardNumber(cardNumber).getTeam() + ",";					
+//				resultData += String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + ",";
+//			}
+//			resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(0).getStageTime()) + ",";	
+//									
+//			for(int stageNumber = 1; stageNumber < results.get(index).getStageResult().size(); stageNumber++) {										
+//				resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTime()) + ",";
+//				resultData += results.get(index).getStageResult().get(stageNumber).getRank() + ",";
+//				resultData += AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(results.get(index).getStageResult().get(stageNumber).getStageTimesBack()) + ",";
+//			}			
+//			resultData += "\n";
+//		}
+//		
+//		return resultData;
+//	}
+
 	//OLD VERSION
 	public static String getResultsAsHtmlString(String name, String date, Stages stage, Competitors competitors, int type, Competition competition) {
 		return "Not done yet";
@@ -154,218 +181,81 @@ public abstract class CompetitionHelper {
 //		return resultData;
 //	}
 	
-	/**
-	 * Searched the Android file system for saved competitions and returns a
-	 * list with filenames for all files found. The current competition is
-	 * excluded from the list, only competitions manually saved by the users is
-	 * returned.
-	 * 
-	 * @return
-	 */
-	public static List<String> getSavedCompetitionsAsList() {
-		File sdCard = Environment.getExternalStorageDirectory();
-		File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-		if (!dir.exists()) {
-			return new ArrayList<String>();
-		}
-
-		File[] fileList = dir.listFiles();
-		List<String> result = new ArrayList<String>();
-		for (File file : fileList) {
-			if (file.getName().contains(".dat")) {
-				result.add(file.getName().replace(".dat", ""));
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Does the same as getSavedCompetitionsAsList() but instead of returning a
-	 * list it returns a new line separated String of competitions.
-	 * 
-	 * @return
-	 */
-	public static String getSavedCompetitions() {
-		File sdCard = Environment.getExternalStorageDirectory();
-		File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-		if (!dir.exists()) {
-			return "";
-		}
-
-		String result = "";
-		File[] fileList = dir.listFiles();
-		for (File file : fileList) {
-			if (file.getName().contains(".dat")) {
-				result += file.getName().replace(".dat", "") + "\n";
-			}
-		}
-		return result;
-	}
-	
-	/**
-	 * Simple helper to ensure that we can write to Android filesystem.
-	 * 
-	 * @return
-	 */
-	public static boolean isExternalStorageWritable() {
-		try {
-			String state = Environment.getExternalStorageState();
-			if (Environment.MEDIA_MOUNTED.equals(state)) {
-				return true;
-			}
-			return false;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	public static void exportString(Activity activity, String StringToSend, String exporttype, String compName, String filetype) throws IOException {
-		String errorMsg = "";
-
-		if (CompetitionHelper.isExternalStorageWritable()) {
-			File sdCard = Environment.getExternalStorageDirectory();
-			compName = compName.replace(" ", "_");
-
-			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-			if (!dir.exists()) {
-				errorMsg += "Dir does not exist " + dir.getAbsolutePath();
-				if (!dir.mkdirs()) {
-					errorMsg += "Could not create directory: " + dir.getAbsolutePath();
-
-					Toast.makeText(activity, "Error = " + errorMsg, Toast.LENGTH_LONG).show();
-					return;
-				}
-			}
-
-			File file = new File(dir, compName + "_" + exporttype + "." + filetype);
-
-			FileWriter fw = new FileWriter(file);
-			fw.write(StringToSend);
-
-			if (activity != null) {
-				Intent mailIntent = new Intent(Intent.ACTION_SEND);
-				mailIntent.setType("text/plain");
-				mailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "" });
-				mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Enduro " + exporttype + " for " + compName);
-				mailIntent.putExtra(Intent.EXTRA_TEXT, exporttype + " in attached file");
-				Uri uri = Uri.fromFile(file);
-				mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-				activity.startActivity(Intent.createChooser(mailIntent, "Send mail"));
-			}
-
-			fw.close();
+	public static String getResultsAsCsvString(Stages stages, Stage totalResults, Competitors competitors, int type) {
+		String resultData = "";
+		
+		if (type == Competition.ESS_TYPE)  {
+			resultData = "Rank,Name,Card Number,Team,Start Number,Total Time,";
 		} else {
-			errorMsg = "External file storage not available, could not export competitors";
-			Toast.makeText(activity, "Error = " + errorMsg, Toast.LENGTH_LONG).show();
-			return;
+			resultData = "Rank,Name,Card Number,Total Time,";
 		}
-	}
-
-	public static Bitmap getBitmapFromView(View view) {
-		// Define a bitmap with the same size as the view
-		Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(),
-				view.getHeight(), Bitmap.Config.ARGB_8888);
-		// Bind a canvas to it
-		Canvas canvas = new Canvas(returnedBitmap);
-		// Get the view's background
-		Drawable bgDrawable = view.getBackground();
-		if (bgDrawable != null) {
-			// has background drawable, then draw it on the canvas
-			bgDrawable.draw(canvas);
-		} else {
-			// does not have background drawable, then draw white background on
-			// the canvas
-			canvas.drawColor(Color.WHITE);
+			
+		for (int i = 0; i < stages.size(); i++) {
+			resultData += "Stage " + (i + 1) + ",Rank,Time Back,";
 		}
-		// draw the view on the canvas
-		view.draw(canvas);
-		// return the bitmap
-		return returnedBitmap;
-	}
-
-	public static File writeImageToFile(String fileName, Bitmap image) {
-		FileOutputStream out = null;
-		File sdCard = Environment.getExternalStorageDirectory();
-		File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-		File file = new File(dir, fileName);
-		try {
-			out = new FileOutputStream(file);
-			image.compress(Bitmap.CompressFormat.PNG, 100, out);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (out != null) {
-					out.close();
-				}
-			} catch (IOException e) {
+		resultData += "\n";
+		if( type == Competition.ESS_TYPE){
+			resultData += "\n";
+		}
+		
+		for( int i  = 0; i < totalResults.numberOfCompetitors(); i++ ){		
+			int cardNumber = totalResults.getCompetitorResults().get(i).getCardNumber();				
+			int rank = totalResults.getCompetitorResults().get(i).getRank();				
+			if (rank == Competition.RANK_DNF) {			
+				resultData += "-,";
+			} else {
+				resultData += rank + ",";
 			}
+			
+			resultData += competitors.getByCardNumber(cardNumber).getName() + ",";
+			resultData += cardNumber + ",";
+			if (type == Competition.ESS_TYPE)  {
+				resultData += competitors.getByCardNumber(cardNumber).getTeam() + ",";					
+				resultData += String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + ",";
+			}
+			resultData += CompetitionHelper.milliSecToMinSecMilliSec( totalResults.getCompetitorResults().get(i).getStageTime() ) + ",";	
+						
+			for(int stageNumber = 0; stageNumber < stages.size(); stageNumber++) {	
+				StageResult stageResult = stages.get(stageNumber).getStageResultByCardnumber(cardNumber);
+				if( stageResult != null){
+					resultData += CompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTime() ) + ",";
+					resultData += stageResult.getRank() + ",";
+					resultData += CompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTimesBack() ) + ",";
+				}
+				else{
+					resultData += "-1,-1,-1";
+				}
+			}			
+			resultData += "\n";
 		}
-		return file;
+		
+		return resultData;
 	}
 
-	public static Bitmap getWholeListViewItemsToBitmap(ListView listview) {
-		ListAdapter adapter = listview.getAdapter();
-		int itemscount = adapter.getCount();
-		int allitemsheight = 0;
-		List<Bitmap> bmps = new ArrayList<Bitmap>();
-
-		for (int i = 0; i < itemscount; i++) {
-			View childView = adapter.getView(i, null, listview);
-			childView.measure(MeasureSpec.makeMeasureSpec(listview.getWidth(),
-					MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0,
-					MeasureSpec.UNSPECIFIED));
-
-			childView.layout(0, 0, childView.getMeasuredWidth(), childView.getMeasuredHeight());
-			childView.setDrawingCacheEnabled(true);
-			childView.buildDrawingCache();
-			bmps.add(childView.getDrawingCache());
-			allitemsheight += childView.getMeasuredHeight();
-		}
-
-		Bitmap bigbitmap = Bitmap.createBitmap(listview.getMeasuredWidth(), allitemsheight, Bitmap.Config.ARGB_8888);
-		Canvas bigcanvas = new Canvas(bigbitmap);
-
-		Paint paint = new Paint();
-		int iHeight = 0;
-
-		for (int i = 0; i < bmps.size(); i++) {
-			Bitmap bmp = bmps.get(i);
-			bigcanvas.drawBitmap(bmp, 0, iHeight, paint);
-			iHeight += bmp.getHeight();
-
-			bmp.recycle();
-			bmp = null;
-		}
-
-		return bigbitmap;
-	}
+	public static String convertToHtmlChars(String text)
+	{
+		text = text.replaceAll("å", "&aring;").
+		replaceAll("ä", "&auml;").
+		replaceAll("ö", "&ouml;").
+		replaceAll("Å", "&Aring;").
+		replaceAll("Ä", "&Auml;").
+		replaceAll("Ö", "&Ouml;");
+		return text;
+	}  	
 	
-	public static void dumpDebugDatToFile( String debugData ){
-		BufferedWriter bw = null;
-		try{
-			File sdCard = Environment.getExternalStorageDirectory();
-	    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-			if (!dir.exists()) {
-				dir.mkdirs();
-			}
-			File file = new File(dir, DEBUG_FILENAME );
-			FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
-			bw = new BufferedWriter(fw);
-			bw.write(debugData);
-    	}
-    	catch( Exception e){
-    		//Do nothing
-    	}
-    	finally {
-			if( bw != null){
-				try {
-					bw.close();
-				} catch (Exception e) {
-					//Do nothing
-				}
-			}
-		}
-	}
+	 public static Object deepClone(Object object) {
+		   try {
+		     ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		     ObjectOutputStream oos = new ObjectOutputStream(baos);
+		     oos.writeObject(object);
+		     ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		     ObjectInputStream ois = new ObjectInputStream(bais);
+		     return ois.readObject();
+		   }
+		   catch (Exception e) {
+		     e.printStackTrace();
+		     return null;
+		   }
+		 }
 	
 }

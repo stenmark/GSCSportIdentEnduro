@@ -1,6 +1,7 @@
 package se.gsc.stenmark.gscenduro;
 
 import se.gsc.stenmark.gscenduro.MainActivity.ExportOnClickListener;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
@@ -30,7 +31,8 @@ public class DialogSelectExport {
 				switch(mRadioButtonListener.which) {				
 				case 0:
 					try {
-						mMainActivity.competition.exportCompetitorsAsCsv(mMainActivity);
+						String competitorList = mMainActivity.competition.getCompetitors().exportCsvString(mMainActivity.competition.getCompetitionType() );
+						AndroidHelper.exportString(mMainActivity, competitorList, "competitors", mMainActivity.competition.getCompetitionName(), "csv");
 					} catch (Exception e) {
 						Log.d("action_export_competitors", "Error = " + Log.getStackTraceString(e));
 					}
@@ -38,23 +40,62 @@ public class DialogSelectExport {
 					
 				case 1:
 					try {
-						mMainActivity.competition.exportResultsAsCsv(mMainActivity);
+						String resultList = CompetitionHelper.getResultsAsCsvString( 
+								mMainActivity.competition.getStages(), 
+								mMainActivity.competition.getTotalResults(), 
+								mMainActivity.competition.getCompetitors(), 
+								mMainActivity.competition.getCompetitionType() );
+						AndroidHelper.exportString(mMainActivity, resultList, "results", mMainActivity.competition.getCompetitionName(), "csv");
 					} catch (Exception e) {
 						Log.d("action_export_results", "Error = " + Log.getStackTraceString(e));
 					}
 					break;
 					
 				case 2:
-					try {
-						mMainActivity.competition.exportPunchesAsCsv(mMainActivity);
+					try {						
+						String punchList = mMainActivity.competition.getCompetitors().exportPunchesCsvString();
+						AndroidHelper.exportString(mMainActivity, punchList, "punches", mMainActivity.competition.getCompetitionName(), "csv");
 					} catch (Exception e) {
 						Log.d("action_export_punches", "Error = " + Log.getStackTraceString(e));
 					}
 					break;						
 			
 				case 3:
-					try {
-						mMainActivity.competition.exportCompetitionAsCsv(mMainActivity);
+					try {		
+						String competitionList = "";
+						// Competition Name
+						competitionList += "[Name]\n";
+						competitionList += mMainActivity.competition.getCompetitionName() + "\n";
+						competitionList += "[/Name]\n";
+						
+						// Competition Date
+						competitionList += "[Date]\n";
+						competitionList += mMainActivity.competition.getCompetitionDate() + "\n";
+						competitionList += "[/Date]\n";
+
+						// Competition Type
+						competitionList += "[Type]\n";
+						competitionList += mMainActivity.competition.getCompetitionType() + "\n";
+						competitionList += "[/Type]\n";
+
+						// Stages
+						competitionList += "[Stages]\n";
+						competitionList += mMainActivity.competition.getStages().exportStagesCsvString() + "\n";
+						competitionList += "[/Stages]\n";
+						
+						// Competitors
+						competitionList += "[Competitors]\n";
+						competitionList += mMainActivity.competition.getCompetitors().exportCsvString(mMainActivity.competition.getCompetitionType());
+						competitionList += "[/Competitors]\n";
+
+						// Punches
+						competitionList += "[Punches]\n";
+						competitionList += mMainActivity.competition.getCompetitors().exportPunchesCsvString();
+						competitionList += "[/Punches]\n";		
+						
+						AndroidHelper.exportString(mMainActivity, competitionList, "competition", mMainActivity.competition.getCompetitionName(), "csv");
+						
+						
 					} catch (Exception e) {
 						Log.d("action_export_competition", "Error = " + Log.getStackTraceString(e));
 					}					

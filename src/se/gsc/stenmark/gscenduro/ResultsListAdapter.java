@@ -1,6 +1,6 @@
 package se.gsc.stenmark.gscenduro;
 
-import se.gsc.stenmark.gscenduro.compmanagement.AndroidIndependantCompetitionHelper;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import se.gsc.stenmark.gscenduro.compmanagement.Stage;
@@ -150,8 +150,8 @@ public class ResultsListAdapter extends BaseAdapter {
 		//OLD VERSION
 //		String time = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(mResult.get(stage).getStageResult().get(index).getStageTime());
 //		String timeBack = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(mResult.get(stage).getStageResult().get(index).getStageTimesBack());			
-		String time = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(stages.get(stage).getCompetitorResults().get(index).getStageTime());
-		String timeBack = AndroidIndependantCompetitionHelper.milliSecToMinSecMilliSec(stages.get(stage).getCompetitorResults().get(index).getStageTimesBack());			
+		String time = CompetitionHelper.milliSecToMinSecMilliSec(stages.get(stage).getCompetitorResults().get(index).getStageTime());
+		String timeBack = CompetitionHelper.milliSecToMinSecMilliSec(stages.get(stage).getCompetitorResults().get(index).getStageTimesBack());			
 		
 		resultRowV.setResultName(name);
 		resultRowV.setResultStartNumber(startNumber);

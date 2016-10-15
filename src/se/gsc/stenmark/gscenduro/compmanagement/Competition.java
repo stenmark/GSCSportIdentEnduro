@@ -1,15 +1,7 @@
 package se.gsc.stenmark.gscenduro.compmanagement;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InvalidClassException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.io.StreamCorruptedException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,12 +10,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
-import se.gsc.stenmark.gscenduro.MainApplication;
+import se.gsc.stenmark.gscenduro.AndroidHelper;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
-import android.app.Activity;
-import android.content.Context;
-import android.os.Environment;
-import android.util.Log;
+
 
 /**
  * Represents a competition with a stage, List of competitors and the name of
@@ -44,11 +33,10 @@ public class Competition implements Serializable {
 	public static final long NO_TIME_FOR_STAGE = 10000000L;
 	public static final long NO_TIME_FOR_COMPETITION = 20000000L;
 	public static final int RANK_DNF = 30000000;
+	public static final String CURRENT_COMPETITION = "current_competition";
 	
 	//Circular buffer to hold the 6 most recently read cards
 	public CircularFifoQueue<String> lastReadCards = new CircularFifoQueue<String>(6);
-	
-	private static final String CURRENT_COMPETITION = "current_competition";
 	private Stages mStages = null;
 	private Stage totalResults = null;
 	private Competitors mCompetitors = null;
@@ -76,10 +64,13 @@ public class Competition implements Serializable {
 			saveSessionData(null);
 			saveSessionData(mCompetitionName);
 		} catch (Exception e1) {
-			Log.d("Competition", "Error = " + e1);
 		}
 	}
 
+	public void saveSessionData(String compName) throws IOException {
+		AndroidHelper.saveSessionData(compName, this);	
+	}
+	
 	public Long getFastestOnStage(String competitorClass, int stageNumber) {
 		//OLD VERSION
 //		if( !mResults.getStageResult(stageNumber, competitorClass).getStageResult().isEmpty() ){
@@ -128,83 +119,6 @@ public class Competition implements Serializable {
 		mCompetitionDate = competitionDate;
 	}		
 		
-	/**
-	 * Takes the whole current competition object and serializes it to the
-	 * Android file system. It is written to the applications private storage,
-	 * so it wont be accessible from outside this program. If the competition
-	 * name is empty it will be treated as "current competition" this is run
-	 * time data that need to be saved to disc when the application or GUI is
-	 * being deallocated from memory by the android system.
-	 * 
-	 * @param competionName
-	 * @throws IOException
-	 */
-	public void saveSessionData(String competionName) throws IOException {
-		if (CompetitionHelper.isExternalStorageWritable()) {
-			FileOutputStream fileOutputComp;
-			if (competionName == null || competionName.isEmpty()) {
-				fileOutputComp = MainApplication.getAppContext().openFileOutput(CURRENT_COMPETITION, Context.MODE_PRIVATE);
-			} else {
-
-				File sdCard = Environment.getExternalStorageDirectory();
-				competionName = competionName.replace(" ", "_");
-				File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-				if (!dir.exists()) {
-					dir.mkdirs();
-				}
-				File file = new File(dir, competionName + ".dat");
-				fileOutputComp = new FileOutputStream(file);
-			}
-
-			ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);
-
-			objStreamOutComp.writeObject(this);
-			objStreamOutComp.close();
-		}
-	}
-
-	/**
-	 * Loads a serialized competition object from Android file system and
-	 * returns the competition loaded from disc. If the competition name is
-	 * empty it will be treated as "current competition" this is run time data
-	 * that is read back as the active competition when the app is brought back
-	 * by the android system.
-	 * 
-	 * @param competionName
-	 * @return
-	 * @throws StreamCorruptedException
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 */
-	public static Competition loadSessionData(String competionName) throws StreamCorruptedException, IOException, ClassNotFoundException, InvalidClassException {
-		FileInputStream fileInputComp = null;
-
-		if (competionName == null || competionName.isEmpty()) {
-			try {
-				fileInputComp = MainApplication.getAppContext().openFileInput(CURRENT_COMPETITION);
-			} catch (FileNotFoundException e) {
-				// If this is the first time the app is started the file does
-				// not exist, handle it by returning an empty competition
-				return new Competition();
-			}
-		} else {
-			File sdCard = Environment.getExternalStorageDirectory();
-			competionName = competionName.replace(" ", "_");
-			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-			if (!dir.exists()) {
-				dir.mkdirs();
-			}
-			File file = new File(dir, competionName + ".dat");
-			fileInputComp = new FileInputStream(file);
-		}
-		Competition loadCompetition = null;
-		ObjectInputStream objStreamInComp = new ObjectInputStream(fileInputComp);
-		loadCompetition = (Competition) objStreamInComp.readObject();
-		objStreamInComp.close();
-
-		return loadCompetition;
-	}
-
 	public String processNewCard(Card card, Boolean calculateResultsAfterAdd) {
 		Competitor foundCompetitor = mCompetitors.findByCard(card);
 		if (foundCompetitor == null) {
@@ -218,57 +132,6 @@ public class Competition implements Serializable {
 		}
 
 		return status;
-	}
-
-	public void exportCompetitorsAsCsv(Activity activity) throws IOException {
-		String competitorList = mCompetitors.exportCsvString(mCompetitionType);
-		CompetitionHelper.exportString(activity, competitorList, "competitors", mCompetitionName, "csv");
-	}
-
-	public void exportResultsAsCsv(Activity activity) throws IOException {
-		String resultList = AndroidIndependantCompetitionHelper.getResultsAsCsvString(mStages, totalResults, mCompetitors, mCompetitionType);
-		CompetitionHelper.exportString(activity, resultList, "results", mCompetitionName, "csv");
-	}
-
-	public void exportPunchesAsCsv(Activity activity) throws IOException {
-		String punchList = mCompetitors.exportPunchesCsvString();
-		CompetitionHelper.exportString(activity, punchList, "punches", mCompetitionName, "csv");
-	}
-
-	public void exportCompetitionAsCsv(Activity activity) throws IOException {
-		String competitionList = "";
-		
-		// Competition Name
-		competitionList += "[Name]\n";
-		competitionList += mCompetitionName + "\n";
-		competitionList += "[/Name]\n";
-		
-		// Competition Date
-		competitionList += "[Date]\n";
-		competitionList += mCompetitionDate + "\n";
-		competitionList += "[/Date]\n";
-
-		// Competition Type
-		competitionList += "[Type]\n";
-		competitionList += mCompetitionType + "\n";
-		competitionList += "[/Type]\n";
-
-		// Stages
-		competitionList += "[Stages]\n";
-		competitionList += mStages.exportStagesCsvString() + "\n";
-		competitionList += "[/Stages]\n";
-		
-		// Competitors
-		competitionList += "[Competitors]\n";
-		competitionList += mCompetitors.exportCsvString(mCompetitionType);
-		competitionList += "[/Competitors]\n";
-
-		// Punches
-		competitionList += "[Punches]\n";
-		competitionList += mCompetitors.exportPunchesCsvString();
-		competitionList += "[/Punches]\n";		
-		
-		CompetitionHelper.exportString(activity, competitionList, "competition", mCompetitionName, "csv");
 	}
 	
 	/**
@@ -464,7 +327,6 @@ public class Competition implements Serializable {
 			saveSessionData(null);
 			saveSessionData(mCompetitionName);
 		} catch (Exception e1) {
-			Log.d("Competition", "Error = " + e1);
 		}
 	}
 	
