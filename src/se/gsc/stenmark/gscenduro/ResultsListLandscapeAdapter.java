@@ -116,8 +116,8 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 				
 			
 				for(int stageNumber = 0; stageNumber < competition.getStages().size(); stageNumber++) {
-					Long fastestTimeOnStage = competition.getFastestOnStage(competition.getTotalResults().title, stageNumber); 
-					Long slowestTimeOnStage = competition.calculateSlowestOnStage(competition.getTotalResults().title, stageNumber);
+					Long fastestTimeOnStage = competition.getStages().get(stageNumber).getFastestTime();
+					Long slowestTimeOnStage = competition.getStages().get(stageNumber).calculateSlowestOnStage();
 					Long competitorStageTime = competition.getStages().get(stageNumber).getStageResultByCardnumber(cardNumber).getStageTime();			
 					String StageTime = CompetitionHelper.milliSecToMinSecMilliSec(competitorStageTime);
 					rank = competition.getStages().get(stageNumber).getStageResultByCardnumber(cardNumber).getRank();

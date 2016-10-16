@@ -317,19 +317,19 @@ public class CompetitionTest {
 		
 		competition.calculateResults();
 		
-		Long slowestOnStage1Filter = competition.calculateSlowestOnStage(COMP_CLASS_TO_TEST, 1);
+		Long slowestOnStage1Filter = competition.getStages().get(0).calculateSlowestOnStage();
 		System.out.println("Slowest on stage 1 with filter " + slowestOnStage1Filter);
-		Long fastestOnStage1 = competition.getFastestOnStage(COMP_CLASS_TO_TEST, 1);
+		Long fastestOnStage1 = competition.getStages().get(0).getFastestTime();
 		System.out.println("Fastest on stage 1 " + fastestOnStage1);
 		
-		Long slowestOnStage2Filter = competition.calculateSlowestOnStage(COMP_CLASS_TO_TEST, 2);
+		Long slowestOnStage2Filter = competition.getStages().get(1).calculateSlowestOnStage();
 		System.out.println("Slowest on stage 2 with filter  " + slowestOnStage2Filter);
-		Long fastestOnStage2 = competition.getFastestOnStage(COMP_CLASS_TO_TEST, 2);
+		Long fastestOnStage2 = competition.getStages().get(1).getFastestTime();
 		System.out.println("Fastest on stage 2 " + fastestOnStage2);
 		
-		Long slowestOnStage3Filter = competition.calculateSlowestOnStage(COMP_CLASS_TO_TEST, 3);
+		Long slowestOnStage3Filter = competition.getStages().get(2).calculateSlowestOnStage();
 		System.out.println("Slowest on stage 3 with filter  " + slowestOnStage3Filter);
-		Long fastestOnStage3 = competition.getFastestOnStage(COMP_CLASS_TO_TEST, 3);
+		Long fastestOnStage3 = competition.getStages().get(2).getFastestTime();
 		System.out.println("Fastest on stage 3  " + fastestOnStage3);
 		
 		
@@ -354,14 +354,14 @@ public class CompetitionTest {
 		
 		competition.calculateResults();
 	
-		Long slowestOnStage4Filter = competition.calculateSlowestOnStage(COMP_CLASS_TO_TEST, 4);
+		Long slowestOnStage4Filter = competition.getStages().get(3).calculateSlowestOnStage();
 		System.out.println("Slowest on stage 4 with filter  " + slowestOnStage4Filter);
-		Long fastestOnStage4 = competition.getFastestOnStage(COMP_CLASS_TO_TEST, 4);
+		Long fastestOnStage4 = competition.getStages().get(3).getFastestTime();
 		System.out.println("Fastest on stage 4 " + fastestOnStage4);
 		
-		Long slowestOnStage5Filter = competition.calculateSlowestOnStage(COMP_CLASS_TO_TEST, 5);
+		Long slowestOnStage5Filter = competition.getStages().get(4).calculateSlowestOnStage();
 		System.out.println("Slowest on stage 5 with filter  " + slowestOnStage5Filter);
-		Long fastestOnStage5 = competition.getFastestOnStage(COMP_CLASS_TO_TEST, 5);
+		Long fastestOnStage5 = competition.getStages().get(4).getFastestTime();
 		System.out.println("Fastest on stage 5  " + fastestOnStage5);
 		
 		//Stage 1 and Stage 2 just test normal functionality

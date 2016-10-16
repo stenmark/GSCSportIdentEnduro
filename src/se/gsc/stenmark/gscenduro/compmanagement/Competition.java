@@ -3,14 +3,12 @@ package se.gsc.stenmark.gscenduro.compmanagement;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
-
 
 /**
  * Represents a competition with a stage, List of competitors and the name of
@@ -38,18 +36,12 @@ public class Competition implements Serializable {
 	private Stage totalResults = null;
 	private Competitors mCompetitors = null;
 	private List<Stage> stages = new ArrayList<Stage>();
-	//OLD VERSION
-//	private ResultList<Results> mResults = null;
-//	private List<Results> mResultLandscapeList = null;
 	private String mCompetitionName;
 	private String mCompetitionDate = "";
 	private int mCompetitionType = SVART_VIT_TYPE;
 	
 	public Competition() {
 		totalResults = new Stage();
-		//OLD VERSION
-//		mResults = new ResultList<Results>();
-//		mResultLandscapeList = new ArrayList<Results>();
 		mCompetitors = new Competitors();
 		setCompetitionName("New");
 		
@@ -57,20 +49,7 @@ public class Competition implements Serializable {
 		String currentDateandTime = sdf.format(new Date());
 		setCompetitionDate(currentDateandTime);
 	}
-		
-	public Long getFastestOnStage(String competitorClass, int stageNumber) {
-		//OLD VERSION
-//		if( !mResults.getStageResult(stageNumber, competitorClass).getStageResult().isEmpty() ){
-//			return mResults.getStageResult(stageNumber, competitorClass).getStageResult().get(0).getStageTime();
-//		}
-		
-		stageNumber=stageNumber-1;  //Convert to 0 indexed
-		if( !stages.get(stageNumber).getCompetitorResults().isEmpty()){
-			return stages.get(stageNumber).getCompetitorResults().get(0).getStageTime();
-		}
-		return 0L;
-	}
-	
+			
 	public Stage getTotalResults(){
 		return totalResults;
 	}
@@ -125,73 +104,7 @@ public class Competition implements Serializable {
 		return status;
 	}
 	
-	/**
-	 * Get slowest stage time with maximum deviation from median time.
-	 * Calculates the median time difference between all adjacent competitors and then return the slowest stage time
-	 * with maximum two times deviation from  median time difference. The idea is to exclude very slow times from the calculation
-	 * @param competitorClass
-	 * @param stageNumber
-	 * @param resultsList
-	 * @return
-	 */
-	public Long calculateSlowestOnStage(String competitorClass, int stageNumber) {
-		if( getCompetitors().size() == 0){
-			return 0L;
-		}
-		List<Long>timeDeltaList = new ArrayList<Long>();
-		//OLD VERSION
-//		Results stageResultForAllCompetitors = mResults.get(stageNumber);
-		List<StageResult> competitorResults = stages.get(stageNumber-1).getCompetitorResults();
-		//OLD VERSION
-//		for( int currentCompetitorNumber = 0; currentCompetitorNumber < (stageResultForAllCompetitors.getStageResult().size()-1); currentCompetitorNumber++ ){
-		for( int currentCompetitorNumber = 0; currentCompetitorNumber < competitorResults.size()-1; currentCompetitorNumber++){
-			int nextCompetitorNumber = currentCompetitorNumber+1;
-			//OLD VERSION
-//			Long currentCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(currentCompetitorNumber).getStageTime();
-//			Long nextCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(nextCompetitorNumber).getStageTime();
-			Long currentCompetitorStageTime = competitorResults.get(currentCompetitorNumber).getStageTime();
-			Long nextCompetitorStageTime = competitorResults.get(nextCompetitorNumber).getStageTime();
-			if( currentCompetitorStageTime != Competition.NO_TIME_FOR_STAGE && nextCompetitorStageTime != Competition.NO_TIME_FOR_STAGE ){
-				timeDeltaList.add(nextCompetitorStageTime - currentCompetitorStageTime);
-			}
-		}	
-		Collections.sort(timeDeltaList);
-		
-		Long medianTimeDelta = 0L;
-		if( !timeDeltaList.isEmpty() ){
-			medianTimeDelta = timeDeltaList.get(timeDeltaList.size()/2);
-			//If the competitors are very close on the stage (low median time delta) we set a minimum medianTimeDelta of 5 to prevent early cutoff
-			if( medianTimeDelta < 7){
-				medianTimeDelta = 7L;
-			}
-		}
-
-		
-		//OLD VERSION
-//		for( int currentCompetitorNumber = 0; currentCompetitorNumber < (stageResultForAllCompetitors.getStageResult().size()-1); currentCompetitorNumber++ ){
-		for( int currentCompetitorNumber = 0; currentCompetitorNumber < competitorResults.size()-1; currentCompetitorNumber++){
-			int nextCompetitorNumber = currentCompetitorNumber+1;
-			//OLD VERSION
-//			Long currentCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(currentCompetitorNumber).getStageTime();
-//			Long nextCompetitorStageTime = stageResultForAllCompetitors.getStageResult().get(nextCompetitorNumber).getStageTime();
-			Long currentCompetitorStageTime = competitorResults.get(currentCompetitorNumber).getStageTime();
-			Long nextCompetitorStageTime = competitorResults.get(nextCompetitorNumber).getStageTime();
-
-			Long timeDelta = nextCompetitorStageTime - currentCompetitorStageTime;
-			//Filter out competitors that are a lot slower than most competitors. 
-			//only filter out competitors that are from the lower half of the competitor list (Use timeDelta list since it already contains only competitors with stage times set
-			if( (timeDelta > medianTimeDelta*4) && (currentCompetitorNumber > (timeDeltaList.size()/2)) ){
-				return currentCompetitorStageTime;
-			}
-		}
-		//OLD VERSION
-//		return stageResultForAllCompetitors.getStageResult().get( stageResultForAllCompetitors.getStageResult().size()-1 ).getStageTime();
-		return competitorResults.get( competitorResults.size()-1 ).getStageTime();
-	}	
-	
 	public void calculateResults() {
-		//OLD VERSION
-//		mResults.clear();		
 		clearResults();
 		
 		//Get Competitor Classes
@@ -211,19 +124,8 @@ public class Competition implements Serializable {
 			} 		
 				
 			// Add total title
-			//OLD VERSION
-//			Results result = new Results(classString + "Total time");
-//			mResults.addTotalResult(result, competitorClass);
 			totalResults.title = classString + "Total time";
 	
-			//OLD VERSION
-//			// Add stage titles
-//			List<Results> tmpResultList = new ArrayList<Results>();
-//			for (int i = 1; i < mStages.size() + 1; i++) {
-//				result = new Results(classString + "Stage " + i);
-//				tmpResultList.add(result);
-//			}
-//			mResults.addAllStageResults( tmpResultList, competitorClass );
 			for (int i = 0; i < stages.size(); i++) {
 				stages.get(i).title = classString + "Stage " + (i+1);
 			}
@@ -241,14 +143,10 @@ public class Competition implements Serializable {
 					else {
 						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), currentCompetitor.getTotalTime( getNumberOfStages() ));							
 					}
-					//OLD VERSION
-//					mResults.getTotalResult(competitorClass).addTotalTimeResult(totalTimeResult);	
 					totalResults.addCompetitorResult(totalTimeResult);
 				}
 			}		
 			//Sort total times
-			//OLD VERSION
-//			mResults.getTotalResult(competitorClass).sortStageResult( NO_TIME_FOR_COMPETITION );	
 			totalResults.sortStageResult(NO_TIME_FOR_COMPETITION);
 
 			StageResult stageResult;
@@ -264,75 +162,20 @@ public class Competition implements Serializable {
 						} 
 		
 						stageResult = new StageResult(currentCompetitor.getCardNumber(), stageTime);
-						//OLD VERSION
-//						mResults.getStageResult(stageNumber,competitorClass).addStageResult(stageResult);
 						stages.get(stageNumber).addCompetitorResult(stageResult);
 					}						
 				}
 	
 				//Sort stages times
-				//OLD VERSION
-//				mResults.getStageResult(stageNumber,competitorClass).sortStageResult( NO_TIME_FOR_STAGE );
 				stages.get(stageNumber).sortStageResult(NO_TIME_FOR_STAGE);
 			}
 
 			//Calculate time back
-			calculateTimeBack(totalResults);
+			totalResults.calculateTimeBack();
 			for( Stage currentStage : stages ) {
-				calculateTimeBack(currentStage);
+				currentStage.calculateTimeBack();
 			}
-					
-			//OLD VERSION
-//			//Calculate results for landscape
-//			if (mStages != null ) {
-//				for (StageResult totalTimeResultForCompetitor : mResults.getTotalResult(competitorClass).getTotalTimeResult()) {							
-//					int cardNumber = totalTimeResultForCompetitor.getCardNumber();				
-//					Results resultLandscapeObject = new Results("");	
-//					//We need to create a true copy of the totalTimeResult for each competitor, otherwise we will overwrite in the original List
-//					resultLandscapeObject.addTotalTimeResult((StageResult) AndroidIndependantCompetitionHelper.deepClone(totalTimeResultForCompetitor));					
-//					for (int stage = 1; stage <= mResults.getAllStageResults(competitorClass).size(); stage++) {										
-//						StageResult newStageResult = new StageResult(cardNumber, NO_TIME_FOR_STAGE );					
-//						for (StageResult stageResultObject : mResults.getStageResult(stage,competitorClass).getStageResult()) {						
-//							if (cardNumber == stageResultObject.getCardNumber()) {
-//								newStageResult = stageResultObject;
-//							}
-//							if (newStageResult.getStageTime() == NO_TIME_FOR_STAGE) {
-//								newStageResult.setStageTimes(Competition.NO_TIME_FOR_STAGE);
-//							}
-//						}
-//												
-//						resultLandscapeObject.addStageResult(newStageResult);
-//					}
-//					
-//					if (competitorClass.length() > 0) {
-//						resultLandscapeObject.setTitle(competitorClass);
-//					}
-//					mResultLandscapeList.add(resultLandscapeObject);
-//				}
-//			}
-			
-
 		}
-	}
-	
-	private void calculateTimeBack( Stage stage){
-		//OLD VERSION
-//		for (StageResult currentStageResult : currentResult.getStageResult() ) {
-		for (StageResult currentStageResult : stage.getCompetitorResults() ) {
-			Long stageTimeBack = NO_TIME_FOR_STAGE;
-			Long currentStageTime = currentStageResult.getStageTime();
-			if (currentStageTime != NO_TIME_FOR_STAGE && currentStageTime != COMPETITION_DNF && currentStageTime != NO_TIME_FOR_COMPETITION ) {
-				//OLD VERSION
-//				if (currentResult.getStageResult().size() > 0) {
-//					stageTimeBack = currentStageTime - currentResult.getStageResult().get(0).getStageTime();
-//				}
-				if (stage.getCompetitorResults().size() > 0) {
-					stageTimeBack = currentStageTime - stage.getFastestTime();
-				}
-			}
-			currentStageResult.setStageTimesBack(stageTimeBack);
-		}
-	
 	}
 	
 	public void importStages(String stagesToImport) {
