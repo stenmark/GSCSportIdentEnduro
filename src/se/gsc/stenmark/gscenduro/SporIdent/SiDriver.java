@@ -125,7 +125,8 @@ public class SiDriver {
     	card.setNumberOfPunches(numberOfPunches);
     	//Log.d("parseCard5Alt", "Number of punches: " + numberOfPunches + "\n"); 
     	
-    	byte firstStartMaker = (byte) comp.getStages().get(0).start;
+    	String anyClass = comp.getAllClasses().get(0);
+    	byte firstStartMaker = (byte) comp.getStages(anyClass).get(0).start;
     	int firstMarkerPos = 0;
     	int i = 0;
     	for( byte data : allData ){

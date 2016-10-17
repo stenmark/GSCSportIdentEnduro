@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 
 public class DialogAddCompetitor {
 	
@@ -136,17 +137,18 @@ public class DialogAddCompetitor {
 					
 					Map<String,Integer> parsingResults = new HashMap<String, Integer>();
 					StringBuffer errorMessage = new StringBuffer("");
-					boolean parsingError = mMainActivity.competition.getCompetitors().parseCompetitor("", 
-																								  nameInput.getText().toString(),
-																								  team, 
-																								  compClass, 
-																								  cardNumber, 
-																								  startNumber, 
-																								  startGroup, 
-																								  mMainActivity.competition.getCompetitionType(),
-																								  true,
-																								  errorMessage, 
-																								  parsingResults);	
+					boolean parsingError = CompetitionHelper.parseCompetitor("", 
+																			 nameInput.getText().toString(),
+																			 team, 
+																			 compClass, 
+																			 cardNumber, 
+																			 startNumber, 
+																			 startGroup, 
+																			 mMainActivity.competition.getCompetitionType(),
+																			 true,
+																			 mMainActivity.competition.getCompetitors(),
+																			 errorMessage, 
+																			 parsingResults);	
 	            	if ( parsingError ) {
 	            		Toast.makeText(mMainActivity, errorMessage, Toast.LENGTH_LONG).show();
 	        			PopupMessage dialog = new PopupMessage( errorMessage.toString() );
@@ -154,7 +156,7 @@ public class DialogAddCompetitor {
 	                    return;
 	            	} 
 					
-					mMainActivity.competition.getCompetitors().add(nameInput.getText().toString(), 
+					mMainActivity.competition.addCompetitor(nameInput.getText().toString(), 
 																   parsingResults.get("cardNumber"), 
 																   teamInput.getText().toString(), 
 																   competitorClassInput.getText().toString(), 

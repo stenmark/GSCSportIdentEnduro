@@ -84,7 +84,7 @@ public class DialogImportCompetition {
 							stageAdded = true;
 						} else if (line.equals("[/Competitors]")) {
 							importType = "";
-							errorText += mMainActivity.competition.getCompetitors().importCompetitors(importData, false, type, true);
+							errorText += CompetitionHelper.importCompetitors(importData, false, type, true, mMainActivity.competition);
 							competitorsAdded = true;
 						} else if (line.equals("[/Punches]")) {
 							importType = "";
@@ -166,7 +166,7 @@ public class DialogImportCompetition {
 							mMainActivity.competition.importStages(importData);
 						} else if (line.equals("[/Competitors]")) {
 							importType = "";
-							mMainActivity.competition.getCompetitors().importCompetitors(importData, false, mMainActivity.competition.getCompetitionType(),false);
+							CompetitionHelper.importCompetitors(importData, false, mMainActivity.competition.getCompetitionType(),false, mMainActivity.competition);
 						} else if (line.equals("[/Punches]")) {
 							importType = "";
 							mMainActivity.competition.getCompetitors().importPunches(importData, mMainActivity.competition.getStages(), mMainActivity.competition.getCompetitionType());

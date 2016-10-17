@@ -83,8 +83,14 @@ public class StatusFragment extends Fragment {
 				final EditText dateInput = (EditText) promptsView.findViewById(R.id.date_input);	
 				dateInput.setText(competition.getCompetitionDate());																		
 				
-				final EditText stagesInput = (EditText) promptsView.findViewById(R.id.modify_stages_manually_input);	
-				stagesInput.setText(CompetitionHelper.exportStagesCsvString(competition.getStages()));
+				final EditText stagesInput = (EditText) promptsView.findViewById(R.id.modify_stages_manually_input);
+				List<String> allClasses = competition.getAllClasses();
+				if( !allClasses.isEmpty()){
+					stagesInput.setText(CompetitionHelper.exportStagesCsvString(competition.getStages(allClasses.get(0))));
+				}
+				else{
+					stagesInput.setText("No Competitor classes found");
+				}
 				
 				if (competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {
 					layoutModifyStageSpinner.setVisibility(View.VISIBLE);
@@ -106,7 +112,7 @@ public class StatusFragment extends Fragment {
 		        ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_spinner_item, numerOfStages);
 		        LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
 		        spinner.setAdapter(LTRadapter);			
-		        spinner.setSelection(competition.getStages().size() - 1);						
+		        spinner.setSelection(competition.getNumberOfStages());						
 				
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mMainActivity);	
 				alertDialogBuilder.setTitle("Modify competitor");
@@ -231,8 +237,9 @@ public class StatusFragment extends Fragment {
 			}
 			
 			statusTextView = (TextView) getView().findViewById(R.id.stages_status);
-			if ( CompetitionHelper.stageStatusAsString( mMainActivity.competition.getStages() ) != null) {
-				statusTextView.setText( CompetitionHelper.stageStatusAsString( mMainActivity.competition.getStages() ) );
+			List<String> allClasses = mMainActivity.competition.getAllClasses();
+			if(!allClasses.isEmpty()){
+				statusTextView.setText( CompetitionHelper.stageStatusAsString( mMainActivity.competition.getStages(allClasses.get(0)) ) );
 			}
 			
 			statusTextView = (TextView) getView().findViewById(R.id.competitor_status);	
@@ -242,7 +249,7 @@ public class StatusFragment extends Fragment {
 				}
 			} else {					
 				String numberOfCompetitors = "";
-				for (String competitorClass : mMainActivity.competition.getCompetitors().getCompetitorClasses()) {
+				for (String competitorClass : mMainActivity.competition.getAllClasses() ) {
 					
 					if (numberOfCompetitors.length() != 0) {
 						numberOfCompetitors += "\n";

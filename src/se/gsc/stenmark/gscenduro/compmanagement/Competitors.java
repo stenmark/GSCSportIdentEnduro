@@ -7,7 +7,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 public class Competitors implements Serializable {
 
 	private static final long serialVersionUID = 44L;
-	private String errorText = "";
 	private LinkedHashMap<Integer,Competitor> mCompetitors = null;
 	
 	public Competitors() {
@@ -55,44 +53,10 @@ public class Competitors implements Serializable {
 		}
 	}	
 		
-	private String checkData(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup, int type, Boolean checkAgainstCurrent) {
-		errorText = "";
 
-		if(name.isEmpty()) {
-			errorText += "Could not import competeitor with card number " + cardNumber + " the name is empty\n";				
-		} else if (checkAgainstCurrent && checkIfCardNumberExists(cardNumber)) {
-			errorText += "Could not import competitor " + name + " Card number " + cardNumber + " already exists\n";              
-		} else if(getCompetitors() != null) {
-			if (checkIfCardNumberExists(cardNumber, getCompetitors())) {
-				errorText += "Could not import competitor " + name + " Card number " + cardNumber + " already exists\n";   
-			} 
-		}
-		
-		if( type == Competition.ESS_TYPE){
-			if( competitorClass.isEmpty() ){
-				errorText += "Incorrect competitor class\n";		
-			}
-			if( team.isEmpty()){
-				errorText += "Incorrect team\n";
-			}
-			if(checkIfStartNumberExists(startNumber)){
-				errorText += "Start number already exists\n";	 
-			}
-			if(getCompetitors() != null) {
-				if( checkIfStartNumberExists(startNumber, getCompetitors()) ){
-					errorText += "Start number already exists\n";	
-				}
-			}
-		}
-		
-		return errorText;
-	}
 	
-	public void add(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup, int type) {				
-		name = name.replaceFirst("\\s+$", "");
-		Competitor competitor = new Competitor(name, cardNumber, team, competitorClass, startNumber, startGroup);
+	public void add( int cardNumber, Competitor competitor) {				
 		mCompetitors.put(cardNumber,competitor);
-
 		sort();
 	}	
 	
@@ -173,19 +137,20 @@ public class Competitors implements Serializable {
 		return null;
 	}	
 	
-	public List<String> getCompetitorClasses() {		
-		List<String> competitorClasses = new ArrayList<String>();		
-		for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.entrySet() ) {
-			Competitor competitor = currentCompetitorEntry.getValue();
-			String competitorClass = competitor.getCompetitorClass();
-			if (competitorClasses.contains(competitorClass)) {
-				//Already in list
-			} else {
-				competitorClasses.add(competitor.getCompetitorClass());
-			}
-		}
-		return competitorClasses;
-	}	
+//OLD VERSION	
+//	public List<String> getCompetitorClasses() {		
+//		List<String> competitorClasses = new ArrayList<String>();		
+//		for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.entrySet() ) {
+//			Competitor competitor = currentCompetitorEntry.getValue();
+//			String competitorClass = competitor.getCompetitorClass();
+//			if (competitorClasses.contains(competitorClass)) {
+//				//Already in list
+//			} else {
+//				competitorClasses.add(competitor.getCompetitorClass());
+//			}
+//		}
+//		return competitorClasses;
+//	}	
 			
 	public String exportCsvString(int type) {
 		String competitorsAsCsv = "";
@@ -286,130 +251,6 @@ public class Competitors implements Serializable {
 		return checkIfStartNumberExists(startNumber, mCompetitors);
 	}	
 
-	public String importCompetitors(String newCompetitors, Boolean keep, int type, boolean onlyCheckDontAdd) throws NumberFormatException, IOException {	
-		StringBuffer errorMessage = new StringBuffer("");
-		String name = "";
-		String cardNumberAsString = "";
-		String team = "";
-		String competitorClass = "";
-		String startNumberAsString = "-1";
-		String startGroupAsString = "-1";
-		String line = null;
-		BufferedReader bufReader = new BufferedReader(new StringReader(newCompetitors));
-		
-		if (!keep) {
-			mCompetitors.clear();
-		}
-		
-		while ((line = bufReader.readLine()) != null) {	
-			boolean parsingError = false;
-			String[] parsedLine = line.split(",");
-			if (type == Competition.ESS_TYPE) { 
-				if( parsedLine.length == 6){
-					name = parsedLine[0];
-					cardNumberAsString = parsedLine[1];
-					team = parsedLine[2];
-					competitorClass = parsedLine[3];
-					startNumberAsString = parsedLine[4];			
-					startGroupAsString = parsedLine[5];
-				}
-				else{
-					//Ignore empty lines (Dont print error message)
-					if( !(line.replace(" ", "").isEmpty())){
-						errorMessage.append( "Could not import " + line + ". Wrong format. Expected \"name,cardNumber,Team,CompetitorClass,StartNumber,StartGroup\". Found " + (parsedLine.length-1) + " Comma(,) signs. Expected 5\n");
-					}
-					continue;
-				}
-			} else {	
-				if( parsedLine.length == 2){
-					name = parsedLine[0];
-					cardNumberAsString = parsedLine[1];
-				}
-				else{
-					//Ignore empty lines (Dont print error message)
-					if( !(line.replace(" ", "").isEmpty())){
-						errorMessage.append( "Could not import " + line + ". Wrong format. Expected \"name,cardNumber\". Found " + (parsedLine.length-1) + " Comma(,) signs. Expected 1\n" );
-					}
-					continue;
-				}
-			}	
-			
-			Integer cardNumber = -1;
-			Integer startNumber = -1;
-			Integer startGroup = -1;
-			Map<String,Integer> parsingResults = new HashMap<String, Integer>();
-			parsingError = parseCompetitor(line,name, team, competitorClass, cardNumberAsString, startNumberAsString, startGroupAsString, type, keep,errorMessage, parsingResults);
-			cardNumber = parsingResults.get("cardNumber");
-			startNumber = parsingResults.get("startNumber");
-			startGroup = parsingResults.get("startGroup");
-			
-			if( !parsingError ){
-				if( !onlyCheckDontAdd){
-					add(name, cardNumber, team, competitorClass, startNumber,startGroup , type);
-				}
-			}
-		}
-		return errorMessage.toString();
-	}	
-	
-	public boolean parseCompetitor( String lineToParse, 
-									String name,
-									String team,
-									String competitorClass,
-									String cardNumberAsString, 
-									String startNumberAsString, 
-									String startGroupAsString, 
-									int type,
-									boolean checkCurrentCompetitors,
-									StringBuffer errorMessage, 
-									Map<String,Integer> results){
-		boolean parsingError = false;
-		 int cardNumber = -1;
-		 int startNumber = -1;
-		 int startGroup = -1;
-		
-		//Remove all none digits
-		cardNumberAsString = cardNumberAsString.replaceAll("[^\\d]", ""); 
-		startNumberAsString = startNumberAsString.replaceAll("[^\\d]", ""); 
-		startGroupAsString = startGroupAsString.replaceAll("[^\\d]", "");
-
-		try{
-			cardNumber = Integer.parseInt(cardNumberAsString);
-		}
-		catch( NumberFormatException e){
-			errorMessage.append( "Could not import " + lineToParse + ". Could not interpret cardNumber" + cardNumberAsString + "\n");
-			parsingError = true;
-		}
-		
-		try{
-			startNumber = Integer.parseInt(startNumberAsString);
-		}
-		catch( NumberFormatException e){
-			errorMessage.append( "Could not import " + lineToParse + ". Could not interpret startNumber" + startNumberAsString + "\n");
-			parsingError = true;
-		}
-		
-		try{
-			startGroup = Integer.parseInt(startGroupAsString);
-		}
-		catch( NumberFormatException e){
-			errorMessage.append( "Could not import " + lineToParse + ". Could not interpret startGroup" + startGroupAsString + "\n");
-			parsingError = true;
-		}
-		
-		results.clear();
-		results.put("cardNumber", cardNumber);
-		results.put("startNumber", startNumber);
-		results.put("startGroup", startGroup);
-		
-		String checkDataResp = checkData(name, cardNumber, team, competitorClass, startNumber, startGroup, type, checkCurrentCompetitors);
-		if( !checkDataResp.isEmpty()){
-			parsingError = true;
-			errorMessage.append(checkDataResp);
-		}
-		
-		return parsingError;
-	}
 	
 	public void importPunches(String punches, List<Stage> stages, int type) throws IOException {		
 		BufferedReader bufReader = new BufferedReader(new StringReader(punches));

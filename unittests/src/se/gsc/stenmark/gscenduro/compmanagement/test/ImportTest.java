@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitors;
 
 public class ImportTest {
@@ -16,62 +17,62 @@ public class ImportTest {
 		System.out.println("Starting ImportCompetitors test");
 		
 		System.out.println("Test normal SvartVitt correct input");
-		Competitors competitorsSvartVitt = new Competitors();
-		String errorMessage = competitorsSvartVitt.importCompetitors("Sverker Gustafsson,8633671\nLars Kastensson,8633672\nErik Holmberg,8633673\nFässberg,8633674\nMattias Holmgren,8633675\nHellberg,8633676\nHans Hellsmark,8633677\nPatrik Capretti,8633678\nFredrik Svensson,8633679\nIngemar Gustavsson,8633680\nElin Andreasson,8633681\nAndreas Haag,8633682\nMikael Nordqvist,8633683\nAndreasNäs,8633684\nGerry Bohm,8633685\nAndreas Nilvander,8633686\nJonas Blomster,8633687\nPontus Olofsson,8633688\nPer Johan Andersson,8633689\nMoisés Clemente,8633690\nMark Brannan,8633691\nErik Österberg,8633692", false, Competition.SVART_VIT_TYPE, false);
-		verifySvartVit(competitorsSvartVitt, errorMessage,22);
+		Competition competition = new Competition();
+		String errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson,8633671\nLars Kastensson,8633672\nErik Holmberg,8633673\nFässberg,8633674\nMattias Holmgren,8633675\nHellberg,8633676\nHans Hellsmark,8633677\nPatrik Capretti,8633678\nFredrik Svensson,8633679\nIngemar Gustavsson,8633680\nElin Andreasson,8633681\nAndreas Haag,8633682\nMikael Nordqvist,8633683\nAndreasNäs,8633684\nGerry Bohm,8633685\nAndreas Nilvander,8633686\nJonas Blomster,8633687\nPontus Olofsson,8633688\nPer Johan Andersson,8633689\nMoisés Clemente,8633690\nMark Brannan,8633691\nErik Österberg,8633692", false, Competition.SVART_VIT_TYPE, false,competition);
+		verifySvartVit(competition.getCompetitors(), errorMessage,22);
 		
 		System.out.println("Test SvartVitt empty lines and double/triple etc. empty lines");
-		competitorsSvartVitt = new Competitors();
-		errorMessage = competitorsSvartVitt.importCompetitors("Sverker Gustafsson,8633671\n\n\nLars Kastensson,8633672\nErik Holmberg,8633673\n    \nFässberg,8633674\n\n\n\n\nMattias Holmgren,8633675\nHellberg,8633676\nHans Hellsmark,8633677\nPatrik Capretti,8633678\nFredrik Svensson,8633679\nIngemar Gustavsson,8633680\nElin Andreasson,8633681\nAndreas Haag,8633682\nMikael Nordqvist,8633683\nAndreasNäs,8633684\nGerry Bohm,8633685\nAndreas Nilvander,8633686\nJonas Blomster,8633687\nPontus Olofsson,8633688\nPer Johan Andersson,8633689\nMoisés Clemente,8633690\nMark Brannan,8633691\nErik Österberg,8633692\n\n\n\n\n", false, Competition.SVART_VIT_TYPE, false);
-		verifySvartVit(competitorsSvartVitt, errorMessage,22);
+		competition = new Competition();
+		errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson,8633671\n\n\nLars Kastensson,8633672\nErik Holmberg,8633673\n    \nFässberg,8633674\n\n\n\n\nMattias Holmgren,8633675\nHellberg,8633676\nHans Hellsmark,8633677\nPatrik Capretti,8633678\nFredrik Svensson,8633679\nIngemar Gustavsson,8633680\nElin Andreasson,8633681\nAndreas Haag,8633682\nMikael Nordqvist,8633683\nAndreasNäs,8633684\nGerry Bohm,8633685\nAndreas Nilvander,8633686\nJonas Blomster,8633687\nPontus Olofsson,8633688\nPer Johan Andersson,8633689\nMoisés Clemente,8633690\nMark Brannan,8633691\nErik Österberg,8633692\n\n\n\n\n", false, Competition.SVART_VIT_TYPE, false,competition);
+		verifySvartVit(competition.getCompetitors(), errorMessage,22);
 		
 		System.out.println("Test SvartVitt import with semicolon instead of colon");
-		competitorsSvartVitt = new Competitors();
-		errorMessage = competitorsSvartVitt.importCompetitors("Sverker Gustafsson;8633671\nLars Kastensson;8633672\nErik Holmberg;8633673\nFässberg;8633674\nMattias Holmgren;8633675\nHellberg;8633676\nHans Hellsmark;8633677\nPatrik Capretti;8633678\nFredrik Svensson;8633679\nIngemar Gustavsson;8633680\nElin Andreasson;8633681\nAndreas Haag;8633682\nMikael Nordqvist;8633683\nAndreasNäs;8633684\nGerry Bohm;8633685\nAndreas Nilvander;8633686\nJonas Blomster;8633687\nPontus Olofsson;8633688\nPer Johan Andersson;8633689\nMoisés Clemente;8633690\nMark Brannan;8633691\nErik Österberg;8633692", false, Competition.SVART_VIT_TYPE, false);
+		competition = new Competition();
+		errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson;8633671\nLars Kastensson;8633672\nErik Holmberg;8633673\nFässberg;8633674\nMattias Holmgren;8633675\nHellberg;8633676\nHans Hellsmark;8633677\nPatrik Capretti;8633678\nFredrik Svensson;8633679\nIngemar Gustavsson;8633680\nElin Andreasson;8633681\nAndreas Haag;8633682\nMikael Nordqvist;8633683\nAndreasNäs;8633684\nGerry Bohm;8633685\nAndreas Nilvander;8633686\nJonas Blomster;8633687\nPontus Olofsson;8633688\nPer Johan Andersson;8633689\nMoisés Clemente;8633690\nMark Brannan;8633691\nErik Österberg;8633692", false, Competition.SVART_VIT_TYPE, false,competition);
 		System.out.println(errorMessage);
-		verifySvartVit(competitorsSvartVitt, errorMessage,0);
+		verifySvartVit(competition.getCompetitors(), errorMessage,0);
 		
 		System.out.println("Test SvartVitt import with just name (no card)");
-		competitorsSvartVitt = new Competitors();
-		errorMessage = competitorsSvartVitt.importCompetitors("Sverker", false, Competition.SVART_VIT_TYPE, false);
+		competition = new Competition();
+		errorMessage = CompetitionHelper.importCompetitors("Sverker", false, Competition.SVART_VIT_TYPE, false,competition);
 		System.out.println(errorMessage);
-		verifySvartVit(competitorsSvartVitt, errorMessage,0);
+		verifySvartVit(competition.getCompetitors(), errorMessage,0);
 		
 		System.out.println("Test SvartVitt import with just card (no name)");
-		competitorsSvartVitt = new Competitors();
-		errorMessage = competitorsSvartVitt.importCompetitors(",1234", false, Competition.SVART_VIT_TYPE, false);
+		competition = new Competition();
+		errorMessage = CompetitionHelper.importCompetitors(",1234", false, Competition.SVART_VIT_TYPE, false,competition);
 		System.out.println(errorMessage);
-		verifySvartVit(competitorsSvartVitt, errorMessage,0);
+		verifySvartVit(competition.getCompetitors(), errorMessage,0);
 		
 		System.out.println("Test SvartVitt import same cardnumber twice");
-		competitorsSvartVitt = new Competitors();
-		errorMessage = competitorsSvartVitt.importCompetitors("Sverker Gustafsson,8633671\nLars Kastensson,8633672\nErik Holmberg,8633673\nFässberg,8633674\nMattias Holmgren,8633675\nHellberg,8633676\nHans Hellsmark,8633677\nPatrik Capretti,8633678\nFredrik Svensson,8633679\nIngemar Gustavsson,8633680\nElin Andreasson,8633681\nAndreas Haag,8633682\nMikael Nordqvist,8633683\nAndreasNäs,8633684\nGerry Bohm,8633685\nAndreas Nilvander,8633686\nJonas Blomster,8633687\nPontus Olofsson,8633688\nPer Johan Andersson,8633671\nMoisés Clemente,8633690\nMark Brannan,8633691\nErik Österberg,8633692", false, Competition.SVART_VIT_TYPE, false);
+		competition = new Competition();
+		errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson,8633671\nLars Kastensson,8633672\nErik Holmberg,8633673\nFässberg,8633674\nMattias Holmgren,8633675\nHellberg,8633676\nHans Hellsmark,8633677\nPatrik Capretti,8633678\nFredrik Svensson,8633679\nIngemar Gustavsson,8633680\nElin Andreasson,8633681\nAndreas Haag,8633682\nMikael Nordqvist,8633683\nAndreasNäs,8633684\nGerry Bohm,8633685\nAndreas Nilvander,8633686\nJonas Blomster,8633687\nPontus Olofsson,8633688\nPer Johan Andersson,8633671\nMoisés Clemente,8633690\nMark Brannan,8633691\nErik Österberg,8633692", false, Competition.SVART_VIT_TYPE, false,competition);
 		System.out.println(errorMessage);
-		verifySvartVit(competitorsSvartVitt, errorMessage,21);
+		verifySvartVit(competition.getCompetitors(), errorMessage,21);
 		
 		System.out.println("Test SvartVitt import with same name twice");
-		competitorsSvartVitt = new Competitors();
-		errorMessage = competitorsSvartVitt.importCompetitors("Sverker,1234\nSverker,45667", false, Competition.SVART_VIT_TYPE, false);
+		competition = new Competition();
+		errorMessage = CompetitionHelper.importCompetitors("Sverker,1234\nSverker,45667", false, Competition.SVART_VIT_TYPE, false,competition);
 		System.out.println(errorMessage);
-		assertEquals("Sverker", competitorsSvartVitt.getByCardNumber(1234).getName());
-		assertEquals("Sverker", competitorsSvartVitt.getByCardNumber(45667).getName());
-		assertEquals(2, competitorsSvartVitt.size());
+		assertEquals("Sverker", competition.getCompetitors().getByCardNumber(1234).getName() );
+		assertEquals("Sverker", competition.getCompetitors().getByCardNumber(45667).getName() );
+		assertEquals(2, competition.getCompetitors().size() );
 		
 		System.out.println("Test SvartVitt import with incorrect cardnumber");
-		competitorsSvartVitt = new Competitors();
-		errorMessage = competitorsSvartVitt.importCompetitors("Sverker Gustafsson,asdfg", false, Competition.SVART_VIT_TYPE, false);
+		competition = new Competition();
+		errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson,asdfg", false, Competition.SVART_VIT_TYPE, false,competition);
 		System.out.println(errorMessage);
-		verifySvartVit(competitorsSvartVitt, errorMessage,0);
+		verifySvartVit(competition.getCompetitors(), errorMessage,0);
 		
 		System.out.println("Test normal ESS correct input");
-		Competitors competitorsEss = new Competitors();
-		errorMessage = competitorsEss.importCompetitors("Sverker Gustafsson,8633671,GSC,Motion,1,1\nLars Kastensson,8633672,GSC,Motion,2,grupp1\nErik Holmberg,8633673,GSC,Motion,3,grupp1\nFässberg,8633674,GSC,Motion,4,grupp1\nMattias Holmgren,8633675,GSC,Motion,5,grupp1\nHellberg,8633676,GSC,Motion,6,grupp1\nHans Hellsmark,8633677,GSC,Motion,7,grupp1\nPatrik Capretti,8633678,GSC,Motion,8,grupp1\nFredrik Svensson,8633679,GSC,Motion,9,1\nIngemar Gustavsson,8633680,GSC,Motion,10,1", false, Competition.ESS_TYPE, false);
-		verifyEss(competitorsEss, errorMessage);
+		competition = new Competition();
+		errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson,8633671,GSC,Motion,1,1\nLars Kastensson,8633672,GSC,Motion,2,grupp1\nErik Holmberg,8633673,GSC,Motion,3,grupp1\nFässberg,8633674,GSC,Motion,4,grupp1\nMattias Holmgren,8633675,GSC,Motion,5,grupp1\nHellberg,8633676,GSC,Motion,6,grupp1\nHans Hellsmark,8633677,GSC,Motion,7,grupp1\nPatrik Capretti,8633678,GSC,Motion,8,grupp1\nFredrik Svensson,8633679,GSC,Motion,9,1\nIngemar Gustavsson,8633680,GSC,Motion,10,1", false, Competition.ESS_TYPE, false,competition);
+		verifyEss(competition.getCompetitors(), errorMessage);
 		
 		System.out.println("Test ESS empty lines and double/triple etc. empty lines");
-		competitorsEss = new Competitors();
-		errorMessage = competitorsEss.importCompetitors("Sverker Gustafsson,8633671,GSC,Motion,1,1\n \n \nLars Kastensson,8633672,GSC,Motion,2,grupp1\n\n\n\nErik Holmberg,8633673,GSC,Motion,3,grupp1\nFässberg,8633674,GSC,Motion,4,grupp1\nMattias Holmgren,8633675,GSC,Motion,5,grupp1\nHellberg,8633676,GSC,Motion,6,grupp1\nHans Hellsmark,8633677,GSC,Motion,7,grupp1\nPatrik Capretti,8633678,GSC,Motion,8,grupp1\nFredrik Svensson,8633679,GSC,Motion,9,1\nIngemar Gustavsson,8633680,GSC,Motion,10,1\n\n\n\n\n", false, Competition.ESS_TYPE, false);
-		verifyEss(competitorsEss, errorMessage);
+		competition = new Competition();
+		errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson,8633671,GSC,Motion,1,1\n \n \nLars Kastensson,8633672,GSC,Motion,2,grupp1\n\n\n\nErik Holmberg,8633673,GSC,Motion,3,grupp1\nFässberg,8633674,GSC,Motion,4,grupp1\nMattias Holmgren,8633675,GSC,Motion,5,grupp1\nHellberg,8633676,GSC,Motion,6,grupp1\nHans Hellsmark,8633677,GSC,Motion,7,grupp1\nPatrik Capretti,8633678,GSC,Motion,8,grupp1\nFredrik Svensson,8633679,GSC,Motion,9,1\nIngemar Gustavsson,8633680,GSC,Motion,10,1\n\n\n\n\n", false, Competition.ESS_TYPE, false,competition);
+		verifyEss(competition.getCompetitors(), errorMessage);
 
 	}
 	
