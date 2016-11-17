@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class StageResult implements Serializable, Comparable<StageResult> {
 	
-	private static final long serialVersionUID = 201111020011L; 
+	private static final long serialVersionUID = 5L; 
 	private int mCardNumber;
 	private int mRank;
 	private Long mStageTime;

@@ -41,7 +41,7 @@ public class DialogImportPunches {
             	
 				try {					
 					PunchParser punchParser = new PunchParser();
-					punchParser.parsePunches(importPunchesInput.getText().toString(), mMainActivity.competition.getCompetitors().getCompetitors(), mMainActivity.competition.getStages());
+					punchParser.parsePunches(importPunchesInput.getText().toString(), mMainActivity.competition.getCompetitors().getCompetitors(), mMainActivity.competition.getStageDefinition());
 					
 					String statusMsg = punchParser.getStatus();
 					statusMsg += "Processing cards:\n";

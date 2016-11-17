@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -19,6 +20,7 @@ import se.gsc.stenmark.gscenduro.SporIdent.test.driverStubs.UsbDriverStub;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
+import se.gsc.stenmark.gscenduro.compmanagement.Stage;
 import se.gsc.stenmark.gscenduro.compmanagement.StageResult;
 
 public class CompetitionTest {
@@ -134,10 +136,10 @@ public class CompetitionTest {
 			}
 		}	
 		
-		String svartCsvResults = CompetitionHelper.getResultsAsCsvString(competition.getStages(COMP_CLASS_TO_TEST),
-																  						   competition.getTotalResults(COMP_CLASS_TO_TEST),
-																  						   competition.getCompetitors(),
-																  						   Competition.SVART_VIT_TYPE);
+		String svartCsvResults = CompetitionHelper.getResultsAsCsvString(competition.getStagesForAllClasses(),
+																  		 competition.getTotalResultsForAllClasses(),
+																  		 competition.getCompetitors(),
+																  		 Competition.SVART_VIT_TYPE);
 		System.out.println("SvartVitt CSV results");
 		System.out.println(svartCsvResults);
 		String[] resultsAsList = svartCsvResults.split("\n");
@@ -149,10 +151,10 @@ public class CompetitionTest {
 			i++;
 		}
 		
-		String essCsvResults = CompetitionHelper.getResultsAsCsvString(competition.getStages(COMP_CLASS_TO_TEST),
-				   competition.getTotalResults(COMP_CLASS_TO_TEST),
-				   competition.getCompetitors(),
-				   Competition.ESS_TYPE);
+		String essCsvResults = CompetitionHelper.getResultsAsCsvString(competition.getStagesForAllClasses(),
+																	   competition.getTotalResultsForAllClasses(),
+																	   competition.getCompetitors(),
+																	   Competition.ESS_TYPE);
 		System.out.println("ESS CSV results");
 		System.out.println(essCsvResults);
 		resultsAsList = essCsvResults.split("\n");

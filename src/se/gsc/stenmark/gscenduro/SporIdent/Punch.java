@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 public class Punch implements Serializable {
 
-	private static final long serialVersionUID = 3L;
+	private static final long serialVersionUID = 5L;
 	private long mTime;  //Time in miliseconds
 	private int mControl;
 	private boolean isFinishPunchBeforeStart = false;

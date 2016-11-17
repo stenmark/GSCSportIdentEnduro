@@ -20,13 +20,13 @@ public class ResultsFragment extends ListFragment {
 		
 		mMainActivity = ((MainActivity) getActivity());		 
 		
-		mResultsAdapter = new ResultsListAdapter(mMainActivity, mMainActivity.competition.getStages());	
+		mResultsAdapter = new ResultsListAdapter(mMainActivity, mMainActivity.competition.getStagesForAllClasses(),mMainActivity.competition.getTotalResultsForAllClasses() );	
 		setListAdapter(mResultsAdapter);
 		
 		Configuration configuration = getResources().getConfiguration(); 						
 		if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
 		{
-			mResultsAdapter = new ResultsListAdapter(mMainActivity, mMainActivity.competition.getStages());	
+			mResultsAdapter = new ResultsListAdapter(mMainActivity, mMainActivity.competition.getStagesForAllClasses(),mMainActivity.competition.getTotalResultsForAllClasses());	
 			setListAdapter(mResultsAdapter);
 		} 
 		else if(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE )

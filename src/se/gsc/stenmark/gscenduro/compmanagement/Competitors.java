@@ -17,7 +17,7 @@ import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
 public class Competitors implements Serializable {
 
-	private static final long serialVersionUID = 44L;
+	private static final long serialVersionUID = 5L;
 	private LinkedHashMap<Integer,Competitor> mCompetitors = null;
 	
 	public Competitors() {

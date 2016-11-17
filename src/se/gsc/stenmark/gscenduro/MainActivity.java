@@ -71,7 +71,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			punchListIntent.setClass(this, PunchActivity.class);		
 			
 			if (competition.getCompetitors().getByCardNumber(cardNumber).getCard() == null) {
-				competition.getCompetitors().getByCardNumber(cardNumber).processCard(new Card(), competition.getStages(), this.competition.getCompetitionType());				
+				competition.getCompetitors().getByCardNumber(cardNumber).processCard(new Card(), competition.getStageDefinition(), this.competition.getCompetitionType());				
 			}			
 			
 			Bundle bundle = new Bundle();
@@ -237,7 +237,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				        while ((line = reader.readLine()) != null) {	
 				        	inputData += line +"\n";
 				        }
-				        importResult = competition.getCompetitors().importCompetitors(inputData, true, competition.getCompetitionType(), false);
+				        importResult = CompetitionHelper.importCompetitors(inputData, true, competition.getCompetitionType(), false, competition);
 				        competition.calculateResults();
 						AndroidHelper.saveSessionData(null,competition);
 						AndroidHelper.saveSessionData(competition.getCompetitionName(),competition);
@@ -410,9 +410,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return true;			
 
 		case R.id.action_export_as_html:
-			String resultList = CompetitionHelper.getResultsAsHtmlString(this.competition.getCompetitionName(), this.competition.getCompetitionDate(), this.competition.getStages(), this.competition.getCompetitors(), this.competition.getCompetitionType(), competition);
+			String resultList = CompetitionHelper.getResultsAsHtmlString(competition.getCompetitionName(), 
+																		 competition.getCompetitionDate(), 
+																		 competition.getStagesForAllClasses(), 
+																		 competition.getCompetitors(), 
+																		 competition.getCompetitionType(),
+																		 competition);
 			try {
-				AndroidHelper.exportString(this, resultList, "results", this.competition.getCompetitionName(), "htm");
+				AndroidHelper.exportString(this, resultList, "results", competition.getCompetitionName(), "htm");
 			} catch (IOException e) {
 				Log.d("action_export_as_html", "Error = " + Log.getStackTraceString(e));
 			}						

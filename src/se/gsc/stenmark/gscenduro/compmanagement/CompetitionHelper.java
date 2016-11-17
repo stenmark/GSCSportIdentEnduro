@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Stateless helper class that can perform various operations on a competition.
@@ -331,8 +333,8 @@ public abstract class CompetitionHelper {
 //	}
 
 	//OLD VERSION
-	public static String getResultsAsHtmlString(String name, String date, List<Stage> stages, Competitors competitors, int type, Competition competition) {
-		return "Not done yet";
+	public static String getResultsAsHtmlString(String name, String date, Map<String, ArrayList<Stage>> stages, Competitors competitors, int type, Competition competition) {
+		return "Not done yet!";
 	}
 //	public static String getResultsAsHtmlString(String name, String date, Stages stage, List<Results> results, Competitors competitors, int type, Competition competition) {
 //		String resultData = "<!DOCTYPE html>\n<html>\n<body>\n";		
@@ -420,7 +422,7 @@ public abstract class CompetitionHelper {
 //		return resultData;
 //	}
 	
-	public static String getResultsAsCsvString(List<Stage> stages, Stage totalResults, Competitors competitors, int type) {
+	public static String getResultsAsCsvString(Map<String, ArrayList<Stage>> stagesForAllClasses,  Map<String, Stage>  totalResultsForAllClasses, Competitors competitors, int type) {
 		String resultData = "";
 		
 		if (type == Competition.ESS_TYPE)  {
@@ -428,44 +430,63 @@ public abstract class CompetitionHelper {
 		} else {
 			resultData = "Rank,Name,Card Number,Total Time,";
 		}
-			
-		for (int stageNumber = 1;stageNumber <= stages.size(); stageNumber++) {
-			resultData += "Stage " + stageNumber + ",Rank,Time Back,";
+		if( stagesForAllClasses.isEmpty() ){	
+			resultData += "NO STAGES FOUND!,Rank,Time Back,";
+		}
+		else{
+			if( stagesForAllClasses.keySet().isEmpty() ){	
+				resultData += "Program failure, class defintion is null";
+			}
+			else{
+				Entry<String, ArrayList<Stage>> firstEntry = stagesForAllClasses.entrySet().iterator().next();
+				for (int stageNumber = 1;stageNumber <= stagesForAllClasses.get( firstEntry.getKey()).size(); stageNumber++) {
+					resultData += "Stage " + stageNumber + ",Rank,Time Back,";
+				}
+			}
 		}
 		resultData += "\n";
 		if( type == Competition.ESS_TYPE){
 			resultData += "\n";
 		}
 		
-		for( int i  = 0; i < totalResults.numberOfCompetitors(); i++ ){		
-			int cardNumber = totalResults.getCompetitorResults().get(i).getCardNumber();				
-			int rank = totalResults.getCompetitorResults().get(i).getRank();				
-			if (rank == Competition.RANK_DNF) {			
-				resultData += "-,";
-			} else {
-				resultData += rank + ",";
+		for( String compClass : stagesForAllClasses.keySet() ){
+			List<Stage> stages = stagesForAllClasses.get(compClass);
+			Stage totalResults = totalResultsForAllClasses.get(compClass);
+			if( totalResults == null || stages == null){
+				resultData += "Inconsistant class definitions for class " +compClass +"\n";
+				continue;
 			}
 			
-			resultData += competitors.getByCardNumber(cardNumber).getName() + ",";
-			resultData += cardNumber + ",";
-			if (type == Competition.ESS_TYPE)  {
-				resultData += competitors.getByCardNumber(cardNumber).getTeam() + ",";					
-				resultData += String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + ",";
+			for( int i  = 0; i < totalResults.numberOfCompetitors(); i++ ){		
+				int cardNumber = totalResults.getCompetitorResults().get(i).getCardNumber();				
+				int rank = totalResults.getCompetitorResults().get(i).getRank();				
+				if (rank == Competition.RANK_DNF) {			
+					resultData += "-,";
+				} else {
+					resultData += rank + ",";
+				}
+				
+				resultData += competitors.getByCardNumber(cardNumber).getName() + ",";
+				resultData += cardNumber + ",";
+				if (type == Competition.ESS_TYPE)  {
+					resultData += competitors.getByCardNumber(cardNumber).getTeam() + ",";					
+					resultData += String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + ",";
+				}
+				resultData += CompetitionHelper.milliSecToMinSecMilliSec( totalResults.getCompetitorResults().get(i).getStageTime() ) + ",";	
+							
+				for(Stage stage : stages) {	
+					StageResult stageResult = stage.getStageResultByCardnumber(cardNumber);
+					if( stageResult != null){
+						resultData += CompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTime() ) + ",";
+						resultData += stageResult.getRank() + ",";
+						resultData += CompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTimesBack() ) + ",";
+					}
+					else{
+						resultData += "-1,-1,-1";
+					}
+				}			
+				resultData += "\n";
 			}
-			resultData += CompetitionHelper.milliSecToMinSecMilliSec( totalResults.getCompetitorResults().get(i).getStageTime() ) + ",";	
-						
-			for(Stage stage : stages) {	
-				StageResult stageResult = stage.getStageResultByCardnumber(cardNumber);
-				if( stageResult != null){
-					resultData += CompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTime() ) + ",";
-					resultData += stageResult.getRank() + ",";
-					resultData += CompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTimesBack() ) + ",";
-				}
-				else{
-					resultData += "-1,-1,-1";
-				}
-			}			
-			resultData += "\n";
 		}
 		
 		return resultData;

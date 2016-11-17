@@ -4,7 +4,10 @@ import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import se.gsc.stenmark.gscenduro.compmanagement.Stage;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import android.content.Context;
 import android.view.View;
@@ -16,16 +19,18 @@ public class ResultsListAdapter extends BaseAdapter {
 	private Context mContext;
 	//OLD VERSION
 //	private ResultList<Results> mResult = new ResultList<Results>();
-	private List<Stage> stages;
+	private TreeMap<String, ArrayList<Stage>> stagesForAllClasses;
+	private TreeMap<String,Stage> totalResultsForAllClasses;
 
 	//OLD VERSION
 //	public ResultsListAdapter(Context context, ResultList<Results> Items) {
 //		mContext = context;
 //		mResult = Items;		
 //	}	
-	public ResultsListAdapter(Context context, List<Stage> Items) {
+	public ResultsListAdapter(Context context, TreeMap<String, ArrayList<Stage>> stages, TreeMap<String,Stage> totalResults ) {
 		mContext = context;
-		stages = Items;		
+		stagesForAllClasses = stages;		
+		totalResultsForAllClasses = totalResults;
 	}	
 	
 	@Override
@@ -37,9 +42,15 @@ public class ResultsListAdapter extends BaseAdapter {
 //		{
 //			size += mResult.get(stage).getStageResult().size();
 //		}
-		for( Stage stage : stages )
+		for( String compClass : totalResultsForAllClasses.keySet() )
 		{
-			size += stage.numberOfCompetitors();
+			size += totalResultsForAllClasses.get(compClass).numberOfCompetitors();
+		}
+		for( String compClass : stagesForAllClasses.keySet() )
+		{
+			for( Stage stage : stagesForAllClasses.get(compClass)){
+				size += stage.numberOfCompetitors();
+			}
 		}
 		
 		return size;
@@ -57,17 +68,29 @@ public class ResultsListAdapter extends BaseAdapter {
 	
 	@Override
 	public Stage getItem(int position) {
-		return stages.get(position);
+		return concatAllClasses().get(position);
+	}
+	
+	private List<Stage> concatAllClasses(){
+		List<Stage> stages = new ArrayList<Stage>();
+		for( String compClass : totalResultsForAllClasses.keySet() ){
+			stages.add( totalResultsForAllClasses.get(compClass));
+		}
+		for( String compClass : stagesForAllClasses.keySet() ){
+			stages.addAll( stagesForAllClasses.get(compClass));
+		}
+		return stages;
 	}
 
-	public List<Stage> getData() {
-	    return stages;
+	public TreeMap<String, ArrayList<Stage>> getData() {
+	    return stagesForAllClasses;
 	}
 	
 	public void updateResult () {
 		//OLD VERSION
 //		mResult = ((MainActivity) mContext).competition.getResults();
-		stages = ((MainActivity) mContext).competition.getStages();
+		stagesForAllClasses = ((MainActivity) mContext).competition.getStagesForAllClasses();
+		totalResultsForAllClasses = ((MainActivity) mContext).competition.getTotalResultsForAllClasses();
 		this.notifyDataSetChanged();	
 	}	
 	
@@ -118,7 +141,8 @@ public class ResultsListAdapter extends BaseAdapter {
 		int stageNumber = 0;
 		//OLD VERSION
 //		for (; stage < mResult.size(); stage++)
-		for ( Stage stage : stages)
+//		for(){
+		for ( Stage stage : concatAllClasses() )
 		{
 			//OLD VERSION
 //			if (index + mResult.get(stage).getStageResult().size() > position)
@@ -134,7 +158,7 @@ public class ResultsListAdapter extends BaseAdapter {
 			stageNumber++;
 		}
 
-		Stage stage = stages.get(stageNumber);
+		Stage stage = concatAllClasses().get(stageNumber);
 		String name; 
 		//OLD VERSION
 //		int rank = mResult.get(stage).getStageResult().get(index).getRank();		

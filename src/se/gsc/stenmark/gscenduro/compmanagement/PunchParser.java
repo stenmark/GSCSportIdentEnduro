@@ -13,7 +13,7 @@ import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
 public class PunchParser implements Serializable {
 
-	private static final long serialVersionUID = 1212L;
+	private static final long serialVersionUID = 5L;
 	private String mStatus = "";
 	private ArrayList<Card> mCards = null;
 

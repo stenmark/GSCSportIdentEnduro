@@ -41,8 +41,8 @@ public class DialogSelectExport {
 				case 1:
 					try {
 						String resultList = CompetitionHelper.getResultsAsCsvString( 
-								mMainActivity.competition.getStages(), 
-								mMainActivity.competition.getTotalResults(), 
+								mMainActivity.competition.getStagesForAllClasses(), 
+								mMainActivity.competition.getTotalResultsForAllClasses(), 
 								mMainActivity.competition.getCompetitors(), 
 								mMainActivity.competition.getCompetitionType() );
 						AndroidHelper.exportString(mMainActivity, resultList, "results", mMainActivity.competition.getCompetitionName(), "csv");
@@ -80,7 +80,7 @@ public class DialogSelectExport {
 
 						// Stages
 						competitionList += "[Stages]\n";
-						competitionList += CompetitionHelper.exportStagesCsvString(mMainActivity.competition.getStages()) + "\n";
+						competitionList += CompetitionHelper.exportStagesCsvString(mMainActivity.competition.getStageDefinition()) + "\n";
 						competitionList += "[/Stages]\n";
 						
 						// Competitors

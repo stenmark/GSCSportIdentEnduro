@@ -169,7 +169,7 @@ public class DialogImportCompetition {
 							CompetitionHelper.importCompetitors(importData, false, mMainActivity.competition.getCompetitionType(),false, mMainActivity.competition);
 						} else if (line.equals("[/Punches]")) {
 							importType = "";
-							mMainActivity.competition.getCompetitors().importPunches(importData, mMainActivity.competition.getStages(), mMainActivity.competition.getCompetitionType());
+							mMainActivity.competition.getCompetitors().importPunches(importData, mMainActivity.competition.getStageDefinition(), mMainActivity.competition.getCompetitionType());
 						} else if (importType.length() > 0) {
 							importData += line;
 							if ((importType.equals("[Competitors]")) || (importType.equals("[Punches]"))) {

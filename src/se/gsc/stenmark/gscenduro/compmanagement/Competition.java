@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
+
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 
@@ -22,7 +22,7 @@ import se.gsc.stenmark.gscenduro.SporIdent.Card;
  */
 public class Competition implements Serializable {
 
-	private static final long serialVersionUID = 2L;
+	private static final long serialVersionUID = 5L;
 	
 	public static final int SVART_VIT_TYPE = 0;
 	public static final int ESS_TYPE = 1;	
@@ -35,8 +35,8 @@ public class Competition implements Serializable {
 	
 	//Circular buffer to hold the 6 most recently read cards
 	public CircularFifoQueue<String> lastReadCards = new CircularFifoQueue<String>(6);
-	private Map<String,Stage> totalResults = null;  //Class as key, one result list for each class
-	private Map<String, ArrayList<Stage>> stages = new HashMap<String, ArrayList<Stage>>(); //Class as key, one Stage per class
+	private TreeMap<String,Stage> totalResults = null;  //Class as key, one result list for each class
+	private TreeMap<String, ArrayList<Stage>> stages = new TreeMap<String, ArrayList<Stage>>(); //Class as key, one Stage per class
 	private Competitors mCompetitors = null;
 	private String mCompetitionName;
 	private String mCompetitionDate = "";
@@ -44,7 +44,7 @@ public class Competition implements Serializable {
 	private String[] stageControls;
 	
 	public Competition() {
-		totalResults = new HashMap<String, Stage>();
+		totalResults = new TreeMap<String, Stage>();
 		mCompetitors = new Competitors();
 		stageControls = new String[0];
 		setCompetitionName("New");
@@ -58,8 +58,23 @@ public class Competition implements Serializable {
 		return totalResults.get(compClass);
 	}
 	
+	public TreeMap<String, Stage> getTotalResultsForAllClasses( ){
+		return totalResults;
+	}
+	
 	public List<Stage> getStages( String compClass ) {
 		return stages.get(compClass);	
+	}
+	
+	public TreeMap<String, ArrayList<Stage>> getStagesForAllClasses() {
+		return stages;
+	}
+	
+	public List<Stage> getStageDefinition(){
+		if( getAllClasses().isEmpty()){
+			return new ArrayList<Stage>();
+		}
+		return stages.get( getAllClasses().get(0) );
 	}
 	
 	public List<String> getAllClasses(){
@@ -71,10 +86,7 @@ public class Competition implements Serializable {
 	}
 	
 	public int getNumberOfStages(){
-		if( getAllClasses().isEmpty()){
-			return 0;
-		}
-		return stages.get( getAllClasses().get(0)).size();
+		return getStageDefinition().size();
 	}
 	
 	public void addCompetitor(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup, int type){
@@ -122,9 +134,9 @@ public class Competition implements Serializable {
 		if (foundCompetitor == null) {
 			return "WARNING! Could not find any competitor with card number: " + card.getCardNumber() + "\n";
 		}
-		ArrayList<Stage> stagesForClass = stages.get( foundCompetitor.getClass() );
+		ArrayList<Stage> stagesForClass = stages.get( foundCompetitor.getCompetitorClass() );
 		if( stagesForClass == null ){
-			return "WARNIGN! Could not find Class " + foundCompetitor.getClass() +  " for " + foundCompetitor.getName();
+			return "WARNIGN! Could not find Class " + foundCompetitor.getCompetitorClass() +  " for " + foundCompetitor.getName();
 		}
 		
 		String status = foundCompetitor.processCard(card, stagesForClass, mCompetitionType);

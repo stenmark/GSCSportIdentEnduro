@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 
 public class DialogImportCompetitors {
 	
@@ -55,7 +56,7 @@ public class DialogImportCompetitors {
 
 				String errorText = "";
 				try {
-					errorText = mMainActivity.competition.getCompetitors().importCompetitors(importCompetitorsInput.getText().toString(), keepCheckBox.isChecked(), mMainActivity.competition.getCompetitionType(), false);
+					errorText = CompetitionHelper.importCompetitors(importCompetitorsInput.getText().toString(), keepCheckBox.isChecked(), mMainActivity.competition.getCompetitionType(), false, mMainActivity.competition);
 					if (!errorText.isEmpty()) {
 						Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
 					}
