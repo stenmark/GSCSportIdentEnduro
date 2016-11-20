@@ -806,14 +806,16 @@ public class SiDriver {
 			
 			//We got something and it was the STX (Start Transmission) symbol.
 			if (readSiMessage.length >= 1 && readSiMessage[0] == SiMessage.STX) {
-				if( VERBOSE_LOGGING ){
-					String message = "";
-					message += "Debug data for inserted card\n";
-					for(int i = 0; i < readSiMessage.length; i++){
-						message += "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", ";
+				if(readSiMessage.length >= 2 && readSiMessage[1] != SiMessage.SI_CARD_REMOVED){
+					if( VERBOSE_LOGGING ){
+						String message = "";
+						message += "Debug data for inserted card\n";
+						for(int i = 0; i < readSiMessage.length; i++){
+							message += "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", ";
+						}
+						message += "\n";
+						LogFileWriter.writeLog("cardInserted", message);
 					}
-					message += "\n";
-					LogFileWriter.writeLog("cardInserted", message);
 				}
 				
 				//Check if the Magic byte 0x66 was received -> SiCard6 was read
@@ -894,7 +896,11 @@ public class SiDriver {
 	
 					sendSiMessage(SiMessage.ack_sequence.sequence());
 					return cardData;
-				} else {
+				} 
+				else if(readSiMessage.length >= 2 && readSiMessage[1] == SiMessage.SI_CARD_REMOVED){
+					LogFileWriter.writeLog("debugLog", "Card was removed");
+				}
+				else {
 					if( VERBOSE_LOGGING ){
 						String message = "";
 						message += "Unkown Card detected\n";
@@ -903,9 +909,7 @@ public class SiDriver {
 						}
 						message += "\n";
 						LogFileWriter.writeLog("unknownCard", message);
-						if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) != 0xE7) {
-							LogFileWriter.writeLog("debugLog", "Unknown card that did not contain 0XE7\n"+message);
-						}
+						LogFileWriter.writeLog("debugLog", "Unknown card that did not contain 0XE7\n"+message);
 					}
 			    	
 					return new Card();

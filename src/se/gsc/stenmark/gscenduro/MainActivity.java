@@ -324,7 +324,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				competition.lastReadCards.add(cardStatus);		
 			}
 			else{
-				Toast.makeText(this, "Failed to read card", Toast.LENGTH_LONG).show();
+				if (!disconected) {
+					Toast.makeText(this, "Failed to read card", Toast.LENGTH_LONG).show();
+				}
 			}
 			//The Listener dies once it has received one message, so kick it again to restart it
 			if (!disconected) {
