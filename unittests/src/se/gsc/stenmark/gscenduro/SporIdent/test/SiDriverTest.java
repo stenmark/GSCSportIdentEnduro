@@ -16,6 +16,7 @@ import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.MessageBuffer;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
+import se.gsc.stenmark.gscenduro.SporIdent.SiDriverDisconnectedException;
 import se.gsc.stenmark.gscenduro.SporIdent.test.driverStubs.UsbDriverStub;
 
 public class SiDriverTest {
@@ -44,7 +45,7 @@ public class SiDriverTest {
 				List<Integer> parsedInts = new ArrayList<>();
 				for( String hexString : currentLine.replaceAll("0x", "").split(",")){
 					if(!hexString.isEmpty()){
-						parsedInts.add( Integer.parseInt(hexString, 16) );
+						parsedInts.add( Integer.parseInt(hexString.replace(" ", ""), 16) );
 					}
 				}
 				byte[] tmpIndataBytes = new byte[parsedInts.size()];
@@ -149,6 +150,32 @@ public class SiDriverTest {
 			testCard6(cardToTest);
 		}
 			
+	}
+	
+	@Test
+	public void testPollForNewCard() throws InterruptedException, SiDriverDisconnectedException{
+		System.out.println("Starting testPollForNewCard");
+		siDriver = new SiDriver();
+		UsbDriverStub stubUsbDriver = new UsbDriverStub();
+		siDriver.setUsbDriver(stubUsbDriver);
+		
+		System.out.println("Trying to read a card that was pulled out in the middle of the read sequence, and was not put back in again");
+		List<byte[]> inData = SiDriverTest.readSiacTestDataFromFile("failedCardRead" + File.separator + "failedSiacCardRead_CardRemoved.card");
+		stubUsbDriver.setStubUsbData(inData);
+		Card emptyCard = siDriver.pollForNewCard(false);
+		assertEquals(0, emptyCard.getCardNumber());
+		
+		System.out.println("Trying to read a card that was pulled out in the middle of the read sequence, and was not put back in again");
+		inData = SiDriverTest.readSiacTestDataFromFile("failedCardRead" + File.separator + "failedSiacCardRead_CardRemoved2.card");
+		stubUsbDriver.setStubUsbData(inData);
+		emptyCard = siDriver.pollForNewCard(false);
+		assertEquals(0, emptyCard.getCardNumber());
+		
+		System.out.println("Trying to read a card that was pulled out in the middle of the read sequence, and was then put back in again");
+		inData = SiDriverTest.readSiacTestDataFromFile("failedCardRead" + File.separator + "failedSiacCardRead_CardRemoved_andReinserted.card");
+		stubUsbDriver.setStubUsbData(inData);
+		Card correctCard = siDriver.pollForNewCard(false);
+		assertEquals(8633672, correctCard.getCardNumber());
 	}
 	
 	@Test

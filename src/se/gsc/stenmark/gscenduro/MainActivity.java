@@ -11,6 +11,7 @@ import java.util.Locale;
 
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.SiDriver;
+import se.gsc.stenmark.gscenduro.SporIdent.SiDriverDisconnectedException;
 import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
@@ -53,12 +54,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	ViewPager mViewPager;
 	public Competition competition = null;
 	public SiDriver siDriver = null;
-	public static long lastCalltime;
-	public static int disconnectCounter;
-	public static boolean disconected;
+	public boolean disconected;
 	private String connectionStatus = "";
-
-
 	public static String driverLayerErrorMsg;
 		
 	public String getConnectionStatus() {
@@ -166,10 +163,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
-			
-			lastCalltime = System.currentTimeMillis();
-			disconnectCounter = 0;
-			disconected = true;
 			connectionStatus = "Disconnected";
 			
 			setContentView(R.layout.main_activity);
@@ -286,7 +279,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				if (siDriver.connectToSiMaster()) {
 					connectionStatus = "SiMain " + siDriver.stationId + " connected";
 					disconected = false;
-					disconnectCounter = 0;
 					new SiCardListener().execute(siDriver);
 				} else {
 					connectionStatus = "Failed ot connect SI master";
@@ -330,7 +322,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				String cardStatus = competition.processNewCard(card, true);			
 				Toast.makeText(this, cardStatus, Toast.LENGTH_LONG).show();
 				competition.lastReadCards.add(cardStatus);		
-			} 
+			}
+			else{
+				Toast.makeText(this, "Failed to read card", Toast.LENGTH_LONG).show();
+			}
 			//The Listener dies once it has received one message, so kick it again to restart it
 			if (!disconected) {
 				new SiCardListener().execute(siDriver);
@@ -604,105 +599,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		 */
 		protected Card doInBackground(SiDriver... siDriver) {
 			try {
-				while (true) {
-					byte[] readSiMessage = siDriver[0].readSiMessage(100, 2000, new StringBuffer());
-
-					if(disconected){
-						//Log.d("SiCardListener", "Was disconnected");
-						siDriver[0].closeDriver();
-						return new Card();
-					}
-					
-					//We got something and it was the STX (Start Transmission) symbol.
-					if (readSiMessage.length >= 1 && readSiMessage[0] == SiMessage.STX) {
-						if( VERBOSE_LOGGING ){
-							String message = "";
-							message += "Debug data for inserted card\n";
-							for(int i = 0; i < readSiMessage.length; i++){
-								message += "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", ";
-							}
-							message += "\n";
-							LogFileWriter.writeLog("cardInserted", message);
-						}
-						
-						//Check if the Magic byte 0x66 was received -> SiCard6 was read
-						if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x66) {
-							LogFileWriter.writeLog("debugLog", "Detected SiCard6 with 0X66 byte\n");
-							return siDriver[0].getCard6Data( VERBOSE_LOGGING );
-						}
-						//Backup detection for SiCard6. Seems like sometimes byte 1 is 0xE8, just like SIAC. But byte5 is 0x02 for Sicard6 (0x0F for SIAC)
-						else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8 && (readSiMessage[5] & 0xFF) == 0x02){
-							LogFileWriter.writeLog("debugLog", "Detected SiCard6 with 0XE8 byte and 0x02 byte on position 5\n");
-							return siDriver[0].getCard6Data( VERBOSE_LOGGING );
-						}
-						//Check if the Magic byte 0xE8 was received -> SiCard9 (SIAC) was read
-						else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8) {
-							try{
-								LogFileWriter.writeLog("debugLog", "Detected SIAC card with byte 0xE8\n");
-								return siDriver[0].getSiacCardData( VERBOSE_LOGGING );
-							}
-							//Some special case handling. 
-							//Seems like sometimes (maybe due to updated SI-MASTER) the SI-MASTER responds with 0xE8 also for SICARD6.
-							//The SIAC readout will throw an exception if that is the case and then we blindly try a CARD6 decode instead
-							catch( RuntimeException e){
-								LogFileWriter.writeLog("debugLog", "Detected SiCard6 with unexpected exception from SIAC decode\n");
-								return siDriver[0].getCard6Data( VERBOSE_LOGGING );
-							}
-						
-						//Check if the Magic byte 0x46 was received -> SiCard5 was read, seems to be 0x46 also for card pulled out event
-						} else if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x46) {
-							
-							//If the next bytes are 0xFF and =x4F it seems like this is magic bytes for card pulled out event, return an Empty Card
-							if (readSiMessage.length >= 3 && (readSiMessage[2] & 0xFF) == 0x4f) {
-								//Log.d("SiCardListener", "Card pulled out");
-								return new Card();
-							}
-
-							//If it was not card pulled out it was an SiCard5
-							siDriver[0].sendSiMessage(SiMessage.request_si_card5.sequence());
-							Card cardData = siDriver[0].getCard5Data( competition, VERBOSE_LOGGING );
-							if (cardData == null) {
-								cardData = new Card();
-							}
-
-							siDriver[0].sendSiMessage(SiMessage.ack_sequence.sequence());
-							return cardData;
-						} else {
-							if( VERBOSE_LOGGING ){
-								String message = "";
-								message += "Unkown Card detected\n";
-								for(int i = 0; i < readSiMessage.length; i++){
-									message += "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", ";
-								}
-								message += "\n";
-								LogFileWriter.writeLog("unknownCard", message);
-								if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) != 0xE7) {
-									LogFileWriter.writeLog("debugLog", "Unknown card that did not contain 0XE7\n"+message);
-								}
-							}
-					    	
-							return new Card();
-						}
-
-					} else {
-						// Use this to check if we have been disconnected. If we
-						// have many faulty read outs from the Driver in a short time span, 
-						// assume disconnection.
-						if (System.currentTimeMillis() - MainActivity.lastCalltime < 1000) {
-							disconnectCounter++;
-						} else {
-							disconnectCounter = 0;
-						}
-						if (disconnectCounter > 10) {
-							disconected = true;
-							siDriver[0].closeDriver();
-						}
-						MainActivity.lastCalltime = System.currentTimeMillis();
-						//Log.d("SiCardListener", "not STX or timeout");
-						return new Card();
-					}
+				if(disconected){
+					siDriver[0].closeDriver();
+					return new Card();
 				}
-			} catch (Exception e) {
+				return siDriver[0].pollForNewCard( VERBOSE_LOGGING );
+			}
+			catch( SiDriverDisconnectedException disconException){
+				siDriver[0].closeDriver();
+				disconected = true;
+				return new Card();
+			}
+			catch (Exception e) {
 				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e));
 				dialog.show(getSupportFragmentManager(), "popUp");
 				return new Card();

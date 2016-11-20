@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 public class UsbDriverStub extends UsbSerialDriver {
 	private List<byte[]> stubUsbData;
+	private int stubTimeoutValue = 100;
 	
 	public UsbDriverStub() {
 		super(null, null);
@@ -19,6 +20,14 @@ public class UsbDriverStub extends UsbSerialDriver {
 	@Override
 	public int read(byte[] dest, int timeoutMillis) throws IOException {
 		System.out.println("Reading up to " + dest.length + " bytes from stub driver");
+		if( stubUsbData.isEmpty() ){
+			try {
+				Thread.sleep(stubTimeoutValue);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			return 0;
+		}
 		byte[] tmpReadData = stubUsbData.remove(0);
 		System.arraycopy(tmpReadData, 0, dest, 0, tmpReadData.length);
 		System.out.println("Read " + tmpReadData.length + " bytes from stubDriver" );

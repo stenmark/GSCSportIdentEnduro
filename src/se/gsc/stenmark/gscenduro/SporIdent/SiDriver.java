@@ -332,7 +332,7 @@ public class SiDriver {
     	
     }
     
-    public Card getCard5Data( Competition comp, boolean verbose) throws IOException{
+    public Card getCard5Data( boolean verbose){
     	StringBuffer message = new StringBuffer("#Testdata for Card5 read\n");
     		
     	byte[] allData = new byte[256];
@@ -371,7 +371,7 @@ public class SiDriver {
         	message.append("\n");
     		message.append("Card5 parsed OK\n");
     		
-    		Card card = parseCard5Alt( allData, rawData, comp );
+    		Card card = parseCard5( rawData );
     		if(verbose){
     			LogFileWriter.writeLog("card5data", message.toString());
     		}
@@ -385,8 +385,8 @@ public class SiDriver {
     	
     }
    
-    private byte[] sendAndExtractSiacPage( byte[] sequence, StringBuffer message){
-    	final int MAX_NUM_READ_ATTEMPTS = 5;
+    private byte[] sendAndExtractSiacPage( byte[] sequence, StringBuffer message) throws SiDriverCardRemovedException{
+    	final int MAX_NUM_READ_ATTEMPTS = 3;
     	byte[] initialReadBytes = new byte[0];
     	for( int i = 0; i < MAX_NUM_READ_ATTEMPTS; i++){
 	    	sendSiMessage(sequence);
@@ -398,11 +398,19 @@ public class SiDriver {
 			if( initialReadBytes.length > 128 + 6 ){ 
 				return initialReadBytes;
 			}
+			else{
+				//Check if Card Remove was sent -> Then abort this readout
+				if (initialReadBytes.length >= 1 && initialReadBytes[0] == SiMessage.STX) {
+					if (initialReadBytes.length >= 2 && initialReadBytes[1] == SiMessage.SI_CARD_REMOVED) {
+						throw new SiDriverCardRemovedException();
+					}
+				}
+			}
     	}
     	return initialReadBytes;
     }
     
-    public Card getSiacCardData( boolean verbose ) throws Exception{
+    public Card getSiacCardData( boolean verbose ) throws SiDriverCardRemovedException{
     	int nrOfReadLoops = 2;
     	int series = -1;
     	int numberOfPunches = -1;
@@ -434,18 +442,24 @@ public class SiDriver {
 						nrOfReadLoops = 2 + (numberOfPunches+31) / 32;
 					}
 					else{
-						LogFileWriter.writeLog("debugLog", "Only SIAC cards currently supported for SICARD 8 and newer\n" + message);
+						if(verbose){
+							LogFileWriter.writeLog("debugLog", "Only SIAC cards currently supported for SICARD 8 and newer\n" + message);
+						}
 						throw new RuntimeException("NOT SUPPORTED CARD");
 					}
 					
 				}
 				else{
-					LogFileWriter.writeLog("debugLog", "Tried to read SIAC card but failed. Expected STX(0x02) + 0xEF but got " + initialReadBytes[0] + " + " + initialReadBytes[1] + "\n" + message);
+					if(verbose){
+						LogFileWriter.writeLog("debugLog", "Tried to read SIAC card but failed. Expected STX(0x02) + 0xEF but got " + initialReadBytes[0] + " + " + initialReadBytes[1] + "\n" + message);
+					}
 					return new Card();
 				}
 			}
 			else{
-				LogFileWriter.writeLog("debugLog", "Wanted to read 128+6 bytes, could only read " + initialReadBytes.length  + " byes\n" + message);
+				if(verbose){
+					LogFileWriter.writeLog("debugLog", "Wanted to read 128+6 bytes, could only read " + initialReadBytes.length  + " byes\n" + message);
+				}
 				return new Card();
 			}
 		}
@@ -783,5 +797,134 @@ public class SiDriver {
     	return 0;
     	 
     }
+
+	public Card pollForNewCard( final boolean VERBOSE_LOGGING) throws SiDriverDisconnectedException, InterruptedException {
+		int disconnectCounter = 0;
+		long lastCalltime = System.currentTimeMillis();
+		while(true){
+			byte[] readSiMessage = readSiMessage(100, 2000, new StringBuffer());
+			
+			//We got something and it was the STX (Start Transmission) symbol.
+			if (readSiMessage.length >= 1 && readSiMessage[0] == SiMessage.STX) {
+				if( VERBOSE_LOGGING ){
+					String message = "";
+					message += "Debug data for inserted card\n";
+					for(int i = 0; i < readSiMessage.length; i++){
+						message += "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", ";
+					}
+					message += "\n";
+					LogFileWriter.writeLog("cardInserted", message);
+				}
+				
+				//Check if the Magic byte 0x66 was received -> SiCard6 was read
+				if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x66) {
+					if(VERBOSE_LOGGING){
+						LogFileWriter.writeLog("debugLog", "Detected SiCard6 with 0X66 byte\n");
+					}
+					Thread.sleep(200);
+					return getCard6Data( VERBOSE_LOGGING );
+				}
+				//Backup detection for SiCard6. Seems like sometimes byte 1 is 0xE8, just like SIAC. But byte5 is 0x02 for Sicard6 (0x0F for SIAC)
+				else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8 && (readSiMessage[5] & 0xFF) == 0x02){
+					if(VERBOSE_LOGGING){
+						LogFileWriter.writeLog("debugLog", "Detected SiCard6 with 0XE8 byte and 0x02 byte on position 5\n");
+					}
+					Thread.sleep(200);
+					return getCard6Data( VERBOSE_LOGGING );
+				}
+				//Check if the Magic byte 0xE8 was received -> SiCard9 (SIAC) was read
+				else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8) {
+					try{
+						if(VERBOSE_LOGGING){
+							LogFileWriter.writeLog("debugLog", "Detected SIAC card with byte 0xE8\n");
+						}
+						Thread.sleep(200);
+						return getSiacCardData( VERBOSE_LOGGING );
+					}
+					catch( SiDriverCardRemovedException cardRemovedException ){
+						if(VERBOSE_LOGGING){
+							LogFileWriter.writeLog("debugLog", "SIAC Card was removed during readout. Will try to read Card again");
+						}
+						readSiMessage = readSiMessage(100, 2000, new StringBuffer());
+						if(VERBOSE_LOGGING){
+							String message = "";
+							message += "Debug data for inserted card\n";
+							for(int i = 0; i < readSiMessage.length; i++){
+								message += "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", ";
+							}
+							message += "\n";
+							LogFileWriter.writeLog("debugLog", readSiMessage.length + " Bytes read. ReadMessage after card readout was: " + message);
+						}
+						try {
+							Thread.sleep(500);
+							return getSiacCardData( VERBOSE_LOGGING );
+						} catch (SiDriverCardRemovedException e) {
+							if(VERBOSE_LOGGING){
+								LogFileWriter.writeLog("debugLog", "Failed to read Card also on second attempt after got Card removed");
+							}
+							return new Card();
+						}	
+					}
+					//Some special case handling. 
+					//Seems like sometimes (maybe due to updated SI-MASTER) the SI-MASTER responds with 0xE8 also for SICARD6.
+					//The SIAC readout will throw an exception if that is the case and then we blindly try a CARD6 decode instead
+					catch( RuntimeException e){
+						if(VERBOSE_LOGGING){
+							LogFileWriter.writeLog("debugLog", "Detected SiCard6 with unexpected exception from SIAC decode\n");
+						}
+						Thread.sleep(200);
+						return getCard6Data( VERBOSE_LOGGING );
+					} 
+				
+				//Check if the Magic byte 0x46 was received -> SiCard5 was read, seems to be 0x46 also for card pulled out event
+				} else if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0x46) {
+					
+					//If the next bytes are 0xFF and =x4F it seems like this is magic bytes for card pulled out event, return an Empty Card
+					if (readSiMessage.length >= 3 && (readSiMessage[2] & 0xFF) == 0x4f) {
+						//Log.d("SiCardListener", "Card pulled out");
+						return new Card();
+					}
 	
+					//If it was not card pulled out it was an SiCard5
+					sendSiMessage(SiMessage.request_si_card5.sequence());
+					Card cardData = getCard5Data( VERBOSE_LOGGING );
+					if (cardData == null) {
+						cardData = new Card();
+					}
+	
+					sendSiMessage(SiMessage.ack_sequence.sequence());
+					return cardData;
+				} else {
+					if( VERBOSE_LOGGING ){
+						String message = "";
+						message += "Unkown Card detected\n";
+						for(int i = 0; i < readSiMessage.length; i++){
+							message += "=0x" + SiDriver.byteToHex(readSiMessage[i]) + ", ";
+						}
+						message += "\n";
+						LogFileWriter.writeLog("unknownCard", message);
+						if (readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) != 0xE7) {
+							LogFileWriter.writeLog("debugLog", "Unknown card that did not contain 0XE7\n"+message);
+						}
+					}
+			    	
+					return new Card();
+				}
+			} 
+			else{
+				// Use this to check if we have been disconnected. If we
+				// have many faulty read outs from the Driver in a short time span, 
+				// assume disconnection.
+				if (System.currentTimeMillis() - lastCalltime < 1000) {
+					disconnectCounter++;
+				} else {
+					disconnectCounter = 0;
+				}
+				if (disconnectCounter > 10) {
+					throw new SiDriverDisconnectedException();
+				}
+				lastCalltime = System.currentTimeMillis();
+			}		
+		}
+	}
 }
