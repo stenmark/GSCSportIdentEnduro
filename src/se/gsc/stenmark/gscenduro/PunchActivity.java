@@ -27,7 +27,7 @@ public class PunchActivity extends ListActivity {
 	private PunchAdapter mPunchAdapter;
 	private Card mUpdatedCard = null;
 	private Competition competition;
-	private List<String> mControls;
+	private List<Integer> mControls;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);			
@@ -46,7 +46,7 @@ public class PunchActivity extends ListActivity {
 		try {				
 			mUpdatedCard = (Card) getIntent().getExtras().getSerializable("Card");
 			competition = (Competition) getIntent().getExtras().getSerializable("Competition");
-			
+				
 			mControls = competition.getControls();
 			
 			if (mUpdatedCard != null) {
@@ -61,7 +61,7 @@ public class PunchActivity extends ListActivity {
 		}
 	}	
 	
-	public List<String> getControls() {
+	public List<Integer> getControls() {
 		return mControls;		
 	}	
 	
@@ -70,7 +70,7 @@ public class PunchActivity extends ListActivity {
 		View promptsView = li.inflate(R.layout.punch_add, null);
 	
 		final Spinner spinner = (Spinner) promptsView.findViewById(R.id.add_punch_controls_spinner);	
-        ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(PunchActivity.this, android.R.layout.simple_spinner_item, mControls);
+        ArrayAdapter<Integer> LTRadapter = new ArrayAdapter<Integer>(PunchActivity.this, android.R.layout.simple_spinner_item, mControls);
         LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
         spinner.setAdapter(LTRadapter);			
         spinner.setSelection(0);				

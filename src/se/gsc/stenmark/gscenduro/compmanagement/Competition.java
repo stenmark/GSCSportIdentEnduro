@@ -246,18 +246,14 @@ public class Competition implements Serializable {
 		}
 	}
 	
-	public List<String> getControls() {
-		List<String> controls = new ArrayList<String>();
-		if(!stages.isEmpty() && stages != null) {
-			@SuppressWarnings("unchecked")
-			List<Stage> stagesForAnyClass = (List<Stage>) stages.entrySet().toArray()[0];
-			for (Stage stage : stagesForAnyClass) {
-				if (!controls.contains(Integer.toString(stage.start))) {
-					controls.add(Integer.toString(stage.start));
-				}
-				if (!controls.contains(Integer.toString(stage.finish))) {
-					controls.add(Integer.toString(stage.finish));
-				}
+	public List<Integer> getControls() {
+		List<Integer> controls = new ArrayList<Integer>();
+		for (Stage stage : getStageDefinition()) {
+			if (!controls.contains(stage.start)) {
+				controls.add(stage.start);
+			}
+			if (!controls.contains(stage.finish)) {
+				controls.add(stage.finish);
 			}
 		}
 		return controls;

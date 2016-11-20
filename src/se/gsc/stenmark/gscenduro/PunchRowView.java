@@ -90,7 +90,7 @@ public class PunchRowView extends LinearLayout {
 			View promptsView = li.inflate(R.layout.punch_modify, null);			
 
 			final Spinner spinner = (Spinner) promptsView.findViewById(R.id.add_punch_controls_spinner);	
-	        ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, ((PunchActivity)mContext).getControls());
+	        ArrayAdapter<Integer> LTRadapter = new ArrayAdapter<Integer>(mContext, android.R.layout.simple_spinner_item, ((PunchActivity)mContext).getControls());
 	        LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
 	        spinner.setAdapter(LTRadapter);			
 	        spinner.setSelection(((PunchActivity)mContext).getControls().indexOf(mControl.getText()));	
