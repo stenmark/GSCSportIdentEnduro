@@ -34,87 +34,63 @@ public class PunchParser implements Serializable {
 		//cardNumber,control,time,control,time..
 		//cardNumber,control,time,control,time..
 		//cardNumber,control,time,control,time..
-		
+	
 		BufferedReader bufReader = new BufferedReader(new StringReader(punches));
 		String line = null;
 		while ((line = bufReader.readLine()) != null) {
-
-			// count so at least 4, each line
-			int number = 0;
-			for (int i = 0, len = line.length(); i < len; ++i) {
-				Character c = line.charAt(i);
-				if (c == ',') {
-					number++;
-				}
-			}
+			String[] commaSeparatedLine = line.split(",");
 		
-			if (number < 4) {
-				if (line.length() == 0) {
+			if (commaSeparatedLine.length < 5) {
+				if (line.isEmpty()) {
 					mStatus += "Can not parse line = empty line\n";
 				} else {
-					mStatus += "Can not parse line = " + line + "\n";
+					mStatus += "Can not parse line, too few entries in " + line + "\n";
 				}
-			} else if ((number > 4) && ((number - 2) % 3 != 0)) { 
+			} else if ((commaSeparatedLine.length > 5) && ((commaSeparatedLine.length - 3) % 3 != 0)) { 
 				//Not correct number of commas
-				mStatus += "Can not parse line = " + line + "\n";
+				mStatus += "Can not parse line, every punch does not have a timestamp in: " + line + "\n";
 			}else {
 				Card cardObject = new Card();
+				String cardNumberAsString = commaSeparatedLine[0];
+				
 
-				int start = 0;
-				int end = 0;
-
-				end = line.indexOf(",", start);
-				String cardNumber = line.substring(start, end);
-				start = end + 1;
-
-				if (!cardNumber.matches("\\d+")) {
-					mStatus += line + ". Card number is not a number\n";
+				if (!cardNumberAsString.matches("\\d+")) {
+					mStatus += line + ". Card number is not a number: " + cardNumberAsString + "\n";
 				} else {	
+					int cardNumber = Integer.parseInt(cardNumberAsString);
 					boolean error = false; 
 					boolean foundCompetitor = false;
-					if( competitors.containsKey(Integer.parseInt(cardNumber))){
+					if( competitors.containsKey( cardNumber) ){
 						foundCompetitor = true;
-						cardObject.setCardNumber(Integer.parseInt(cardNumber));
-						while (start < line.length()) {
-							end = line.indexOf(",", start);
-							String control = line.substring(start, end);
-							start = end + 1;								
+						cardObject.setCardNumber( cardNumber );
+						for( int i = 1; i < commaSeparatedLine.length; i+=2){
+							String controlAsString = commaSeparatedLine[i];
+							String timeAsString = commaSeparatedLine[i+1];		
 							
-							end = line.indexOf(",", start);
-							String time;
-							if (end == -1) {
-								time = line.substring(start, line.length());
-								start = line.length() + 1;
-							} else {											
-								time = line.substring(start, end);
-								start = end + 1;
-							}				
-							
-							if (!control.matches("\\d+")) {
-								mStatus += line + ". Control is not a number\n";
+							if (!controlAsString.matches("\\d+")) {
+								mStatus += line + ". Control is not a number: " + controlAsString + "\n";
 								error = true;
 								break;
 							}
-							
-							if (!CompetitionHelper.validStageControl(stages, Integer.valueOf(control) )) {
+							if (!timeAsString.matches("\\d+")) {
+								mStatus += line + ". Time is not a number: " + timeAsString + "\n";
+								error = true;
+								break;
+							} 	
+							int time = Integer.valueOf(timeAsString);
+							int control = Integer.valueOf(controlAsString);
+				
+							if (!CompetitionHelper.validStageControl(stages, control )) {
 								mStatus += line + ". Control is not in any of the stages\n";
 								error = true;
 								break;									
 							}
-							
-							if (!time.matches("\\d+")) {
-								mStatus += line + ". Time is not a number\n";
-								error = true;
-								break;
-							} 							
-							
-							Punch punchObject = new Punch(Long.valueOf(time), Integer.valueOf(control));
+				
+							Punch punchObject = new Punch(time, control);
 							cardObject.getPunches().add(punchObject);
-						}
-						break;						
+						}				
 					}
-
-					
+		
 					if (!error && foundCompetitor) {
 						if (cardObject.getPunches().size() > 0) {
 							if (cardObject.getCardNumber() != 0) {

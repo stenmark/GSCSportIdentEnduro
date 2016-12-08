@@ -1,6 +1,7 @@
 package se.gsc.stenmark.gscenduro;
 
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
+import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.PunchParser;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -39,26 +40,14 @@ public class DialogImportPunches {
             		return;
             	}            	
             	
-				try {					
-					PunchParser punchParser = new PunchParser();
-					punchParser.parsePunches(importPunchesInput.getText().toString(), mMainActivity.competition.getCompetitors().getCompetitors(), mMainActivity.competition.getStageDefinition());
-					
-					String statusMsg = punchParser.getStatus();
-					statusMsg += "Processing cards:\n";
-					for (Card cardObject : punchParser.getCards()) {		
-						if (cardObject.getPunches().size() > 0) {
-							if (cardObject.getCardNumber() != 0) {
-								statusMsg += mMainActivity.competition.processNewCard(cardObject, false);
-							}
-						}
-					}												
-					
+				try {	
+					String statusMsg = CompetitionHelper.importPunches( importPunchesInput.getText().toString(), mMainActivity.competition );
+
 					mMainActivity.competition.calculateResults();									
 					mMainActivity.updateFragments();
 					AndroidHelper.saveSessionData(null,mMainActivity.competition);
 					AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition);
 
-					
 					AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 			        builder.setIcon(android.R.drawable.ic_dialog_alert);
 			        builder.setMessage(statusMsg).setTitle("Import punches status").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {

@@ -9,10 +9,12 @@ import java.io.ObjectOutputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
+import se.gsc.stenmark.gscenduro.SporIdent.Card;
+
 
 /**
  * Stateless helper class that can perform various operations on a competition.
@@ -47,6 +49,156 @@ public abstract class CompetitionHelper {
 		
 		return String.format("%02d:%02d.%01d", totalTimeMin, totalTimeSec, totalTimeTenth);
 
+	}
+	
+	public static Competition importCompetition( String importString, StringBuilder errorText) throws IOException{
+		Boolean nameAdded = false;
+		Boolean dateAdded = false;
+		Boolean typeAdded = false;
+		Boolean stageAdded = false;
+		Boolean competitorsAdded = false;
+		Boolean punchesAdded = false;
+		int type = 0;
+		String importType = "";
+		String importData = "";
+		BufferedReader bufReader = new BufferedReader(new StringReader(importString));
+		String line = null;
+		while ((line = bufReader.readLine()) != null) {
+
+			if (line.equals("[/Name]")) {
+				importType = "";
+				if (importData.length() > 0) {
+					nameAdded = true;
+				}
+			} else if (line.equals("[/Date]")) {
+				importType = "";
+				if (importData.length() > 0) {
+					dateAdded = true;
+				}
+			} else if (line.equals("[/Type]")) {
+				importType = "";
+				if (importData.length() > 0) {
+					if (importData.matches("\\d+")) {
+						type = Integer.parseInt(importData);
+						if ((type == 0) || (type == 1)) {
+							typeAdded = true;
+						}
+					}
+				}
+			} else if (line.equals("[/Stages]")) {
+				importType = "";
+				errorText.append( CompetitionHelper.checkStagesData(importData, type));
+				stageAdded = true;
+			} else if (line.equals("[/Competitors]")) {
+				importType = "";
+				errorText.append( importCompetitors(importData, false, type, true, new Competition() ));
+				competitorsAdded = true;
+			} else if (line.equals("[/Punches]")) {
+				importType = "";
+				punchesAdded = true;
+			} else if (importType.length() > 0) {
+				importData += line;
+				if ((importType.equals("[Competitors]")) || (importType.equals("[Punches]"))) {
+					importData += "\n";
+				}
+			} else if ((line.equals("[Name]"))
+					|| (line.equals("[Date]"))
+					|| (line.equals("[Type]"))
+					|| (line.equals("[Stages]"))
+					|| (line.equals("[Competitors]"))
+					|| (line.equals("[Punches]"))) {
+				importType = line;
+				importData = "";
+			}
+		}
+
+		if (!nameAdded) {
+			errorText.append( "No name\n" );
+		}
+
+		if (!dateAdded) {
+			errorText.append( "No date\n" );
+		}
+
+		if (!typeAdded) {
+			errorText.append( "No type\n" );
+		}
+
+		if (!stageAdded) {
+			errorText.append( "No stage\n" );
+		}
+		
+		if (!competitorsAdded && punchesAdded) {
+			errorText.append( "Can't add punches without adding competitors\n" );
+		}
+		
+		if ( errorText.length() != 0 ) {
+			return new Competition();
+		}
+
+		importType = "";
+		importData = "";
+		Competition competition = new Competition();
+
+		bufReader = new BufferedReader(new StringReader(importString));
+		line = null;
+		while ((line = bufReader.readLine()) != null) {
+
+			if (line.equals("[/Name]")) {
+				importType = "";
+				competition.setCompetitionName(importData);
+			} else if (line.equals("[/Date]")) {
+				importType = "";
+				competition.setCompetitionDate(importData);
+			} else if (line.equals("[/Type]")) {
+				importType = "";
+				competition.setCompetitionType(Integer.parseInt(importData));
+			} else if (line.equals("[/Stages]")) {
+				importType = "";
+				competition.importStages(importData);
+			} else if (line.equals("[/Competitors]")) {
+				importType = "";
+				CompetitionHelper.importCompetitors(importData, false, competition.getCompetitionType(),false, competition);
+			} else if (line.equals("[/Punches]")) {
+				importType = "";
+				competition.getCompetitors().importPunches(importData, competition.getStageDefinition(), competition.getCompetitionType());
+			} else if (importType.length() > 0) {
+				importData += line;
+				if ((importType.equals("[Competitors]")) || (importType.equals("[Punches]"))) {
+					importData += "\n";
+				}
+			} else if ((line.equals("[Name]"))
+					|| (line.equals("[Date]"))
+					|| (line.equals("[Type]"))
+					|| (line.equals("[Stages]"))
+					|| (line.equals("[Competitors]"))
+					|| (line.equals("[Punches]"))) {
+				importType = line;
+				importData = "";
+			}
+		}
+
+		competition.calculateResults();	
+		return competition;
+	}
+	
+	public static String importPunches(String punchString, Competition competition) throws IOException{
+		 LinkedHashMap<Integer, Competitor> competitors = competition.getCompetitors().getCompetitors();
+		 List<Stage> stages = competition.getStageDefinition();
+		
+		PunchParser punchParser = new PunchParser();
+		punchParser.parsePunches(punchString, competitors, stages);
+
+		String statusMsg = punchParser.getStatus();
+		statusMsg += "Processing cards:\n";
+		for (Card cardObject : punchParser.getCards()) {		
+			if (cardObject.getPunches().size() > 0) {
+				if (cardObject.getCardNumber() != 0) {
+					statusMsg += competition.processNewCard(cardObject, false);
+				}
+			}
+		}
+		return statusMsg;
 	}
 	
 	public static String importCompetitors(String newCompetitors, Boolean keep, int type, boolean onlyCheckDontAdd, Competition competition) throws NumberFormatException, IOException {	
@@ -213,7 +365,7 @@ public abstract class CompetitionHelper {
 		for (Stage stage : stages) {
 			exportString += "," + stage.start + "," + stage.finish;
 		}
-		exportString.replaceFirst(",", "");
+		exportString = exportString.replaceFirst(",", "");
 		return exportString;
 	}	
 	
@@ -244,8 +396,8 @@ public abstract class CompetitionHelper {
 		String[] controlsList = stages.split(",");				
 		if ((controlsList.length % 2) == 0) {	//Is even
 			//Check that all controls are digits only
-			for (int i = 0; i < controlsList.length; i++) {
-				if (!android.text.TextUtils.isDigitsOnly(controlsList[i])) {
+			for (String controlAsString : controlsList) {
+				if (!controlAsString.matches("\\d+")) {
 					return "Controls are not digits only\n";
 				}
 			}
@@ -421,6 +573,41 @@ public abstract class CompetitionHelper {
 //		
 //		return resultData;
 //	}
+	
+	public static String getCompetitionAsString( Competition competition){
+		String competitionList = "";
+		// Competition Name
+		competitionList += "[Name]\n";
+		competitionList += competition.getCompetitionName() + "\n";
+		competitionList += "[/Name]\n";
+		
+		// Competition Date
+		competitionList += "[Date]\n";
+		competitionList += competition.getCompetitionDate() + "\n";
+		competitionList += "[/Date]\n";
+
+		// Competition Type
+		competitionList += "[Type]\n";
+		competitionList += competition.getCompetitionType() + "\n";
+		competitionList += "[/Type]\n";
+
+		// Stages
+		competitionList += "[Stages]\n";
+		competitionList += CompetitionHelper.exportStagesCsvString(competition.getStageDefinition()) + "\n";
+		competitionList += "[/Stages]\n";
+		
+		// Competitors
+		competitionList += "[Competitors]\n";
+		competitionList += competition.getCompetitors().exportCsvString(competition.getCompetitionType());
+		competitionList += "[/Competitors]\n";
+
+		// Punches
+		competitionList += "[Punches]\n";
+		competitionList += competition.getCompetitors().exportPunchesCsvString();
+		competitionList += "[/Punches]\n";	
+		
+		return competitionList;
+	}
 	
 	public static String getResultsAsCsvString(Map<String, ArrayList<Stage>> stagesForAllClasses,  Map<String, Stage>  totalResultsForAllClasses, Competitors competitors, int type) {
 		String resultData = "";

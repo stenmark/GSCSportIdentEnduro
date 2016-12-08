@@ -43,89 +43,9 @@ public class DialogImportCompetition {
 				}
 
 				try {
-					Boolean nameAdded = false;
-					Boolean dateAdded = false;
-					Boolean typeAdded = false;
-					Boolean stageAdded = false;
-					Boolean competitorsAdded = false;
-					Boolean punchesAdded = false;
-					int type = 0;
-					String importType = "";
-					String importData = "";
-					String errorText = "";					
-
-					BufferedReader bufReader = new BufferedReader(new StringReader(importCompetitionInput.getText().toString()));
-					String line = null;
-					while ((line = bufReader.readLine()) != null) {
-
-						if (line.equals("[/Name]")) {
-							importType = "";
-							if (importData.length() > 0) {
-								nameAdded = true;
-							}
-						} else if (line.equals("[/Date]")) {
-							importType = "";
-							if (importData.length() > 0) {
-								dateAdded = true;
-							}
-						} else if (line.equals("[/Type]")) {
-							importType = "";
-							if (importData.length() > 0) {
-								if (importData.matches("\\d+")) {
-									type = Integer.parseInt(importData);
-									if ((type == 0) || (type == 1)) {
-										typeAdded = true;
-									}
-								}
-							}
-						} else if (line.equals("[/Stages]")) {
-							importType = "";
-							errorText += CompetitionHelper.checkStagesData(importData, type);
-							stageAdded = true;
-						} else if (line.equals("[/Competitors]")) {
-							importType = "";
-							errorText += CompetitionHelper.importCompetitors(importData, false, type, true, mMainActivity.competition);
-							competitorsAdded = true;
-						} else if (line.equals("[/Punches]")) {
-							importType = "";
-							// errorText += mMainActivity.competition.getCompetitors().checkimportPunches(importData);														
-							punchesAdded = true;
-						} else if (importType.length() > 0) {
-							importData += line;
-							if ((importType.equals("[Competitors]")) || (importType.equals("[Punches]"))) {
-								importData += "\n";
-							}
-						} else if ((line.equals("[Name]"))
-								|| (line.equals("[Date]"))
-								|| (line.equals("[Type]"))
-								|| (line.equals("[Stages]"))
-								|| (line.equals("[Competitors]"))
-								|| (line.equals("[Punches]"))) {
-							importType = line;
-							importData = "";
-						}
-					}
-
-					if (!nameAdded) {
-						errorText += "No name\n";
-					}
-
-					if (!dateAdded) {
-						errorText += "No date\n";
-					}
-
-					if (!typeAdded) {
-						errorText += "No type\n";
-					}
-
-					if (!stageAdded) {
-						errorText += "No stage\n";
-					}
-					
-					if (!competitorsAdded && punchesAdded) {
-						errorText += "Can't add punches without adding competitors\n";
-					}
-					
+					StringBuilder status = new StringBuilder();
+					mMainActivity.competition = CompetitionHelper.importCompetition(importCompetitionInput.getText().toString(), status);
+					String errorText = status.toString();
 					if (errorText.length() != 0) {
 						Toast.makeText(mMainActivity, errorText, Toast.LENGTH_LONG).show();
 						return;
