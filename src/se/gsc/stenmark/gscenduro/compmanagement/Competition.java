@@ -10,6 +10,9 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
+
+import se.gsc.stenmark.gscenduro.LogFileWriter;
+import se.gsc.stenmark.gscenduro.MainActivity;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 
 /**
@@ -23,16 +26,16 @@ import se.gsc.stenmark.gscenduro.SporIdent.Card;
 public class Competition implements Serializable {
 
 	private static final long serialVersionUID = 5L;
-	
+
 	public static final int SVART_VIT_TYPE = 0;
 	public static final int ESS_TYPE = 1;	
-	
+
 	public static final long COMPETITION_DNF = 5000000L;
 	public static final long NO_TIME_FOR_STAGE = 10000000L;
 	public static final long NO_TIME_FOR_COMPETITION = 20000000L;
 	public static final int RANK_DNF = 30000000;
 	public static final String CURRENT_COMPETITION = "current_competition";
-	
+
 	//Circular buffer to hold the 6 most recently read cards
 	public CircularFifoQueue<String> lastReadCards = new CircularFifoQueue<String>(6);
 	private TreeMap<String,Stage> totalResults = null;  //Class as key, one result list for each class
@@ -42,41 +45,41 @@ public class Competition implements Serializable {
 	private String mCompetitionDate = "";
 	private int mCompetitionType = SVART_VIT_TYPE;
 	private String[] stageControls;
-	
+
 	public Competition() {
 		totalResults = new TreeMap<String, Stage>();
 		mCompetitors = new Competitors();
 		stageControls = new String[0];
 		setCompetitionName("New");
-		
+
 		SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd", new Locale("swedish", "sweden"));
 		String currentDateandTime = sdf.format(new Date());
 		setCompetitionDate(currentDateandTime);
 	}
-			
+
 	public Stage getTotalResults( String compClass ){
 		return totalResults.get(compClass);
 	}
-	
+
 	public TreeMap<String, Stage> getTotalResultsForAllClasses( ){
 		return totalResults;
 	}
-	
+
 	public List<Stage> getStages( String compClass ) {
 		return stages.get(compClass);	
 	}
-	
+
 	public TreeMap<String, ArrayList<Stage>> getStagesForAllClasses() {
 		return stages;
 	}
-	
+
 	public List<Stage> getStageDefinition(){
 		if( getAllClasses().isEmpty()){
 			return new ArrayList<Stage>();
 		}
 		return stages.get( getAllClasses().get(0) );
 	}
-	
+
 	public List<String> getAllClasses(){
 		List<String> result = new ArrayList<String>();
 		for( String compClass : stages.keySet() ){
@@ -84,11 +87,11 @@ public class Competition implements Serializable {
 		}
 		return result;
 	}
-	
+
 	public int getNumberOfStages(){
 		return getStageDefinition().size();
 	}
-	
+
 	public void addCompetitor(String name, int cardNumber, String team, String competitorClass, int startNumber, int startGroup, int type){
 		name = name.replaceFirst("\\s+$", "");
 		Competitor competitor = new Competitor(name, cardNumber, team, competitorClass, startNumber, startGroup);
@@ -108,11 +111,11 @@ public class Competition implements Serializable {
 	public String getCompetitionName() {
 		return mCompetitionName;
 	}
-	
+
 	public String getCompetitionDate() {
 		return mCompetitionDate;
 	}		
-	
+
 	public void setCompetitionName(String competitionName) {
 		mCompetitionName = competitionName;
 	}	
@@ -128,7 +131,7 @@ public class Competition implements Serializable {
 	public void setCompetitionDate(String competitionDate) {
 		mCompetitionDate = competitionDate;
 	}		
-		
+
 	public String processNewCard(Card card, Boolean calculateResultsAfterAdd) {
 		Competitor foundCompetitor = mCompetitors.findByCard(card);
 		if (foundCompetitor == null) {
@@ -138,86 +141,91 @@ public class Competition implements Serializable {
 		if( stagesForClass == null ){
 			return "WARNIGN! Could not find Class " + foundCompetitor.getCompetitorClass() +  " for " + foundCompetitor.getName();
 		}
-		
+
 		String status = foundCompetitor.processCard(card, stagesForClass, mCompetitionType);
-		
+
 		if (calculateResultsAfterAdd) {				
 			calculateResults();
 		}
 
 		return status;
 	}
-	
+
 	public void calculateResults() {
-		clearResults();
+		try{
+			clearResults();
 
-		//One result for each competitor class
-		for( String competitorClass : totalResults.keySet() ) {
-			if( !stages.containsKey(competitorClass) ){
-				//Something went very wrong, the stages and totalresults does not have the samme classes defined
-				break;
-			}
-			
-			String classString = "";
-			if ( !competitorClass.isEmpty() ) {
-				classString = competitorClass + " - ";
-			} 		
-				
-			// Add total title
-			totalResults.get(competitorClass).title = classString + "Total time";
-	
-			for (int i = 0; i < getNumberOfStages(); i++) {
-				stages.get(competitorClass).get(i).title = classString + "Stage " + (i+1);
-			}
-
-			// Add total times		
-			for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.getCompetitors().entrySet() ) {
-				Competitor currentCompetitor = currentCompetitorEntry.getValue();
-				StageResult totalTimeResult;
-				if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {
-					if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() == 0) ) {
-						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(),NO_TIME_FOR_COMPETITION);
-					} else if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < getNumberOfStages() )) {
-						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), COMPETITION_DNF);
-					} 
-					else {
-						totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), currentCompetitor.getTotalTime( getNumberOfStages() ));							
-					}
-					totalResults.get(competitorClass).addCompetitorResult(totalTimeResult);
+			//One result for each competitor class
+			for( String competitorClass : totalResults.keySet() ) {
+				if( !stages.containsKey(competitorClass) ){
+					//Something went very wrong, the stages and totalresults does not have the samme classes defined
+					break;
 				}
-			}		
-			//Sort total times
-			totalResults.get(competitorClass).sortStageResult(NO_TIME_FOR_COMPETITION);
 
-			StageResult stageResult;
-			// Add stage times
-			for (int stageNumber = 0; stageNumber <  getNumberOfStages(); stageNumber++) {
+				String classString = "";
+				if ( !competitorClass.isEmpty() ) {
+					classString = competitorClass + " - ";
+				} 		
+
+				// Add total title
+				totalResults.get(competitorClass).title = classString + "Total time";
+
+				for (int i = 0; i < getNumberOfStages(); i++) {
+					stages.get(competitorClass).get(i).title = classString + "Stage " + (i+1);
+				}
+
+				// Add total times		
 				for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.getCompetitors().entrySet() ) {
 					Competitor currentCompetitor = currentCompetitorEntry.getValue();
-					if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {			
-
-						Long stageTime = NO_TIME_FOR_STAGE;
-						if ((currentCompetitor.hasResult()) && (currentCompetitor.getStageTimes().size() > stageNumber)) {  //OLD VERSION -1
-							stageTime = currentCompetitor.getStageTimes().getTimesOfStage(stageNumber);  //OLD VERSION -1
+					StageResult totalTimeResult;
+					if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {
+						if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() == 0) ) {
+							totalTimeResult = new StageResult(currentCompetitor.getCardNumber(),NO_TIME_FOR_COMPETITION);
+						} else if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < getNumberOfStages() )) {
+							totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), COMPETITION_DNF);
 						} 
-		
-						stageResult = new StageResult(currentCompetitor.getCardNumber(), stageTime);
-						stages.get(competitorClass).get(stageNumber).addCompetitorResult(stageResult);
-					}						
-				}
-	
-				//Sort stages times
-				stages.get(competitorClass).get(stageNumber).sortStageResult(NO_TIME_FOR_STAGE);
-			}
+						else {
+							totalTimeResult = new StageResult(currentCompetitor.getCardNumber(), currentCompetitor.getTotalTime( getNumberOfStages() ));							
+						}
+						totalResults.get(competitorClass).addCompetitorResult(totalTimeResult);
+					}
+				}		
+				//Sort total times
+				totalResults.get(competitorClass).sortStageResult(NO_TIME_FOR_COMPETITION);
 
-			//Calculate time back
-			totalResults.get(competitorClass).calculateTimeBack();
-			for( Stage currentStage : stages.get(competitorClass) ) {
-				currentStage.calculateTimeBack();
+				StageResult stageResult;
+				// Add stage times
+				for (int stageNumber = 0; stageNumber <  getNumberOfStages(); stageNumber++) {
+					for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.getCompetitors().entrySet() ) {
+						Competitor currentCompetitor = currentCompetitorEntry.getValue();
+						if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {			
+
+							Long stageTime = NO_TIME_FOR_STAGE;
+							if ((currentCompetitor.hasResult()) && (currentCompetitor.getStageTimes().size() > stageNumber)) { 
+								stageTime = currentCompetitor.getStageTimes().getTimesOfStage(stageNumber); 
+							} 
+
+							stageResult = new StageResult(currentCompetitor.getCardNumber(), stageTime);
+							stages.get(competitorClass).get(stageNumber).addCompetitorResult(stageResult);
+						}						
+					}
+
+					//Sort stages times
+					stages.get(competitorClass).get(stageNumber).sortStageResult(NO_TIME_FOR_STAGE);
+				}
+
+				//Calculate time back
+				totalResults.get(competitorClass).calculateTimeBack();
+				for( Stage currentStage : stages.get(competitorClass) ) {
+					currentStage.calculateTimeBack();
+				}
 			}
 		}
+		catch(Exception e){
+			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+		}
 	}
-	
+
 	private ArrayList<Stage> createNewStages(){
 		ArrayList<Stage> result = new ArrayList<Stage>();
 		for (int i = 0; i < stageControls.length; i += 2) {
@@ -229,7 +237,7 @@ public class Competition implements Serializable {
 		}	
 		return result;
 	}
-	
+
 	public void importStages(String stagesToImport) {
 		stageControls = stagesToImport.split(",");				
 		stages.clear();
@@ -245,7 +253,7 @@ public class Competition implements Serializable {
 			totalResults.get(compClass).clearResult();
 		}
 	}
-	
+
 	public List<Integer> getControls() {
 		List<Integer> controls = new ArrayList<Integer>();
 		for (Stage stage : getStageDefinition()) {
@@ -258,5 +266,5 @@ public class Competition implements Serializable {
 		}
 		return controls;
 	}
-	
+
 }

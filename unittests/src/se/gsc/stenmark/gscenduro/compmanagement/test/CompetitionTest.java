@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -20,7 +19,6 @@ import se.gsc.stenmark.gscenduro.SporIdent.test.driverStubs.UsbDriverStub;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
-import se.gsc.stenmark.gscenduro.compmanagement.Stage;
 import se.gsc.stenmark.gscenduro.compmanagement.StageResult;
 
 public class CompetitionTest {
@@ -845,6 +843,572 @@ public class CompetitionTest {
 		assertEquals(2079747,stage3Result.get(4).getCardNumber() );
 	
 	}
+	
+	@Test
+	public void testFullEssCompetition() {
+		final String MEN_ELIT_CLASS = "Herrar Elit";
+		final String WOMEN_ELIT_CLASS = "Dam Elit";
+		final String MOTION_CLASS = "Motion";
+		final int EXPECTED_NUM_COMPETITORS = 12;
+		final int EXPECTED_NUM_COMPETITORS_MEN = 6;
+		final int EXPECTED_NUM_COMPETITORS_MOTION = 3;
+		final int EXPECTED_NUM_COMPETITORS_WOMEN = 3;
+		final int EXPECTED_NUM_STAGES = 3;
+		
+		//Init Competition with test parameters
+		Competition competition = new Competition();
+		competition.importStages("110,111,120,121,130,131");
+		competition.addCompetitor("Andreas S", 2079749, "Team Andreas", MEN_ELIT_CLASS, 1, 0, Competition.ESS_TYPE);
+		competition.addCompetitor("Peter B", 2065396, "Team Peter", MEN_ELIT_CLASS, 2, 0, Competition.ESS_TYPE);
+		competition.addCompetitor("Sverker G", 2078056, "Team Andreas", MEN_ELIT_CLASS, 3, 0, Competition.ESS_TYPE);
+		competition.addCompetitor("Ingemar G", 2079747, "Team Igge", MEN_ELIT_CLASS, 4, 0, Competition.ESS_TYPE);
+		competition.addCompetitor("Släggan", 2078082, "", MEN_ELIT_CLASS, 5, 0, Competition.ESS_TYPE);
+		competition.addCompetitor("Fruttberg", 2078040, "Team Voltaren", MEN_ELIT_CLASS, 6, 0, Competition.ESS_TYPE);
+		competition.addCompetitor("Anna", 2079751, "Team Anna", WOMEN_ELIT_CLASS, 7, 0, Competition.ESS_TYPE);
+		competition.addCompetitor("Karin", 2079752, "", WOMEN_ELIT_CLASS, 8, 0, Competition.ESS_TYPE);
+		competition.addCompetitor("Josefin", 2079753, "Team Josefin", WOMEN_ELIT_CLASS, 9, 0, Competition.ESS_TYPE);
+		competition.addCompetitor("Morgan", 2079761, "", MOTION_CLASS, 10, 0, Competition.ESS_TYPE);
+		competition.addCompetitor("Pelle", 2079762, "", MOTION_CLASS, 11, 0, Competition.ESS_TYPE);
+		competition.addCompetitor("Johan", 2079763, "", MOTION_CLASS, 12, 0, Competition.ESS_TYPE);
+		competition.setCompetitionDate("2015-09-12");
+		competition.setCompetitionType( Competition.ESS_TYPE);
+		competition.setCompetitionName("ESS Competition test name");
+		
+		//Assert some basic competition fields
+		assertEquals(EXPECTED_NUM_STAGES, competition.getNumberOfStages() );
+		assertEquals( 110, competition.getStages(MEN_ELIT_CLASS).get(0).start );
+		assertEquals( 111, competition.getStages(MEN_ELIT_CLASS).get(0).finish );
+		assertEquals( 120, competition.getStages(MEN_ELIT_CLASS).get(1).start );
+		assertEquals( 121, competition.getStages(MEN_ELIT_CLASS).get(1).finish );
+		assertEquals( 130, competition.getStages(MEN_ELIT_CLASS).get(2).start );
+		assertEquals( 131, competition.getStages(MEN_ELIT_CLASS).get(2).finish );
+		assertEquals( 110, competition.getStages(WOMEN_ELIT_CLASS).get(0).start );
+		assertEquals( 111, competition.getStages(WOMEN_ELIT_CLASS).get(0).finish );
+		assertEquals( 120, competition.getStages(WOMEN_ELIT_CLASS).get(1).start );
+		assertEquals( 121, competition.getStages(WOMEN_ELIT_CLASS).get(1).finish );
+		assertEquals( 130, competition.getStages(WOMEN_ELIT_CLASS).get(2).start );
+		assertEquals( 131, competition.getStages(WOMEN_ELIT_CLASS).get(2).finish );
+		assertEquals( 110, competition.getStages(MOTION_CLASS).get(0).start );
+		assertEquals( 111, competition.getStages(MOTION_CLASS).get(0).finish );
+		assertEquals( 120, competition.getStages(MOTION_CLASS).get(1).start );
+		assertEquals( 121, competition.getStages(MOTION_CLASS).get(1).finish );
+		assertEquals( 130, competition.getStages(MOTION_CLASS).get(2).start );
+		assertEquals( 131, competition.getStages(MOTION_CLASS).get(2).finish );
+		assertEquals( 110, competition.getStageDefinition().get(0).start );
+		assertEquals( 111, competition.getStageDefinition().get(0).finish );
+		assertEquals( 120, competition.getStageDefinition().get(1).start );
+		assertEquals( 121, competition.getStageDefinition().get(1).finish );
+		assertEquals( 130, competition.getStageDefinition().get(2).start );
+		assertEquals( 131, competition.getStageDefinition().get(2).finish );
+		
+		assertEquals(EXPECTED_NUM_COMPETITORS, competition.getCompetitors().getCompetitors().size() );
+		assertEquals(3, competition.getAllClasses().size());
+		assertEquals( WOMEN_ELIT_CLASS, competition.getAllClasses().get(0) );
+		assertEquals( MEN_ELIT_CLASS, competition.getAllClasses().get(1) );
+		assertEquals( MOTION_CLASS, competition.getAllClasses().get(2) );
+		
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		//Calculate results
+		competition.calculateResults();
+		
+		//No stagetimes are reported yet. Verify that totalTime is set to NO_TIME_FOR_COMPETITION 
+		//and that each stage result is set to NO_TIME_FOR_STAGE
+		//and that rank is set to RANK_DNF
+		assertEquals(EXPECTED_NUM_COMPETITORS_MEN, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().size() );
+		assertEquals(EXPECTED_NUM_COMPETITORS_WOMEN, competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults().size() );
+		assertEquals(EXPECTED_NUM_COMPETITORS_MOTION, competition.getTotalResults(MOTION_CLASS).getCompetitorResults().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getNumberOfStages() );
+		for( StageResult currentTotalTimeResult : competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults() ){
+			assertEquals( (Long)Competition.NO_TIME_FOR_COMPETITION, currentTotalTimeResult.getStageTime() );
+			assertEquals( (Integer)Competition.RANK_DNF, currentTotalTimeResult.getRank() );
+			assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentTotalTimeResult.getStageTimesBack() );
+		}
+		for( StageResult currentTotalTimeResult : competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults() ){
+			assertEquals( (Long)Competition.NO_TIME_FOR_COMPETITION, currentTotalTimeResult.getStageTime() );
+			assertEquals( (Integer)Competition.RANK_DNF, currentTotalTimeResult.getRank() );
+			assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentTotalTimeResult.getStageTimesBack() );
+		}
+		for( StageResult currentTotalTimeResult : competition.getTotalResults(MOTION_CLASS).getCompetitorResults() ){
+			assertEquals( (Long)Competition.NO_TIME_FOR_COMPETITION, currentTotalTimeResult.getStageTime() );
+			assertEquals( (Integer)Competition.RANK_DNF, currentTotalTimeResult.getRank() );
+			assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentTotalTimeResult.getStageTimesBack() );
+		}
+		
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			for( StageResult currentStageResult : competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults() ){
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTime() );
+				assertEquals( (Integer)Competition.RANK_DNF, currentStageResult.getRank() );
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTimesBack() );
+			}
+		}	
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			for( StageResult currentStageResult : competition.getStages(WOMEN_ELIT_CLASS).get(stageNumber).getCompetitorResults() ){
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTime() );
+				assertEquals( (Integer)Competition.RANK_DNF, currentStageResult.getRank() );
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTimesBack() );
+			}
+		}
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			for( StageResult currentStageResult : competition.getStages(MOTION_CLASS).get(stageNumber).getCompetitorResults() ){
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTime() );
+				assertEquals( (Integer)Competition.RANK_DNF, currentStageResult.getRank() );
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTimesBack() );
+			}
+		}
+		
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		System.out.println("Add results for competitor 1: Andreas S - 2079749");
+		Competitor competitorAndreas = competition.getCompetitors().getByCardNumber(2079749);
+		assertEquals(2079749, competitorAndreas.getCardNumber() );
+		Card cardAndreas = new Card();
+		cardAndreas.setCardNumber(2079749);
+		cardAndreas.setNumberOfPunches(6);
+		List<Punch> andreasPunches = new ArrayList<>();
+		andreasPunches.add( new Punch(100, 110));
+		andreasPunches.add( new Punch(200, 111));
+		andreasPunches.add( new Punch(300, 120));
+		andreasPunches.add( new Punch(500, 121));
+		andreasPunches.add( new Punch(600, 130));
+		andreasPunches.add( new Punch(900, 131));
+		cardAndreas.setPunches(andreasPunches);
+		String cardStatus = competitorAndreas.processCard(cardAndreas, competition.getStages(MEN_ELIT_CLASS), Competition.ESS_TYPE);
+		System.out.println("Proccess card status for Andreas S" + cardStatus);
+		assertEquals(competitorAndreas.getCardNumber(), competitorAndreas.getCard().getCardNumber());
+		competition.calculateResults();
+		assertEquals(EXPECTED_NUM_COMPETITORS_MEN, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getStages(MEN_ELIT_CLASS).size() );
+
+		System.out.println("Check first entry in the total result, should be Andreas S");
+		assertEquals( (Long)600L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTime() );
+		assertEquals( (Integer)1,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getRank() );
+		assertEquals( (Long)0L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTimesBack() );
+		assertEquals(2079749,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getCardNumber() );
+		for( StageResult currentTotalTimeResult : competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults() ){
+			assertEquals( (Long)Competition.NO_TIME_FOR_COMPETITION, currentTotalTimeResult.getStageTime() );
+			assertEquals( (Integer)Competition.RANK_DNF, currentTotalTimeResult.getRank() );
+			assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentTotalTimeResult.getStageTimesBack() );
+		}
+		for( StageResult currentTotalTimeResult : competition.getTotalResults(MOTION_CLASS).getCompetitorResults() ){
+			assertEquals( (Long)Competition.NO_TIME_FOR_COMPETITION, currentTotalTimeResult.getStageTime() );
+			assertEquals( (Integer)Competition.RANK_DNF, currentTotalTimeResult.getRank() );
+			assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentTotalTimeResult.getStageTimesBack() );
+		}
+		
+		System.out.println("Check first entry in each stage, should be Andreas S");
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			assertEquals( (Long)((stageNumber+1)*100L), competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTime() );
+			assertEquals( (Integer)1, competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getRank() );
+			assertEquals( (Long)0L, competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTimesBack() );
+			assertEquals(2079749,competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getCardNumber() );
+		}
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			for( StageResult currentStageResult : competition.getStages(WOMEN_ELIT_CLASS).get(stageNumber).getCompetitorResults() ){
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTime() );
+				assertEquals( (Integer)Competition.RANK_DNF, currentStageResult.getRank() );
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTimesBack() );
+			}
+		}
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			for( StageResult currentStageResult : competition.getStages(MOTION_CLASS).get(stageNumber).getCompetitorResults() ){
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTime() );
+				assertEquals( (Integer)Competition.RANK_DNF, currentStageResult.getRank() );
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTimesBack() );
+			}
+		}
+		
+		
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		System.out.println("Add results for competitor 2 in Men Elite class: Sverker G - 2078056");
+		Competitor competitorSverker = competition.getCompetitors().getByCardNumber(2078056);
+		assertEquals(2078056, competitorSverker.getCardNumber() );
+		Card cardSverker = new Card();
+		cardSverker.setCardNumber(2078056);
+		cardSverker.setNumberOfPunches(6);
+		List<Punch> sverkerPunches = new ArrayList<>();
+		sverkerPunches.add( new Punch(10, 110));
+		sverkerPunches.add( new Punch(20, 111));
+		sverkerPunches.add( new Punch(30, 120));
+		sverkerPunches.add( new Punch(50, 121));
+		sverkerPunches.add( new Punch(60, 130));
+		sverkerPunches.add( new Punch(90, 131));
+		cardSverker.setPunches(sverkerPunches);
+		cardStatus = competitorSverker.processCard(cardSverker, competition.getStages(MEN_ELIT_CLASS), Competition.ESS_TYPE);
+		System.out.println("Proccess card status for Sverker G" + cardStatus);
+		assertEquals(competitorSverker.getCardNumber(), competitorSverker.getCard().getCardNumber());
+		competition.calculateResults();
+		assertEquals(EXPECTED_NUM_COMPETITORS_MEN, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getStages(MEN_ELIT_CLASS).size() );
+		System.out.println("Add results for competitor 1 in Women Elite: Anna - 2079751");
+		Competitor competitorAnna = competition.getCompetitors().getByCardNumber(2079751);
+		assertEquals(2079751, competitorAnna.getCardNumber() );
+		Card cardAnna = new Card();
+		cardAnna.setCardNumber(2079751);
+		cardAnna.setNumberOfPunches(6);
+		List<Punch> annaPunches = new ArrayList<>();
+		annaPunches.add( new Punch(30, 120));
+		annaPunches.add( new Punch(50, 121));
+		annaPunches.add( new Punch(10, 110));
+		annaPunches.add( new Punch(20, 111));
+		annaPunches.add( new Punch(60, 130));
+		annaPunches.add( new Punch(90, 131));
+		cardAnna.setPunches(annaPunches);
+		cardStatus = competitorAnna.processCard(cardAnna, competition.getStages(WOMEN_ELIT_CLASS), Competition.ESS_TYPE);
+		System.out.println("Proccess card status for Anna" + cardStatus);
+		assertEquals(competitorAnna.getCardNumber(), competitorAnna.getCard().getCardNumber());
+		competition.calculateResults();
+		assertEquals(EXPECTED_NUM_COMPETITORS_WOMEN, competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getStages(WOMEN_ELIT_CLASS).size() );
+			
+		System.out.println("Check first entry in the total result, should be Sverker G");
+		assertEquals( (Long)60L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTime() );
+		assertEquals( (Integer)1, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getRank() );
+		assertEquals( (Long)0L,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTimesBack() );
+		assertEquals(2078056,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getCardNumber() );
+		
+		System.out.println("Check second entry in the total result, should be Andreas S");
+		assertEquals( (Long)600L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getStageTime() );
+		assertEquals( (Integer)2, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getRank() );
+		assertEquals( (Long)540L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getStageTimesBack() );
+		assertEquals(2079749,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getCardNumber() );
+		
+		System.out.println("Check first entry in each stage, should be Sverker G");
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			assertEquals( (Long)((stageNumber+1)*10L), competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTime() );
+			assertEquals( (Integer)1, competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getRank() );
+			assertEquals( (Long)0L, competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTimesBack() );
+			assertEquals(2078056,competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getCardNumber() );
+		}
+		
+		System.out.println("Check second entry in each stage, should be Andreas S");
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			assertEquals( (Long)((stageNumber+1)*100L), competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(1).getStageTime() );
+			assertEquals( (Integer)2, competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(1).getRank() );
+			assertEquals( (Long)((stageNumber+1)*90L), competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(1).getStageTimesBack() );
+			assertEquals(2079749,competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(1).getCardNumber() );
+		}
+		
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			for( StageResult currentStageResult : competition.getStages(MOTION_CLASS).get(stageNumber).getCompetitorResults() ){
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTime() );
+				assertEquals( (Integer)Competition.RANK_DNF, currentStageResult.getRank() );
+				assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, currentStageResult.getStageTimesBack() );
+			}
+		}
+		
+		System.out.println("Check first entry in the total result for Women Elite class, should be Anna");
+		assertEquals( (Long)60L, competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTime() );
+		assertEquals( (Integer)1, competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults().get(0).getRank() );
+		assertEquals( (Long)0L,competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTimesBack() );
+		assertEquals(2079751,competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults().get(0).getCardNumber() );
+		
+		System.out.println("Check first entry in each stage for Women Elite class, should be Anna");
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			assertEquals( (Long)((stageNumber+1)*10L), competition.getStages(WOMEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTime() );
+			assertEquals( (Integer)1, competition.getStages(WOMEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getRank() );
+			assertEquals( (Long)0L, competition.getStages(WOMEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTimesBack() );
+			assertEquals(2079751,competition.getStages(WOMEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getCardNumber() );
+		}
+		assertEquals(0,competition.getCompetitors().getByCardNumber(2079751).getStartGroup());
+		assertEquals(7,competition.getCompetitors().getByCardNumber(2079751).getStartNumber());
+		assertEquals("Team Anna",competition.getCompetitors().getByCardNumber(2079751).getTeam());
+		assertEquals(WOMEN_ELIT_CLASS,competition.getCompetitors().getByCardNumber(2079751).getCompetitorClass());
+
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		System.out.println("Add results for competitor 3: Släggan- 2078082. Only add results for 2 stages");
+		Competitor competitorSledgeHammer = competition.getCompetitors().getByCardNumber(2078082);
+		assertEquals(2078082, competitorSledgeHammer.getCardNumber() );
+		Card cardSledgeHammer = new Card();
+		cardSledgeHammer.setCardNumber(2078082);
+		cardSledgeHammer.setNumberOfPunches(6);
+		List<Punch> sledgeHammerPunches = new ArrayList<>();
+		sledgeHammerPunches.add( new Punch(100, 110));
+		sledgeHammerPunches.add( new Punch(150, 111));
+		sledgeHammerPunches.add( new Punch(200, 120));
+		sledgeHammerPunches.add( new Punch(210, 121));
+		cardSledgeHammer.setPunches(sledgeHammerPunches);
+		cardStatus = competitorSledgeHammer.processCard(cardSledgeHammer, competition.getStages(MEN_ELIT_CLASS), Competition.ESS_TYPE);
+		System.out.println("Proccess card status for Släggan" + cardStatus);
+		assertEquals(competitorSledgeHammer.getCardNumber(), competitorSledgeHammer.getCard().getCardNumber());
+		competition.calculateResults();
+		assertEquals(EXPECTED_NUM_COMPETITORS_MEN, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getStages(MEN_ELIT_CLASS).size() );
+		System.out.println("Add results for competitor 1 for Motion Class: Morgan - 2079761.");
+		Competitor competitorMorgan = competition.getCompetitors().getByCardNumber(2079761);
+		assertEquals(2079761, competitorMorgan.getCardNumber() );
+		Card cardMorgan = new Card();
+		cardMorgan.setCardNumber(2079761);
+		cardMorgan.setNumberOfPunches(6);
+		List<Punch> morganPunches = new ArrayList<>();
+		morganPunches.add( new Punch(300, 130));
+		morganPunches.add( new Punch(360, 131));
+		morganPunches.add( new Punch(100, 110));
+		morganPunches.add( new Punch(120, 111));
+		morganPunches.add( new Punch(200, 120));
+		morganPunches.add( new Punch(240, 121));
+		cardMorgan.setPunches(morganPunches);
+		cardStatus = competitorMorgan.processCard(cardMorgan, competition.getStages(MOTION_CLASS), Competition.ESS_TYPE);
+		System.out.println("Proccess card status for Släggan" + cardStatus);
+		assertEquals(competitorMorgan.getCardNumber(), competitorMorgan.getCard().getCardNumber());
+		competition.calculateResults();
+		assertEquals(EXPECTED_NUM_COMPETITORS_MOTION, competition.getTotalResults(MOTION_CLASS).getCompetitorResults().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getStages(MOTION_CLASS).size() );
+		
+		System.out.println("Check first entry in the total result, should be Sverker G");
+		assertEquals( (Long)60L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTime() );
+		assertEquals( (Integer)1, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getRank() );
+		assertEquals( (Long)0L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTimesBack() );
+		assertEquals(2078056,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getCardNumber() );
+		
+		System.out.println("Check second entry in the total result, should be Andreas S");
+		assertEquals( (Long)600L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getStageTime() );
+		assertEquals( (Integer)2, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getRank() );
+		assertEquals( (Long)540L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getStageTimesBack() );
+		assertEquals(2079749,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getCardNumber() );
+		
+		System.out.println(CompetitionHelper.getResultsAsCsvString(competition.getStagesForAllClasses(), competition.getTotalResultsForAllClasses(), competition.getCompetitors(), Competition.ESS_TYPE));
+		System.out.println("Check third entry in the total result, should be Släggan but with DNF result");
+		assertEquals( (Long)Competition.COMPETITION_DNF, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getStageTime() );
+		assertEquals( (Integer)Competition.RANK_DNF, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getStageTimesBack() );
+		assertEquals(2078082,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getCardNumber() );
+	
+		System.out.println("Check first entry in the total result for Women Elite class, should be Anna");
+		assertEquals( (Long)60L, competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTime() );
+		assertEquals( (Integer)1, competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults().get(0).getRank() );
+		assertEquals( (Long)0L,competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTimesBack() );
+		assertEquals(2079751,competition.getTotalResults(WOMEN_ELIT_CLASS).getCompetitorResults().get(0).getCardNumber() );
+		
+		System.out.println("Check first entry in each stage for Women Elite class, should be Anna");
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			assertEquals( (Long)((stageNumber+1)*10L), competition.getStages(WOMEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTime() );
+			assertEquals( (Integer)1, competition.getStages(WOMEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getRank() );
+			assertEquals( (Long)0L, competition.getStages(WOMEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTimesBack() );
+			assertEquals(2079751,competition.getStages(WOMEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getCardNumber() );
+		}
+		
+		System.out.println("Check first entry in the total result for Motion class, should be Morgan");
+		assertEquals( (Long)120L, competition.getTotalResults(MOTION_CLASS).getCompetitorResults().get(0).getStageTime() );
+		assertEquals( (Integer)1, competition.getTotalResults(MOTION_CLASS).getCompetitorResults().get(0).getRank() );
+		assertEquals( (Long)0L,competition.getTotalResults(MOTION_CLASS).getCompetitorResults().get(0).getStageTimesBack() );
+		assertEquals(2079761,competition.getTotalResults(MOTION_CLASS).getCompetitorResults().get(0).getCardNumber() );
+		
+		System.out.println("Check first entry in each stage for Motion class, should be Morgan");
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			assertEquals( (Long)((stageNumber+1)*20L), competition.getStages(MOTION_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTime() );
+			assertEquals( (Integer)1, competition.getStages(MOTION_CLASS).get(stageNumber).getCompetitorResults().get(0).getRank() );
+			assertEquals( (Long)0L, competition.getStages(MOTION_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTimesBack() );
+			assertEquals(2079761,competition.getStages(MOTION_CLASS).get(stageNumber).getCompetitorResults().get(0).getCardNumber() );
+		}
+	
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		System.out.println("Add results for competitor 4: Peter B - 2065396. Set same stage time as Sverker on stage 2. And same total Time as Andreas S");
+		Competitor competitorPeter = competition.getCompetitors().getByCardNumber(2065396);
+		assertEquals(2065396, competitorPeter.getCardNumber() );
+		Card cardPeter = new Card();
+		cardPeter.setCardNumber(2065396);
+		cardPeter.setNumberOfPunches(6);
+		List<Punch> peterPunches = new ArrayList<>();
+		peterPunches.add( new Punch(5, 110));
+		peterPunches.add( new Punch(115, 111));
+		peterPunches.add( new Punch(130, 120));
+		peterPunches.add( new Punch(150, 121));
+		peterPunches.add( new Punch(500, 130));
+		peterPunches.add( new Punch(970, 131));
+		cardPeter.setPunches(peterPunches);
+		cardStatus = competitorPeter.processCard(cardPeter, competition.getStages(MEN_ELIT_CLASS), Competition.ESS_TYPE);
+		assertEquals(competitorPeter.getCardNumber(), competitorPeter.getCard().getCardNumber());
+		competition.calculateResults();
+		assertEquals(EXPECTED_NUM_COMPETITORS_MEN, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getStages(MEN_ELIT_CLASS).size() );
+		
+		System.out.println("Check first entry in the total result, should be Sverker G");
+		assertEquals( (Long)60L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTime() );
+		assertEquals( (Integer)1, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getRank() );
+		assertEquals( (Long)0L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTimesBack() );
+		assertEquals(2078056,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getCardNumber() );
+		
+		System.out.println("Check second entry in the total result, should be Andreas S");
+		assertEquals( (Long)600L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getStageTime() );
+		assertEquals( (Integer)2, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getRank() );
+		assertEquals( (Long)540L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getStageTimesBack() );
+		assertEquals(2079749,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getCardNumber() );
+		
+		System.out.println("Check third entry in the total result, should be Peter B. Should have same time and Rank as Andreas S");
+		assertEquals( (Long)600L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getStageTime() );
+		assertEquals( (Integer)2, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getRank() );
+		assertEquals( (Long)540L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getStageTimesBack() );
+		assertEquals(2065396,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getCardNumber() );
+	
+		System.out.println("Check fourth entry in the total result, should be Släggan but with DNF result");
+		assertEquals( (Long)Competition.COMPETITION_DNF, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(3).getStageTime() );
+		assertEquals( (Integer)Competition.RANK_DNF, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(3).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(3).getStageTimesBack() );
+		assertEquals(2078082,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(3).getCardNumber() );
+	
+		
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		////////////////////////	////////////////////////	//////////////////////// 	//////////////////////// 
+		System.out.println("Add results for competitor 5: Fruttberg - 2078040. Total time highest, check that rank is last");
+		Competitor competitorFruttberg = competition.getCompetitors().getByCardNumber(2078040);
+		assertEquals(2078040, competitorFruttberg.getCardNumber() );
+		Card cardFruttberg = new Card();
+		cardFruttberg.setCardNumber(2078040);
+		cardFruttberg.setNumberOfPunches(6);
+		List<Punch> fruttbergPunches = new ArrayList<>();
+		fruttbergPunches.add( new Punch(250, 110));
+		fruttbergPunches.add( new Punch(450, 111));
+		fruttbergPunches.add( new Punch(550, 120));
+		fruttbergPunches.add( new Punch(750, 121));
+		fruttbergPunches.add( new Punch(1000, 130));
+		fruttbergPunches.add( new Punch(1300, 131));
+		cardFruttberg.setPunches(fruttbergPunches);
+		cardStatus = competitorFruttberg.processCard(cardFruttberg, competition.getStages(MEN_ELIT_CLASS), Competition.ESS_TYPE);
+		assertEquals(competitorFruttberg.getCardNumber(), competitorFruttberg.getCard().getCardNumber());
+		competition.calculateResults();
+		assertEquals(EXPECTED_NUM_COMPETITORS_MEN, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().size() );
+		assertEquals(EXPECTED_NUM_STAGES, competition.getStages(MEN_ELIT_CLASS).size() );
+		
+		System.out.println("Check first entry in the total result, should be Sverker G");
+		assertEquals( (Long)60L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTime() );
+		assertEquals( (Integer)1, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getRank() );
+		assertEquals( (Long)0L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getStageTimesBack() );
+		assertEquals(2078056,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(0).getCardNumber() );
+		
+		System.out.println("Check second entry in the total result, should be Andreas S");
+		assertEquals( (Long)600L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getStageTime() );
+		assertEquals( (Integer)2, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getRank() );
+		assertEquals( (Long)540L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getStageTimesBack() );
+		assertEquals(2079749,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(1).getCardNumber() );
+		
+		System.out.println("Check third entry in the total result, should be Peter B. Should have same time and Rank as Andreas S");
+		assertEquals( (Long)600L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getStageTime() );
+		assertEquals( (Integer)2, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getRank() );
+		assertEquals( (Long)540L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getStageTimesBack() );
+		assertEquals(2065396,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(2).getCardNumber() );
+		
+		System.out.println("Check fourth entry in the total result, should be Fruttberg. Should be rank 4");
+		assertEquals( (Long)700L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(3).getStageTime() );
+		assertEquals( (Integer)4, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(3).getRank() );
+		assertEquals( (Long)640L, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(3).getStageTimesBack() );
+		assertEquals(2078040,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(3).getCardNumber() );
+	
+		System.out.println("Check fifth entry in the total result, should be Släggan but with DNF result");
+		assertEquals( (Long)Competition.COMPETITION_DNF, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(4).getStageTime() );
+		assertEquals( (Integer)Competition.RANK_DNF, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(4).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(4).getStageTimesBack() );
+		assertEquals(2078082,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(4).getCardNumber() );
+		
+		System.out.println("Check sixth entry in the total result, should be Ingemar but with \"no time result\"");
+		assertEquals( (Long)Competition.NO_TIME_FOR_COMPETITION, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(5).getStageTime() );
+		assertEquals( (Integer)Competition.RANK_DNF, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(5).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(5).getStageTimesBack() );
+		assertEquals(2079747,competition.getTotalResults(MEN_ELIT_CLASS).getCompetitorResults().get(5).getCardNumber() );
+		
+		System.out.println("Check first entry in each stage, should be Sverker G");
+		for( int stageNumber = 0; stageNumber < EXPECTED_NUM_STAGES; stageNumber++){
+			//Sverker is not the winner on stage 2
+			if( stageNumber == 1){ 
+				assertEquals( (Long)((stageNumber+1)*10L), competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(1).getStageTime() );
+				assertEquals( (Integer)2, competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(1).getRank() );
+				assertEquals( (Long)10L, competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(1).getStageTimesBack() );
+				//Same time as Peter B on stage 2, Peter ends up in position 1 in the array but shall have the same rank as sverker
+				assertEquals(2078056,competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(2).getCardNumber() );
+			}
+			else { 
+				assertEquals( (Long)((stageNumber+1)*10L), competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTime() ); 
+				assertEquals( (Integer)1,competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getRank() );
+				assertEquals( (Long)0L, competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getStageTimesBack() );
+				assertEquals(2078056,competition.getStages(MEN_ELIT_CLASS).get(stageNumber).getCompetitorResults().get(0).getCardNumber() );
+			}	
+		}
+		
+		System.out.println("Check contents of stage results");
+		assertEquals(MEN_ELIT_CLASS + " - Stage 1", competition.getStages(MEN_ELIT_CLASS).get(0).title);
+		assertEquals(MEN_ELIT_CLASS + " - Stage 2", competition.getStages(MEN_ELIT_CLASS).get(1).title);
+		assertEquals(MEN_ELIT_CLASS + " - Stage 3", competition.getStages(MEN_ELIT_CLASS).get(2).title);
+		assertEquals(EXPECTED_NUM_COMPETITORS_MEN, competition.getStages(MEN_ELIT_CLASS).get(0).getCompetitorResults().size());
+		assertEquals(EXPECTED_NUM_COMPETITORS_MEN, competition.getStages(MEN_ELIT_CLASS).get(1).getCompetitorResults().size());
+		assertEquals(EXPECTED_NUM_COMPETITORS_MEN, competition.getStages(MEN_ELIT_CLASS).get(2).getCompetitorResults().size());
+		
+		System.out.println("Check results for each stage Competitor Andreas S");
+		List<StageResult> stage1Result = competition.getStages(MEN_ELIT_CLASS).get(0).getCompetitorResults();
+		List<StageResult> stage2Result = competition.getStages(MEN_ELIT_CLASS).get(1).getCompetitorResults();
+		List<StageResult> stage3Result = competition.getStages(MEN_ELIT_CLASS).get(2).getCompetitorResults();
+		assertEquals( (Long)(100L), stage1Result.get(2).getStageTime() ); 
+		assertEquals( (Integer)3, stage1Result.get(2).getRank() );
+		assertEquals( (Long)90L, stage1Result.get(2).getStageTimesBack() );
+		assertEquals(2079749,stage1Result.get(2).getCardNumber() );
+		assertEquals( (Long)(200L), stage2Result.get(3).getStageTime() ); 
+		assertEquals( (Integer)4, stage2Result.get(3).getRank() );
+		assertEquals( (Long)190L, stage2Result.get(3).getStageTimesBack() );
+		assertEquals(2079749,stage2Result.get(3).getCardNumber() );
+		assertEquals( (Long)(300L), stage3Result.get(1).getStageTime() ); 
+		assertEquals( (Integer)2, stage3Result.get(1).getRank() );
+		assertEquals( (Long)270L, stage3Result.get(1).getStageTimesBack() );
+		assertEquals(2079749,stage3Result.get(1).getCardNumber() );
+		
+		System.out.println("Check results for each stage Competitor Peter B");
+		assertEquals( (Long)(110L), stage1Result.get(3).getStageTime() ); 
+		assertEquals( (Integer)4, stage1Result.get(3).getRank() );
+		assertEquals( (Long)100L, stage1Result.get(3).getStageTimesBack() );
+		assertEquals(2065396,stage1Result.get(3).getCardNumber() );
+		assertEquals( (Long)(20L), stage2Result.get(1).getStageTime() ); 
+		assertEquals( (Integer)2, stage2Result.get(1).getRank() );
+		assertEquals( (Long)10L, stage2Result.get(1).getStageTimesBack() );
+		assertEquals(2065396,stage2Result.get(1).getCardNumber() );
+		assertEquals( (Long)(470L), stage3Result.get(3).getStageTime() ); 
+		assertEquals( (Integer)4, stage3Result.get(3).getRank() );
+		assertEquals( (Long)440L, stage3Result.get(3).getStageTimesBack() );
+		assertEquals(2065396,stage3Result.get(3).getCardNumber() );
+		
+		System.out.println("Check results for each stage Competitor Fruttberg");
+		assertEquals( (Long)(200L), stage1Result.get(4).getStageTime() ); 
+		assertEquals( (Integer)5, stage1Result.get(4).getRank() );
+		assertEquals( (Long)190L, stage1Result.get(4).getStageTimesBack() );
+		assertEquals(2078040,stage1Result.get(4).getCardNumber() );
+		assertEquals( (Long)(200L), stage2Result.get(4).getStageTime() ); 
+		assertEquals( (Integer)4, stage2Result.get(4).getRank() );
+		assertEquals( (Long)190L, stage2Result.get(4).getStageTimesBack() );
+		assertEquals(2078040,stage2Result.get(4).getCardNumber() );
+		assertEquals( (Long)(300L), stage3Result.get(2).getStageTime() ); 
+		assertEquals( (Integer)2, stage3Result.get(2).getRank() );
+		assertEquals( (Long)270L, stage3Result.get(2).getStageTimesBack() );
+		assertEquals(2078040,stage3Result.get(2).getCardNumber() );
+		
+		System.out.println("Check results for each stage Competitor Släggan");
+		assertEquals( (Long)(50L), stage1Result.get(1).getStageTime() ); 
+		assertEquals( (Integer)2, stage1Result.get(1).getRank() );
+		assertEquals( (Long)40L, stage1Result.get(1).getStageTimesBack() );
+		assertEquals(2078082,stage1Result.get(1).getCardNumber() );
+		assertEquals( (Long)(10L), stage2Result.get(0).getStageTime() ); 
+		assertEquals( (Integer)1, stage2Result.get(0).getRank() );
+		assertEquals( (Long)0L, stage2Result.get(0).getStageTimesBack() );
+		assertEquals(2078082,stage2Result.get(0).getCardNumber() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage3Result.get(5).getStageTime() ); 
+		assertEquals( (Integer)Competition.RANK_DNF, stage3Result.get(5).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage3Result.get(5).getStageTimesBack() );
+		assertEquals(2078082,stage3Result.get(5).getCardNumber() );
+		
+		System.out.println("Check results for each stage Competitor Ingemar (No time on any stage)");
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage1Result.get(5).getStageTime() ); 
+		assertEquals( (Integer)Competition.RANK_DNF, stage1Result.get(5).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage1Result.get(5).getStageTimesBack() );
+		assertEquals(2079747,stage1Result.get(5).getCardNumber() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage2Result.get(5).getStageTime() ); 
+		assertEquals( (Integer)Competition.RANK_DNF, stage2Result.get(5).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage2Result.get(5).getStageTimesBack() );
+		assertEquals(2079747,stage2Result.get(5).getCardNumber() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage3Result.get(4).getStageTime() ); 
+		assertEquals( (Integer)Competition.RANK_DNF, stage3Result.get(4).getRank() );
+		assertEquals( (Long)Competition.NO_TIME_FOR_STAGE, stage3Result.get(4).getStageTimesBack() );
+		assertEquals(2079747,stage3Result.get(4).getCardNumber() );
+	}
+
 	
 	private List<Card> readCardsFromFiles( String subFolder ) throws Exception{
 		SiDriver siDriver = new SiDriver();

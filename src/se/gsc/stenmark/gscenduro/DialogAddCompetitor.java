@@ -126,14 +126,16 @@ public class DialogAddCompetitor {
 						compClass = competitorClassInput.getText().toString();
 						startNumber = startNumberInput.getText().toString();
 						startGroup = startGroupInput.getText().toString();
+						cardNumber = cardNumberInput.getText().toString();
 					}
 					else{
 						if (cardNumberCheckBox.isChecked()) {						 
 							cardNumber = cardNumberInput.getText().toString();
 						} else {
 							cardNumber = cardNumberSpinner.getSelectedItem().toString();
-						}	
+						}
 					}
+
 					
 					Map<String,Integer> parsingResults = new HashMap<String, Integer>();
 					StringBuffer errorMessage = new StringBuffer("");

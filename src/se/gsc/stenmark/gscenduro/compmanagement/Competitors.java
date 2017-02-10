@@ -136,22 +136,7 @@ public class Competitors implements Serializable {
 		
 		return null;
 	}	
-	
-//OLD VERSION	
-//	public List<String> getCompetitorClasses() {		
-//		List<String> competitorClasses = new ArrayList<String>();		
-//		for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.entrySet() ) {
-//			Competitor competitor = currentCompetitorEntry.getValue();
-//			String competitorClass = competitor.getCompetitorClass();
-//			if (competitorClasses.contains(competitorClass)) {
-//				//Already in list
-//			} else {
-//				competitorClasses.add(competitor.getCompetitorClass());
-//			}
-//		}
-//		return competitorClasses;
-//	}	
-			
+				
 	public String exportCsvString(int type) {
 		String competitorsAsCsv = "";
 
