@@ -117,7 +117,6 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 				}
 			}
 			if(totalTimeResult==null){
-				LogFileWriter.writeLog("debugLog", "totalTimeResult is null  for position"  + position);
 				return resultLandscapeRowV;
 			}
 			List<Stage> stages = competition.getStages(foundCompClass);

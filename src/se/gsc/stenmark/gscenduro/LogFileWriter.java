@@ -15,6 +15,13 @@ public abstract class LogFileWriter {
 	private LogFileWriter() {
 	}
 	
+	public static void writeLog( Exception e){
+		String errorMessage = "\n" + e.getMessage() + "\n";
+		for (StackTraceElement element : e.getStackTrace()) {
+			errorMessage += element.toString() + "\n";
+		}
+		LogFileWriter.writeLog("stacktrace", errorMessage);
+	}
 	public static void writeLog( String directory, String message){
     	BufferedWriter bw  = null;
     	File file = null;
@@ -25,13 +32,13 @@ public abstract class LogFileWriter {
 			if (!dir.exists()) {
 				dir.mkdirs();
 			}
-			if(directory == "debugLog"){
+			if(directory.equals("debugLog")){
 				file = new File(dir, "debug.log");
-				message = timeStamp + " " + message;
+				message = timeStamp + " " + message + "\n";
 			}
-			if(directory == "stacktrace"){
+			else if(directory.equals("stacktrace")){
 				file = new File(dir, "stacktrace.log");
-				message = timeStamp + " " + message;
+				message = timeStamp + " " + message + "\n";
 			}
 			else{
 				file = new File(dir, "cardDebugData_" + timeStamp + ".card");

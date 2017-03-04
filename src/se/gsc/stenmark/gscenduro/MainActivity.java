@@ -106,7 +106,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			updateFragments();
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			generateErrorMessage(e);
 		}
 	}
 
@@ -135,9 +135,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			if (statusFragment != null) {
 				statusFragment.updateCompetitionStatus();
 			}
+			else{
+				LogFileWriter.writeLog("debugLog", "StatusFragment was null when trying to update it\n");
+			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			generateErrorMessage(e);
 		}
 	}	
 

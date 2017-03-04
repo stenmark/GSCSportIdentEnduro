@@ -259,10 +259,7 @@ public class StatusFragment extends Fragment {
 				}
 
 				statusTextView = (TextView) getView().findViewById(R.id.stages_status);
-				List<String> allClasses = mMainActivity.competition.getAllClasses();
-				if(!allClasses.isEmpty()){
-					statusTextView.setText( CompetitionHelper.stageStatusAsString( mMainActivity.competition.getStages(allClasses.get(0)) ) );
-				}
+				statusTextView.setText( CompetitionHelper.stageStatusAsString( mMainActivity.competition.getStageDefinition() ));
 
 				statusTextView = (TextView) getView().findViewById(R.id.competitor_status);	
 				if (mMainActivity.competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {

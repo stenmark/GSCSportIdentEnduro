@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
+import android.support.v4.util.LogWriter;
 import se.gsc.stenmark.gscenduro.LogFileWriter;
 import se.gsc.stenmark.gscenduro.MainActivity;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
@@ -74,10 +75,26 @@ public class Competition implements Serializable {
 	}
 
 	public List<Stage> getStageDefinition(){
-		if( getAllClasses().isEmpty()){
+		try{
+			if( getAllClasses().isEmpty()){
+				List<Stage> stages = new ArrayList<Stage>();
+				for(int i = 0; i < stageControls.length; i+=2){
+					String start = stageControls[i];
+					String fin = stageControls[i+1];
+					Stage stage = new Stage();
+					stage.start = Integer.parseInt(start);
+					stage.finish = Integer.parseInt(fin);
+					stages.add(stage);		
+				}
+				return stages;
+			}
+		}
+		catch( Exception e){
+			LogFileWriter.writeLog(e);
 			return new ArrayList<Stage>();
 		}
 		return stages.get( getAllClasses().get(0) );
+
 	}
 
 	public List<String> getAllClasses(){
@@ -222,7 +239,7 @@ public class Competition implements Serializable {
 			}
 		}
 		catch(Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			LogFileWriter.writeLog(e);
 		}
 	}
 
