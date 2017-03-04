@@ -589,6 +589,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		for (StackTraceElement element : e.getStackTrace()) {
 			errorMessage += element.toString() + "\n";
 		}
+		LogFileWriter.writeLog("stacktrace", errorMessage);
 		return errorMessage+"\n";
 	}
 

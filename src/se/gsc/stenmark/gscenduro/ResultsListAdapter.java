@@ -42,7 +42,7 @@ public class ResultsListAdapter extends BaseAdapter {
 			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 
 		return size;
@@ -65,7 +65,7 @@ public class ResultsListAdapter extends BaseAdapter {
 			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 		return stages;
 	}
@@ -81,7 +81,7 @@ public class ResultsListAdapter extends BaseAdapter {
 			this.notifyDataSetChanged();	
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}	
 
@@ -149,7 +149,7 @@ public class ResultsListAdapter extends BaseAdapter {
 			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 
 		return resultRowV;

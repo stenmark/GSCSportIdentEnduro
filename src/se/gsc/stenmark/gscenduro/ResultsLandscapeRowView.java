@@ -107,7 +107,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			mResultLandscapeStageTime9 = (TextView) mCompoundView.findViewById(R.id.result_landscape_ss10_time);
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}
 
@@ -118,7 +118,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			init(context);
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}
 
@@ -129,7 +129,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}		
 
@@ -140,7 +140,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}	
 
@@ -151,7 +151,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}		
 
@@ -162,7 +162,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 
 	}		
@@ -174,7 +174,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}		
 
@@ -238,7 +238,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}
 
@@ -289,7 +289,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			}		
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}	
 
@@ -349,7 +349,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}	
 
@@ -396,7 +396,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			}	
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}
 
@@ -407,7 +407,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			}
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}
 
@@ -438,7 +438,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			return null;
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 			return null;
 		}
 	}
@@ -452,7 +452,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			}	
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}		
 
@@ -461,7 +461,7 @@ public class ResultsLandscapeRowView extends LinearLayout {
 			mPosition = Position;
 		}
 		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+			MainActivity.generateErrorMessage(e);
 		}
 	}	
 }

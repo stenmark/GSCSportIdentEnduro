@@ -14,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class PunchRowView extends LinearLayout {
-	
+
 	Context mContext;
 	TextView mControl;
 	TextView mTime;
@@ -24,18 +24,23 @@ public class PunchRowView extends LinearLayout {
 	LinearLayout mCompoundView;
 
 	protected void init(Context context) {
-		mContext = context;
-		
-		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);		
-		mCompoundView = (LinearLayout) inflater.inflate(R.layout.punch_row, this);
+		try{
+			mContext = context;
 
-		mControl = (TextView) mCompoundView.findViewById(R.id.punch_control);
-		mTime = (TextView) mCompoundView.findViewById(R.id.punch_time);
-		mDelete = (Button) mCompoundView.findViewById(R.id.punch_delete);
-		mModify = (Button) mCompoundView.findViewById(R.id.punch_modify);
+			LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);		
+			mCompoundView = (LinearLayout) inflater.inflate(R.layout.punch_row, this);
 
-		mDelete.setOnClickListener(mOnDeleteClickListener);
-		mModify.setOnClickListener(mOnModifyClickListener);
+			mControl = (TextView) mCompoundView.findViewById(R.id.punch_control);
+			mTime = (TextView) mCompoundView.findViewById(R.id.punch_time);
+			mDelete = (Button) mCompoundView.findViewById(R.id.punch_delete);
+			mModify = (Button) mCompoundView.findViewById(R.id.punch_modify);
+
+			mDelete.setOnClickListener(mOnDeleteClickListener);
+			mModify.setOnClickListener(mOnModifyClickListener);
+		}
+		catch( Exception e1){
+			MainActivity.generateErrorMessage(e1);
+		}
 	}
 
 	public PunchRowView(Context context) {
@@ -44,14 +49,24 @@ public class PunchRowView extends LinearLayout {
 	}
 
 	public void setControl(String Control) {
-		if (mControl != null) {
-			mControl.setText(Control);
+		try{
+			if (mControl != null) {
+				mControl.setText(Control);
+			}
+		}
+		catch( Exception e1){
+			MainActivity.generateErrorMessage(e1);
 		}
 	}
 
 	public void setTime(String Time) {
-		if (mTime != null) {
-			mTime.setText(Time);
+		try{
+			if (mTime != null) {
+				mTime.setText(Time);
+			}
+		}
+		catch( Exception e1){
+			MainActivity.generateErrorMessage(e1);
 		}
 	}
 
@@ -62,65 +77,75 @@ public class PunchRowView extends LinearLayout {
 	private OnClickListener mOnDeleteClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			LayoutInflater li = LayoutInflater.from(mContext);
-			View promptsView = li.inflate(R.layout.punch_delete, null);
+			try{
+				LayoutInflater li = LayoutInflater.from(mContext);
+				View promptsView = li.inflate(R.layout.punch_delete, null);
 
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
-			alertDialogBuilder.setTitle("Delete punch");
-			alertDialogBuilder.setView(promptsView);
-			alertDialogBuilder.setPositiveButton("Delete", null);
-			alertDialogBuilder.setNegativeButton("Cancel", null);		
-			
-			final AlertDialog alertDialog = alertDialogBuilder.create();
-			alertDialog.show();
-			alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-	            @Override
-	            public void onClick(View v) {	
-	            	((PunchActivity) mContext).removePunch(mPosition);														
-					alertDialog.dismiss();
-	            }
-			});			
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+				alertDialogBuilder.setTitle("Delete punch");
+				alertDialogBuilder.setView(promptsView);
+				alertDialogBuilder.setPositiveButton("Delete", null);
+				alertDialogBuilder.setNegativeButton("Cancel", null);		
+
+				final AlertDialog alertDialog = alertDialogBuilder.create();
+				alertDialog.show();
+				alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {	
+						((PunchActivity) mContext).removePunch(mPosition);														
+						alertDialog.dismiss();
+					}
+				});	
+			}
+			catch( Exception e1){
+				MainActivity.generateErrorMessage(e1);
+			}
 		}	
 	};
 
 	private OnClickListener mOnModifyClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			LayoutInflater li = LayoutInflater.from(mContext);
-			View promptsView = li.inflate(R.layout.punch_modify, null);			
+			try{
+				LayoutInflater li = LayoutInflater.from(mContext);
+				View promptsView = li.inflate(R.layout.punch_modify, null);			
 
-			final Spinner spinner = (Spinner) promptsView.findViewById(R.id.add_punch_controls_spinner);	
-	        ArrayAdapter<Integer> LTRadapter = new ArrayAdapter<Integer>(mContext, android.R.layout.simple_spinner_item, ((PunchActivity)mContext).getControls());
-	        LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
-	        spinner.setAdapter(LTRadapter);			
-	        spinner.setSelection(((PunchActivity)mContext).getControls().indexOf(mControl.getText()));	
-			
-			final EditText timeInput = (EditText) promptsView.findViewById(R.id.time_input);
-			timeInput.setText(mTime.getText());
+				final Spinner spinner = (Spinner) promptsView.findViewById(R.id.add_punch_controls_spinner);	
+				ArrayAdapter<Integer> LTRadapter = new ArrayAdapter<Integer>(mContext, android.R.layout.simple_spinner_item, ((PunchActivity)mContext).getControls());
+				LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
+				spinner.setAdapter(LTRadapter);			
+				spinner.setSelection(((PunchActivity)mContext).getControls().indexOf(mControl.getText()));	
 
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
-			alertDialogBuilder.setTitle("Modify punch");
-			alertDialogBuilder.setView(promptsView);
-			alertDialogBuilder.setPositiveButton("Modify", null);
-			alertDialogBuilder.setNegativeButton("Cancel", null);
-			
-			final AlertDialog alertDialog = alertDialogBuilder.create();
-			alertDialog.show();
-			alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-	            @Override
-	            public void onClick(View v) {
-	            	if (timeInput.length() == 0) {
-	            		Toast.makeText(mContext, "No time was supplied", Toast.LENGTH_LONG).show();
-	            		return;            		 
-	            	}	            	
-	            	
-	            	mControl.setText(spinner.getSelectedItem().toString());
-	            	mTime.setText(timeInput.getText());
-					((PunchActivity) mContext).updatePunch(mPosition, Integer.valueOf(mControl.getText().toString()), Long.valueOf(mTime.getText().toString()));
-					
-					alertDialog.dismiss();
-	            }
-			});								
+				final EditText timeInput = (EditText) promptsView.findViewById(R.id.time_input);
+				timeInput.setText(mTime.getText());
+
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+				alertDialogBuilder.setTitle("Modify punch");
+				alertDialogBuilder.setView(promptsView);
+				alertDialogBuilder.setPositiveButton("Modify", null);
+				alertDialogBuilder.setNegativeButton("Cancel", null);
+
+				final AlertDialog alertDialog = alertDialogBuilder.create();
+				alertDialog.show();
+				alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						if (timeInput.length() == 0) {
+							Toast.makeText(mContext, "No time was supplied", Toast.LENGTH_LONG).show();
+							return;            		 
+						}	            	
+
+						mControl.setText(spinner.getSelectedItem().toString());
+						mTime.setText(timeInput.getText());
+						((PunchActivity) mContext).updatePunch(mPosition, Integer.valueOf(mControl.getText().toString()), Long.valueOf(mTime.getText().toString()));
+
+						alertDialog.dismiss();
+					}
+				});	
+			}
+			catch( Exception e1){
+				MainActivity.generateErrorMessage(e1);
+			}
 		}
 	};
 }

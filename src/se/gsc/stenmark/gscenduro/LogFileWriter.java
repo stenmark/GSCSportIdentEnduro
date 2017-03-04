@@ -29,6 +29,10 @@ public abstract class LogFileWriter {
 				file = new File(dir, "debug.log");
 				message = timeStamp + " " + message;
 			}
+			if(directory == "stacktrace"){
+				file = new File(dir, "stacktrace.log");
+				message = timeStamp + " " + message;
+			}
 			else{
 				file = new File(dir, "cardDebugData_" + timeStamp + ".card");
 			}

@@ -36,8 +36,8 @@ public class ResultsFragment extends ListFragment {
 				setListAdapter(mResultLandscapeAdapter);
 			}		
 		}
-		catch( Exception e){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e));
+		catch( Exception e1){
+			MainActivity.generateErrorMessage(e1);
 		}
 	}	
 

@@ -11,44 +11,70 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 public class PunchAdapter extends BaseAdapter {
-	
+
 	private Context mContext;
 	private List<Punch> mPunches = new ArrayList<Punch>();
 
 	public PunchAdapter(Context context, List<Punch> Items) {
-		mContext = context;
-		mPunches = Items;
+		try{
+			mContext = context;
+			mPunches = Items;
+		}
+		catch( Exception e1){
+			MainActivity.generateErrorMessage(e1);
+		}
 	}		
-	
+
 	@Override
 	public int getCount() {
-		return mPunches.size();
+		try{
+			return mPunches.size();
+		}
+		catch( Exception e1){
+			MainActivity.generateErrorMessage(e1);
+			return 0;
+		}
 	}
 
 	@Override
 	public Punch getItem(int position) {
-		return mPunches.get(position);
+		try{
+			return mPunches.get(position);
+		}
+		catch( Exception e1){
+			MainActivity.generateErrorMessage(e1);
+			return new Punch(0, 0);
+		}
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return position;
+		try{
+			return position;
+		}
+		catch( Exception e1){
+			MainActivity.generateErrorMessage(e1);
+			return 0;
+		}
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		PunchRowView punchRowV = null;
+		try{
+			if (convertView == null) {
+				punchRowV = new PunchRowView(mContext);
+			} else {
+				punchRowV = (PunchRowView) convertView;
+			}
 
-		if (convertView == null) {
-			punchRowV = new PunchRowView(mContext);
-		} else {
-			punchRowV = (PunchRowView) convertView;
+			punchRowV.setControl(Long.toString(mPunches.get(position).getControl()));		
+			punchRowV.setTime(Long.toString(mPunches.get(position).getTime()));
+			punchRowV.setPosition(position);
 		}
-		
-		punchRowV.setControl(Long.toString(mPunches.get(position).getControl()));		
-		punchRowV.setTime(Long.toString(mPunches.get(position).getTime()));
-		punchRowV.setPosition(position);
-	
+		catch( Exception e1){
+			MainActivity.generateErrorMessage(e1);
+		}
 		return punchRowV;
 	}
 }

@@ -32,7 +32,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			size = competition.getCompetitors().size();
 		}
 		catch( Exception e1){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e1));
+			MainActivity.generateErrorMessage(e1);
 		}
 		return size;
 	}
@@ -44,7 +44,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			c = competition.getCompetitors().get(position);
 		}
 		catch( Exception e1){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e1));
+			MainActivity.generateErrorMessage(e1);
 		}
 		return c;
 	}
@@ -55,7 +55,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			cs =competition.getCompetitors();
 		}
 		catch( Exception e1){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e1));
+			MainActivity.generateErrorMessage(e1);
 		}
 		return cs;
 	}	
@@ -66,7 +66,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			this.notifyDataSetChanged();	
 		}
 		catch( Exception e1){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e1));
+			MainActivity.generateErrorMessage(e1);
 		}
 	}		
 
@@ -177,7 +177,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			return resultLandscapeRowV;
 		}
 		catch( Exception e1){
-			LogFileWriter.writeLog("debugLog", "Feck" +MainActivity.generateErrorMessage(e1));
+			MainActivity.generateErrorMessage(e1);
 		}
 		return null;
 	}
