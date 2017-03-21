@@ -56,12 +56,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public SiDriver siDriver = null;
 	public boolean disconected;
 	private String connectionStatus = "";
+
+	private Uri previousImportIntent = new Uri.Builder().build();
 	public static String driverLayerErrorMsg;
 
 	public String getConnectionStatus() {
 		return connectionStatus;
 	}	
 
+	/*
+	 * A bit of a hack to make import from mail work reasonably well.
+	 * The previousImportIntent remembers what has been imported and not.
+	 * This method resets previousImportIntent so that any new import intent will be imported after calling this method
+	 */
+	public void resetImportIntent(){
+		previousImportIntent = new Uri.Builder().build();
+	}
 	public void listPunches(int cardNumber) {		
 		try{
 			Intent punchListIntent = new Intent();		
@@ -165,6 +175,54 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	@Override
 	protected void onResume(){
 		super.onResume();
+		
+		//Its a hack, i know. Improve if possible...
+		//If the user tries to import from a mail, by clicking a .gsc file
+		//Catch this intent and import the data, only problem is, i dont know
+		//How to check wether we have served this intent or not, the intent seems
+		//to come again and again when app is resumed, even though the user only clicked
+		//the import file once.
+		//Workaround -> remember the Uri to the previous intent and compare if its a new intent or not
+		try{
+			Uri data = getIntent().getData();
+			if(data!=null) {
+				if(	data.compareTo(previousImportIntent) != 0){
+					previousImportIntent = data;
+					String importResult = "";
+					if(ContentResolver.SCHEME_CONTENT.equals(data.getScheme())) {
+						ContentResolver resolver = getContentResolver();
+						InputStream input = resolver.openInputStream(data);
+
+						if(input != null){
+							BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+							String line = "";
+							String inputData = "";
+							while ((line = reader.readLine()) != null) {	
+								inputData += line +"\n";
+							}
+							importResult = CompetitionHelper.importCompetitors(inputData, true, competition.getCompetitionType(), false, competition);
+							competition.calculateResults();
+							AndroidHelper.saveSessionData(null,competition);
+							AndroidHelper.saveSessionData(competition.getCompetitionName(),competition);
+						}
+					}
+					updateFragments();
+
+					if( importResult.isEmpty() ){
+						PopupMessage dialog = new PopupMessage("Imported competitors from .gsc file succesfully!");
+						dialog.show(getSupportFragmentManager(), "popUp");
+					}
+					else{
+						PopupMessage dialog = new PopupMessage("Importing competitors from .gsc file failed\n" + importResult );
+						dialog.show(getSupportFragmentManager(), "popUp");
+					}
+				}
+			}
+		}
+		catch(Exception e){
+			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
+			dialog.show(getSupportFragmentManager(), "popUp");
+		}
 
 	}
 	/**
@@ -229,39 +287,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				// when this tab is selected.
 				actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
 			}				
-
-			Uri data = getIntent().getData();
-			if(data!=null) {
-				String importResult = "";
-				if(ContentResolver.SCHEME_CONTENT.equals(data.getScheme())) {
-
-					ContentResolver resolver = getContentResolver();
-					InputStream input = resolver.openInputStream(data);
-					if(input != null){
-						BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-						String line = "";
-						String inputData = "";
-						while ((line = reader.readLine()) != null) {	
-							inputData += line +"\n";
-						}
-						importResult = CompetitionHelper.importCompetitors(inputData, true, competition.getCompetitionType(), false, competition);
-						competition.calculateResults();
-						AndroidHelper.saveSessionData(null,competition);
-						AndroidHelper.saveSessionData(competition.getCompetitionName(),competition);
-					}
-				}
-				updateFragments();
-
-				if( importResult.isEmpty() ){
-					PopupMessage dialog = new PopupMessage("Imported competitors from .gsc file succesfully!");
-					dialog.show(getSupportFragmentManager(), "popUp");
-				}
-				else{
-					PopupMessage dialog = new PopupMessage("Importing competitors from .gsc file failed\n" + importResult );
-					dialog.show(getSupportFragmentManager(), "popUp");
-				}
-
-			}
 
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e1));

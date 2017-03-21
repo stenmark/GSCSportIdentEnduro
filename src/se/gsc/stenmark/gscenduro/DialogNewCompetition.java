@@ -181,7 +181,8 @@ public class DialogNewCompetition {
 							mMainActivity.competition.importStages(stageString);										
 						}					
 					}					
-					mMainActivity.updateFragments();                    
+					mMainActivity.updateFragments();   
+					mMainActivity.resetImportIntent();
 
 					newAlertDialog.dismiss();
 				}
