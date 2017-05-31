@@ -45,6 +45,13 @@ public class Competitor implements Serializable {
 		setStartGroup(startGroup);
 	}
 
+	public boolean hasCardBeenRead(){
+		if( getCard() == null){
+			return false;
+		}
+		return getCard().hasCardBeenRead();
+	}
+	
 	public String getName() {
 		return name;
 	}

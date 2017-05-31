@@ -272,6 +272,7 @@ public class Competitors implements Serializable {
 					cardObject.getPunches().add(punchObject);
 				}
 				
+				cardObject.setCardAsRead();
 				competiorMatchingNewCardnumber.processCard(cardObject, stages, type);					
 			}			
 		}

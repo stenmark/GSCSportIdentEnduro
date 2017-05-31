@@ -45,7 +45,7 @@ public abstract class AndroidHelper {
 	 * Generate an RGB value for a transition from Red to Green.
 	 * @return RGB coded color
 	 */
-	public static int generateRedToGreenColorTransition(Long fastestTimeOnStage, Long slowestTimeOnStage, Long competitorStageTime, int rank){		
+	public static int generateRedToGreenColorTransition(Long fastestTimeOnStage, Long slowestTimeOnStage, Long competitorStageTime, long rank){		
 		try{
 			if (rank == Competition.RANK_DNF) {
 				return Color.WHITE;

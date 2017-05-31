@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.util.LogWriter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -205,16 +206,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							AndroidHelper.saveSessionData(null,competition);
 							AndroidHelper.saveSessionData(competition.getCompetitionName(),competition);
 						}
-					}
-					updateFragments();
+						updateFragments();
 
-					if( importResult.isEmpty() ){
-						PopupMessage dialog = new PopupMessage("Imported competitors from .gsc file succesfully!");
-						dialog.show(getSupportFragmentManager(), "popUp");
-					}
-					else{
-						PopupMessage dialog = new PopupMessage("Importing competitors from .gsc file failed\n" + importResult );
-						dialog.show(getSupportFragmentManager(), "popUp");
+						if( importResult.isEmpty() ){
+							PopupMessage dialog = new PopupMessage("Imported competitors from .gsc file succesfully!");
+							dialog.show(getSupportFragmentManager(), "popUp");
+						}
+						else{
+							PopupMessage dialog = new PopupMessage("Importing competitors from .gsc file failed\n" + importResult );
+							dialog.show(getSupportFragmentManager(), "popUp");
+						}
 					}
 				}
 			}
@@ -645,7 +646,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					siDriver[0].closeDriver();
 					return new Card();
 				}
-				return siDriver[0].pollForNewCard( VERBOSE_LOGGING );
+				Card readCard = siDriver[0].pollForNewCard( VERBOSE_LOGGING );
+				LogFileWriter.writeLog("debugLog", "Read new card with cardnumber=" + readCard.getCardNumber() + 
+						" StartPunch=" + readCard.getStartPunch() + 
+						" FinishPunch=" + readCard.getFinishPunch() + 
+						" CheckPunch=" + readCard.getCheckPunch() );
+				return readCard;
 			}
 			catch( SiDriverDisconnectedException disconException){
 				siDriver[0].closeDriver();

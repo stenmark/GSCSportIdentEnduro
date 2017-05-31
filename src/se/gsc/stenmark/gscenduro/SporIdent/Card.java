@@ -15,13 +15,15 @@ import se.gsc.stenmark.gscenduro.compmanagement.Competition;
  */
 public class Card implements Serializable {
 
-	private static final long serialVersionUID = 5L;
+	private static final long serialVersionUID = 6L;
 	private int mNumberOfPunches;
 	private int mCardNumber;
-	private Punch mStartPunch; // Not used by GSC competitions
-	private Punch mFinishPunch; // Not used by GSC competitions
-	private Punch mCheckPunch; // Not used by GSC competitions
+	private Punch mStartPunch; 
+	private Punch mFinishPunch;
+	private Punch mCheckPunch; 
+	private Punch mClearPunch;
 	private List<Punch> mPunches;
+	private boolean hasCardBeenRead = false;
 
 	public Card() {
 		setCardNumber(0);
@@ -29,6 +31,7 @@ public class Card implements Serializable {
 		setStartPunch(new Punch(-1, -1));
 		setFinishPunch(new Punch(-1, -1));
 		setCheckPunch(new Punch(-1, -1));
+		setClearPunch(new Punch(-1, -1));
 		setPunches(new ArrayList<Punch>());
 	}
 
@@ -87,6 +90,14 @@ public class Card implements Serializable {
 		mCheckPunch = checkPunch;
 	}
 
+	public Punch getClearPunch() {
+		return mClearPunch;
+	}
+
+	public void setClearPunch(Punch clearPunch) {
+		mClearPunch = clearPunch;
+	}
+	
 	public List<Punch> getPunches() {
 		return mPunches;
 	}
@@ -209,5 +220,13 @@ public class Card implements Serializable {
 		} else {			
 			return finish - start;
 		}
+	}
+
+	public boolean hasCardBeenRead() {
+		return hasCardBeenRead;
+	}
+
+	public void setCardAsRead() {
+		hasCardBeenRead = true;
 	}		
 }

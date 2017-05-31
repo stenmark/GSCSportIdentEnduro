@@ -123,7 +123,7 @@ public class ResultsListAdapter extends BaseAdapter {
 			Stage stage = concatAllClasses().get(stageNumber);
 			String name; 
 
-			int rank =stage.getCompetitorResults().get(index).getRank();	
+			long rank =stage.getCompetitorResults().get(index).getRank();	
 			if (rank == Competition.RANK_DNF) {			
 				name = "-. ";
 			} else {
@@ -133,8 +133,8 @@ public class ResultsListAdapter extends BaseAdapter {
 			name += currentCompetitor.getName();
 			String startNumber = String.valueOf(currentCompetitor.getStartNumber());
 			String team = currentCompetitor.getTeam();
-			String time = CompetitionHelper.milliSecToMinSecMilliSec(stage.getCompetitorResults().get(index).getStageTime());
-			String timeBack = CompetitionHelper.milliSecToMinSecMilliSec(stage.getCompetitorResults().get(index).getStageTimesBack());			
+			String time = CompetitionHelper.milliSecToMinSecMilliSec(stage.getCompetitorResults().get(index).getStageTime(), currentCompetitor.hasCardBeenRead());
+			String timeBack = CompetitionHelper.milliSecToMinSecMilliSec(stage.getCompetitorResults().get(index).getStageTimesBack(), currentCompetitor.hasCardBeenRead());			
 
 			resultRowV.setResultName(name);
 			resultRowV.setResultStartNumber(startNumber);

@@ -8,12 +8,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
 import org.apache.commons.collections4.queue.CircularFifoQueue;
-
-import android.support.v4.util.LogWriter;
 import se.gsc.stenmark.gscenduro.LogFileWriter;
-import se.gsc.stenmark.gscenduro.MainActivity;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 
 /**
@@ -26,15 +22,15 @@ import se.gsc.stenmark.gscenduro.SporIdent.Card;
  */
 public class Competition implements Serializable {
 
-	private static final long serialVersionUID = 5L;
+	private static final long serialVersionUID = 6L;
 
 	public static final int SVART_VIT_TYPE = 0;
 	public static final int ESS_TYPE = 1;	
 
-	public static final long COMPETITION_DNF = 5000000L;
-	public static final long NO_TIME_FOR_STAGE = 10000000L;
+	public static final long COMPETITION_DNF =         5000000L;
+	public static final long NO_TIME_FOR_STAGE =       10000000L;
 	public static final long NO_TIME_FOR_COMPETITION = 20000000L;
-	public static final int RANK_DNF = 30000000;
+	public static final long RANK_DNF =                30000000L;
 	public static final String CURRENT_COMPETITION = "current_competition";
 
 	//Circular buffer to hold the 6 most recently read cards

@@ -153,22 +153,22 @@ public class ImportTest {
 										"4,Lars Kastensson,8633672,04:40.0,01:50.0,2,00:10.0,02:50.0,5,01:10.0,\n"+
 										"4,Mattias Holmgren,8633675,04:40.0,02:30.0,5,00:50.0,02:10.0,4,00:30.0,\n"+
 										"6,Sverker Gustafsson,8633671,04:50.0,01:40.0,1,00:00.0,03:10.0,6,01:30.0,\n"+
-										"-,Andreas Haag,8633682,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Andreas Nilvander,8633686,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,AndreasNäs,8633684,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Elin Andreasson,8633681,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Erik Österberg,8633692,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Fredrik Svensson,8633679,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Gerry Bohm,8633685,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Hans Hellsmark,8633677,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Ingemar Gustavsson,8633680,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Jonas Blomster,8633687,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Mark Brannan,8633691,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Mikael Nordqvist,8633683,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Moisés Clemente,8633690,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Patrik Capretti,8633678,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Per Johan Andersson,8633689,no time,no result,30000000,no result,no result,30000000,no result,\n"+
-										"-,Pontus Olofsson,8633688,no time,no result,30000000,no result,no result,30000000,no result,\n";
+										"-,Andreas Haag,8633682,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Andreas Nilvander,8633686,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,AndreasNäs,8633684,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Elin Andreasson,8633681,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Erik Österberg,8633692,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Fredrik Svensson,8633679,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Gerry Bohm,8633685,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Hans Hellsmark,8633677,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Ingemar Gustavsson,8633680,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Jonas Blomster,8633687,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Mark Brannan,8633691,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Mikael Nordqvist,8633683,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Moisés Clemente,8633690,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Patrik Capretti,8633678,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Per Johan Andersson,8633689,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+										"-,Pontus Olofsson,8633688,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n";
 		assertEquals(EXPECTED_RESULT, resultsAsCsvString);
 		
 		String exportPunchesCsvString = competition.getCompetitors().exportPunchesCsvString();
@@ -223,7 +223,7 @@ public class ImportTest {
 		competition = new Competition();
 		errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson;8633671\nLars Kastensson;8633672\nErik Holmberg;8633673\nFässberg;8633674\nMattias Holmgren;8633675\nHellberg;8633676\nHans Hellsmark;8633677\nPatrik Capretti;8633678\nFredrik Svensson;8633679\nIngemar Gustavsson;8633680\nElin Andreasson;8633681\nAndreas Haag;8633682\nMikael Nordqvist;8633683\nAndreasNäs;8633684\nGerry Bohm;8633685\nAndreas Nilvander;8633686\nJonas Blomster;8633687\nPontus Olofsson;8633688\nPer Johan Andersson;8633689\nMoisés Clemente;8633690\nMark Brannan;8633691\nErik Österberg;8633692", false, Competition.SVART_VIT_TYPE, false,competition);
 		System.out.println(errorMessage);
-		verifySvartVit(competition.getCompetitors(), errorMessage,0);
+		verifySvartVit(competition.getCompetitors(), errorMessage,22);
 		
 		System.out.println("Test SvartVitt import with just name (no card)");
 		competition = new Competition();

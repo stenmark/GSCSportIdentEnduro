@@ -26,7 +26,11 @@ import se.gsc.stenmark.gscenduro.SporIdent.Card;
  */
 public abstract class CompetitionHelper {
 
-	public static String milliSecToMinSecMilliSec(Long milliSec) {
+	public static String milliSecToMinSecMilliSec(Long milliSec, boolean cardDataValid) {
+		if(!cardDataValid){
+			return "card not read";
+		}
+		
 		if (milliSec == Competition.NO_TIME_FOR_STAGE) {
 			return "no result";
 		}
@@ -195,6 +199,7 @@ public abstract class CompetitionHelper {
 			if (cardObject.getPunches().size() > 0) {
 				if (cardObject.getCardNumber() != 0) {
 					statusMsg += competition.processNewCard(cardObject, false);
+					cardObject.setCardAsRead();
 				}
 			}
 		}
@@ -202,7 +207,7 @@ public abstract class CompetitionHelper {
 	}
 	
 	public static String importCompetitors(String newCompetitors, Boolean keep, int type, boolean onlyCheckDontAdd, Competition competition) throws NumberFormatException, IOException {	
-		StringBuffer errorMessage = new StringBuffer("");
+		StringBuffer errorMessage = new StringBuffer("Input contains no text");
 		String name = "";
 		String cardNumberAsString = "";
 		String team = "";
@@ -217,7 +222,11 @@ public abstract class CompetitionHelper {
 		}
 		
 		while ((line = bufReader.readLine()) != null) {	
+			errorMessage = new StringBuffer("");
 			boolean parsingError = false;
+			if( !line.contains(",") && line.contains(";") ){
+				line = line.replace(";", ",");
+			}
 			String[] parsedLine = line.split(",");
 			if (type == Competition.ESS_TYPE) { 
 				if( parsedLine.length == 6){
@@ -509,27 +518,28 @@ public abstract class CompetitionHelper {
 			
 			for( int i  = 0; i < totalResults.numberOfCompetitors(); i++ ){		
 				int cardNumber = totalResults.getCompetitorResults().get(i).getCardNumber();				
-				int rank = totalResults.getCompetitorResults().get(i).getRank();				
+				long rank = totalResults.getCompetitorResults().get(i).getRank();				
 				if (rank == Competition.RANK_DNF) {			
 					resultData += "-,";
 				} else {
 					resultData += rank + ",";
 				}
 				
-				resultData += competitors.getByCardNumber(cardNumber).getName() + ",";
+				Competitor competitor = competitors.getByCardNumber(cardNumber);
+				resultData += competitor.getName() + ",";
 				resultData += cardNumber + ",";
 				if (type == Competition.ESS_TYPE)  {
 					resultData += competitors.getByCardNumber(cardNumber).getTeam() + ",";					
-					resultData += String.valueOf(competitors.getByCardNumber(cardNumber).getStartNumber()) + ",";
+					resultData += String.valueOf(competitor.getStartNumber()) + ",";
 				}
-				resultData += CompetitionHelper.milliSecToMinSecMilliSec( totalResults.getCompetitorResults().get(i).getStageTime() ) + ",";	
+				resultData += CompetitionHelper.milliSecToMinSecMilliSec( totalResults.getCompetitorResults().get(i).getStageTime(),competitor.hasCardBeenRead() ) + ",";	
 							
 				for(Stage stage : stages) {	
 					StageResult stageResult = stage.getStageResultByCardnumber(cardNumber);
 					if( stageResult != null){
-						resultData += CompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTime() ) + ",";
+						resultData += CompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTime(), competitor.hasCardBeenRead() ) + ",";
 						resultData += stageResult.getRank() + ",";
-						resultData += CompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTimesBack() ) + ",";
+						resultData += CompetitionHelper.milliSecToMinSecMilliSec( stageResult.getStageTimesBack(), competitor.hasCardBeenRead() ) + ",";
 					}
 					else{
 						resultData += "-1,-1,-1";

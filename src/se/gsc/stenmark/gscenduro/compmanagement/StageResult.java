@@ -6,7 +6,7 @@ public class StageResult implements Serializable, Comparable<StageResult> {
 	
 	private static final long serialVersionUID = 5L; 
 	private int mCardNumber;
-	private int mRank;
+	private Long mRank;
 	private Long mStageTime;
 	private Long mStageTimeBack;
 	
@@ -40,12 +40,12 @@ public class StageResult implements Serializable, Comparable<StageResult> {
 	    mStageTimeBack = stageTimesBack;
 	}
 	
-	public Integer getRank() {
+	public Long getRank() {
 		return mRank;
 	}
 
-	public void setRank(int rank) {
-		mRank = rank;
+	public void setRank(long rankDnf) {
+		mRank = rankDnf;
 	}
 	
 	@Override

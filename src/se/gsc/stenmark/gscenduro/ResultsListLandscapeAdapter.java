@@ -123,7 +123,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			
 			int cardNumber = totalTimeResult.getCardNumber();
 
-			int rank = totalTimeResult.getRank();
+			long rank = totalTimeResult.getRank();
 			String name = "";
 			if (rank == Competition.RANK_DNF) {			
 				name += "-. ";
@@ -131,17 +131,18 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 				name += rank + ". ";
 			}
 
-			name += competition.getCompetitors().getByCardNumber(cardNumber).getName();
+			Competitor competitor = competition.getCompetitors().getByCardNumber(cardNumber);
+			name += competitor.getName();
 			resultLandscapeRowV.setResultLandscapeName(name);
 
-			String startNumber = String.valueOf(competition.getCompetitors().getByCardNumber(cardNumber).getStartNumber());	
+			String startNumber = String.valueOf(competitor.getStartNumber());	
 			resultLandscapeRowV.setResultLandscapeStartNumber(startNumber);			
 
-			String team = competition.getCompetitors().getByCardNumber(cardNumber).getTeam();	
+			String team = competitor.getTeam();	
 			resultLandscapeRowV.setResultLandscapeTeam(team);
 
 			long totalTime = totalTimeResult.getStageTime();			
-			resultLandscapeRowV.setResultLandscapeTotalTime(CompetitionHelper.milliSecToMinSecMilliSec(totalTime));				
+			resultLandscapeRowV.setResultLandscapeTotalTime(CompetitionHelper.milliSecToMinSecMilliSec(totalTime, competitor.hasCardBeenRead()));				
 
 			//First clear all stages
 			for(int stageNumber = 0; stageNumber < 10; stageNumber++) {
@@ -153,7 +154,7 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 					Long fastestTimeOnStage = stages.get(stageNumber).getFastestTime();
 					Long slowestTimeOnStage = stages.get(stageNumber).calculateSlowestOnStage();
 					Long competitorStageTime = stages.get(stageNumber).getStageResultByCardnumber(cardNumber).getStageTime();			
-					String StageTime = CompetitionHelper.milliSecToMinSecMilliSec(competitorStageTime);
+					String StageTime = CompetitionHelper.milliSecToMinSecMilliSec(competitorStageTime, competitor.hasCardBeenRead());
 					rank = stages.get(stageNumber).getStageResultByCardnumber(cardNumber).getRank();
 
 					int color = AndroidHelper.generateRedToGreenColorTransition(fastestTimeOnStage, slowestTimeOnStage, competitorStageTime, rank);

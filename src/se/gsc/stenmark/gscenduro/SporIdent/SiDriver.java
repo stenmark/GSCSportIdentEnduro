@@ -189,6 +189,7 @@ public class SiDriver {
 //    	card.errorMsg += "Second marker: " + allData[i+4] + " " + allData[i+5] + " " + allData[i+6] + " " + allData[i+7] + "\n";
 //    	card.errorMsg += "Third marker: " + allData[i+8] + " " + allData[i+9] + " " + allData[i+10] + " " + allData[i+11] + "\n";
 //    	
+    	card.setCardAsRead();
     	return card;
     }
         
@@ -230,6 +231,7 @@ public class SiDriver {
     	
 //    	androidActivity.msg += card.toString() + "\n";
 
+    	card.setCardAsRead();
     	return card;
     	
     }
@@ -267,6 +269,9 @@ public class SiDriver {
     	int cardNoHiWord = makeIntFromBytes( siacCardData.get(25), (byte)0 );
     	card.setCardNumber(cardNoLoWord + (cardNoHiWord*65536)); 
     	card.setNumberOfPunches(numberOfPunches);
+    	card.setCheckPunch( analysePunch(siacCardData, 8 ));
+    	card.setStartPunch( analysePunch(siacCardData, 12 ));
+    	card.setFinishPunch( analysePunch(siacCardData, 16 ));
     	
     	if( series == 15 ){
     		List<Integer> milliSecondTimeStamps = new ArrayList<Integer>();
@@ -293,6 +298,7 @@ public class SiDriver {
     		}
     	}
     	
+    	card.setCardAsRead();
     	return card;
     }
     
@@ -328,6 +334,7 @@ public class SiDriver {
     	
 //    	androidActivity.msg += card.toString() + "\n";
 
+    	card.setCardAsRead();
     	return card;
     	
     }
@@ -375,6 +382,7 @@ public class SiDriver {
     		if(verbose){
     			LogFileWriter.writeLog("card5data", message.toString());
     		}
+    		
     		return card;
     		
     	}
@@ -829,7 +837,7 @@ public class SiDriver {
 				//Backup detection for SiCard6. Seems like sometimes byte 1 is 0xE8, just like SIAC. But byte5 is 0x02 for Sicard6 (0x0F for SIAC)
 				else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8 && (readSiMessage[5] & 0xFF) == 0x02){
 					if(VERBOSE_LOGGING){
-						LogFileWriter.writeLog("debugLog", "Detected SiCard6 with 0XE8 byte and 0x02 byte on position 5\n");
+						LogFileWriter.writeLog("debugLog", "Detected SiCard6 with 0XE8 byte and 0x02 byte on position 5");
 					}
 					Thread.sleep(200);
 					return getCard6Data( VERBOSE_LOGGING );
@@ -838,7 +846,7 @@ public class SiDriver {
 				else if(readSiMessage.length >= 2 && (readSiMessage[1] & 0xFF) == 0xE8) {
 					try{
 						if(VERBOSE_LOGGING){
-							LogFileWriter.writeLog("debugLog", "Detected SIAC card with byte 0xE8\n");
+							LogFileWriter.writeLog("debugLog", "Detected SIAC card with byte 0xE8");
 						}
 						Thread.sleep(200);
 						return getSiacCardData( VERBOSE_LOGGING );
@@ -872,7 +880,7 @@ public class SiDriver {
 					//The SIAC readout will throw an exception if that is the case and then we blindly try a CARD6 decode instead
 					catch( RuntimeException e){
 						if(VERBOSE_LOGGING){
-							LogFileWriter.writeLog("debugLog", "Detected SiCard6 with unexpected exception from SIAC decode\n");
+							LogFileWriter.writeLog("debugLog", "Detected SiCard6 with unexpected exception from SIAC decode");
 						}
 						Thread.sleep(200);
 						return getCard6Data( VERBOSE_LOGGING );
