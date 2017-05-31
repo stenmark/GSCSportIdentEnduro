@@ -2,7 +2,7 @@ package se.gsc.stenmark.gscenduro.compmanagement;
 
 public class NotAllStationsPunchedException extends RuntimeException {
 
-	private static final long serialVersionUID = 5L;
+	private static final long serialVersionUID = 7L;
 
 	public NotAllStationsPunchedException() {
 		super();

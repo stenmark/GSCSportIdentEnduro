@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class StageTimes implements Serializable {
 
-	private static final long serialVersionUID = 5L;
+	private static final long serialVersionUID = 7L;
 	private ArrayList<Integer> mStages;
 	private ArrayList<Long> mTimes;
 	

@@ -119,6 +119,7 @@ public class PunchActivity extends ListActivity {
 	public void sendCard(){
 		Intent intent = new Intent(this, MainActivity.class);		
 
+		mUpdatedCard.setCardAsRead();
 		Bundle bundle = new Bundle();
 		bundle.putSerializable("updateCard", mUpdatedCard);
 		intent.putExtras(bundle);		                    	

@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class Stage implements Serializable {
 
-	private static final long serialVersionUID = 5L;
+	private static final long serialVersionUID = 7L;
 	public String title;
 	public int start;
 	public int finish;

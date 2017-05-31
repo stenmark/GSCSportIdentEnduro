@@ -15,7 +15,7 @@ import se.gsc.stenmark.gscenduro.compmanagement.Competition;
  */
 public class Card implements Serializable {
 
-	private static final long serialVersionUID = 6L;
+	private static final long serialVersionUID = 7L;
 	private int mNumberOfPunches;
 	private int mCardNumber;
 	private Punch mStartPunch; 
