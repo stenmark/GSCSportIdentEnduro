@@ -59,15 +59,9 @@ public class Competitors implements Serializable {
 		mCompetitors.put(cardNumber,competitor);
 		sort();
 	}	
-	
-	public void removeByName(String nameToDelete) {
-		for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.entrySet() ) {
-			Competitor competitor = currentCompetitorEntry.getValue();
-			if (competitor.getName().equals(nameToDelete)) {
-				mCompetitors.remove(currentCompetitorEntry.getKey());
-				break;
-			}
-		}
+		
+	public void removeByCardNumber(Integer cardNumberToDelete) {
+		mCompetitors.remove(cardNumberToDelete);
 	}	
 	
 	public String update(String name, int oldCardNumber, int newCardNumber, String team, String competitorClass, String startNumber, String startGroup) {

@@ -172,7 +172,7 @@ public class CompetitorsRowView extends LinearLayout {
 				alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {								
-						((MainActivity) mContext).competition.getCompetitors().removeByName((String) mName.getText());		
+						((MainActivity) mContext).competition.getCompetitors().removeByCardNumber( Integer.parseInt( (String) mCardNumber.getText()) );		
 						((MainActivity) mContext).competition.calculateResults();
 						((MainActivity) mContext).updateFragments();
 						AndroidHelper.saveSessionData(null,((MainActivity) mContext).competition);

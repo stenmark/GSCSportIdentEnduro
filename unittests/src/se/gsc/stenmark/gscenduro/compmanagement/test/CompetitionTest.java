@@ -24,6 +24,95 @@ import se.gsc.stenmark.gscenduro.compmanagement.StageResult;
 public class CompetitionTest {
 
 	@Test
+	public void testAddDeleteCompetitor(){
+		System.out.println("START testAddDeleteCompetitor");
+		final String COMP_CLASS_TO_TEST = "";
+		final int STAGE1_START_TIME = 100;
+		final int STAGE2_START_TIME = 500;
+
+		
+		Competition competition = new Competition();
+		competition.importStages("71,72,71,72");
+		competition.setCompetitionDate("2017-06-06");
+		competition.setCompetitionType( Competition.SVART_VIT_TYPE);
+		competition.setCompetitionName("Competition SvartVitt add-del competitor");
+		
+		competition.addCompetitor("Andreas", 1234, "", COMP_CLASS_TO_TEST, 1, 0, Competition.SVART_VIT_TYPE);
+		competition.addCompetitor("Sverker", 4567, "", COMP_CLASS_TO_TEST, 2, 0, Competition.SVART_VIT_TYPE);
+		competition.addCompetitor("Morgan", 1357, "", COMP_CLASS_TO_TEST, 3, 0, Competition.SVART_VIT_TYPE);
+		assertEquals(3, competition.getCompetitors().size());
+		
+		competition.addCompetitor("Andreas", 1111, "", COMP_CLASS_TO_TEST, 4, 0, Competition.SVART_VIT_TYPE);
+		assertEquals(4, competition.getCompetitors().size());
+		
+		assertNotNull(competition.getCompetitors().getByCardNumber(1234));
+		assertNotNull(competition.getCompetitors().getByCardNumber(4567));
+		assertNotNull(competition.getCompetitors().getByCardNumber(1357));
+		assertNotNull(competition.getCompetitors().getByCardNumber(1111));
+		competition.getCompetitors().removeByCardNumber(1111);
+		assertEquals(3, competition.getCompetitors().size());
+		assertNotNull(competition.getCompetitors().getByCardNumber(1234));
+		assertNotNull(competition.getCompetitors().getByCardNumber(4567));
+		assertNotNull(competition.getCompetitors().getByCardNumber(1357));
+		assertNull(competition.getCompetitors().getByCardNumber(1111));
+		
+		competition.addCompetitor("Andreas", 1111, "", COMP_CLASS_TO_TEST, 4, 0, Competition.SVART_VIT_TYPE);
+		assertEquals(4, competition.getCompetitors().size());
+		
+		assertNotNull(competition.getCompetitors().getByCardNumber(1234));
+		assertNotNull(competition.getCompetitors().getByCardNumber(4567));
+		assertNotNull(competition.getCompetitors().getByCardNumber(1357));
+		assertNotNull(competition.getCompetitors().getByCardNumber(1111));
+		
+		Competitor competitorAndreas1 = competition.getCompetitors().getByCardNumber(1234);
+		assertEquals(1234, competitorAndreas1.getCardNumber() );
+		Card cardAndreas1 = new Card();
+		cardAndreas1.setCardNumber(1234);
+		cardAndreas1.setCardAsRead();
+		cardAndreas1.setNumberOfPunches(4);
+		List<Punch> andreasPunches1 = new ArrayList<>();
+		andreasPunches1.add( new Punch(STAGE1_START_TIME, 71));
+		andreasPunches1.add( new Punch(STAGE1_START_TIME+123000, 72));
+		andreasPunches1.add( new Punch(STAGE2_START_TIME, 71));
+		andreasPunches1.add( new Punch(STAGE2_START_TIME+85000, 72));
+		cardAndreas1.setPunches(andreasPunches1);
+		competitorAndreas1.processCard(cardAndreas1, competition.getStages(COMP_CLASS_TO_TEST), Competition.SVART_VIT_TYPE);
+		competition.calculateResults();
+		System.out.println(CompetitionHelper.getResultsAsCsvString(competition.getStagesForAllClasses(), competition.getTotalResultsForAllClasses(),competition.getCompetitors(),  Competition.SVART_VIT_TYPE));
+
+		Competitor competitorAndreas2 = competition.getCompetitors().getByCardNumber(1111);
+		assertEquals(1111, competitorAndreas2.getCardNumber() );
+		Card cardAndreas2 = new Card();
+		cardAndreas2.setCardNumber(1111);
+		cardAndreas2.setCardAsRead();
+		cardAndreas2.setNumberOfPunches(4);
+		List<Punch> andreasPunches2 = new ArrayList<>();
+		andreasPunches2.add( new Punch(STAGE1_START_TIME, 71));
+		andreasPunches2.add( new Punch(STAGE1_START_TIME+60000, 72));
+		andreasPunches2.add( new Punch(STAGE2_START_TIME, 71));
+		andreasPunches2.add( new Punch(STAGE2_START_TIME+120000, 72));
+		cardAndreas2.setPunches(andreasPunches2);
+		competitorAndreas2.processCard(cardAndreas2, competition.getStages(COMP_CLASS_TO_TEST), Competition.SVART_VIT_TYPE);
+		competition.calculateResults();
+		System.out.println(CompetitionHelper.getResultsAsCsvString(competition.getStagesForAllClasses(), competition.getTotalResultsForAllClasses(),competition.getCompetitors(),  Competition.SVART_VIT_TYPE));
+		assertEquals("Rank,Name,Card Number,Total Time,Stage 1,Rank,Time Back,Stage 2,Rank,Time Back,\n"+
+				"1,Andreas,1111,03:00.0,01:00.0,1,00:00.0,02:00.0,2,00:35.0,\n"+
+				"2,Andreas,1234,03:28.0,02:03.0,2,01:03.0,01:25.0,1,00:00.0,\n"+
+				"-,Morgan,1357,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+				"-,Sverker,4567,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n", 
+				CompetitionHelper.getResultsAsCsvString(competition.getStagesForAllClasses(), competition.getTotalResultsForAllClasses(),competition.getCompetitors(),  Competition.SVART_VIT_TYPE));
+		
+		competition.getCompetitors().removeByCardNumber(1111);
+		competition.calculateResults();
+		System.out.println(CompetitionHelper.getResultsAsCsvString(competition.getStagesForAllClasses(), competition.getTotalResultsForAllClasses(),competition.getCompetitors(),  Competition.SVART_VIT_TYPE));
+		assertEquals("Rank,Name,Card Number,Total Time,Stage 1,Rank,Time Back,Stage 2,Rank,Time Back,\n"+
+					"1,Andreas,1234,03:28.0,02:03.0,1,00:00.0,01:25.0,1,00:00.0,\n"+
+					"-,Morgan,1357,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
+					"-,Sverker,4567,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n", 
+					CompetitionHelper.getResultsAsCsvString(competition.getStagesForAllClasses(), competition.getTotalResultsForAllClasses(),competition.getCompetitors(),  Competition.SVART_VIT_TYPE) );
+	}
+	
+	@Test
 	/**
 	 * Test with real SIAC data from Stenungsund race. 
 	 * Some competitors went into the Goal antenna before the start punch,
