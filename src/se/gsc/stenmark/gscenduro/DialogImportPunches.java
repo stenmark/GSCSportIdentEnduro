@@ -1,8 +1,6 @@
 package se.gsc.stenmark.gscenduro;
 
-import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
-import se.gsc.stenmark.gscenduro.compmanagement.PunchParser;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;

@@ -9,6 +9,7 @@ import android.preference.PreferenceActivity;
 
 public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -22,6 +23,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onResume(){
 		super.onResume();
@@ -33,6 +35,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -47,6 +50,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		try{
+			@SuppressWarnings("deprecation")
 			Preference pref = findPreference(key);
 
 			if (pref instanceof ListPreference) {

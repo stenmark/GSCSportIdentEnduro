@@ -102,7 +102,8 @@ public class SiDriver {
     //Work around, ReadDle is not woeking as expected for card5, not found why yet.
     //This one hacks the SI interface by finding the Fist station position in the data array and
     //then just hard fetches 4 bytes at a time from there, removing DLE (0x10) marker and extract station ID and time
-    private Card parseCard5Alt( byte[] dleData, byte[] allData, Competition comp){
+    @SuppressWarnings("unused")
+	private Card parseCard5Alt( byte[] dleData, byte[] allData, Competition comp){
     	Card card = new Card();;
     	int dataPos = 0;
     	

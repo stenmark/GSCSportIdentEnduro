@@ -22,8 +22,8 @@ public abstract class LogFileWriter {
 		}
 		LogFileWriter.writeLog("stacktrace", errorMessage);
 	}
-	public static void writeLog( String directory, String message){
-    	BufferedWriter bw  = null;
+	public static void writeLog( String directory, String message){		
+		BufferedWriter bw  = null;
     	File file = null;
     	String timeStamp = Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "");
     	try{
@@ -40,6 +40,10 @@ public abstract class LogFileWriter {
 				file = new File(dir, "stacktrace.log");
 				message = timeStamp + " " + message + "\n";
 			}
+			else if(directory.equals("cardLog")){
+				file = new File(dir, "cardLog.log");
+				message = timeStamp + " " + message + "\n";
+			}
 			else{
 				file = new File(dir, "cardDebugData_" + timeStamp + ".card");
 			}
@@ -47,6 +51,9 @@ public abstract class LogFileWriter {
 			bw = new BufferedWriter(fw);
 			bw.write(message);
     	} catch (IOException e) {
+		}
+    	catch (NoClassDefFoundError e) {
+    		return;
 		}
     	finally{
 			try {

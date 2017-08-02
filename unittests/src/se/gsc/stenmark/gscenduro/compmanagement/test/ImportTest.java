@@ -257,6 +257,18 @@ public class ImportTest {
 		System.out.println(errorMessage);
 		verifySvartVit(competition.getCompetitors(), errorMessage,0);
 		
+		System.out.println("Test SvartVitt import only dam klass");
+		competition = new Competition();
+		errorMessage = CompetitionHelper.importCompetitors("Sverkina Gustafsson,1234,dam\nJosefin,567,dam", false, Competition.SVART_VIT_TYPE, false,competition);
+		System.out.println(errorMessage);
+		verifySvartVitDam(competition.getCompetitors(), errorMessage,2, competition);
+		
+		System.out.println("Test SvartVitt import both normal and dam klass");
+		competition = new Competition();
+		errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson,8633671\nLars Kastensson,8633672\nJosefin,567,dam\nErik Holmberg,8633673\nHelena,1234,dam", false, Competition.SVART_VIT_TYPE, false,competition);
+		System.out.println(errorMessage);
+		verifySvartVitDamHerrMixed(competition.getCompetitors(), errorMessage,5, competition);
+		
 		System.out.println("Test normal ESS correct input");
 		competition = new Competition();
 		errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson,8633671,GSC,Motion,1,1\nLars Kastensson,8633672,GSC,Motion,2,grupp1\nErik Holmberg,8633673,GSC,Motion,3,grupp1\nFässberg,8633674,GSC,Motion,4,grupp1\nMattias Holmgren,8633675,GSC,Motion,5,grupp1\nHellberg,8633676,GSC,Motion,6,grupp1\nHans Hellsmark,8633677,GSC,Motion,7,grupp1\nPatrik Capretti,8633678,GSC,Motion,8,grupp1\nFredrik Svensson,8633679,GSC,Motion,9,1\nIngemar Gustavsson,8633680,GSC,Motion,10,1", false, Competition.ESS_TYPE, false,competition);
@@ -267,6 +279,37 @@ public class ImportTest {
 		errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson,8633671,GSC,Motion,1,1\n \n \nLars Kastensson,8633672,GSC,Motion,2,grupp1\n\n\n\nErik Holmberg,8633673,GSC,Motion,3,grupp1\nFässberg,8633674,GSC,Motion,4,grupp1\nMattias Holmgren,8633675,GSC,Motion,5,grupp1\nHellberg,8633676,GSC,Motion,6,grupp1\nHans Hellsmark,8633677,GSC,Motion,7,grupp1\nPatrik Capretti,8633678,GSC,Motion,8,grupp1\nFredrik Svensson,8633679,GSC,Motion,9,1\nIngemar Gustavsson,8633680,GSC,Motion,10,1\n\n\n\n\n", false, Competition.ESS_TYPE, false,competition);
 		verifyEss(competition.getCompetitors(), errorMessage);
 
+	}
+	
+	private void verifySvartVitDam(Competitors competitorsSvartVitt, String errorMessage, int numberOfCompetitors, Competition competition){ 
+		assertEquals(numberOfCompetitors, competitorsSvartVitt.size());
+		if(numberOfCompetitors > 0){
+			assertEquals("Sverkina Gustafsson", competitorsSvartVitt.getByCardNumber(1234).getName());
+			assertEquals("dam", competitorsSvartVitt.getByCardNumber(1234).getCompetitorClass());
+			assertEquals("Josefin", competitorsSvartVitt.getByCardNumber(567).getName());
+			assertEquals("dam", competitorsSvartVitt.getByCardNumber(567).getCompetitorClass());
+			assertEquals(1, competition.getAllClasses().size() );
+			assertNotNull(competition.getTotalResults("dam") );
+		}
+	}
+	
+	private void verifySvartVitDamHerrMixed(Competitors competitorsSvartVitt, String errorMessage, int numberOfCompetitors, Competition competition){ 
+		assertEquals(numberOfCompetitors, competitorsSvartVitt.size());
+		if(numberOfCompetitors > 0){
+			assertEquals("Sverker Gustafsson", competitorsSvartVitt.getByCardNumber(8633671).getName());
+			assertEquals("", competitorsSvartVitt.getByCardNumber(8633671).getCompetitorClass());
+			assertEquals("Lars Kastensson", competitorsSvartVitt.getByCardNumber(8633672).getName());
+			assertEquals("", competitorsSvartVitt.getByCardNumber(8633672).getCompetitorClass());
+			assertEquals("Josefin", competitorsSvartVitt.getByCardNumber(567).getName());
+			assertEquals("dam", competitorsSvartVitt.getByCardNumber(567).getCompetitorClass());
+			assertEquals("Erik Holmberg", competitorsSvartVitt.getByCardNumber(8633673).getName());
+			assertEquals("", competitorsSvartVitt.getByCardNumber(8633673).getCompetitorClass());
+			assertEquals("Helena", competitorsSvartVitt.getByCardNumber(1234).getName());
+			assertEquals("dam", competitorsSvartVitt.getByCardNumber(1234).getCompetitorClass());
+			assertEquals(2, competition.getAllClasses().size() );
+			assertNotNull(competition.getTotalResults("dam") );
+			assertNotNull(competition.getTotalResults("") );
+		}
 	}
 	
 	private void verifySvartVit(Competitors competitorsSvartVitt, String errorMessage, int numberOfCompetitors){

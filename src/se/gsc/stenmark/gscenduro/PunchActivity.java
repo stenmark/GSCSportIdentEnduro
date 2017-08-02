@@ -188,7 +188,7 @@ public class PunchActivity extends ListActivity {
 		Collections.sort(mUpdatedCard.getPunches(), new Comparator<Punch>() {
 			@Override
 			public int compare(Punch s1, Punch s2) {
-				return new Long(s1.getTime()).compareTo(s2.getTime());
+				return Long.valueOf(s1.getTime()).compareTo(s2.getTime());
 			}
 		});	
 	}

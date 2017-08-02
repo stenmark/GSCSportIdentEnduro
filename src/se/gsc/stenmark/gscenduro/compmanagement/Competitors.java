@@ -165,28 +165,9 @@ public class Competitors implements Serializable {
 				Competitor competitor = currentCompetitorEntry.getValue();
 				
 				Card card = new Card();
-
 				card = competitor.getCard();
-
 				if (card != null) {
-					Collections.sort(card.getPunches(),
-						new Comparator<Punch>() {
-							@Override
-							public int compare(Punch s1, Punch s2) {
-								return Long.valueOf(s1.getTime()).compareTo(s2.getTime());
-							}
-						});
-
-					punchesAsCsv += competitor.getCardNumber() + ",";
-					int i = 0;					
-					for (Punch punch : card.getPunches()) {
-						if (i != 0) {
-							punchesAsCsv += ",";	
-						}
-						punchesAsCsv += punch.getControl() + "," + punch.getTime();
-						i++;
-					}
-					punchesAsCsv += "\n";
+					punchesAsCsv += card.getPunchesAsString();
 				}
 			}
 		}

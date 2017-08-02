@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
@@ -51,7 +52,7 @@ public abstract class CompetitionHelper {
 		totalTimeTenth -= totalTimeSec*10;
 		totalTimeSec -= (totalTimeMin*60);
 		
-		return String.format("%02d:%02d.%01d", totalTimeMin, totalTimeSec, totalTimeTenth);
+		return String.format(Locale.ENGLISH,"%02d:%02d.%01d", totalTimeMin, totalTimeSec, totalTimeTenth);
 
 	}
 	
@@ -221,8 +222,12 @@ public abstract class CompetitionHelper {
 			competition.getCompetitors().clear();
 		}
 		
+		boolean firstLine = true;
 		while ((line = bufReader.readLine()) != null) {	
-			errorMessage = new StringBuffer("");
+			if(firstLine){
+				errorMessage = new StringBuffer("");
+				firstLine = false;
+			}
 			boolean parsingError = false;
 			if( !line.contains(",") && line.contains(";") ){
 				line = line.replace(";", ",");
@@ -245,9 +250,21 @@ public abstract class CompetitionHelper {
 					continue;
 				}
 			} else {	
-				if( parsedLine.length == 2){
+				if( parsedLine.length == 2 ){
 					name = parsedLine[0];
 					cardNumberAsString = parsedLine[1];
+					competitorClass = "";
+				}
+				else if( parsedLine.length == 3 ){
+					if( parsedLine[2].equalsIgnoreCase("dam")){
+						competitorClass = parsedLine[2];
+						name = parsedLine[0];
+						cardNumberAsString = parsedLine[1];
+					}
+					else{
+						errorMessage.append( "Could not import. Found 3 entries on the line, but the last entry was not \"dam\", which is the only accepted third entry. Third entry was: Line was: "+ parsedLine[2] + " Line was:" + line );	
+						parsingError = true;
+					}
 				}
 				else{
 					//Ignore empty lines (Dont print error message)
@@ -262,10 +279,12 @@ public abstract class CompetitionHelper {
 			Integer startNumber = -1;
 			Integer startGroup = -1;
 			Map<String,Integer> parsingResults = new HashMap<String, Integer>();
-			parsingError = parseCompetitor(line,name, team, competitorClass, cardNumberAsString, startNumberAsString, startGroupAsString, type, keep,competition.getCompetitors(),errorMessage, parsingResults);
-			cardNumber = parsingResults.get("cardNumber");
-			startNumber = parsingResults.get("startNumber");
-			startGroup = parsingResults.get("startGroup");
+			if(!parsingError){
+				parsingError = parseCompetitor(line,name, team, competitorClass, cardNumberAsString, startNumberAsString, startGroupAsString, type, keep,competition.getCompetitors(),errorMessage, parsingResults);
+				cardNumber = parsingResults.get("cardNumber");
+				startNumber = parsingResults.get("startNumber");
+				startGroup = parsingResults.get("startGroup");
+			}
 			
 			if( !parsingError ){
 				if( !onlyCheckDontAdd){

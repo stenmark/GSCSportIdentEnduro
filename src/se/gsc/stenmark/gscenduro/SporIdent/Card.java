@@ -2,8 +2,11 @@ package se.gsc.stenmark.gscenduro.SporIdent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import se.gsc.stenmark.gscenduro.LogFileWriter;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 
 /**
@@ -97,7 +100,7 @@ public class Card implements Serializable {
 	public void setClearPunch(Punch clearPunch) {
 		mClearPunch = clearPunch;
 	}
-	
+
 	public List<Punch> getPunches() {
 		return mPunches;
 	}
@@ -105,16 +108,16 @@ public class Card implements Serializable {
 	public void setPunches(List<Punch> punches) {
 		mPunches = punches;
 	}
-	
+
 	public Long getTimeOfControlEss(int control, Boolean startControl) {
 		long time;
-		
+
 		if (startControl) {
 			time = 0;
 		} else {
 			time = (long) Integer.MAX_VALUE;
 		}			
-		
+
 		for (Punch punch : mPunches) {
 			if (punch.getControl() == control) {
 				if (startControl) {
@@ -130,32 +133,32 @@ public class Card implements Serializable {
 		}
 		return time;
 	}		
-	
+
 	public Long getStageTimeEss(int startControl, int finishControl) {
 		long finish = getTimeOfControlEss(finishControl, false);
 		long start = getTimeOfControlEss(startControl, true);
-		
+
 		if ((start == (long) Integer.MAX_VALUE) || (finish == (long) Integer.MAX_VALUE)) {
 			return Competition.NO_TIME_FOR_STAGE;
 		} else {			
 			return finish - start;
 		}		
 	}	
-	
+
 	public Long getTimeOfControlSvartVitt(int control, Boolean startControl, int stageNumber) {
 		long time;
 		int currentStage = 1;
-		
+
 		if (startControl) {
 			time = 0;
 		} else {
 			time = (long) Integer.MAX_VALUE;
 		}			
-		
+
 
 		for( int i = 0; i < mPunches.size(); i++){
 			Punch currentPunch = mPunches.get(i);
-			
+
 			//Found one punch with that control
 			if( !currentPunch.getIsFinishPunchBeforeStart()){
 				if (currentPunch.getControl() == control) {				
@@ -168,7 +171,7 @@ public class Card implements Serializable {
 							time = currentPunch.getTime();
 						}
 					}	
-					
+
 					//Is this the last punch?
 					if( (i+1) == mPunches.size() ) {
 						//No more punches
@@ -210,11 +213,11 @@ public class Card implements Serializable {
 
 		return time;
 	}	
-	
+
 	public Long getStageTimeSvartVitt(int startControl, int finishControl, int stageNumber) {
 		long finish = getTimeOfControlSvartVitt(finishControl, false, stageNumber);
 		long start = getTimeOfControlSvartVitt(startControl, true, stageNumber);
-		
+
 		if ((start == (long) Integer.MAX_VALUE) || (finish == (long) Integer.MAX_VALUE)) {
 			return Competition.NO_TIME_FOR_STAGE;
 		} else {			
@@ -228,5 +231,31 @@ public class Card implements Serializable {
 
 	public void setCardAsRead() {
 		hasCardBeenRead = true;
-	}		
+		LogFileWriter.writeLog("cardLog", getPunchesAsString() );
+	}
+
+	public String getPunchesAsString(){
+		String punchesAsCsv = "";
+
+		Collections.sort(getPunches(),
+				new Comparator<Punch>() {
+			@Override
+			public int compare(Punch s1, Punch s2) {
+				return Long.valueOf(s1.getTime()).compareTo(s2.getTime());
+			}
+		});
+
+		punchesAsCsv += getCardNumber() + ",";
+		int i = 0;					
+		for (Punch punch : getPunches()) {
+			if (i != 0) {
+				punchesAsCsv += ",";	
+			}
+			punchesAsCsv += punch.getControl() + "," + punch.getTime();
+			i++;
+		}
+		punchesAsCsv += "\n";
+
+		return punchesAsCsv;
+	}
 }

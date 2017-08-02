@@ -30,7 +30,7 @@ public class DialogImportCompetitors {
 			if (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) {			
 				importCompetitorsInfo.setText("Enter competitors in the following way:\n\nName,CardNumber,Team,CompetitorClass,StartNumber,StartGroup\nName,CardNumber,Team,CompetitorClass,StartNumber,StartGroup\nName,CardNumber,Team,CompetitorClass,StartNumber,StartGroup\n");			
 			} else {
-				importCompetitorsInfo.setText("Enter competitors in the following way:\n\nName,CardNumber\nName,CardNumber\nName,CardNumber");
+				importCompetitorsInfo.setText("Enter competitors in the following way:\nOptionally Add \"dam\" at the end of each line if the competitor is to be added to the Women´s class\n\nName,CardNumber,[dam]\nName,CardNumber,[dam]\nName,CardNumber,[dam]");
 			}
 
 			final CheckBox keepCheckBox = (CheckBox) promptsView.findViewById(R.id.import_competitors_keep_checkbox);
