@@ -171,7 +171,7 @@ public class Competition implements Serializable {
 			//One result for each competitor class
 			for( String competitorClass : totalResults.keySet() ) {
 				if( !stages.containsKey(competitorClass) ){
-					//Something went very wrong, the stages and totalresults does not have the samme classes defined
+					//Something went very wrong, the stages and totalresults does not have the same classes defined
 					break;
 				}
 
@@ -191,7 +191,7 @@ public class Competition implements Serializable {
 				for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.getCompetitors().entrySet() ) {
 					Competitor currentCompetitor = currentCompetitorEntry.getValue();
 					StageResult totalTimeResult;
-					if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {
+					if ((currentCompetitor.getCompetitorClass().equals(competitorClass))) {
 						if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() == 0) ) {
 							totalTimeResult = new StageResult(currentCompetitor.getCardNumber(),NO_TIME_FOR_COMPETITION);
 						} else if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < getNumberOfStages() )) {
@@ -211,8 +211,7 @@ public class Competition implements Serializable {
 				for (int stageNumber = 0; stageNumber <  getNumberOfStages(); stageNumber++) {
 					for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.getCompetitors().entrySet() ) {
 						Competitor currentCompetitor = currentCompetitorEntry.getValue();
-						if ((mCompetitionType == SVART_VIT_TYPE) || (currentCompetitor.getCompetitorClass().equals(competitorClass))) {			
-
+						if ((currentCompetitor.getCompetitorClass().equals(competitorClass))) {			
 							Long stageTime = NO_TIME_FOR_STAGE;
 							if ((currentCompetitor.hasResult()) && (currentCompetitor.getStageTimes().size() > stageNumber)) { 
 								stageTime = currentCompetitor.getStageTimes().getTimesOfStage(stageNumber); 

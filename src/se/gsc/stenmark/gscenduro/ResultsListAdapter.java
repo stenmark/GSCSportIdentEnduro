@@ -33,7 +33,7 @@ public class ResultsListAdapter extends BaseAdapter {
 			for( String compClass : totalResultsForAllClasses.keySet() )
 			{
 				size += totalResultsForAllClasses.get(compClass).numberOfCompetitors();
-			}
+				}
 			for( String compClass : stagesForAllClasses.keySet() )
 			{
 				for( Stage stage : stagesForAllClasses.get(compClass)){
@@ -44,7 +44,6 @@ public class ResultsListAdapter extends BaseAdapter {
 		catch( Exception e){
 			MainActivity.generateErrorMessage(e);
 		}
-
 		return size;
 	}
 
@@ -92,7 +91,6 @@ public class ResultsListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-
 		ResultsRowView resultRowV = null;
 		try{
 
@@ -102,24 +100,19 @@ public class ResultsListAdapter extends BaseAdapter {
 				resultRowV = (ResultsRowView) convertView;
 			}
 
-
 			int index = 0;
 			int stageNumber = 0;
-
 			for ( Stage stage : concatAllClasses() )
 			{
-
 				if (index + stage.getCompetitorResults().size() > position)
 				{
 					index = position - index;
 					break;
 				}	
 
-
 				index += stage.getCompetitorResults().size();
 				stageNumber++;
 			}
-
 			Stage stage = concatAllClasses().get(stageNumber);
 			String name; 
 
@@ -135,7 +128,7 @@ public class ResultsListAdapter extends BaseAdapter {
 			String team = currentCompetitor.getTeam();
 			String time = CompetitionHelper.milliSecToMinSecMilliSec(stage.getCompetitorResults().get(index).getStageTime(), currentCompetitor.hasCardBeenRead());
 			String timeBack = CompetitionHelper.milliSecToMinSecMilliSec(stage.getCompetitorResults().get(index).getStageTimesBack(), currentCompetitor.hasCardBeenRead());			
-
+			
 			resultRowV.setResultName(name);
 			resultRowV.setResultStartNumber(startNumber);
 			resultRowV.setResultTeam(team);

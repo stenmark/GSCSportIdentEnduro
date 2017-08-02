@@ -265,8 +265,10 @@ public class ImportTest {
 		
 		System.out.println("Test SvartVitt import both normal and dam klass");
 		competition = new Competition();
+		competition.importStages("71,72");
 		errorMessage = CompetitionHelper.importCompetitors("Sverker Gustafsson,8633671\nLars Kastensson,8633672\nJosefin,567,dam\nErik Holmberg,8633673\nHelena,1234,dam", false, Competition.SVART_VIT_TYPE, false,competition);
 		System.out.println(errorMessage);
+		competition.calculateResults();
 		verifySvartVitDamHerrMixed(competition.getCompetitors(), errorMessage,5, competition);
 		
 		System.out.println("Test normal ESS correct input");
@@ -309,6 +311,10 @@ public class ImportTest {
 			assertEquals(2, competition.getAllClasses().size() );
 			assertNotNull(competition.getTotalResults("dam") );
 			assertNotNull(competition.getTotalResults("") );
+			assertEquals(2, competition.getTotalResults("dam").numberOfCompetitors() );
+			assertEquals(3, competition.getTotalResults("").numberOfCompetitors() );
+			assertEquals(2, competition.getStages("dam").get(0).numberOfCompetitors());
+			assertEquals(3, competition.getStages("").get(0).numberOfCompetitors());
 		}
 	}
 	
