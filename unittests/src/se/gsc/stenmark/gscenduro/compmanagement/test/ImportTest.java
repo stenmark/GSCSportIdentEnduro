@@ -312,9 +312,9 @@ public class ImportTest {
 			assertNotNull(competition.getTotalResults("dam") );
 			assertNotNull(competition.getTotalResults("") );
 			assertEquals(2, competition.getTotalResults("dam").numberOfCompetitors() );
-			assertEquals(3, competition.getTotalResults("").numberOfCompetitors() );
+			assertEquals(5, competition.getTotalResults("").numberOfCompetitors() );
 			assertEquals(2, competition.getStages("dam").get(0).numberOfCompetitors());
-			assertEquals(3, competition.getStages("").get(0).numberOfCompetitors());
+			assertEquals(5, competition.getStages("").get(0).numberOfCompetitors());
 		}
 	}
 	

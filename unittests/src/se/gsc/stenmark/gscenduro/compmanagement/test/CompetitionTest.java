@@ -27,6 +27,7 @@ public class CompetitionTest {
 	public void testAddDeleteCompetitor(){
 		System.out.println("START testAddDeleteCompetitor");
 		final String COMP_CLASS_TO_TEST = "";
+		final String DAM_CLASS = "dam";
 		final int STAGE1_START_TIME = 100;
 		final int STAGE2_START_TIME = 500;
 
@@ -110,6 +111,69 @@ public class CompetitionTest {
 					"-,Morgan,1357,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n"+
 					"-,Sverker,4567,card not read,card not read,30000000,card not read,card not read,30000000,card not read,\n", 
 					CompetitionHelper.getResultsAsCsvString(competition.getStagesForAllClasses(), competition.getTotalResultsForAllClasses(),competition.getCompetitors(),  Competition.SVART_VIT_TYPE) );
+	
+	
+	System.out.println("Add Dam klass competitor to SvartVitt competition and check that results are calculated correctly.");
+	competition.addCompetitor("Josefin", 1987, "", DAM_CLASS, 3, 0, Competition.SVART_VIT_TYPE);
+	competition.addCompetitor("Helena", 2765, "", DAM_CLASS, 3, 0, Competition.SVART_VIT_TYPE);
+	assertEquals(5, competition.getCompetitors().size());
+	Card cardMorgan = new Card();
+	cardMorgan.setCardNumber(1357);
+	cardMorgan.setCardAsRead();
+	cardMorgan.setNumberOfPunches(4);
+	List<Punch> morganPunches = new ArrayList<>();
+	morganPunches.add( new Punch(STAGE1_START_TIME+10000, 71));
+	morganPunches.add( new Punch(STAGE1_START_TIME+60000, 72));
+	morganPunches.add( new Punch(STAGE2_START_TIME+5000, 71));
+	morganPunches.add( new Punch(STAGE2_START_TIME+120000, 72));
+	cardMorgan.setPunches(morganPunches);
+	Competitor competitorMorgan = competition.getCompetitors().getByCardNumber(1357);
+	competitorMorgan.processCard(cardMorgan, competition.getStages(COMP_CLASS_TO_TEST), Competition.SVART_VIT_TYPE);
+	competition.calculateResults();
+	assertEquals(2,competition.getTotalResults("dam").getCompetitorResults().size() );
+	assertEquals(5,competition.getTotalResults("").getCompetitorResults().size() );
+	assertEquals(2,competition.getStages("dam").size());
+	assertEquals(2,competition.getStages("dam").get(0).getCompetitorResults().size() );
+	assertEquals(2,competition.getStages("dam").get(1).getCompetitorResults().size() );
+	assertEquals(5,competition.getStages("").get(0).getCompetitorResults().size() );
+	assertEquals(5,competition.getStages("").get(1).getCompetitorResults().size() );
+	assertEquals( Competition.RANK_DNF,competition.getTotalResults("dam").getCompetitorResults().get(0).getRank() );
+	assertEquals( Competition.RANK_DNF,competition.getTotalResults("dam").getCompetitorResults().get(1).getRank() );
+	assertEquals(Competition.RANK_DNF,competition.getStages("dam").get(0).getCompetitorResults().get(0).getRank() );
+	assertEquals(Competition.RANK_DNF,competition.getStages("dam").get(1).getCompetitorResults().get(0).getRank() );
+	assertEquals(Competition.RANK_DNF,competition.getStages("dam").get(0).getCompetitorResults().get(1).getRank() );
+	assertEquals(Competition.RANK_DNF,competition.getStages("dam").get(1).getCompetitorResults().get(1).getRank() );
+	assertNotEquals( Competition.RANK_DNF,competition.getTotalResults("").getCompetitorResults().get(0).getRank() );
+	assertNotEquals( Competition.RANK_DNF,competition.getTotalResults("").getCompetitorResults().get(1).getRank() );
+	assertEquals( Competition.RANK_DNF,competition.getTotalResults("").getCompetitorResults().get(2).getRank() );
+	assertEquals( Competition.RANK_DNF,competition.getTotalResults("").getCompetitorResults().get(3).getRank() );
+	assertEquals( Competition.RANK_DNF,competition.getTotalResults("").getCompetitorResults().get(4).getRank() );
+	
+	Card cardJosefin = new Card();
+	cardJosefin.setCardNumber(1987);
+	cardJosefin.setCardAsRead();
+	cardJosefin.setNumberOfPunches(4);
+	List<Punch> josefinPunches = new ArrayList<>();
+	josefinPunches.add( new Punch(STAGE1_START_TIME+70000, 71));
+	josefinPunches.add( new Punch(STAGE1_START_TIME+60000, 72));
+	josefinPunches.add( new Punch(STAGE2_START_TIME+2000, 71));
+	josefinPunches.add( new Punch(STAGE2_START_TIME+120000, 72));
+	cardJosefin.setPunches(josefinPunches);
+	Competitor competitorJosefin= competition.getCompetitors().getByCardNumber(1987);
+	competitorJosefin.processCard(cardJosefin, competition.getStages(COMP_CLASS_TO_TEST), Competition.SVART_VIT_TYPE);
+	competition.calculateResults();
+	assertNotEquals( Competition.RANK_DNF,competition.getTotalResults("dam").getCompetitorResults().get(0).getRank() );
+	assertEquals( Competition.RANK_DNF,competition.getTotalResults("dam").getCompetitorResults().get(1).getRank() );
+	assertNotEquals(Competition.RANK_DNF,competition.getStages("dam").get(0).getCompetitorResults().get(0).getRank() );
+	assertNotEquals(Competition.RANK_DNF,competition.getStages("dam").get(1).getCompetitorResults().get(0).getRank() );
+	assertEquals(Competition.RANK_DNF,competition.getStages("dam").get(0).getCompetitorResults().get(1).getRank() );
+	assertEquals(Competition.RANK_DNF,competition.getStages("dam").get(1).getCompetitorResults().get(1).getRank() );
+	assertNotEquals( Competition.RANK_DNF,competition.getTotalResults("").getCompetitorResults().get(0).getRank() );
+	assertNotEquals( Competition.RANK_DNF,competition.getTotalResults("").getCompetitorResults().get(1).getRank() );
+	assertNotEquals( Competition.RANK_DNF,competition.getTotalResults("").getCompetitorResults().get(2).getRank() );
+	assertEquals( Competition.RANK_DNF,competition.getTotalResults("").getCompetitorResults().get(3).getRank() );
+	assertEquals( Competition.RANK_DNF,competition.getTotalResults("").getCompetitorResults().get(4).getRank() );
+
 	}
 	
 	@Test

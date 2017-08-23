@@ -30,7 +30,7 @@ public class Competition implements Serializable {
 	public static final long COMPETITION_DNF =         5000000L;
 	public static final long NO_TIME_FOR_STAGE =       10000000L;
 	public static final long NO_TIME_FOR_COMPETITION = 20000000L;
-	public static final long RANK_DNF =                30000000L;
+	public static final Long RANK_DNF =                30000000L;
 	public static final String CURRENT_COMPETITION = "current_competition";
 
 	//Circular buffer to hold the 6 most recently read cards
@@ -188,10 +188,12 @@ public class Competition implements Serializable {
 				}
 
 				// Add total times		
-				for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.getCompetitors().entrySet() ) {
+				for( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.getCompetitors().entrySet() ) {
 					Competitor currentCompetitor = currentCompetitorEntry.getValue();
 					StageResult totalTimeResult;
-					if ((currentCompetitor.getCompetitorClass().equals(competitorClass))) {
+					
+										
+					if( (currentCompetitor.getCompetitorClass().equals(competitorClass)) || (competitorClass.equals("")) ){
 						if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() == 0) ) {
 							totalTimeResult = new StageResult(currentCompetitor.getCardNumber(),NO_TIME_FOR_COMPETITION);
 						} else if ((currentCompetitor.getStageTimes() == null) || (currentCompetitor.getStageTimes().size() < getNumberOfStages() )) {
@@ -211,7 +213,7 @@ public class Competition implements Serializable {
 				for (int stageNumber = 0; stageNumber <  getNumberOfStages(); stageNumber++) {
 					for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.getCompetitors().entrySet() ) {
 						Competitor currentCompetitor = currentCompetitorEntry.getValue();
-						if ((currentCompetitor.getCompetitorClass().equals(competitorClass))) {			
+						if( (currentCompetitor.getCompetitorClass().equals(competitorClass)) || (competitorClass.equals("")) ) {			
 							Long stageTime = NO_TIME_FOR_STAGE;
 							if ((currentCompetitor.hasResult()) && (currentCompetitor.getStageTimes().size() > stageNumber)) { 
 								stageTime = currentCompetitor.getStageTimes().getTimesOfStage(stageNumber); 

@@ -29,7 +29,10 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 	public int getCount() {
 		int size = 0;
 		try{
-			size = competition.getCompetitors().size();
+			for( String compClass : competition.getTotalResultsForAllClasses().keySet() )
+			{
+				size += competition.getTotalResultsForAllClasses().get(compClass).numberOfCompetitors();
+			}
 		}
 		catch( Exception e1){
 			MainActivity.generateErrorMessage(e1);
@@ -98,9 +101,6 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 			int i = 0;
 			boolean done = false;
 			String foundCompClass = "";
-			if(position==0){
-				resultLandscapeRowV.setTitle( competition.getNumberOfStages() );
-			}
 			for(String compClass : totalResults.keySet()){
 				resultLandscapeRowV.setResultLandscapeCompetitorClass(  totalResults.get(compClass).title );
 				for( StageResult totalTimeRes : totalResults.get(compClass).getCompetitorResults() ){
@@ -120,10 +120,13 @@ public class ResultsListLandscapeAdapter extends BaseAdapter {
 				return resultLandscapeRowV;
 			}
 			List<Stage> stages = competition.getStages(foundCompClass);
-			
+			long rank = totalTimeResult.getRank();
+			if(rank==1){
+				resultLandscapeRowV.setTitle( competition.getNumberOfStages() );
+			}
 			int cardNumber = totalTimeResult.getCardNumber();
 
-			long rank = totalTimeResult.getRank();
+			
 			String name = "";
 			if (rank == Competition.RANK_DNF) {			
 				name += "-. ";

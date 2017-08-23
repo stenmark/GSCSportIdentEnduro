@@ -33,12 +33,12 @@ public class ResultsListAdapter extends BaseAdapter {
 			for( String compClass : totalResultsForAllClasses.keySet() )
 			{
 				size += totalResultsForAllClasses.get(compClass).numberOfCompetitors();
-				}
+			}
 			for( String compClass : stagesForAllClasses.keySet() )
 			{
 				for( Stage stage : stagesForAllClasses.get(compClass)){
 					size += stage.numberOfCompetitors();
-				}
+			}
 			}
 		}
 		catch( Exception e){
