@@ -17,7 +17,7 @@
         android:layout_height="wrap_content" >
         <requestFocus /> 
     </EditText>
-    
+        
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,7 +28,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"> 
-    </EditText>    
+    </EditText>
+    
+    <CheckBox
+        android:id="@+id/damklass_checkbox_modify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="itemClicked"
+        android:text="Womens class competitor"
+        android:visibility="gone" />
 	
 	<LinearLayout 
 	    android:id="@+id/modify_competitor_ess_layout"

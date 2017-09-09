@@ -7,6 +7,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ public class CompetitorsRowView extends LinearLayout {
 	EditText mCompetitorClassInput = null;
 	EditText mStartNumberInput = null;
 	EditText mStartGroupInput = null;
+	private String competitorClassString;
 
 	protected void init(Context context) {
 		try{
@@ -117,6 +119,7 @@ public class CompetitorsRowView extends LinearLayout {
 			if (mCompetitorClass != null) {
 				mCompetitorClass.setText(competitorClass);
 			}
+			competitorClassString = competitorClass;
 		}
 		catch( Exception e1){
 			MainActivity.generateErrorMessage(e1);
@@ -189,6 +192,8 @@ public class CompetitorsRowView extends LinearLayout {
 	};
 
 	private OnClickListener mOnModifyClickListener = new OnClickListener() {
+		private CheckBox damClassCheckBox;
+
 		@Override
 		public void onClick(View v) {
 			try{
@@ -199,6 +204,7 @@ public class CompetitorsRowView extends LinearLayout {
 
 				if (((MainActivity) mContext).competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {				
 					modifyCompetitorEssLayout.setVisibility(View.GONE);	
+					
 				} else {
 					modifyCompetitorEssLayout.setVisibility(View.VISIBLE);	
 				}
@@ -217,11 +223,22 @@ public class CompetitorsRowView extends LinearLayout {
 					mStartGroupInput.setText(mStartGroup.getText());						
 				}
 
+
 				mNameInput = (EditText) promptsView.findViewById(R.id.name_input);	
 				mNameInput.setText(mName.getText());
 
 				mCardNumberInput = (EditText) promptsView.findViewById(R.id.card_number_input);	
 				mCardNumberInput.setText(mCardNumber.getText());
+				
+				if (((MainActivity) mContext).competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {
+					damClassCheckBox = (CheckBox) promptsView.findViewById(R.id.damklass_checkbox_modify);	
+					damClassCheckBox.setChecked(competitorClassString.equalsIgnoreCase("dam"));
+					damClassCheckBox.setVisibility(View.VISIBLE);
+					damClassCheckBox.setOnClickListener(new View.OnClickListener() {
+						public void onClick(View v) {
+						}
+					});	
+				}
 
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);	
 				alertDialogBuilder.setTitle("Modify competitor");
@@ -273,12 +290,16 @@ public class CompetitorsRowView extends LinearLayout {
 									mStartNumber.getText().toString(), 
 									mStartGroup.getText().toString());
 						} else {
+							String compClass = "";
+							if( damClassCheckBox.isChecked()){
+								compClass = "dam";
+							}
 							status = ((MainActivity) mContext).competition.getCompetitors().update( 
 									mNameInput.getText().toString(),
 									Integer.parseInt(mCardNumber.getText().toString()),
 									Integer.parseInt(mCardNumberInput.getText().toString()),
 									"",
-									"",
+									compClass,
 									"-1",
 									"-1");	
 						}
