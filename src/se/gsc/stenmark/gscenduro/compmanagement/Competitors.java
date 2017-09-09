@@ -137,7 +137,7 @@ public class Competitors implements Serializable {
 		if (mCompetitors != null && !mCompetitors.isEmpty()) {
 			for ( Entry<Integer, Competitor> currentCompetitorEntry : mCompetitors.entrySet() ) {	
 				Competitor competitor = currentCompetitorEntry.getValue();
-				if (type == 1) { //ESS_TYPE
+				if (type == Competition.ESS_TYPE) { 
 					competitorsAsCsv += competitor.getName() + "," + 
 									  	competitor.getCardNumber() + "," + 
 									  	competitor.getTeam() + "," + 
@@ -145,7 +145,12 @@ public class Competitors implements Serializable {
 									  	competitor.getStartNumber() + "," + 
 									  	competitor.getStartGroup() + "\n";					
 				} else {
-					competitorsAsCsv += competitor.getName() + "," + competitor.getCardNumber() + "\n";
+					if( competitor.getCompetitorClass().equalsIgnoreCase("dam")){
+						competitorsAsCsv += competitor.getName() + "," + competitor.getCardNumber() + ",dam\n";
+					}
+					else{
+						competitorsAsCsv += competitor.getName() + "," + competitor.getCardNumber() + "\n";
+					}
 				}
 			}
 		}

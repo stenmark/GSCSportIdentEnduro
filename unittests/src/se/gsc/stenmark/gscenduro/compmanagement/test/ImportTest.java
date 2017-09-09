@@ -12,7 +12,7 @@ import se.gsc.stenmark.gscenduro.compmanagement.Competitors;
 
 public class ImportTest {
 
-	@Test
+//	@Test
 	public void testImportCompetition() throws IOException{
 		System.out.println("Starting testImportCompetition");
 		Competition competition = new Competition();
@@ -95,7 +95,98 @@ public class ImportTest {
 		System.out.println("Competition as string\n" + competitionAsString);
 		assertEquals(EXPECTED_EXPORT_STRING, competitionAsString);
 		
-		status = new StringBuilder();
+		competition = CompetitionHelper.importCompetition(competitionAsString, status);
+		assertEquals("", status.toString());
+		competition.calculateResults();
+		
+		competitionAsString = CompetitionHelper.getCompetitionAsString(competition);
+		System.out.println("Competition as string\n" + competitionAsString);
+		assertEquals(EXPECTED_EXPORT_STRING, competitionAsString);
+	}
+	
+	@Test
+	public void testImportDamCompetition() throws IOException{
+		System.out.println("Starting testImportDamCompetition");
+		Competition competition = new Competition();
+		final String IMPORT_STRING = "[Name]\n" + 
+				"Import Comp\n" + 
+				"[/Name]\n" + 
+				"[Date]\n" + 
+				"16-12-01\n" + 
+				"[/Date]\n" + 
+				"[Type]\n" + 
+				"0\n" + 
+				"[/Type]\n" + 
+				"[Stages]\n" + 
+				"71,72,71,72\n" + 
+				"[/Stages]\n" + 
+				"[Competitors]\n" + 
+				"Andrea Haag,8633682,dam\n" + 
+				"Andreas Nilvander,8633686\n" + 
+				"AndreasNäs,8633684\n" + 
+				"Elin Andreasson,8633681,dam\n" + 
+				"Erik Holmberg,8633673\n" + 
+				"Erik Österberg,8633692\n" + 
+				"Fredrika Svensson,8633679,dam\n" + 
+				"Fässberg,8633674\n" + 
+				"Gerry Bohm,8633685\n" + 
+				"Hans Hellsmark,8633677\n" + 
+				"Hellberg,8633676\n" + 
+				"[/Competitors]\n" + 
+				"[Punches]\n" + 
+				"8633682,71,38054000,72,38137000,71,39241000,72,39273000\n" +
+				"8633686,71,38133000,72,38209000,71,39333000,72,39367000\n" +
+				"8633684,71,38120000,72,38200000,71,39257000,72,39291000\n" +
+				"8633681,71,38156000,72,38235000,71,39323000,72,39361000\n" +
+				"8633673,71,38025000,72,38098000,71,39224000,72,39253000\n" +
+				"8633692,71,38099000,72,38179000,71,39293000,72,39328000\n" +
+				"8633679,71,38038000,72,38108000,71,39312000,72,39339000\n" +
+				"[/Punches]\n";
+		
+		final String EXPECTED_EXPORT_STRING = "[Name]\n" +
+											"Import Comp\n" +
+											"[/Name]\n" +
+											"[Date]\n" +
+											"16-12-01\n" +
+											"[/Date]\n" +
+											"[Type]\n" +
+											"0\n" +
+											"[/Type]\n" +
+											"[Stages]\n" +
+											"71,72,71,72\n" +
+											"[/Stages]\n" +
+											"[Competitors]\n" +
+											"Andrea Haag,8633682,dam\n" + 
+											"Andreas Nilvander,8633686\n" +
+											"AndreasNäs,8633684\n" +
+											"Elin Andreasson,8633681,dam\n" +
+											"Erik Holmberg,8633673\n" +
+											"Erik Österberg,8633692\n" +
+											"Fredrika Svensson,8633679,dam\n" +
+											"Fässberg,8633674\n" +
+											"Gerry Bohm,8633685\n" +
+											"Hans Hellsmark,8633677\n" +
+											"Hellberg,8633676\n" +
+											"[/Competitors]\n" +
+											"[Punches]\n" +
+											"8633682,71,38054000,72,38137000,71,39241000,72,39273000\n" +
+											"8633686,71,38133000,72,38209000,71,39333000,72,39367000\n" +
+											"8633684,71,38120000,72,38200000,71,39257000,72,39291000\n" +
+											"8633681,71,38156000,72,38235000,71,39323000,72,39361000\n" +
+											"8633673,71,38025000,72,38098000,71,39224000,72,39253000\n" +
+											"8633692,71,38099000,72,38179000,71,39293000,72,39328000\n" +
+											"8633679,71,38038000,72,38108000,71,39312000,72,39339000\n" +
+											"[/Punches]\n";
+
+		StringBuilder status = new StringBuilder();
+		competition = CompetitionHelper.importCompetition(IMPORT_STRING, status);
+		assertEquals("", status.toString());
+		competition.calculateResults();
+		
+		String competitionAsString = CompetitionHelper.getCompetitionAsString(competition);
+		System.out.println("Competition as string\n" + competitionAsString);
+		assertEquals(EXPECTED_EXPORT_STRING, competitionAsString);
+		
 		competition = CompetitionHelper.importCompetition(competitionAsString, status);
 		assertEquals("", status.toString());
 		competition.calculateResults();
@@ -106,7 +197,7 @@ public class ImportTest {
 
 	}
 	
-	@Test 
+//	@Test 
 	public void testImportPunches() throws NumberFormatException, IOException{
 		//CardNumber,Control,Time,Control,Time
 		System.out.println("Starting importPunches test");
@@ -205,7 +296,7 @@ public class ImportTest {
 		assertEquals(EXPECTED_RESULT, resultsAsCsvString);
 	}
 	
-	@Test
+//	@Test
 	public void testImportCompetitors() throws NumberFormatException, IOException {
 		System.out.println("Starting ImportCompetitors test");
 		
