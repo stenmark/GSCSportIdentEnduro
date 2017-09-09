@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.AlertDialog;
+import android.support.v4.util.LogWriter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -70,6 +71,7 @@ public class DialogAddCompetitor {
 			final EditText startGroupInput = (EditText) promptsView.findViewById(R.id.start_group_input);
 			final Spinner cardNumberSpinner = (Spinner) promptsView.findViewById(R.id.card_number_spinner);
 			final CheckBox cardNumberCheckBox = (CheckBox) promptsView.findViewById(R.id.cardnumber_checkbox);
+			final CheckBox isDamKlass = (CheckBox) promptsView.findViewById(R.id.damklass_checkbox);
 			cardNumberCheckBox.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
 					if (cardNumberCheckBox.isChecked()) {
@@ -80,13 +82,18 @@ public class DialogAddCompetitor {
 						cardNumberSpinner.setVisibility(View.VISIBLE);		    		  
 					}
 				}
-			});			
+			});	
+			isDamKlass.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+				}
+			});	
 
 			if (mMainActivity.competition.getCompetitionType() == Competition.SVART_VIT_TYPE) {				
 				addCompetitorEssLayout.setVisibility(View.GONE);
 				cardNumberCheckBox.setVisibility(View.VISIBLE);
 				cardNumberInput.setVisibility(View.GONE);
 				cardNumberSpinner.setVisibility(View.VISIBLE);
+				isDamKlass.setVisibility(View.VISIBLE);
 
 				List<Integer> cardNumberList = new ArrayList<Integer>();
 				for (int i = 0; i < mCardNumbers.length; i++) {
@@ -101,6 +108,7 @@ public class DialogAddCompetitor {
 				cardNumberSpinner.setSelection(0);					        			
 			} else {
 				addCompetitorEssLayout.setVisibility(View.VISIBLE);
+				isDamKlass.setVisibility(View.GONE);
 			}    	    		
 
 			AlertDialog.Builder addCompetitorAlertDialogBuilder = new AlertDialog.Builder(mMainActivity);
@@ -135,6 +143,9 @@ public class DialogAddCompetitor {
 							} else {
 								cardNumber = cardNumberSpinner.getSelectedItem().toString();
 							}
+							if( isDamKlass.isChecked() ){
+								compClass = "dam";
+							}
 						}
 
 
@@ -162,12 +173,11 @@ public class DialogAddCompetitor {
 						mMainActivity.competition.addCompetitor(nameInput.getText().toString(), 
 								parsingResults.get("cardNumber"), 
 								teamInput.getText().toString(), 
-								competitorClassInput.getText().toString(), 
+								compClass, 
 								parsingResults.get("startNumber"), 
 								parsingResults.get("startGroup"),
 								mMainActivity.competition.getCompetitionType());
 						cardNumber = cardNumberInput.getText().toString();
-
 
 						status = nameInput.getText().toString() + ", " + cardNumber + ". Added";
 						mMainActivity.competition.calculateResults();
@@ -180,8 +190,7 @@ public class DialogAddCompetitor {
 						addCompetitorAlertDialog.dismiss();
 					}
 					catch( Exception e){
-						PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e));
-						dialog.show( mMainActivity.getSupportFragmentManager(), "popUp");
+						LogFileWriter.writeLog(e);
 					}
 				}
 			});  
