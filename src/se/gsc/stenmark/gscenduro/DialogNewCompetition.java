@@ -61,6 +61,19 @@ public class DialogNewCompetition {
 				public void onClick(View v) {
 				}
 			});
+			final CheckBox addStagesManuallyCheckBox = (CheckBox) promptsView.findViewById(R.id.svart_vitt_manual_stages_checkbox);
+			addStagesManuallyCheckBox.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					if( addStagesManuallyCheckBox.isChecked() ){
+						layoutAddStageManually.setVisibility(View.VISIBLE);		
+						layoutAddStageSpinner.setVisibility(View.GONE);
+					}	
+					else{
+						layoutAddStageManually.setVisibility(View.GONE);	
+						layoutAddStageSpinner.setVisibility(View.VISIBLE);
+					}
+				}
+			});
 
 			final Spinner spinner = (Spinner) promptsView.findViewById(R.id.add_stage_spinner);	
 			ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_spinner_item, numerOfStages);
@@ -69,10 +82,13 @@ public class DialogNewCompetition {
 			spinner.setSelection(mMainActivity.competition.getNumberOfStages() - 1);			
 
 			if (mMainActivity.competition.getCompetitionType() == Competition.SVART_VIT_TYPE){
-				keepCompetitorsCheckBox.setVisibility(View.VISIBLE);							
+				keepCompetitorsCheckBox.setVisibility(View.VISIBLE);		
+				addStagesManuallyCheckBox.setVisibility(View.VISIBLE);	
 			} else {					
 				keepCompetitorsCheckBox.setVisibility(View.GONE);
-				keepCompetitorsCheckBox.setChecked(false);						
+				keepCompetitorsCheckBox.setChecked(false);	
+				addStagesManuallyCheckBox.setVisibility(View.GONE);
+				addStagesManuallyCheckBox.setChecked(false);
 			}	        
 
 			RadioGroup radioTypeOfCompetition = (RadioGroup) promptsView.findViewById(R.id.radio_type_of_competition);	
@@ -83,18 +99,21 @@ public class DialogNewCompetition {
 					if ((mMainActivity.competition.getCompetitors().size() > 0) && 
 							(((checkedId == R.id.radio_type_ess) && (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) && (mMainActivity.competition.getCompetitors().size() > 0)) ||
 									((checkedId == R.id.radio_type_svartvitt) && (mMainActivity.competition.getCompetitionType() == Competition.SVART_VIT_TYPE)))) {
-						keepCompetitorsCheckBox.setVisibility(View.VISIBLE);							
+						keepCompetitorsCheckBox.setVisibility(View.VISIBLE);
+						addStagesManuallyCheckBox.setVisibility(View.VISIBLE);	
 					} else {					
 						keepCompetitorsCheckBox.setVisibility(View.GONE);
-						keepCompetitorsCheckBox.setChecked(false);						
+						keepCompetitorsCheckBox.setChecked(false);	
+						addStagesManuallyCheckBox.setVisibility(View.GONE);
+						addStagesManuallyCheckBox.setChecked(false);
 					}
 
 					if (checkedId == R.id.radio_type_ess) {
 						layoutAddStageSpinner.setVisibility(View.GONE);
 						layoutAddStageManually.setVisibility(View.VISIBLE);
 					} else {
-						layoutAddStageSpinner.setVisibility(View.VISIBLE);
-						layoutAddStageManually.setVisibility(View.GONE);						
+						layoutAddStageSpinner.setVisibility(View.VISIBLE);	
+						layoutAddStageManually.setVisibility(View.GONE);
 					}
 				}
 			});	        
@@ -153,33 +172,38 @@ public class DialogNewCompetition {
 					if (mMainActivity.competition.getCompetitionType() == Competition.ESS_TYPE) {										
 						mMainActivity.competition.importStages(addStagesManuallyInput.getText().toString());
 					} else {
-						SharedPreferences settings = mMainActivity.getSharedPreferences(MainActivity.PREF_NAME, 0);
-						int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
-						int finishStationNumner = Integer.parseInt(settings.getString("FINISH_STATION_NUMBER", "72"));
-
-						String newStage = spinner.getSelectedItem().toString();	
-
-						if (newStage.length() == 0) {
-							Toast.makeText(mMainActivity, "Competition not created! No stages was supplied", Toast.LENGTH_LONG).show();
-							return;
-						} else {
-							int numberOfSs = 1;
-							try {
-								numberOfSs = Integer.parseInt(newStage);
-							}
-							catch( NumberFormatException e){											
-								Toast.makeText(mMainActivity, "Competition not created! Invalid stages has been entered", Toast.LENGTH_LONG).show();
+						if( addStagesManuallyCheckBox.isChecked() ){
+							mMainActivity.competition.importStages(addStagesManuallyInput.getText().toString());
+						}
+						else{
+							SharedPreferences settings = mMainActivity.getSharedPreferences(MainActivity.PREF_NAME, 0);
+							int startStationNumner = Integer.parseInt(settings.getString("START_STATION_NUMBER", "71"));
+							int finishStationNumner = Integer.parseInt(settings.getString("FINISH_STATION_NUMBER", "72"));
+	
+							String newStage = spinner.getSelectedItem().toString();	
+	
+							if (newStage.length() == 0) {
+								Toast.makeText(mMainActivity, "Competition not created! No stages was supplied", Toast.LENGTH_LONG).show();
 								return;
-							}
-
-							String stageString = "";
-							for (int i = 0; i < numberOfSs;  i++) {
-								stageString += startStationNumner + "," + finishStationNumner + ",";
-							}
-							stageString = stageString.substring(0, stageString.length() - 1);   //remove last ","
-
-							mMainActivity.competition.importStages(stageString);										
-						}					
+							} else {
+								int numberOfSs = 1;
+								try {
+									numberOfSs = Integer.parseInt(newStage);
+								}
+								catch( NumberFormatException e){											
+									Toast.makeText(mMainActivity, "Competition not created! Invalid stages has been entered", Toast.LENGTH_LONG).show();
+									return;
+								}
+	
+								String stageString = "";
+								for (int i = 0; i < numberOfSs;  i++) {
+									stageString += startStationNumner + "," + finishStationNumner + ",";
+								}
+								stageString = stageString.substring(0, stageString.length() - 1);   //remove last ","
+	
+								mMainActivity.competition.importStages(stageString);										
+							}	
+					}
 					}					
 					mMainActivity.updateFragments();   
 					mMainActivity.resetImportIntent();
