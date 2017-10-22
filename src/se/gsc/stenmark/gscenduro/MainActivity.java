@@ -651,6 +651,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 						" StartPunch=" + readCard.getStartPunch() + 
 						" FinishPunch=" + readCard.getFinishPunch() + 
 						" CheckPunch=" + readCard.getCheckPunch() );
+				if(readCard.getIsSiacCard()){
+					if(	readCard.getFinishPunch().getControl() == -1 ){
+						PopupMessage dialog = new PopupMessage(	"SIAC contactless cards must be turned off.\n"+""
+								+ "Punch the card in a \"SIAC OFF\" station." +
+								"Or the battery in the chip will be depleted");
+						dialog.show(getSupportFragmentManager(), "popUp");
+					}
+				}
 				return readCard;
 			}
 			catch( SiDriverDisconnectedException disconException){

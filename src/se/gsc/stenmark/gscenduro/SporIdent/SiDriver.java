@@ -300,6 +300,7 @@ public class SiDriver {
     	}
     	
     	card.setCardAsRead();
+    	card.setIsSiacCard();
     	return card;
     }
     

@@ -18,7 +18,7 @@ import se.gsc.stenmark.gscenduro.compmanagement.Competition;
  */
 public class Card implements Serializable {
 
-	private static final long serialVersionUID = 7L;
+	private static final long serialVersionUID = 8L;
 	private int mNumberOfPunches;
 	private int mCardNumber;
 	private Punch mStartPunch; 
@@ -27,6 +27,7 @@ public class Card implements Serializable {
 	private Punch mClearPunch;
 	private List<Punch> mPunches;
 	private boolean hasCardBeenRead = false;
+	private boolean isSiacCard = false;
 
 	public Card() {
 		setCardNumber(0);
@@ -232,6 +233,14 @@ public class Card implements Serializable {
 	public void setCardAsRead() {
 		hasCardBeenRead = true;
 		LogFileWriter.writeLog("cardLog", getPunchesAsString() );
+	}
+	
+	public boolean getIsSiacCard() {
+		return isSiacCard;
+	}
+	
+	public void setIsSiacCard(){
+		isSiacCard = true;
 	}
 
 	public String getPunchesAsString(){
