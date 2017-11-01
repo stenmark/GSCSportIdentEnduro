@@ -15,12 +15,25 @@
         android:orientation="vertical" >
 
         <TextView
+            android:id="@+id/connection_status"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/black"
             android:padding="4dp"
             android:text="@string/connection_status"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/on_stage_competitors"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/black"
+            android:padding="4dp"
+            android:text="Competitors on stage"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -51,6 +64,82 @@
                 android:textColor="@color/button_text"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/comp1_on_stage_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Name1"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/stop_time_comp1"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_gravity="right"
+                android:layout_margin="8dp"
+                android:background="@drawable/button"
+                android:text="Stop time"
+                android:textColor="@color/button_text"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:padding="4dp" >
+
+            <TextView
+                android:id="@+id/comp2_on_stage_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Name2"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/stop_time_comp2"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_gravity="right"
+                android:layout_margin="8dp"
+                android:background="@drawable/button"
+                android:text="Stop time"
+                android:textColor="@color/button_text"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:padding="4dp" >
+
+            <TextView
+                android:id="@+id/comp3_on_stage_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Name3"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/stop_time_comp3"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_gravity="right"
+                android:layout_margin="8dp"
+                android:background="@drawable/button"
+                android:text="Stop time"
+                android:textColor="@color/button_text"
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
@@ -70,15 +159,15 @@
             android:text="Name"
             android:textColor="@color/blue"
             android:textSize="24dp" />
-        
+
         <TextView
             android:id="@+id/competition_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
             android:text="No Name"
-            android:textSize="16sp" />        
-        
+            android:textSize="16sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -86,15 +175,15 @@
             android:text="Date"
             android:textColor="@color/blue"
             android:textSize="24dp" />
-        
+
         <TextView
             android:id="@+id/competition_competition_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
             android:text="2015-06-07"
-            android:textSize="16sp" />        
-        
+            android:textSize="16sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -117,8 +206,8 @@
             android:padding="4dp"
             android:text="Stages"
             android:textColor="@color/blue"
-            android:textSize="24dp" />        
-        
+            android:textSize="24dp" />
+
         <TextView
             android:id="@+id/stages_status"
             android:layout_width="wrap_content"
@@ -133,8 +222,8 @@
             android:padding="4dp"
             android:text="Number of competitors"
             android:textColor="@color/blue"
-            android:textSize="24dp" />        
-        
+            android:textSize="24dp" />
+
         <TextView
             android:id="@+id/competitor_status"
             android:layout_width="wrap_content"
@@ -142,15 +231,16 @@
             android:padding="4dp"
             android:text="No competitors added."
             android:textSize="16sp" />
-        
-       <TextView
+
+        <TextView
+            android:id="@+id/recently_read_cards_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
             android:text="Recently read cards"
             android:textColor="@color/blue"
-            android:textSize="24dp" />        
-        
+            android:textSize="24dp" />
+
         <TextView
             android:id="@+id/card_status"
             android:layout_width="wrap_content"
@@ -158,19 +248,18 @@
             android:padding="4dp"
             android:text="No cards read yet"
             android:textSize="16sp" />
-        
-		<Button
-		    android:id="@+id/modify_competition_button"
+
+        <Button
+            android:id="@+id/modify_competition_button"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
             android:layout_gravity="right"
             android:layout_margin="8dp"
             android:background="@drawable/button"
-	  		android:text="MODIFY"
+            android:text="MODIFY"
             android:textColor="@color/button_text"
             android:textSize="16sp"
-            android:textStyle="bold" 	 	    	
-	  		/>            
+            android:textStyle="bold" />
     </LinearLayout>
 
 </ScrollView>

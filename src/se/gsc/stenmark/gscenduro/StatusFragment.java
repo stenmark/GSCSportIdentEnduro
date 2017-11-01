@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
@@ -59,23 +60,45 @@ public class StatusFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+		
 		View rootView = null;
 		try{
 			rootView = inflater.inflate(R.layout.status_fragment, container,	false);
 
-			TextView connectButton = (TextView) rootView.findViewById(R.id.connect_button);
-			connectButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					try {
-						mMainActivity.connectToSiMaster();
-						updateConnectText();
-					} catch (Exception e) {
-						PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
-						dialog.show(getFragmentManager(), "popUp");
+			((TextView) rootView.findViewById(R.id.comp1_on_stage_text)).setVisibility(View.GONE);
+			((TextView) rootView.findViewById(R.id.comp2_on_stage_text)).setVisibility(View.GONE);
+			((TextView) rootView.findViewById(R.id.comp3_on_stage_text)).setVisibility(View.GONE);
+			((TextView) rootView.findViewById(R.id.stop_time_comp1)).setVisibility(View.GONE);
+			((TextView) rootView.findViewById(R.id.stop_time_comp2)).setVisibility(View.GONE);
+			((TextView) rootView.findViewById(R.id.stop_time_comp3)).setVisibility(View.GONE);
+			if(!MainActivity.sportIdentMode){
+				TextView connectionStatusHeader = (TextView) rootView.findViewById(R.id.connection_status);
+				connectionStatusHeader.setVisibility(View.GONE);
+				TextView connectionStatusText = (TextView) rootView.findViewById(R.id.status_text);
+				connectionStatusText.setVisibility(View.GONE);
+				TextView connectButton = (TextView) rootView.findViewById(R.id.connect_button);
+				connectButton.setVisibility(View.GONE);
+				((TextView) rootView.findViewById(R.id.on_stage_competitors)).setVisibility(View.VISIBLE);
+			}
+			else{
+				((TextView) rootView.findViewById(R.id.on_stage_competitors)).setVisibility(View.GONE);
+				TextView connectButton = (TextView) rootView.findViewById(R.id.connect_button);
+				connectButton.setVisibility(View.VISIBLE);
+				connectButton.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						try {
+							mMainActivity.connectToSiMaster();
+							updateConnectText();
+						} catch (Exception e) {
+							PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
+							dialog.show(getFragmentManager(), "popUp");
+						}
 					}
-				}
-			});
+				});
+			}
+
+
 
 			Button editCompetitionButton = (Button) rootView.findViewById(R.id.modify_competition_button);
 			editCompetitionButton.setOnClickListener(new Button.OnClickListener() {
@@ -190,8 +213,8 @@ public class StatusFragment extends Fragment {
 
 										mMainActivity.competition.calculateResults();									
 										mMainActivity.updateFragments();		
-										AndroidHelper.saveSessionData(null,mMainActivity.competition);
-										AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition);
+										AndroidHelper.saveSessionData(null,mMainActivity.competition, null);
+										AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition, null);
 									}
 								}											
 							} else {
@@ -236,11 +259,94 @@ public class StatusFragment extends Fragment {
 		}
 	}
 
+	private void updateWebCompetitors( ){
+		try{
+			Competitor[] competitorsOnstage = mMainActivity.webTime.getCompetitorsOnstage();
+			if(competitorsOnstage[0] == null){
+				((TextView) getView().findViewById(R.id.comp1_on_stage_text)).setText( "" );
+				((TextView) getView().findViewById(R.id.comp1_on_stage_text)).setVisibility(View.GONE);
+				((TextView) getView().findViewById(R.id.stop_time_comp1)).setVisibility(View.GONE);
+			}
+			else{
+				((TextView) getView().findViewById(R.id.comp1_on_stage_text)).setText( competitorsOnstage[0].getName());
+				((TextView) getView().findViewById(R.id.comp1_on_stage_text)).setVisibility(View.VISIBLE);
+				((Button) getView().findViewById(R.id.stop_time_comp1)).setVisibility(View.VISIBLE);
+				((Button) getView().findViewById(R.id.stop_time_comp1)).setOnClickListener(onStopTimeComp1ButtonClicked);
+			}
+
+			if(competitorsOnstage[1] == null){
+				((TextView) getView().findViewById(R.id.comp2_on_stage_text)).setText( "" );
+				((TextView) getView().findViewById(R.id.comp2_on_stage_text)).setVisibility(View.GONE);
+				((TextView) getView().findViewById(R.id.stop_time_comp2)).setVisibility(View.GONE);
+			}
+			else{
+				((TextView) getView().findViewById(R.id.comp2_on_stage_text)).setText( competitorsOnstage[1].getName() );
+				((TextView) getView().findViewById(R.id.comp2_on_stage_text)).setVisibility(View.VISIBLE);
+				((TextView) getView().findViewById(R.id.stop_time_comp2)).setVisibility(View.VISIBLE);
+				((Button) getView().findViewById(R.id.stop_time_comp2)).setOnClickListener(onStopTimeComp2ButtonClicked);
+			}
+
+			if(competitorsOnstage[2] == null){
+				((TextView) getView().findViewById(R.id.comp3_on_stage_text)).setText( "" );
+				((TextView) getView().findViewById(R.id.comp3_on_stage_text)).setVisibility(View.GONE);
+				((TextView) getView().findViewById(R.id.stop_time_comp3)).setVisibility(View.GONE);
+			}
+			else{
+				((TextView) getView().findViewById(R.id.comp3_on_stage_text)).setText( competitorsOnstage[2].getName() );
+				((TextView) getView().findViewById(R.id.comp3_on_stage_text)).setVisibility(View.VISIBLE);
+				((TextView) getView().findViewById(R.id.stop_time_comp3)).setVisibility(View.VISIBLE);
+				((Button) getView().findViewById(R.id.stop_time_comp1)).setOnClickListener(onStopTimeComp3ButtonClicked);
+			}
+		}
+		catch(Exception e){
+			LogFileWriter.writeLog(e);
+		}
+
+	}
+
 	public void updateCompetitionStatus() {
 		try{
 			if (inView) {
-				TextView statusTextView;				
-
+				TextView statusTextView;
+				
+				((TextView) getView().findViewById(R.id.comp1_on_stage_text)).setVisibility(View.GONE);
+				((TextView) getView().findViewById(R.id.comp2_on_stage_text)).setVisibility(View.GONE);
+				((TextView) getView().findViewById(R.id.comp3_on_stage_text)).setVisibility(View.GONE);
+				((TextView) getView().findViewById(R.id.stop_time_comp1)).setVisibility(View.GONE);
+				((TextView) getView().findViewById(R.id.stop_time_comp2)).setVisibility(View.GONE);
+				((TextView) getView().findViewById(R.id.stop_time_comp3)).setVisibility(View.GONE);
+				if(!MainActivity.sportIdentMode){
+					TextView connectionStatusHeader = (TextView) getView().findViewById(R.id.connection_status);
+					connectionStatusHeader.setVisibility(View.GONE);
+					TextView connectionStatusText = (TextView) getView().findViewById(R.id.status_text);
+					connectionStatusText.setVisibility(View.GONE);
+					TextView connectButton = (TextView) getView().findViewById(R.id.connect_button);
+					connectButton.setVisibility(View.GONE);
+					((TextView) getView().findViewById(R.id.on_stage_competitors)).setVisibility(View.VISIBLE);
+					((TextView) getView().findViewById(R.id.recently_read_cards_header)).setVisibility(View.GONE);
+					updateWebCompetitors();
+				}
+				else{
+					((TextView) getView().findViewById(R.id.recently_read_cards_header)).setVisibility(View.VISIBLE);
+					TextView connectionStatusHeader = (TextView) getView().findViewById(R.id.connection_status);
+					connectionStatusHeader.setVisibility(View.VISIBLE);
+					((TextView) getView().findViewById(R.id.on_stage_competitors)).setVisibility(View.GONE);
+					TextView connectButton = (TextView) getView().findViewById(R.id.connect_button);
+					connectButton.setVisibility(View.VISIBLE);
+					connectButton.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							try {
+								mMainActivity.connectToSiMaster();
+								updateConnectText();
+							} catch (Exception e) {
+								PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
+								dialog.show(getFragmentManager(), "popUp");
+							}
+						}
+					});	
+				}
+				
 				statusTextView = (TextView) getView().findViewById(R.id.competition_competition_date);
 				if (mMainActivity.competition.getCompetitionDate() != null) {
 					statusTextView.setText(mMainActivity.competition.getCompetitionDate());
@@ -303,4 +409,39 @@ public class StatusFragment extends Fragment {
 			MainActivity.generateErrorMessage(e1);
 		}
 	}
+	
+	private void stopCompetitor(int number){
+		try{
+			Competitor competitor = mMainActivity.webTime.getCompetitorsOnstage()[number];
+			competitor.getCard().getPunches().add(new Punch(System.currentTimeMillis(), 72));
+			competitor.getCard().setNumberOfPunches(competitor.getCard().getNumberOfPunches()+1);
+			LogFileWriter.writeLog("debugLog", "ENTER onStopTimeComp1ButtonClicked " + number);
+			mMainActivity.competition.processNewCard(competitor.getCard(), true);
+			mMainActivity.webTime.removeCompetitorOnStage(competitor);
+			updateWebCompetitors();
+			mMainActivity.updateFragments();
+		}
+		catch(Exception e){
+			LogFileWriter.writeLog(e);
+		}
+	}
+	
+	private OnClickListener onStopTimeComp1ButtonClicked = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			stopCompetitor(0);
+		}
+	};
+	private OnClickListener onStopTimeComp2ButtonClicked = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			stopCompetitor(1);
+		}
+	};
+	private OnClickListener onStopTimeComp3ButtonClicked = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			stopCompetitor(2);
+		}
+	};
 }

@@ -44,7 +44,7 @@ public class DialogSelectCompetition {
 					try {
 						List<String> savedCompetitions = AndroidHelper.getSavedCompetitionsAsList();
 						String selectedItem = savedCompetitions.get(radioButtonListener.which);
-						mMainActivity.competition = AndroidHelper.loadSessionData(selectedItem);
+						mMainActivity.competition = AndroidHelper.loadSessionData(selectedItem, null);
 						mMainActivity.competition.calculateResults();
 						mMainActivity.updateFragments();	
 					}
@@ -63,8 +63,8 @@ public class DialogSelectCompetition {
 						mMainActivity.competition.calculateResults();
 						mMainActivity.updateFragments();	
 					}	
-					AndroidHelper.saveSessionData(null,mMainActivity.competition);
-					AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition);
+					AndroidHelper.saveSessionData(null,mMainActivity.competition, null);
+					AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition, null);
 				}});
 			builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
 				@Override

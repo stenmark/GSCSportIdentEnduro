@@ -51,34 +51,35 @@ public class SiDriver {
     }
     
     private boolean performHandShake( boolean withStartup){
-		byte[] startupResponse = new byte[16];
+    	byte[] startupResponse = new byte[16];
     	if( withStartup ){
-			sendSiMessage(SiMessage.startup_sequence.sequence());
-			sleep(700);
-			startupResponse = readSiMessage(16, 500, new StringBuffer());
-		}
-		if( (startupResponse.length >= 1 && startupResponse[0]== SiMessage.STX ) || (withStartup == false)) {
-			sendMessage( appendMarkesAndCrcToMessage(SiMessage.read_system_data.sequence() ));
-			byte[] systemData = readSiMessage(32, 8000, new StringBuffer());
-			if( (systemData[0] == SiMessage.STX) &&  
-				(systemData.length > 14) ){
-				stationId = makeIntFromBytes( systemData[4], systemData[3] );
-								
-				byte pr = systemData[6+4];
-				mode = systemData[6+1] & 0xFF;
+    		sendSiMessage(SiMessage.startup_sequence.sequence());
+    		sleep(700);
+    		startupResponse = readSiMessage(16, 500, new StringBuffer());
+    	}
+    	if( (startupResponse.length >= 1 && startupResponse[0]== SiMessage.STX ) || (withStartup == false)) {
+    		sendMessage( appendMarkesAndCrcToMessage(SiMessage.read_system_data.sequence() ));
+    		byte[] systemData = readSiMessage(32, 8000, new StringBuffer());
+    		if( systemData.length > 14 ){
+    			if( systemData[0] == SiMessage.STX ){
+    				stationId = makeIntFromBytes( systemData[4], systemData[3] );
 
-				extended = (pr&0x1) !=0 ;
-				handShake= (pr&0x4) !=0;
-				autoSend = (pr&0x2)!=0;
-							}
-			else{
-				return false;
-			}
-		}
-		else{
-			return false;
-		}
-		return true;
+    				byte pr = systemData[6+4];
+    				mode = systemData[6+1] & 0xFF;
+
+    				extended = (pr&0x1) !=0 ;
+    				handShake= (pr&0x4) !=0;
+    				autoSend = (pr&0x2)!=0;
+    			}
+    		}
+    		else{
+    			return false;
+    		}
+    	}
+    	else{
+    		return false;
+    	}
+    	return true;
     }
     
 	private void sendMessage(byte[] message) {

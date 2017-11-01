@@ -75,6 +75,20 @@ public class DialogNewCompetition {
 				}
 			});
 
+			final CheckBox sportIdentModeCheckBox = (CheckBox) promptsView.findViewById(R.id.sport_ident_mode_checkbox);
+			MainActivity.sportIdentMode = true;
+			sportIdentModeCheckBox.setChecked(true);
+			sportIdentModeCheckBox.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					if( sportIdentModeCheckBox.isChecked() ){
+						MainActivity.sportIdentMode = true;
+					}	
+					else{
+						MainActivity.sportIdentMode = false;
+					}
+				}
+			});
+			
 			final Spinner spinner = (Spinner) promptsView.findViewById(R.id.add_stage_spinner);	
 			ArrayAdapter<String> LTRadapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_spinner_item, numerOfStages);
 			LTRadapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);			
@@ -156,8 +170,8 @@ public class DialogNewCompetition {
 					} else {
 						//Create a new competition
 						mMainActivity.competition = new Competition();
-						AndroidHelper.saveSessionData(null,mMainActivity.competition);
-						AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition);
+						AndroidHelper.saveSessionData(null,mMainActivity.competition, null);
+						AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition, null);
 
 					}									
 					mMainActivity.competition.setCompetitionName(newCompetitionInput.getText().toString());	

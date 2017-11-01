@@ -29,6 +29,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.webtime.WebTimeHandler;
 
 /**
  * Stateless helper class that can perform various operations on a competition.
@@ -89,12 +90,14 @@ public abstract class AndroidHelper {
 	 * @param competionName
 	 * @throws IOException
 	 */
-	public static void saveSessionData(String competionName, Competition competition) {
+	public static void saveSessionData(String competionName, Competition competition, WebTimeHandler webTime) {
 		try{
 			if (AndroidHelper.isExternalStorageWritable()) {
 				FileOutputStream fileOutputComp;
+				FileOutputStream fileOutputWebTime = null;
 				if (competionName == null || competionName.isEmpty()) {
 					fileOutputComp = MainApplication.getAppContext().openFileOutput(Competition.CURRENT_COMPETITION, Context.MODE_PRIVATE);
+					fileOutputWebTime = MainApplication.getAppContext().openFileOutput(Competition.WEB_TIME, Context.MODE_PRIVATE);
 				} else {
 
 					File sdCard = Environment.getExternalStorageDirectory();
@@ -108,6 +111,11 @@ public abstract class AndroidHelper {
 				}
 
 				ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);
+				if( fileOutputWebTime != null && webTime != null){
+					ObjectOutputStream objStreamOutWebTime = new ObjectOutputStream(fileOutputWebTime);
+					objStreamOutWebTime.writeObject(webTime);
+					objStreamOutWebTime.close();
+				}
 
 				objStreamOutComp.writeObject(competition);
 				objStreamOutComp.close();
@@ -132,39 +140,44 @@ public abstract class AndroidHelper {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static Competition loadSessionData(String competionName) throws StreamCorruptedException, IOException, ClassNotFoundException, InvalidClassException {
+	public static Competition loadSessionData(String competionName, WebTimeHandler webTime) throws StreamCorruptedException, IOException, ClassNotFoundException, InvalidClassException {
 		FileInputStream fileInputComp = null;
+		FileInputStream fileInputWebTime = null;
 		Competition loadCompetition = null;
-		try{
-			if (competionName == null || competionName.isEmpty()) {
-				try {
-					fileInputComp = MainApplication.getAppContext().openFileInput(Competition.CURRENT_COMPETITION);
-				} catch (FileNotFoundException e) {
-					// If this is the first time the app is started the file does
-					// not exist, handle it by returning an empty competition
-					Competition competition = new Competition();
-					AndroidHelper.saveSessionData(null,competition);
-					AndroidHelper.saveSessionData(competition.getCompetitionName(),competition);
-					return competition;
-				}
-			} else {
-				File sdCard = Environment.getExternalStorageDirectory();
-				competionName = competionName.replace(" ", "_");
-				File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
-				if (!dir.exists()) {
-					dir.mkdirs();
-				}
-				File file = new File(dir, competionName + ".dat");
-				fileInputComp = new FileInputStream(file);
+
+		if (competionName == null || competionName.isEmpty()) {
+			try {
+				fileInputComp = MainApplication.getAppContext().openFileInput(Competition.CURRENT_COMPETITION);
+				fileInputWebTime = MainApplication.getAppContext().openFileInput(Competition.WEB_TIME);
+			} catch (FileNotFoundException e) {
+				// If this is the first time the app is started the file does
+				// not exist, handle it by returning an empty competition
+				Competition competition = new Competition();
+				AndroidHelper.saveSessionData(null,competition, new WebTimeHandler());
+				AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null);
+				return competition;
 			}
-			loadCompetition = null;
-			ObjectInputStream objStreamInComp = new ObjectInputStream(fileInputComp);
-			loadCompetition = (Competition) objStreamInComp.readObject();
-			objStreamInComp.close();
+		} else {
+			File sdCard = Environment.getExternalStorageDirectory();
+			competionName = competionName.replace(" ", "_");
+			File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+			File file = new File(dir, competionName + ".dat");
+			fileInputComp = new FileInputStream(file);
 		}
-		catch( Exception e1){
-			MainActivity.generateErrorMessage(e1);
+		loadCompetition = null;
+		ObjectInputStream objStreamInComp = new ObjectInputStream(fileInputComp);
+		loadCompetition = (Competition) objStreamInComp.readObject();
+		objStreamInComp.close();
+
+		if( fileInputWebTime != null && webTime != null ){
+			ObjectInputStream objStreamInWebTime = new ObjectInputStream(fileInputWebTime);
+			webTime = (WebTimeHandler) objStreamInWebTime.readObject();
+			objStreamInWebTime.close();
 		}
+
 		return loadCompetition;
 	}
 

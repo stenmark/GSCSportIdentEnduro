@@ -22,7 +22,8 @@
                 android:title="Set Finish Number"
                 android:summary="Set SPORTident Finish Station Number"
                 android:dialogTitle="Set SPORTident Finish Station Number"
-                android:defaultValue="72" />                                        
+                android:defaultValue="72" />  
+
         
     </PreferenceCategory>       
   

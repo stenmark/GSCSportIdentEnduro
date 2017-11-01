@@ -163,7 +163,15 @@
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
     			android:onClick="itemClicked"
-    			android:text="Add stages manually" />	    
+    			android:text="Add stages manually" />	
+    		
+    		<CheckBox
+    			android:id="@+id/sport_ident_mode_checkbox"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:onClick="itemClicked"
+    			android:text="Use SportIdent"
+    			android:state_checked="true" />	     
 
 		</LinearLayout>			
 	</LinearLayout>    		

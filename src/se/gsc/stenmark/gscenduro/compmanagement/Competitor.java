@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.gsc.stenmark.gscenduro.LogFileWriter;
 import se.gsc.stenmark.gscenduro.SporIdent.Card;
 import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 
@@ -199,5 +200,15 @@ public class Competitor implements Serializable {
 			totalTime += mStageTimes.getTimesOfStage(i);
 		}
 		return totalTime;
-	}			
+	}		
+	
+	@Override
+	public boolean equals(Object other){
+		return ((Competitor)other).cardNumber == cardNumber;
+	}
+	
+	@Override
+	public String toString(){
+		return name + " " + cardNumber;
+	}
 }

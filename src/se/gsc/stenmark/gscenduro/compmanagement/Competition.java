@@ -32,6 +32,7 @@ public class Competition implements Serializable {
 	public static final long NO_TIME_FOR_COMPETITION = 20000000L;
 	public static final Long RANK_DNF =                30000000L;
 	public static final String CURRENT_COMPETITION = "current_competition";
+	public static final String WEB_TIME = "web_time";
 
 	//Circular buffer to hold the 6 most recently read cards
 	public CircularFifoQueue<String> lastReadCards = new CircularFifoQueue<String>(6);

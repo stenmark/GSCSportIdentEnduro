@@ -41,7 +41,7 @@ public class DialogSaveCompetition {
 					} else {
 						try {
 							mMainActivity.competition.setCompetitionName(compName);
-							AndroidHelper.saveSessionData(compName,mMainActivity.competition);
+							AndroidHelper.saveSessionData(compName,mMainActivity.competition, null);
 						} catch (Exception e) {
 							Log.d("action_save", "Error = " + Log.getStackTraceString(e));
 						}											

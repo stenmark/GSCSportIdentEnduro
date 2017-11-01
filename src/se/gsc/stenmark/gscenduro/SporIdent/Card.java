@@ -116,7 +116,7 @@ public class Card implements Serializable {
 		if (startControl) {
 			time = 0;
 		} else {
-			time = (long) Integer.MAX_VALUE;
+			time = Long.MAX_VALUE;
 		}			
 
 		for (Punch punch : mPunches) {
@@ -139,7 +139,7 @@ public class Card implements Serializable {
 		long finish = getTimeOfControlEss(finishControl, false);
 		long start = getTimeOfControlEss(startControl, true);
 
-		if ((start == (long) Integer.MAX_VALUE) || (finish == (long) Integer.MAX_VALUE)) {
+		if ((start == Long.MAX_VALUE) || (finish == Long.MAX_VALUE)) {
 			return Competition.NO_TIME_FOR_STAGE;
 		} else {			
 			return finish - start;
@@ -153,7 +153,7 @@ public class Card implements Serializable {
 		if (startControl) {
 			time = 0;
 		} else {
-			time = (long) Integer.MAX_VALUE;
+			time = Long.MAX_VALUE;
 		}			
 
 
@@ -184,7 +184,7 @@ public class Card implements Serializable {
 							if (startControl) {
 								time = 0;
 							} else {
-								time = (long) Integer.MAX_VALUE;
+								time = Long.MAX_VALUE;
 							}	
 							currentStage++;
 						}
@@ -201,7 +201,7 @@ public class Card implements Serializable {
 								if (startControl) {
 									time = 0;
 								} else {
-									time = (long) Integer.MAX_VALUE;
+									time = Long.MAX_VALUE;
 								}	
 								currentStage++;
 							}
@@ -219,7 +219,7 @@ public class Card implements Serializable {
 		long finish = getTimeOfControlSvartVitt(finishControl, false, stageNumber);
 		long start = getTimeOfControlSvartVitt(startControl, true, stageNumber);
 
-		if ((start == (long) Integer.MAX_VALUE) || (finish == (long) Integer.MAX_VALUE)) {
+		if ((start == Long.MAX_VALUE) || (finish == Long.MAX_VALUE)) {
 			return Competition.NO_TIME_FOR_STAGE;
 		} else {			
 			return finish - start;

@@ -1,188 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="wrap_content"
-	android:orientation="horizontal"
-	android:background="@color/white">
-	
-    <LinearLayout 
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"	
-		android:layout_weight="1">          
-		<TextView		 	
-		    android:id="@+id/competitor_name"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_marginLeft="8dp"			    
-		    android:layout_marginRight="8dp"
-		    android:textSize="30dp"
-		    android:text="Namn Namnsson"	
-		    android:textStyle="bold"/>		
-		    
-	    <LinearLayout 
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-			android:layout_marginLeft="8dp"			    
-			android:layout_marginRight="8dp">     	
-			<TextView		 	
-			    android:layout_width="wrap_content"
-			    android:layout_height="wrap_content"
-			    android:textSize="12sp"		    
-			    android:text="Card number: "   
-			    android:textStyle="bold"/>     	    
-	    	    
-			<TextView		 	
-			    android:id="@+id/competitor_cardnumber"
-			    android:layout_width="wrap_content"
-			    android:layout_height="wrap_content"
-			    android:textSize="12sp"		    
-			    android:text="123456789"/>				   	
-		</LinearLayout>	
-	</LinearLayout>	
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="horizontal" >
 
-    <LinearLayout 
-	    android:id="@+id/competitor_row_ess_layout"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:layout_weight="1"
-		android:visibility="gone">
-	 
-			<LinearLayout 
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:layout_marginLeft="8dp"			    
-				android:layout_marginRight="8dp"	
-				android:paddingLeft="20dp">     	
-				<TextView		 	
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:textSize="12sp"		    
-				    android:text="Start number: "   
-				    android:textStyle="bold"/>  
-			   	     	
-				<TextView		 	
-				    android:id="@+id/competitor_startnumber"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:textSize="12sp"		    
-				    android:text="startnumber"/>
-			</LinearLayout>   
-			
-	     	<LinearLayout 
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:layout_marginLeft="8dp"			    
-				android:layout_marginRight="8dp"	
-				android:paddingLeft="20dp">     	
-				<TextView		 	
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:textSize="12sp"		    
-				    android:text="Team: "   
-				    android:textStyle="bold"/>  
-			   	     	
-				<TextView		 	
-				    android:id="@+id/competitor_team"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:textSize="12sp"		    
-				    android:text="team"/>
-			</LinearLayout>			
-			
-	     	<LinearLayout 
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:layout_marginLeft="8dp"			    
-				android:layout_marginRight="8dp"	
-				android:paddingLeft="20dp">     	
-				<TextView		 	
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:textSize="12sp"		    
-				    android:text="Class: "   
-				    android:textStyle="bold"/>  
-			   	     	
-				<TextView		 	
-				    android:id="@+id/competitor_class"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:textSize="12sp"		    
-				    android:text="class"/>	
-			</LinearLayout>  	     	
-			
-	     	<LinearLayout 
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:layout_marginLeft="8dp"			    
-				android:layout_marginRight="8dp"	
-				android:paddingLeft="20dp"			
-				>     	
-				<TextView		 	
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:textSize="12sp"		    
-				    android:text="Start group: "   
-				    android:textStyle="bold"/>  		
-	     	
-				<TextView		 	
-				    android:id="@+id/competitor_startgroup"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:textSize="12sp"		    
-				    android:text="1"/>			
-			</LinearLayout>		     	
-        
-	</LinearLayout>    
-    
-    <LinearLayout 
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"	
-		android:layout_gravity="center_vertical|right">
-    
-		<Button
-		    android:id="@+id/competitor_delete"
-		    android:layout_width="wrap_content"
-		    android:layout_height="32dp"
-		    android:layout_margin="8dp"		    
-		    android:textSize="16sp"
-		   	android:textStyle="bold"
-		    android:text="DELETE"		    
-		    android:textColor="@color/button_text"
-		    android:background="@drawable/button" 
-		    android:layout_gravity="center_vertical|right"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical" >
 
-		<Button
-		    android:id="@+id/competitor_modify"
-    		android:layout_width="wrap_content"
-    		android:layout_height="32dp"
-    		android:layout_margin="8dp"
-    		android:textSize="16sp"
-    		android:textStyle="bold"
-    		android:text="MODIFY"
-    		android:textColor="@color/button_text"   
-    		android:background="@drawable/button"	
-    		android:layout_gravity="center_vertical|right"/>
-		
-		<Button
-		    android:id="@+id/competitor_punch"
-    		android:layout_width="wrap_content"
-    		android:layout_height="32dp"
-    		android:layout_margin="8dp"
-    		android:textSize="16sp"
-    		android:textStyle="bold"
-    		android:text="PUNCHES"
-    		android:textColor="@color/button_text"   
-    		android:background="@drawable/button"	
-    		android:layout_gravity="center_vertical|right"/>		
-	</LinearLayout>    
-    
-</LinearLayout>	
+        <TextView
+            android:id="@+id/competitor_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:text="Namn Namnsson"
+            android:textSize="30dp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Card number: "
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/competitor_cardnumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="123456789"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/competitor_row_ess_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start number: "
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/competitor_startnumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="startnumber"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Team: "
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/competitor_team"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="team"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Class: "
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/competitor_class"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="class"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start group: "
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/competitor_startgroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/competitor_start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical|right"
+            android:layout_margin="8dp"
+            android:background="@drawable/button"
+            android:text="START"
+            android:textColor="@color/button_text"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/competitor_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical|right"
+            android:layout_margin="8dp"
+            android:background="@drawable/button"
+            android:text="DELETE"
+            android:textColor="@color/button_text"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/competitor_modify"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical|right"
+            android:layout_margin="8dp"
+            android:background="@drawable/button"
+            android:text="MODIFY"
+            android:textColor="@color/button_text"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/competitor_punch"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical|right"
+            android:layout_margin="8dp"
+            android:background="@drawable/button"
+            android:text="PUNCHES"
+            android:textColor="@color/button_text"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,7 +1,10 @@
 package se.gsc.stenmark.gscenduro;
 
 import se.gsc.stenmark.gscenduro.R;
+import se.gsc.stenmark.gscenduro.SporIdent.Card;
+import se.gsc.stenmark.gscenduro.SporIdent.Punch;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
+import se.gsc.stenmark.gscenduro.compmanagement.Competitor;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -44,6 +47,12 @@ public class CompetitorsRowView extends LinearLayout {
 			LinearLayout mCompoundView = (LinearLayout) inflater.inflate(R.layout.competitor_row, this);			
 			final LinearLayout competitorRowEssLayout = (LinearLayout) mCompoundView.findViewById(R.id.competitor_row_ess_layout);
 
+			Button startWebTimeButton = (Button) mCompoundView.findViewById(R.id.competitor_start_time);
+			startWebTimeButton.setOnClickListener(onStartWebTimeClicked);
+			if(MainActivity.sportIdentMode){
+				startWebTimeButton.setVisibility(View.GONE);
+			}
+			
 			if (((MainActivity) mContext).competition.getCompetitionType() == Competition.SVART_VIT_TYPE)	{
 				competitorRowEssLayout.setVisibility(View.GONE);
 			} else {
@@ -156,6 +165,32 @@ public class CompetitorsRowView extends LinearLayout {
 			MainActivity.generateErrorMessage(e1);
 		}
 	}
+	
+	private OnClickListener onStartWebTimeClicked = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			try{
+				Competitor startedCompetitor = ((MainActivity) mContext).competition.getCompetitors().getByCardNumber(Integer.parseInt(mCardNumber.getText().toString()));
+				Card card = null;
+				if( startedCompetitor.getCard() == null){
+					card = new Card();
+					card.setCardAsRead();
+					card.setCardNumber(startedCompetitor.getCardNumber());
+				}
+				else{
+					card = startedCompetitor.getCard();
+				}
+				card.setNumberOfPunches( card.getNumberOfPunches()+1 );
+				card.getPunches().add(new Punch(System.currentTimeMillis(), 71));
+				((MainActivity) mContext).competition.processNewCard(card, true);
+				((MainActivity) mContext).webTime.addCompetitorOnStage(startedCompetitor);
+				((MainActivity) mContext).updateFragments();
+			}
+			catch( Exception e1){
+				MainActivity.generateErrorMessage(e1);
+			}
+		}
+	};
 
 	private OnClickListener mOnDeleteClickListener = new OnClickListener() {
 		@Override
@@ -178,8 +213,8 @@ public class CompetitorsRowView extends LinearLayout {
 						((MainActivity) mContext).competition.getCompetitors().removeByCardNumber( Integer.parseInt( (String) mCardNumber.getText()) );		
 						((MainActivity) mContext).competition.calculateResults();
 						((MainActivity) mContext).updateFragments();
-						AndroidHelper.saveSessionData(null,((MainActivity) mContext).competition);
-						AndroidHelper.saveSessionData(((MainActivity) mContext).competition.getCompetitionName(),((MainActivity) mContext).competition);
+						AndroidHelper.saveSessionData(null,((MainActivity) mContext).competition, null);
+						AndroidHelper.saveSessionData(((MainActivity) mContext).competition.getCompetitionName(),((MainActivity) mContext).competition, null);
 
 						alertDialog.dismiss();
 					}
@@ -307,8 +342,8 @@ public class CompetitorsRowView extends LinearLayout {
 						mCardNumber.setText(mCardNumberInput.getText());	
 						((MainActivity) mContext).competition.calculateResults();
 						((MainActivity) mContext).updateFragments();
-						AndroidHelper.saveSessionData(null,((MainActivity) mContext).competition);
-						AndroidHelper.saveSessionData(((MainActivity) mContext).competition.getCompetitionName(),((MainActivity) mContext).competition);
+						AndroidHelper.saveSessionData(null,((MainActivity) mContext).competition, null);
+						AndroidHelper.saveSessionData(((MainActivity) mContext).competition.getCompetitionName(),((MainActivity) mContext).competition, null);
 
 						Toast.makeText((MainActivity) mContext, status, Toast.LENGTH_LONG).show();
 
