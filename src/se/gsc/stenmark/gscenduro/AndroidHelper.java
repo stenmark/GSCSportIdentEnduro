@@ -163,7 +163,7 @@ public abstract class AndroidHelper {
 				// If this is the first time the app is started the file does
 				// not exist, handle it by returning an empty competition
 				Competition competition = new Competition();
-				saveSessionData(null,competition, new WebTimeHandler(null), MainActivity.sportIdentMode);
+				saveSessionData(null,competition, new WebTimeHandler(null, new WebTimePeristentData()), MainActivity.sportIdentMode);
 				saveSessionData(competition.getCompetitionName(),competition, null, MainActivity.sportIdentMode);
 				return competition;
 			}

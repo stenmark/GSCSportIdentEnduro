@@ -62,7 +62,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public SiDriver siDriver = null;
 	public boolean disconected;
 	private String connectionStatus = "";
-//	public WebTimeHandler webTime = new WebTimeHandler();
+	public WebTimeHandler webTime = new WebTimeHandler(this, new WebTimePeristentData());
 	public static boolean sportIdentMode = true;
 
 	private Uri previousImportIntent = new Uri.Builder().build();
@@ -117,7 +117,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				if (updatedCard.getCardNumber() != 0) {	    		
 					competition.processNewCard(updatedCard, true);
 					Toast.makeText(this, "Card updated", Toast.LENGTH_LONG).show();
-					AndroidHelper.saveSessionData(null,competition, webTime, sportIdentMode);
+					AndroidHelper.saveSessionData(null,competition, null, sportIdentMode);
 					AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null, sportIdentMode);
 				}   		    
 			}
@@ -172,7 +172,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			super.onPause();
 			disconected = true;
 			if( competition != null){
-				AndroidHelper.saveSessionData(null,competition, webTime, MainActivity.sportIdentMode);
+				AndroidHelper.saveSessionData(null,competition, null, MainActivity.sportIdentMode);
 			}
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e1));
@@ -211,7 +211,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							}
 							importResult = CompetitionHelper.importCompetitors(inputData, true, competition.getCompetitionType(), false, competition);
 							competition.calculateResults();
-							AndroidHelper.saveSessionData(null,competition, webTime, MainActivity.sportIdentMode);
+							AndroidHelper.saveSessionData(null,competition, null, MainActivity.sportIdentMode);
 							AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null, MainActivity.sportIdentMode);
 						}
 						updateFragments();
@@ -278,7 +278,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			//Version missmatch, dont warn the user. Just create a new empty Competition and continue.
 			catch( InvalidClassException e1){
 				competition = new Competition();
-				AndroidHelper.saveSessionData(null,competition, webTime, MainActivity.sportIdentMode);
+				AndroidHelper.saveSessionData(null,competition, null, MainActivity.sportIdentMode);
 				AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null, MainActivity.sportIdentMode);
 
 			}
@@ -436,7 +436,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 		updateFragments();
-		AndroidHelper.saveSessionData(null,competition, webTime, MainActivity.sportIdentMode);
+		AndroidHelper.saveSessionData(null,competition, null, MainActivity.sportIdentMode);
 		AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null, MainActivity.sportIdentMode);
 	}
 

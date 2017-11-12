@@ -15,12 +15,8 @@ public class WebTimeHandler {
 	private MainActivity mainActivity = null;
 	private Socket socket = null;
 		
-	public WebTimeHandler( ) {
-		for( int i = 0; i < webTimeData.competitorsOnStage.length; i++){
-			webTimeData.competitorsOnStage[i] = null;
-		}
-	}
-	public WebTimeHandler( MainActivity mainActivity ) {
+	public WebTimeHandler( MainActivity mainActivity, WebTimePeristentData webTimeData ) {
+		this.webTimeData = webTimeData;
 		for( int i = 0; i < webTimeData.competitorsOnStage.length; i++){
 			webTimeData.competitorsOnStage[i] = null;
 		}
