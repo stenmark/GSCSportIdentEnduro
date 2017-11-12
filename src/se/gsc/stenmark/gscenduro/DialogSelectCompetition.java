@@ -63,8 +63,8 @@ public class DialogSelectCompetition {
 						mMainActivity.competition.calculateResults();
 						mMainActivity.updateFragments();	
 					}	
-					AndroidHelper.saveSessionData(null,mMainActivity.competition, null);
-					AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition, null);
+					AndroidHelper.saveSessionData(null,mMainActivity.competition, null, MainActivity.sportIdentMode);
+					AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition, null, MainActivity.sportIdentMode);
 				}});
 			builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
 				@Override

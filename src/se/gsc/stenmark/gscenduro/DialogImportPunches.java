@@ -44,8 +44,8 @@ public class DialogImportPunches {
 
 						mMainActivity.competition.calculateResults();									
 						mMainActivity.updateFragments();
-						AndroidHelper.saveSessionData(null,mMainActivity.competition, null);
-						AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition, null);
+						AndroidHelper.saveSessionData(null,mMainActivity.competition, null, MainActivity.sportIdentMode);
+						AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition, null, MainActivity.sportIdentMode);
 
 						AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity);
 						builder.setIcon(android.R.drawable.ic_dialog_alert);

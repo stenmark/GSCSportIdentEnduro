@@ -52,6 +52,14 @@
                 android:layout_weight="1"
                 android:text="Not Connected"
                 android:textSize="16sp" />
+            
+            <EditText
+                android:id="@+id/connection_ip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Connect to IP"
+                android:textSize="16sp" />
 
             <Button
                 android:id="@+id/connect_button"
@@ -64,6 +72,14 @@
                 android:textColor="@color/button_text"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+        </LinearLayout>
+        
+       <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:padding="4dp" >
 
             <TextView
                 android:id="@+id/comp1_on_stage_text"

@@ -213,8 +213,8 @@ public class CompetitorsRowView extends LinearLayout {
 						((MainActivity) mContext).competition.getCompetitors().removeByCardNumber( Integer.parseInt( (String) mCardNumber.getText()) );		
 						((MainActivity) mContext).competition.calculateResults();
 						((MainActivity) mContext).updateFragments();
-						AndroidHelper.saveSessionData(null,((MainActivity) mContext).competition, null);
-						AndroidHelper.saveSessionData(((MainActivity) mContext).competition.getCompetitionName(),((MainActivity) mContext).competition, null);
+						AndroidHelper.saveSessionData(null,((MainActivity) mContext).competition, null, MainActivity.sportIdentMode);
+						AndroidHelper.saveSessionData(((MainActivity) mContext).competition.getCompetitionName(),((MainActivity) mContext).competition, null,MainActivity.sportIdentMode);
 
 						alertDialog.dismiss();
 					}
@@ -342,8 +342,8 @@ public class CompetitorsRowView extends LinearLayout {
 						mCardNumber.setText(mCardNumberInput.getText());	
 						((MainActivity) mContext).competition.calculateResults();
 						((MainActivity) mContext).updateFragments();
-						AndroidHelper.saveSessionData(null,((MainActivity) mContext).competition, null);
-						AndroidHelper.saveSessionData(((MainActivity) mContext).competition.getCompetitionName(),((MainActivity) mContext).competition, null);
+						AndroidHelper.saveSessionData(null,((MainActivity) mContext).competition, null, MainActivity.sportIdentMode);
+						AndroidHelper.saveSessionData(((MainActivity) mContext).competition.getCompetitionName(),((MainActivity) mContext).competition, null, MainActivity.sportIdentMode);
 
 						Toast.makeText((MainActivity) mContext, status, Toast.LENGTH_LONG).show();
 

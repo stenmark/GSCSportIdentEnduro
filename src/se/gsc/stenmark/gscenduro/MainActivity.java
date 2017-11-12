@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InvalidClassException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 
@@ -15,6 +18,7 @@ import se.gsc.stenmark.gscenduro.SporIdent.SiDriverDisconnectedException;
 import se.gsc.stenmark.gscenduro.SporIdent.SiMessage;
 import se.gsc.stenmark.gscenduro.compmanagement.CompetitionHelper;
 import se.gsc.stenmark.gscenduro.webtime.WebTimeHandler;
+import se.gsc.stenmark.gscenduro.webtime.WebTimePeristentData;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import android.app.ActionBar;
 import android.support.v4.app.FragmentManager;
@@ -58,11 +62,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public SiDriver siDriver = null;
 	public boolean disconected;
 	private String connectionStatus = "";
-	public WebTimeHandler webTime = new WebTimeHandler();
+//	public WebTimeHandler webTime = new WebTimeHandler();
 	public static boolean sportIdentMode = true;
 
 	private Uri previousImportIntent = new Uri.Builder().build();
-	public static String driverLayerErrorMsg;
+
+		public static String driverLayerErrorMsg;
 
 	public String getConnectionStatus() {
 		return connectionStatus;
@@ -112,8 +117,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				if (updatedCard.getCardNumber() != 0) {	    		
 					competition.processNewCard(updatedCard, true);
 					Toast.makeText(this, "Card updated", Toast.LENGTH_LONG).show();
-					AndroidHelper.saveSessionData(null,competition, webTime);
-					AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null);
+					AndroidHelper.saveSessionData(null,competition, webTime, sportIdentMode);
+					AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null, sportIdentMode);
 				}   		    
 			}
 
@@ -167,7 +172,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			super.onPause();
 			disconected = true;
 			if( competition != null){
-				AndroidHelper.saveSessionData(null,competition, webTime);
+				AndroidHelper.saveSessionData(null,competition, webTime, MainActivity.sportIdentMode);
 			}
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e1));
@@ -206,8 +211,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 							}
 							importResult = CompetitionHelper.importCompetitors(inputData, true, competition.getCompetitionType(), false, competition);
 							competition.calculateResults();
-							AndroidHelper.saveSessionData(null,competition, webTime);
-							AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null);
+							AndroidHelper.saveSessionData(null,competition, webTime, MainActivity.sportIdentMode);
+							AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null, MainActivity.sportIdentMode);
 						}
 						updateFragments();
 
@@ -229,6 +234,28 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 
 	}
+	
+	public String getIpAddress() {
+		String ip = "";
+		try {
+			Enumeration<NetworkInterface> enumNetworkInterfaces = NetworkInterface.getNetworkInterfaces();
+			while (enumNetworkInterfaces.hasMoreElements()) {
+				NetworkInterface networkInterface = enumNetworkInterfaces.nextElement();
+				Enumeration<InetAddress> enumInetAddress = networkInterface.getInetAddresses();
+				while (enumInetAddress.hasMoreElements()) {
+					InetAddress inetAddress = enumInetAddress.nextElement();
+					if (inetAddress.isSiteLocalAddress()) {
+						ip = inetAddress.getHostAddress();
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			LogFileWriter.writeLog(e);
+		}
+		return ip;
+	}
+	
 	/**
 	 * A lot of template code to get the sectorPager going. Created automagically by eclipse.
 	 * Creates an empty competion object, later to be populated by onResume()
@@ -239,25 +266,34 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
-			connectionStatus = "Disconnected";
-
 			setContentView(R.layout.main_activity);
 
 			try {
-				competition = AndroidHelper.loadSessionData(null, webTime);				
+				WebTimePeristentData webTimeData = new WebTimePeristentData();
+				competition = AndroidHelper.loadSessionData(null, webTimeData);	
+//				webTime = new WebTimeHandler(this);
+//				webTime.setPersistentData(webTimeData);
 			} 
+						
 			//Version missmatch, dont warn the user. Just create a new empty Competition and continue.
 			catch( InvalidClassException e1){
 				competition = new Competition();
-				AndroidHelper.saveSessionData(null,competition, webTime);
-				AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null);
+				AndroidHelper.saveSessionData(null,competition, webTime, MainActivity.sportIdentMode);
+				AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null, MainActivity.sportIdentMode);
 
 			}
 			catch (Exception e2) {
 				competition = new Competition();
 				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e2));
 				dialog.show(getSupportFragmentManager(), "popUp");
-			}		
+			}	
+			
+			if( sportIdentMode ){
+				connectionStatus = "Disconnected";
+			}
+			else{
+				connectionStatus = "Disconnected - Listening on IP: " + getIpAddress();
+			}
 
 			// Set up the action bar.
 			final ActionBar actionBar = getActionBar();
@@ -290,14 +326,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				// the TabListener interface, as the callback (listener) for
 				// when this tab is selected.
 				actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
-			}				
+			}		
+			
+//			if( !sportIdentMode ){
+//				webTime.startNewIncommingConnectionListener();
+//			}
 
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(MainActivity.generateErrorMessage(e1));
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 	}
-
+	
 	/** Called when the user clicks the Connect button 
 	 * Connects to the SI main Unit over USB with the SiDriver USB/Serial interface.
 	 * Checks that connection was successful and initiates the supervision counters and connectionStatus.
@@ -352,6 +392,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			disconected = true;
 		}
 	}
+	
+
+			
+	public void updateStatus( String msg){
+		connectionStatus = msg;
+		SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());		     	
+		StatusFragment statusFragment = (StatusFragment)mAdapter.getRegisteredFragment(0);
+		if (statusFragment != null) {
+			statusFragment.updateConnectText();
+		}	
+	}
 
 	/**
 	 * Called by SiListener Callback when SI cards are read by the SI main unit.
@@ -375,12 +426,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			if (!disconected) {
 				new SiCardListener().execute(siDriver);
 			} else {
-				connectionStatus = "Disconnected";				
-				SectionsPagerAdapter mAdapter = ((SectionsPagerAdapter)mViewPager.getAdapter());		     	
-				StatusFragment statusFragment = (StatusFragment)mAdapter.getRegisteredFragment(0);
-				if (statusFragment != null) {
-					statusFragment.updateConnectText();
-				}								
+				updateStatus("Disconnected");							
 			}
 		} catch (Exception e) {
 			if (!disconected) {
@@ -390,8 +436,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			dialog.show(getSupportFragmentManager(), "popUp");
 		}
 		updateFragments();
-		AndroidHelper.saveSessionData(null,competition, webTime);
-		AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null);
+		AndroidHelper.saveSessionData(null,competition, webTime, MainActivity.sportIdentMode);
+		AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null, MainActivity.sportIdentMode);
 	}
 
 	@Override
@@ -624,8 +670,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		LogFileWriter.writeLog("stacktrace", errorMessage);
 		return errorMessage+"\n";
 	}
-
-	/**
+		/**
 	 * Internal class to handle the SI Main unit events over USB/Serial.
 	 * Uses Android AsyncTask to let Android launch this as a background task.
 	 * Once an SI MainUnit event (i.e. read an SI card) has occured and been processed the Task is killed and has to be spawned again by the MainActivity.
@@ -684,4 +729,5 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			writeCard(newCard);
 		}
 	}
+
 }

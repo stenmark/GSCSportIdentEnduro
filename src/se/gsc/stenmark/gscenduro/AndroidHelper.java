@@ -30,6 +30,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import se.gsc.stenmark.gscenduro.webtime.WebTimeHandler;
+import se.gsc.stenmark.gscenduro.webtime.WebTimePeristentData;
 
 /**
  * Stateless helper class that can perform various operations on a competition.
@@ -90,14 +91,16 @@ public abstract class AndroidHelper {
 	 * @param competionName
 	 * @throws IOException
 	 */
-	public static void saveSessionData(String competionName, Competition competition, WebTimeHandler webTime) {
+	public static void saveSessionData(String competionName, Competition competition, WebTimeHandler webTime, Boolean sportIdentMode) {
 		try{
 			if (AndroidHelper.isExternalStorageWritable()) {
 				FileOutputStream fileOutputComp;
 				FileOutputStream fileOutputWebTime = null;
+				FileOutputStream fileOutputSportIdentMode = null;
 				if (competionName == null || competionName.isEmpty()) {
 					fileOutputComp = MainApplication.getAppContext().openFileOutput(Competition.CURRENT_COMPETITION, Context.MODE_PRIVATE);
 					fileOutputWebTime = MainApplication.getAppContext().openFileOutput(Competition.WEB_TIME, Context.MODE_PRIVATE);
+					fileOutputSportIdentMode = MainApplication.getAppContext().openFileOutput(Competition.SPORT_IDENT_MODE, Context.MODE_PRIVATE);
 				} else {
 
 					File sdCard = Environment.getExternalStorageDirectory();
@@ -113,8 +116,13 @@ public abstract class AndroidHelper {
 				ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);
 				if( fileOutputWebTime != null && webTime != null){
 					ObjectOutputStream objStreamOutWebTime = new ObjectOutputStream(fileOutputWebTime);
-					objStreamOutWebTime.writeObject(webTime);
+					objStreamOutWebTime.writeObject( webTime.getPersistentData() );
 					objStreamOutWebTime.close();
+				}
+				if( fileOutputSportIdentMode != null ){
+					ObjectOutputStream objStreamOutSportIdentMode = new ObjectOutputStream(fileOutputSportIdentMode);
+					objStreamOutSportIdentMode.writeObject(sportIdentMode);
+					objStreamOutSportIdentMode.close();
 				}
 
 				objStreamOutComp.writeObject(competition);
@@ -140,21 +148,23 @@ public abstract class AndroidHelper {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static Competition loadSessionData(String competionName, WebTimeHandler webTime) throws StreamCorruptedException, IOException, ClassNotFoundException, InvalidClassException {
+	public static Competition loadSessionData(String competionName, WebTimePeristentData webTimeData) throws StreamCorruptedException, IOException, ClassNotFoundException, InvalidClassException {
 		FileInputStream fileInputComp = null;
 		FileInputStream fileInputWebTime = null;
+		FileInputStream fileInputSportIdentMode = null;
 		Competition loadCompetition = null;
 
 		if (competionName == null || competionName.isEmpty()) {
 			try {
 				fileInputComp = MainApplication.getAppContext().openFileInput(Competition.CURRENT_COMPETITION);
 				fileInputWebTime = MainApplication.getAppContext().openFileInput(Competition.WEB_TIME);
+				fileInputSportIdentMode = MainApplication.getAppContext().openFileInput(Competition.SPORT_IDENT_MODE);
 			} catch (FileNotFoundException e) {
 				// If this is the first time the app is started the file does
 				// not exist, handle it by returning an empty competition
 				Competition competition = new Competition();
-				AndroidHelper.saveSessionData(null,competition, new WebTimeHandler());
-				AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null);
+				saveSessionData(null,competition, new WebTimeHandler(null), MainActivity.sportIdentMode);
+				saveSessionData(competition.getCompetitionName(),competition, null, MainActivity.sportIdentMode);
 				return competition;
 			}
 		} else {
@@ -172,10 +182,16 @@ public abstract class AndroidHelper {
 		loadCompetition = (Competition) objStreamInComp.readObject();
 		objStreamInComp.close();
 
-		if( fileInputWebTime != null && webTime != null ){
+		if( fileInputWebTime != null && webTimeData != null ){
 			ObjectInputStream objStreamInWebTime = new ObjectInputStream(fileInputWebTime);
-			webTime = (WebTimeHandler) objStreamInWebTime.readObject();
+			webTimeData = (WebTimePeristentData) objStreamInWebTime.readObject();
 			objStreamInWebTime.close();
+		}
+		
+		if( fileInputSportIdentMode != null ){
+			ObjectInputStream objStreamInSporetIdetnMode = new ObjectInputStream(fileInputSportIdentMode);
+			MainActivity.sportIdentMode= (Boolean) objStreamInSporetIdetnMode.readObject();
+			objStreamInSporetIdetnMode.close();
 		}
 
 		return loadCompetition;

@@ -71,31 +71,22 @@ public class StatusFragment extends Fragment {
 			((TextView) rootView.findViewById(R.id.stop_time_comp1)).setVisibility(View.GONE);
 			((TextView) rootView.findViewById(R.id.stop_time_comp2)).setVisibility(View.GONE);
 			((TextView) rootView.findViewById(R.id.stop_time_comp3)).setVisibility(View.GONE);
+			TextView connectButton = (TextView) rootView.findViewById(R.id.connect_button);
 			if(!MainActivity.sportIdentMode){
+				/*
 				TextView connectionStatusHeader = (TextView) rootView.findViewById(R.id.connection_status);
 				connectionStatusHeader.setVisibility(View.GONE);
 				TextView connectionStatusText = (TextView) rootView.findViewById(R.id.status_text);
 				connectionStatusText.setVisibility(View.GONE);
-				TextView connectButton = (TextView) rootView.findViewById(R.id.connect_button);
-				connectButton.setVisibility(View.GONE);
+				*/
+				((EditText) rootView.findViewById(R.id.connection_ip)).setVisibility(View.VISIBLE);
 				((TextView) rootView.findViewById(R.id.on_stage_competitors)).setVisibility(View.VISIBLE);
+				connectButton.setOnClickListener(onConnectIp);
 			}
 			else{
+				((EditText) rootView.findViewById(R.id.connection_ip)).setVisibility(View.GONE);
 				((TextView) rootView.findViewById(R.id.on_stage_competitors)).setVisibility(View.GONE);
-				TextView connectButton = (TextView) rootView.findViewById(R.id.connect_button);
-				connectButton.setVisibility(View.VISIBLE);
-				connectButton.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						try {
-							mMainActivity.connectToSiMaster();
-							updateConnectText();
-						} catch (Exception e) {
-							PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
-							dialog.show(getFragmentManager(), "popUp");
-						}
-					}
-				});
+				connectButton.setOnClickListener(onConnectSiMain);
 			}
 
 
@@ -213,8 +204,8 @@ public class StatusFragment extends Fragment {
 
 										mMainActivity.competition.calculateResults();									
 										mMainActivity.updateFragments();		
-										AndroidHelper.saveSessionData(null,mMainActivity.competition, null);
-										AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition, null);
+										AndroidHelper.saveSessionData(null,mMainActivity.competition, null, MainActivity.sportIdentMode);
+										AndroidHelper.saveSessionData(mMainActivity.competition.getCompetitionName(),mMainActivity.competition, null, MainActivity.sportIdentMode);
 									}
 								}											
 							} else {
@@ -258,7 +249,7 @@ public class StatusFragment extends Fragment {
 			MainActivity.generateErrorMessage(e1);
 		}
 	}
-
+	
 	private void updateWebCompetitors( ){
 		try{
 			Competitor[] competitorsOnstage = mMainActivity.webTime.getCompetitorsOnstage();
@@ -315,36 +306,27 @@ public class StatusFragment extends Fragment {
 				((TextView) getView().findViewById(R.id.stop_time_comp1)).setVisibility(View.GONE);
 				((TextView) getView().findViewById(R.id.stop_time_comp2)).setVisibility(View.GONE);
 				((TextView) getView().findViewById(R.id.stop_time_comp3)).setVisibility(View.GONE);
+				TextView connectButton = (TextView) getView().findViewById(R.id.connect_button);
 				if(!MainActivity.sportIdentMode){
+					/*
 					TextView connectionStatusHeader = (TextView) getView().findViewById(R.id.connection_status);
 					connectionStatusHeader.setVisibility(View.GONE);
 					TextView connectionStatusText = (TextView) getView().findViewById(R.id.status_text);
 					connectionStatusText.setVisibility(View.GONE);
-					TextView connectButton = (TextView) getView().findViewById(R.id.connect_button);
-					connectButton.setVisibility(View.GONE);
+					*/
+					((EditText) getView().findViewById(R.id.connection_ip)).setVisibility(View.VISIBLE);
 					((TextView) getView().findViewById(R.id.on_stage_competitors)).setVisibility(View.VISIBLE);
 					((TextView) getView().findViewById(R.id.recently_read_cards_header)).setVisibility(View.GONE);
+					connectButton.setOnClickListener(onConnectIp);
 					updateWebCompetitors();
 				}
 				else{
+					((EditText) getView().findViewById(R.id.connection_ip)).setVisibility(View.GONE);
 					((TextView) getView().findViewById(R.id.recently_read_cards_header)).setVisibility(View.VISIBLE);
 					TextView connectionStatusHeader = (TextView) getView().findViewById(R.id.connection_status);
 					connectionStatusHeader.setVisibility(View.VISIBLE);
 					((TextView) getView().findViewById(R.id.on_stage_competitors)).setVisibility(View.GONE);
-					TextView connectButton = (TextView) getView().findViewById(R.id.connect_button);
-					connectButton.setVisibility(View.VISIBLE);
-					connectButton.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							try {
-								mMainActivity.connectToSiMaster();
-								updateConnectText();
-							} catch (Exception e) {
-								PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
-								dialog.show(getFragmentManager(), "popUp");
-							}
-						}
-					});	
+					connectButton.setOnClickListener(onConnectSiMain);
 				}
 				
 				statusTextView = (TextView) getView().findViewById(R.id.competition_competition_date);
@@ -442,6 +424,35 @@ public class StatusFragment extends Fragment {
 		@Override
 		public void onClick(View v) {
 			stopCompetitor(2);
+		}
+	};
+	
+	private OnClickListener onConnectSiMain = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			try {
+				mMainActivity.connectToSiMaster();
+				updateConnectText();
+			} catch (Exception e) {
+				PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
+				dialog.show(getFragmentManager(), "popUp");
+			}
+		}
+	};
+	
+	private OnClickListener onConnectIp = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			try{
+				if (inView) {
+					EditText ipEditBox = (EditText) getView().findViewById(R.id.connection_ip);
+					LogFileWriter.writeLog("debugLog", "Connect IP button pressed. Connect to IP: " + ipEditBox.getText().toString() );
+					mMainActivity.webTime.connectToIp(ipEditBox.getText().toString());
+				}
+			}
+			catch(Exception e){
+				LogFileWriter.writeLog(e);
+			}
 		}
 	};
 }
