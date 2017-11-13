@@ -14,6 +14,7 @@ public class WebTimeHandler {
 	private ClientConnectionHandler clientConnection = null;
 	private MainActivity mainActivity = null;
 	private Socket socket = null;
+	private IncommingMessageListener incommingMessageListener;
 		
 	public WebTimeHandler( MainActivity mainActivity, WebTimePeristentData webTimeData ) {
 		this.webTimeData = webTimeData;
@@ -30,7 +31,7 @@ public class WebTimeHandler {
 	public void gotNewServerSocket( Socket socket){
 		//Start to listen for more connections
 		if( socket != null){
-			LogFileWriter.writeLog("debugLog", "Already had an actoive socket when a new socket came in");
+			LogFileWriter.writeLog("debugLog", "Already had an active socket when a new socket came in");
 		}
 		this.socket = socket;
 		LogFileWriter.writeLog("debugLog", "reset IP Listener set socket from new Incomming connection");
@@ -38,22 +39,11 @@ public class WebTimeHandler {
 		
 		//Start a new Listener to handle all future communication on this socket
 		LogFileWriter.writeLog("debugLog", "Send new socket to socket listener");
-		new IncommingMessageListener(this).execute( socket );
+		incommingMessageListener = new IncommingMessageListener(this, socket );
+		new Thread(incommingMessageListener).start();
 	}
 	
-	public void gotNewMsg( String msg, Socket socket){
-		//Start a new Listener to handle all future communication on this socket
-		if( socket != null ){
-			if( socket.isConnected() ){
-				new IncommingMessageListener(this).execute( socket );
-			}
-			else{
-				LogFileWriter.writeLog("debugLog", "Stopped listening to socket. Socket is not connected");
-			}
-		}
-		else{
-			LogFileWriter.writeLog("debugLog", "Stopped listening to socket. It became NULL");
-		}
+	public void gotNewMsg( String msg){
 		mainActivity.updateStatus(msg);
 	}
 
@@ -65,8 +55,9 @@ public class WebTimeHandler {
 	
 	public void socketConnected( Socket socket){
 		this.socket = socket;
-		sendMessage(socket, "Connected with socket");
-		new IncommingMessageListener(this).execute( socket );
+		sendMessage( "Connected with socket");
+		incommingMessageListener = new IncommingMessageListener(this, socket );
+		new Thread(incommingMessageListener).start();
 	}
 	
 	public void addCompetitorOnStage( Competitor competitor){
@@ -77,7 +68,7 @@ public class WebTimeHandler {
 				if(webTimeData.competitorsOnStage[i] == null ){
 					webTimeData.competitorsOnStage[i] = competitor;
 					LogFileWriter.writeLog("debugLog", "addCompetitorOnStage found and adding " + competitor.toString());
-					sendMessage(socket, "Add Competitor: " + competitor.getName());
+					sendMessage( "Add Competitor: " + competitor.getName());
 					return;
 				}
 			}
@@ -101,9 +92,9 @@ public class WebTimeHandler {
 	}
 	
 		
-	public void sendMessage(Socket socket, String msg){
+	public void sendMessage(String msg){
 		try {
-			OutputStream outstream = socket .getOutputStream(); 
+			OutputStream outstream = socket.getOutputStream(); 
 			PrintWriter out = new PrintWriter(outstream);
 			out.println(msg);
 			out.flush();
@@ -115,10 +106,6 @@ public class WebTimeHandler {
 	
 	public WebTimePeristentData getPersistentData(){
 		return webTimeData;
-	}
-	
-	public void setPersistentData(WebTimePeristentData webTimeData){
-		this.webTimeData = webTimeData;
 	}
 
 }

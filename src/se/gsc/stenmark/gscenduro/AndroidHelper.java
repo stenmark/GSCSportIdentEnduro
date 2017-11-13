@@ -102,7 +102,6 @@ public abstract class AndroidHelper {
 					fileOutputWebTime = MainApplication.getAppContext().openFileOutput(Competition.WEB_TIME, Context.MODE_PRIVATE);
 					fileOutputSportIdentMode = MainApplication.getAppContext().openFileOutput(Competition.SPORT_IDENT_MODE, Context.MODE_PRIVATE);
 				} else {
-
 					File sdCard = Environment.getExternalStorageDirectory();
 					competionName = competionName.replace(" ", "_");
 					File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro");
@@ -115,9 +114,22 @@ public abstract class AndroidHelper {
 
 				ObjectOutputStream objStreamOutComp = new ObjectOutputStream(fileOutputComp);
 				if( fileOutputWebTime != null && webTime != null){
-					ObjectOutputStream objStreamOutWebTime = new ObjectOutputStream(fileOutputWebTime);
-					objStreamOutWebTime.writeObject( webTime.getPersistentData() );
-					objStreamOutWebTime.close();
+					ObjectOutputStream objStreamOutWebTime = null;
+					try{
+						objStreamOutWebTime = new ObjectOutputStream(fileOutputWebTime);
+						if( webTime.getPersistentData() == null){
+							LogFileWriter.writeLog("debugLog", "ERROR: saveSessionData: getPersistentData is null" );
+						}
+						objStreamOutWebTime.writeObject( webTime.getPersistentData() );
+						objStreamOutWebTime.close();
+					}
+					catch( Exception exp){
+						LogFileWriter.writeLog(exp);
+					}
+					finally{
+						if( objStreamOutWebTime != null)
+							objStreamOutWebTime.close();
+					}
 				}
 				if( fileOutputSportIdentMode != null ){
 					ObjectOutputStream objStreamOutSportIdentMode = new ObjectOutputStream(fileOutputSportIdentMode);
@@ -183,9 +195,21 @@ public abstract class AndroidHelper {
 		objStreamInComp.close();
 
 		if( fileInputWebTime != null && webTimeData != null ){
-			ObjectInputStream objStreamInWebTime = new ObjectInputStream(fileInputWebTime);
-			webTimeData = (WebTimePeristentData) objStreamInWebTime.readObject();
-			objStreamInWebTime.close();
+			ObjectInputStream objStreamInWebTime = null;
+			try{
+				objStreamInWebTime = new ObjectInputStream(fileInputWebTime);
+				webTimeData = (WebTimePeristentData) objStreamInWebTime.readObject();
+				objStreamInWebTime.close();
+			}
+			catch( Exception exp){
+				LogFileWriter.writeLog(exp);
+				webTimeData = new WebTimePeristentData();
+			}
+			finally{
+				if( objStreamInWebTime != null ){
+					objStreamInWebTime.close();
+				}
+			}
 		}
 		
 		if( fileInputSportIdentMode != null ){

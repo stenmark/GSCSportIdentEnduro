@@ -172,7 +172,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			super.onPause();
 			disconected = true;
 			if( competition != null){
-				AndroidHelper.saveSessionData(null,competition, null, MainActivity.sportIdentMode);
+				AndroidHelper.saveSessionData(null,competition, webTime, MainActivity.sportIdentMode);
 			}
 		} catch (Exception e1) {
 			PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e1));
@@ -271,8 +271,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			try {
 				WebTimePeristentData webTimeData = new WebTimePeristentData();
 				competition = AndroidHelper.loadSessionData(null, webTimeData);	
-//				webTime = new WebTimeHandler(this);
-//				webTime.setPersistentData(webTimeData);
+				webTime = new WebTimeHandler(this, webTimeData);
 			} 
 						
 			//Version missmatch, dont warn the user. Just create a new empty Competition and continue.
