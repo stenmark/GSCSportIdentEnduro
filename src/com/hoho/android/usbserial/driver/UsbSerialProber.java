@@ -25,6 +25,7 @@ import java.util.Map;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
+import se.gsc.stenmark.gscenduro.LogFileWriter;
 import se.gsc.stenmark.gscenduro.MainActivity;
 
 
@@ -81,8 +82,8 @@ public enum UsbSerialProber {
             }
             final UsbDeviceConnection connection = manager.openDevice(usbDevice);
             if (connection == null) {
-            	MainActivity.driverLayerErrorMsg += " Could not open connection to USB device\n Try to disconnect the USB cable, reconnect it again and answer YES when aksed if you want to start GSCEnduro automatically \n";
-                return null;
+            	LogFileWriter.writeLog("debugLog", "Could not open connection to USB device\n Try to disconnect the USB cable, reconnect it again and answer YES when aksed if you want to start GSCEnduro automatically \n" );
+            	return null;
             }
             return new Cp2102SerialDriver(usbDevice, connection);
         }
@@ -118,7 +119,7 @@ public enum UsbSerialProber {
             }
         }
         
-        MainActivity.driverLayerErrorMsg += "No device found in device list. Size of list was: " + deviceList.size() + " size of values was " + deviceList.values().size();
+       	LogFileWriter.writeLog("debugLog", "No device found in device list. Size of list was: " + deviceList.size() + " size of values was " + deviceList.values().size());
         return null;
     }
 
@@ -139,7 +140,7 @@ public enum UsbSerialProber {
                 return probedDevice;
             }
         }
-    	MainActivity.driverLayerErrorMsg += "Could not find any device for " + usbDevice.getProductId() + "\n";
+    	LogFileWriter.writeLog("debugLog", "Could not find any device for " + usbDevice.getProductId() );
         return null;
     }
 
@@ -162,7 +163,7 @@ public enum UsbSerialProber {
 				return true;
 			}
 		}
-		MainActivity.driverLayerErrorMsg += " productId " + productId + " is unsupported\n";
+		LogFileWriter.writeLog("debugLog", " productId " + productId + " is unsupported" );
 		return false;
 	}
 

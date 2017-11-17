@@ -444,8 +444,10 @@ public class StatusFragment extends Fragment {
 				mMainActivity.connectToSiMaster();
 				updateConnectText();
 			} catch (Exception e) {
-				PopupMessage dialog = new PopupMessage(MainActivity	.generateErrorMessage(e));
+				LogFileWriter.writeLog(e);
+				PopupMessage dialog = new PopupMessage("Could not connect to SiMain, unkown problem");
 				dialog.show(getFragmentManager(), "popUp");
+				updateConnectText();
 			}
 		}
 	};

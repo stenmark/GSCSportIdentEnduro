@@ -64,10 +64,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private String connectionStatus = "";
 	public WebTimeHandler webTime = new WebTimeHandler(this, new WebTimePeristentData());
 	public static boolean sportIdentMode = true;
-
 	private Uri previousImportIntent = new Uri.Builder().build();
-
-		public static String driverLayerErrorMsg;
 
 	public String getConnectionStatus() {
 		return connectionStatus;
@@ -348,13 +345,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * */
 	public void connectToSiMaster() {
 		try {
-			driverLayerErrorMsg = "";
 			siDriver = new SiDriver();
 			UsbManager usbSystemService = (UsbManager) getSystemService(Context.USB_SERVICE);
 			if( usbSystemService == null ){
 				disconected = true;
 				connectionStatus = "Could not get the USB system service from the Android system";
-				PopupMessage dialog = new PopupMessage( connectionStatus + driverLayerErrorMsg );
+				LogFileWriter.writeLog("debugLog", connectionStatus);
+				PopupMessage dialog = new PopupMessage( connectionStatus );
 				dialog.show(getSupportFragmentManager(), "popUp");
 				return;
 			}
@@ -366,7 +363,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					new SiCardListener().execute(siDriver);
 				} else {
 					connectionStatus = "Failed ot connect SI master";
-					PopupMessage dialog = new PopupMessage( connectionStatus + driverLayerErrorMsg );
+					LogFileWriter.writeLog("debugLog", connectionStatus);
+					PopupMessage dialog = new PopupMessage( connectionStatus  );
 					dialog.show(getSupportFragmentManager(), "popUp");
 					disconected = true;
 					return;
@@ -374,7 +372,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 			else{			
 				connectionStatus = "Could not connect to the USB service";
-				PopupMessage dialog = new PopupMessage( connectionStatus + driverLayerErrorMsg );
+				LogFileWriter.writeLog("debugLog", connectionStatus);
+				PopupMessage dialog = new PopupMessage( connectionStatus  );
 				dialog.show(getSupportFragmentManager(), "popUp");
 				disconected = true;
 				return;
@@ -388,7 +387,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 		} catch (Exception e) {
 			connectionStatus = "Unknown connection problem";
-			PopupMessage dialog = new PopupMessage(driverLayerErrorMsg + "\n" + MainActivity.generateErrorMessage(e) );
+			LogFileWriter.writeLog("debugLog", connectionStatus);
+			LogFileWriter.writeLog(e);
+			PopupMessage dialog = new PopupMessage( connectionStatus );
 			dialog.show(getSupportFragmentManager(), "popUp");
 			disconected = true;
 		}

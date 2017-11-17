@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import se.gsc.stenmark.gscenduro.LogFileWriter;
-import se.gsc.stenmark.gscenduro.MainActivity;
 import se.gsc.stenmark.gscenduro.SporIdent.CRCCalculator;
 import se.gsc.stenmark.gscenduro.compmanagement.Competition;
 import android.hardware.usb.UsbManager;
@@ -600,18 +599,18 @@ public class SiDriver {
 			try {
 				driver.open();
 			} catch (IOException e1) {
-				MainActivity.driverLayerErrorMsg += MainActivity.generateErrorMessage(e1);
+				LogFileWriter.writeLog(e1);
 				return false;
 			}
 			try {
 				driver.setParameters(38400, UsbSerialDriver.DATABITS_8, UsbSerialDriver.STOPBITS_1, UsbSerialDriver.PARITY_NONE);
 			} catch (IOException e) {
-				MainActivity.driverLayerErrorMsg += MainActivity.generateErrorMessage(e);
+				LogFileWriter.writeLog(e);
 				return false;
 			}
 
 		} else {
-			MainActivity.driverLayerErrorMsg += "\nacquire probe was unsuccesful";
+			LogFileWriter.writeLog("debugLog", "acquire probe was unsuccesful" );
 			return false;
 		}
 
