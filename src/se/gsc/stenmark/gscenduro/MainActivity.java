@@ -269,19 +269,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			setContentView(R.layout.main_activity);
 
 			try {
-				WebTimePeristentData webTimeData = new WebTimePeristentData();
-				competition = AndroidHelper.loadSessionData(null, webTimeData);	
-				webTime = new WebTimeHandler(this, webTimeData);
+				SessionData loadedSession = AndroidHelper.loadSessionData(null);
+				competition = loadedSession.competition;
+				webTime = new WebTimeHandler(this, loadedSession.webTimeData);
 			} 
 						
-			//Version missmatch, dont warn the user. Just create a new empty Competition and continue.
+			//Version mismatch, don't warn the user. Just create a new empty Competition and continue.
 			catch( InvalidClassException e1){
+				LogFileWriter.writeLog(e1);
 				competition = new Competition();
 				AndroidHelper.saveSessionData(null,competition, null, MainActivity.sportIdentMode);
 				AndroidHelper.saveSessionData(competition.getCompetitionName(),competition, null, MainActivity.sportIdentMode);
 
 			}
 			catch (Exception e2) {
+				LogFileWriter.writeLog(e2);
 				competition = new Competition();
 				PopupMessage dialog = new PopupMessage(	MainActivity.generateErrorMessage(e2));
 				dialog.show(getSupportFragmentManager(), "popUp");

@@ -44,7 +44,8 @@ public class DialogSelectCompetition {
 					try {
 						List<String> savedCompetitions = AndroidHelper.getSavedCompetitionsAsList();
 						String selectedItem = savedCompetitions.get(radioButtonListener.which);
-						mMainActivity.competition = AndroidHelper.loadSessionData(selectedItem, null);
+						SessionData loadedSession = AndroidHelper.loadSessionData(selectedItem);
+						mMainActivity.competition = loadedSession.competition;
 						mMainActivity.competition.calculateResults();
 						mMainActivity.updateFragments();	
 					}

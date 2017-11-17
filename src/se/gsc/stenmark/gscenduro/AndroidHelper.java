@@ -42,7 +42,7 @@ import se.gsc.stenmark.gscenduro.webtime.WebTimePeristentData;
  */
 public abstract class AndroidHelper {
 	private static final String DEBUG_FILENAME = "debugData.txt";
-
+	
 	/**
 	 * Generate an RGB value for a transition from Red to Green.
 	 * @return RGB coded color
@@ -160,11 +160,12 @@ public abstract class AndroidHelper {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static Competition loadSessionData(String competionName, WebTimePeristentData webTimeData) throws StreamCorruptedException, IOException, ClassNotFoundException, InvalidClassException {
+	public static SessionData loadSessionData(String competionName ) throws StreamCorruptedException, IOException, ClassNotFoundException, InvalidClassException {
 		FileInputStream fileInputComp = null;
 		FileInputStream fileInputWebTime = null;
 		FileInputStream fileInputSportIdentMode = null;
 		Competition loadCompetition = null;
+		WebTimePeristentData webTimeData = null;
 
 		if (competionName == null || competionName.isEmpty()) {
 			try {
@@ -177,7 +178,7 @@ public abstract class AndroidHelper {
 				Competition competition = new Competition();
 				saveSessionData(null,competition, new WebTimeHandler(null, new WebTimePeristentData()), MainActivity.sportIdentMode);
 				saveSessionData(competition.getCompetitionName(),competition, null, MainActivity.sportIdentMode);
-				return competition;
+				return new SessionData(competition);
 			}
 		} else {
 			File sdCard = Environment.getExternalStorageDirectory();
@@ -194,7 +195,7 @@ public abstract class AndroidHelper {
 		loadCompetition = (Competition) objStreamInComp.readObject();
 		objStreamInComp.close();
 
-		if( fileInputWebTime != null && webTimeData != null ){
+		if( fileInputWebTime != null ){
 			ObjectInputStream objStreamInWebTime = null;
 			try{
 				objStreamInWebTime = new ObjectInputStream(fileInputWebTime);
@@ -211,6 +212,9 @@ public abstract class AndroidHelper {
 				}
 			}
 		}
+		if( webTimeData == null){
+			webTimeData = new WebTimePeristentData();
+		}
 		
 		if( fileInputSportIdentMode != null ){
 			ObjectInputStream objStreamInSporetIdetnMode = new ObjectInputStream(fileInputSportIdentMode);
@@ -218,7 +222,7 @@ public abstract class AndroidHelper {
 			objStreamInSporetIdetnMode.close();
 		}
 
-		return loadCompetition;
+		return new SessionData(loadCompetition, webTimeData);
 	}
 
 	/**

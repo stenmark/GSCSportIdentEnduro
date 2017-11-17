@@ -82,6 +82,11 @@ public class StatusFragment extends Fragment {
 				((EditText) rootView.findViewById(R.id.connection_ip)).setVisibility(View.VISIBLE);
 				((TextView) rootView.findViewById(R.id.on_stage_competitors)).setVisibility(View.VISIBLE);
 				connectButton.setOnClickListener(onConnectIp);
+				if(mMainActivity.webTime != null){
+					if(mMainActivity.webTime.getPersistentData() != null){
+						((EditText) rootView.findViewById(R.id.connection_ip)).setText(mMainActivity.webTime.getPersistentData().serverIp);
+					}
+				}
 			}
 			else{
 				((EditText) rootView.findViewById(R.id.connection_ip)).setVisibility(View.GONE);
@@ -319,6 +324,11 @@ public class StatusFragment extends Fragment {
 					((TextView) getView().findViewById(R.id.recently_read_cards_header)).setVisibility(View.GONE);
 					connectButton.setOnClickListener(onConnectIp);
 					updateWebCompetitors();
+					if(mMainActivity.webTime != null){
+						if(mMainActivity.webTime.getPersistentData() != null){
+							((EditText) getView().findViewById(R.id.connection_ip)).setText(mMainActivity.webTime.getPersistentData().serverIp);
+						}
+					}
 				}
 				else{
 					((EditText) getView().findViewById(R.id.connection_ip)).setVisibility(View.GONE);
