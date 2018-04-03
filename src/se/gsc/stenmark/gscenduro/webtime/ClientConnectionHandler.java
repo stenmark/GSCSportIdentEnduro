@@ -11,12 +11,17 @@ public class ClientConnectionHandler extends AsyncTask<Void, Void, Socket> {
 	private String serverIp;
 	private InetAddress serverAddr;
 	private Socket socket = null;
-	private WebTimeHandler webTimeHandler = null;
+	private WebTimeHandler_ClientServerSocket webTimeHandler = null;
 
-	public ClientConnectionHandler(String serverIp, WebTimeHandler webTimeHandler){
-		LogFileWriter.writeLog("debugLog", "ClientConnectionHandler: Created new handler for IP: " +serverIp );
-		this.serverIp = serverIp.replace(" ", "");
-		this.webTimeHandler = webTimeHandler;
+	public ClientConnectionHandler(String serverIp, WebTimeHandler_ClientServerSocket webTimeHandler){
+		try{
+			LogFileWriter.writeLog("debugLog", "ClientConnectionHandler: Created new handler for IP: " +serverIp );
+			this.serverIp = serverIp.replace(" ", "");
+			this.webTimeHandler = webTimeHandler;
+		}
+		catch( Exception e){
+			LogFileWriter.writeLog(e);
+		}
 	}
 
 	@Override
@@ -25,6 +30,7 @@ public class ClientConnectionHandler extends AsyncTask<Void, Void, Socket> {
 			LogFileWriter.writeLog("debugLog", "ClientConnectionHandler: creating new socket to " +serverIp );
 			serverAddr = InetAddress.getByName(serverIp);
 			socket = new Socket();
+
 			socket.connect(new InetSocketAddress(serverAddr,IncommingConnectionListener.SERVER_PORT), 5000);
 		} catch (Exception e) {
 			LogFileWriter.writeLog(e);
@@ -34,11 +40,16 @@ public class ClientConnectionHandler extends AsyncTask<Void, Void, Socket> {
 	}
 	
 	protected void onPostExecute(Socket socket) {
-		if(socket == null){
-			webTimeHandler.failedToConnectSocket(serverIp);
+		try{
+			if(socket == null){
+				webTimeHandler.failedToConnectSocket(serverIp);
+			}
+			else{
+				webTimeHandler.socketConnected(socket, serverIp);
+			}
 		}
-		else{
-			webTimeHandler.socketConnected(socket, serverIp);
+		catch( Exception e){
+			LogFileWriter.writeLog(e);
 		}
 	}
 

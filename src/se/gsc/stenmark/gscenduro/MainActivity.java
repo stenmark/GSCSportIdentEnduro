@@ -290,7 +290,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				connectionStatus = "Disconnected";
 			}
 			else{
-				connectionStatus = "Disconnected - Listening on IP: " + getIpAddress();
+				connectionStatus = "Disconnected" + getIpAddress();
 			}
 
 			// Set up the action bar.

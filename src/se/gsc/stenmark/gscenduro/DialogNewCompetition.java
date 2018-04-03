@@ -76,8 +76,9 @@ public class DialogNewCompetition {
 			});
 
 			final CheckBox sportIdentModeCheckBox = (CheckBox) promptsView.findViewById(R.id.sport_ident_mode_checkbox);
-			MainActivity.sportIdentMode = false;
-			sportIdentModeCheckBox.setChecked(false);
+			MainActivity.sportIdentMode = true;
+			sportIdentModeCheckBox.setChecked(true);
+			sportIdentModeCheckBox.setVisibility(View.GONE);
 			sportIdentModeCheckBox.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
 					if( sportIdentModeCheckBox.isChecked() ){
@@ -225,8 +226,7 @@ public class DialogNewCompetition {
 						mMainActivity.updateStatus( "Not Connected");
 					}
 					else{
-						mMainActivity.updateStatus( "Disconnected - Waiting on IP: " + mMainActivity.getIpAddress());
-						mMainActivity.webTime.startNewIncommingConnectionListener();
+						mMainActivity.updateStatus( "Disconnected" + mMainActivity.getIpAddress());
 					}
 
 					newAlertDialog.dismiss();

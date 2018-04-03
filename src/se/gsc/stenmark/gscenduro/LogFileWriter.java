@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import android.os.Environment;
 
@@ -25,7 +27,9 @@ public abstract class LogFileWriter {
 	public static void writeLog( String directory, String message){		
 		BufferedWriter bw  = null;
     	File file = null;
-    	String timeStamp = Calendar.getInstance().getTime().toString().replace(" ", "_").replace(":", "").replace("CEST", "");
+    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+    	String timeStamp = format.format(Calendar.getInstance().getTime());
+
     	try{
 	    	File sdCard = Environment.getExternalStorageDirectory();
 	    	File dir = new File(sdCard.getAbsolutePath() + "/gscEnduro/" + directory);

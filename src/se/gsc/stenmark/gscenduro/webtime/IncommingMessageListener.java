@@ -6,30 +6,39 @@ import java.net.Socket;
 import se.gsc.stenmark.gscenduro.LogFileWriter;
 
 public class IncommingMessageListener implements Runnable{
-	private WebTimeHandler webTimeHandler;
+	private WebTimeHandler_ClientServerSocket webTimeHandler;
 	private Socket socket;
 
-	public IncommingMessageListener(WebTimeHandler webTimeHandler, Socket socket){
+	public IncommingMessageListener(WebTimeHandler_ClientServerSocket webTimeHandler, Socket socket){
 		this.webTimeHandler = webTimeHandler;
 		this.socket = socket;
 	}
 
 	@Override
 	public void run() {
-		while(true){
-			String newMessage ="";
-			try{
+		try{
+			BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			while(true){
+				String newMessage ="";
 				LogFileWriter.writeLog("debugLog", "Wait for new messages on listening socket");
-				BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				newMessage = inputReader.readLine();
 				LogFileWriter.writeLog("debugLog", "Got new IP message on listening socket: " + newMessage);
+				webTimeHandler.gotNewMsg(newMessage);
+				if( newMessage == null){
+					//If we got null, it means we lost the socket. Stop the listening thread. The caller needs to restart the thread when a new socket has been established
+					break;					
+				}
+				if( newMessage.equals(WebTimeHandler_ClientServerSocket.MSG_ACK)){
+					webTimeHandler.lastMsgAcked = true;
+				}
+				else{
+					webTimeHandler.sendMessage(WebTimeHandler_ClientServerSocket.MSG_ACK);
+				}
 			}
-			catch(Exception e){
-				LogFileWriter.writeLog(e);
-			}
-			webTimeHandler.gotNewMsg(newMessage);
 		}
-
+		catch(Exception e){
+			LogFileWriter.writeLog(e);
+		}
 	}
 }
 
